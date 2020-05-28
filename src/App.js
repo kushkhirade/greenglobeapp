@@ -1,44 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {Admin, Resource} from 'react-admin';
 import {Home,Book,Business,Payment,People,Pages,History,HeadsetMic, Chat} from '@material-ui/icons';
 import iLayout from './Custom/iLayout';
-import {HomePage} from './Sections';
+import {HomePage,Support,Rto,Communication} from './Sections';
+import data from './data';
+function getData(url){
 
-const salesData={data:[
-	{
-		id:"o1",
-		product:"3W ACE",
-		target:"50",
-		achieved:"40",
-		target_left:"10",
-	},{
-		id:"o2",
-		product:"2W ACE",
-		target:"50",
-		achieved:"40",
-		target_left:"10",
-	},{
-		id:"o3",
-		product:"4W ACE",
-		target:"50",
-		achieved:"40",
-		target_left:"10",
-	},{
-		id:"o4",
-		product:"5W ACE",
-		target:"50",
-		achieved:"40",
-		target_left:"10",
-	}
-],
-total:3}
+	console.log(url);
+	if(url=="Home")
+		return data.sales;
+	else if(url=="Support")
+		return data.support;
+	else if(url=="RTO")
+		return data.rto;
+
+	return data.sales;
+}
 
 const getList=(url="",params={})=>new Promise((resolve,reject)=>{
 	try{
+		resolve(getData(url));
+	}catch(e){
+		reject(e);
+	}
+	
+});
+const getOne=(url="",params={})=>new Promise((resolve,reject)=>{
+	try{
 
-	resolve(salesData);
+		resolve(getData(url));
 
 	}catch(e){
 		reject(e);
@@ -47,7 +38,8 @@ const getList=(url="",params={})=>new Promise((resolve,reject)=>{
 });
 
 const dataProvider={
-	getList
+	getList,
+	getOne
 }
 
 
@@ -67,9 +59,9 @@ function App() {
 					<Resource name="Customers" list={Empty} icon={People}/>
 					<Resource name="Transactions" list={Empty} icon={Business}/>
 					<Resource name="Report" list={Empty} />
-					<Resource name="RTO Process" list={Empty} icon={History}/>
-					<Resource name="Communications" list={Empty} icon={HeadsetMic}/>
-					<Resource name="Support" list={Empty} icon={Chat}/>
+					<Resource name="RTO" list={Rto} icon={History}/>
+					<Resource name="Communications" list={Communication} icon={HeadsetMic}/>
+					<Resource name="Support" list={Support} icon={Chat}/>
 				</Admin>
 			</div>
     		</div>
@@ -77,20 +69,3 @@ function App() {
 }
 
 export default App;
-/*
-function App() {
-	return (
-		<div className="App">
-			<div>
-				<Admin dataProvider={dataProvider}>
-					<Resource name="Agents" list={ListGuesser}/>
-					<Resource name="Properties" list={ListGuesser}/>
-					<Resource name="Websites" list={ListGuesser}/>
-					<Resource name="Scheduler" list={ListGuesser}/>
-				</Admin>
-			</div>
-    		</div>
-	);
-}
-
-*/
