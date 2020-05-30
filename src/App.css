@@ -1,5 +1,58 @@
+html,
+body,
+#root,
+.App {
+  height: 100%;
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+input,
+button {
+  outline: none;
+}
+
 .App {
   text-align: center;
+}
+
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #eaeaea;
+}
+
+.login-button {
+  padding: 10px;
+  background-color: #48a89c;
+  color: white;
+  width: 190px;
+  font-size: 16px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+
+}
+
+.login-button:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.login-input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid;
+  margin-bottom: 16px;
+  border-radius: 12px
+}
+
+.input-container {
+  margin-bottom: 26px;
+}
+
+.login-container {
+  width: 300px;
+  padding: 45px 10px;
 }
 
 .App-logo {
@@ -32,6 +85,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
