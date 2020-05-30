@@ -1,6 +1,5 @@
 import React from 'react';
 import { Sidebar } from 'react-admin';
-import { makeStyles } from '@material-ui/core/styles';
 
 function iSidebar(props){
 

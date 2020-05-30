@@ -1,7 +1,5 @@
 import React from 'react';
-import { Datagrid, List,TextField,Show} from 'react-admin';
-import {Modal,Fab} from '@material-ui/core';
-import {Add} from '@material-ui/icons';
+import { Show } from 'react-admin';
 class Communication extends React.Component{
 	render(){
 		return (<div>

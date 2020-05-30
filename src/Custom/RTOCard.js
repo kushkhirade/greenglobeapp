@@ -1,6 +1,6 @@
-import React from "react";
-import { Grid, Button } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { Edit } from "@material-ui/icons";
+import React from "react";
 const RTOCard = ({
   source,
   record = {},
@@ -16,7 +16,7 @@ const RTOCard = ({
             {record[source].title}
           </Grid>
           <Grid item xs={6} md={6}>
-            <Edit onClick={() => onEditClick(source)} />
+            <Edit onClick={() => onEditClick(record)} />
           </Grid>
           <Grid item xs={6} md={6}>
             {record[source].fullname}

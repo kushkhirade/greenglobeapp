@@ -1,12 +1,7 @@
-import Home from './Home';
-import Support from './Support';
-import Rto from './Rto';
 import Communication from './Communication';
+import Home from './Home';
+import Rto from './Rto';
+import Support from './Support';
 const HomePage=Home;
 
-export {
-	HomePage,
-	Support,
-	Rto,
-	Communication
-};
+export { HomePage, Support, Rto, Communication };
