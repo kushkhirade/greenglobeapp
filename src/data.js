@@ -32,6 +32,67 @@ const data = {
     ],
     total: 4,
   },
+  inventory: {
+    data: [
+      {
+        id: 1,
+        model: "3W-ACE-SKU9875",
+        price: "Rs. 35620",
+        addedOn: " 06/05/2020",
+        imageURL:
+          "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
+        pName: "ACE",
+        SKU: "SKU35956",
+        mDate: "02/05/2019",
+        tankID: "TN98745",
+        tankCapacity: "20",
+      },
+      {
+        id: 2,
+        model: "3W-ACE-SKU9875",
+        price: "Rs. 35620",
+        addedOn: " 06/05/2020",
+        pName: "ACE",
+        SKU: "SKU35956",
+        mDate: "02/05/2019",
+        tankID: "TN98745",
+        tankCapacity: "20",
+
+        imageURL:
+          "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
+      },
+      {
+        id: 3,
+        model: "3W-ACE-SKU9875",
+        price: "Rs. 35620",
+        addedOn: " 06/05/2020",
+        pName: "ACE",
+        SKU: "SKU35956",
+        mDate: "02/05/2019",
+        tankID: "TN98745",
+        tankCapacity: "20",
+
+        imageURL:
+          "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
+      },
+      {
+        id: 4,
+        model: "3W-ACE-SKU9875",
+        price: "Rs. 35620",
+        addedOn: " 06/05/2020",
+        pName: "ACE",
+        SKU: "SKU35956",
+        mDate: "02/05/2019",
+        tankID: "TN98745",
+        tankCapacity: "20",
+
+        imageURL:
+          "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
+      },
+    ],
+    total: 4,
+  },
+
   support: {
     data: [
       {

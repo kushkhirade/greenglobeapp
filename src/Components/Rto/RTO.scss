@@ -1,0 +1,23 @@
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .modal-content {
+        display: flex;
+        background-color: white;
+        width: 300px;
+        text-align: center;
+    }
+
+    .modal-margin {
+        margin-bottom: 20px;
+    }
+}
+
+.rto-modal {
+    .modal-content {
+        padding: 50px;
+
+    }
+}

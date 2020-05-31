@@ -1,0 +1,47 @@
+.inventory-card-container {
+    margin: 10px;
+    width: 285px;
+}
+
+
+.inventory-main {
+    .MuiGrid-root {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+}
+
+.list-page {
+    width: 100%;
+}
+
+.inventory-card {
+    text-align: left;
+    padding: 14px;
+    width: 100%;
+    margin: 15px;
+
+    .MuiGrid-item {
+        padding: 6px;
+        display: flex;
+    }
+}
+
+.padding-6 {
+    padding: 6px;
+}
+
+.grid-label { 
+    font-size: 13px;
+}
+.text-left {
+    text-align: left;
+    margin-top: 15px;
+}
+
+.inventory-modal {
+    .modal-content {
+        padding: 20px;
+    }
+}

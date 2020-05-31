@@ -8,7 +8,6 @@ export class BasePage extends React.Component {
 
   componentDidMount() {
     const isUserLoggedIn = localStorage.getItem("userData");
-    console.log('>> isuserLoggedIn', isUserLoggedIn);
     if (JSON.parse(isUserLoggedIn)) {
       this.setState({
         isLoggedIn: true,
@@ -22,7 +21,6 @@ export class BasePage extends React.Component {
   };
 
   render() {
-    console.log(">> this.state.isLoggedIn", this.state.isLoggedIn);
     return (
       <div className="App">
         <div className="main-container">
