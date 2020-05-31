@@ -61,6 +61,23 @@ const data = {
     ],
     total: 4,
   },
+  profile: {
+    data: [
+      {
+        distID: 2555,
+        name: "Sachin T.",
+        email: "Sachin@gmail.com",
+        phoneNumber: "12346423423",
+        whatsApp: "12346423423",
+        address: "Indiabulls, Lower Parel",
+        pincode: "411093",
+        city: "Mumbai",
+        state: "MH",
+        country: "INDIA",
+      },
+    ],
+    total: 1,
+  },
   rto: {
     data: [
       {

@@ -1,6 +1,6 @@
 import React from "react";
 import { ToastProvider } from "react-toast-notifications";
-import "./App.css";
+import "./App.scss";
 import { BasePage } from "./Components/BasePage";
 import { HomeScreen } from "./Components/HomePage";
 

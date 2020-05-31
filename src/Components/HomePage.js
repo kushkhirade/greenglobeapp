@@ -10,17 +10,19 @@ import {
   History,
   HeadsetMic,
   Chat,
+  AccountCircle,
 } from "@material-ui/icons";
 import iLayout from "../Custom/iLayout";
 import { HomePage, Support, Rto, Communication } from "../Sections";
 import data from "../data";
+import { ProfilePage } from "./Profile";
 
 function getData(url) {
   console.log(url);
   if (url === "Home") return data.sales;
   else if (url === "Support") return data.support;
   else if (url === "RTO") return data.rto;
-
+  else if (url === "Profile") return data.profile;
   return data.sales;
 }
 
@@ -50,8 +52,16 @@ function Empty(props) {
   return <h2>Under Construction</h2>;
 }
 
+const PersonIcon = () => <AccountCircle className="profile-icon" fontSize="large" />;
+
 export const HomeScreen = () => (
   <Admin layout={iLayout} dataProvider={dataProvider}>
+    <Resource
+      name="Profile"
+      title="Profile"
+      list={ProfilePage}
+      icon={PersonIcon}
+    />
     <Resource name="Home" title="Home" list={HomePage} icon={Home} />
     <Resource name="Inventory" list={Empty} icon={Book} />
     <Resource name="Buy Orders" list={Empty} icon={Payment} />
