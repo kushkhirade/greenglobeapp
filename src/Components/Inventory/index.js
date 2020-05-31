@@ -1,12 +1,12 @@
-import React from "react";
-import { Grid, Card, Tab } from "@material-ui/core";
-import { List } from "react-admin";
-import { map, isEmpty, values } from "ramda";
-import "./inventory.scss";
+import { Grid, Tab } from "@material-ui/core";
+import Modal from "@material-ui/core/Modal";
 import TabContext from "@material-ui/lab/TabContext";
 import TabList from "@material-ui/lab/TabList";
 import TabPanel from "@material-ui/lab/TabPanel";
-import Modal from "@material-ui/core/Modal";
+import { isEmpty, map, values } from "ramda";
+import React from "react";
+import { List } from "react-admin";
+import "./inventory.scss";
 
 export class Inventory extends React.Component {
   state = {
@@ -74,20 +74,25 @@ export class Inventory extends React.Component {
     return (
       <div className="inventory-main">
         {this.renderModal()}
-        <Grid container>
-          <TabContext value={this.state.value}>
-            <TabList onChange={(e, value) => this.setState({ value: value })}>
-              {this.tabs.map((tabData, index) => (
-                <Tab label={tabData} value={index} />
-              ))}
-            </TabList>
-            <TabPanel value={0}>
-              <List exporter={false} {...this.props}>
+        <TabContext value={this.state.value}>
+          <TabList onChange={(e, value) => this.setState({ value: value })}>
+            {this.tabs.map((tabData, index) => (
+              <Tab label={tabData} value={index} />
+            ))}
+          </TabList>
+          <TabPanel value={0}>
+            <Grid className="grid-container" container>
+              <List
+                actions={null}
+                className="list-main"
+                exporter={false}
+                {...this.props}
+              >
                 <InventoryCards onClickItem={this.handleItemClick} />
               </List>
-            </TabPanel>
-          </TabContext>
-        </Grid>
+            </Grid>
+          </TabPanel>
+        </TabContext>
       </div>
     );
   }
@@ -97,41 +102,40 @@ const InventoryCards = (props) => {
   return isEmpty(props.data) ? (
     <div>Empty</div>
   ) : (
-    <Grid>
-      {map((inData, key) => {
-        return (
-          <Grid
-            key={key}
-            onClick={() => props.onClickItem(inData)}
-            item
-            md={5}
-            xs={12}
-          >
-            <Card className="inventory-card">
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div className="padding-6">{inData.model}</div>
+    map((inData, key) => {
+      return (
+        <Grid
+          key={key}
+          onClick={() => props.onClickItem(inData)}
+          item
+          xs={12}
+          className="base-item"
+          md={6}
+        >
+          <div className="inventory-card">
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div className="padding-6">{inData.model}</div>
+              <img
+                height="16px"
+                src="https://img.icons8.com/material/24/000000/menu-2--v1.png"
+                alt="menu"
+              />
+            </div>
+            <Grid item xs={12} md={12}>
+              <Grid>
                 <img
-                  height="16px"
-                  src="https://img.icons8.com/material/24/000000/menu-2--v1.png"
-                  alt="menu"
+                  className="padding-6"
+                  src={inData.imageURL}
+                  width="80px"
+                  alt="bike"
                 />
-              </div>
-              <Grid item xs={12} md={12}>
-                <Grid>
-                  <img
-                    className="padding-6"
-                    src={inData.imageURL}
-                    width="80px"
-                    alt="bike"
-                  />
-                </Grid>
-                <Grid className="padding-6">{inData.price}</Grid>
               </Grid>
-              <div className="padding-6">{inData.addedOn}</div>
-            </Card>
-          </Grid>
-        );
-      }, values(props.data))}
-    </Grid>
+              <Grid className="padding-6">{inData.price}</Grid>
+            </Grid>
+            <div className="padding-6">{inData.addedOn}</div>
+          </div>
+        </Grid>
+      );
+    }, values(props.data))
   );
 };

@@ -196,6 +196,59 @@ const data = {
     ],
     total: 4,
   },
+  customers: {
+    data: [
+      {
+        id: 1,
+        firstName: "Sachin",
+        middleName: "",
+        lastName: "T",
+        mobileNumber: "123566666",
+        productPurchased: "3W Pro",
+        dealerRating: "3.5",
+      },
+      {
+        id: 2,
+        firstName: "Sachin",
+        middleName: "",
+        lastName: "T",
+        mobileNumber: "123566666",
+        productPurchased: "3W Pro",
+        dealerRating: "3.5",
+      },
+      {
+        id: 3,
+
+        firstName: "Sachin",
+        middleName: "",
+        lastName: "T",
+        mobileNumber: "123566666",
+        productPurchased: "3W Pro",
+        dealerRating: "3.5",
+      },
+      {
+        id: 4,
+
+        firstName: "Sachin",
+        middleName: "",
+        lastName: "T",
+        mobileNumber: "123566666",
+        productPurchased: "3W Pro",
+        dealerRating: "3.5",
+      },
+      {
+        id: 5,
+
+        firstName: "Sachin",
+        middleName: "",
+        lastName: "T",
+        mobileNumber: "123566666",
+        productPurchased: "3W Pro",
+        dealerRating: "3.5",
+      },
+    ],
+    total: 5,
+  },
 };
 
 export default data;
