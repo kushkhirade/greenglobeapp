@@ -11,7 +11,7 @@ export class Customers extends React.Component {
     return (
       <div className="customers-container">
         <Grid className="grid-container" container>
-          <List {...this.props}>
+          <List exporter={false} {...this.props}>
             <CustomerList />
           </List>
         </Grid>
@@ -26,10 +26,10 @@ const CustomerList = (props) => {
       <Grid className="base-item" item md={6} xs={12}>
         <div className="customer-card ">
           <Grid container className="padding-15 align-left">
-            <Grid item className="bold-font" xs={6} md={12}>
+            <Grid item className="bold-font center" xs={6} md={12}>
               <PersonPin /> {customerData.firstName}
             </Grid>
-            <Grid className="bold-font" item xs={6} md={12}>
+            <Grid className="bold-fon centert" item xs={6} md={12}>
               <Phone /> {customerData.mobileNumber}
             </Grid>
           </Grid>

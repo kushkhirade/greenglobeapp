@@ -20,6 +20,7 @@ export class BasePage extends React.Component {
     this.setState({ isLoggedIn: true });
   };
 
+
   render() {
     return (
       <div className="App">

@@ -70,21 +70,64 @@ export const LandingPage = () => (
         title="Profile"
         list={ProfilePage}
         icon={PersonIcon}
+        options={{ label: "Profile" }}
       />
-      <Resource name="Home" title="Home" list={HomePage} icon={Home} />
-      <Resource name="Inventory" list={Inventory} icon={Book} />
-      <Resource name="Buy Orders" list={Empty} icon={Payment} />
-      <Resource name="Leads" list={Empty} icon={Pages} />
       <Resource
+        options={{ label: "Home" }}
+        name="Home"
+        title="Home"
+        list={HomePage}
+        icon={Home}
+      />
+      <Resource
+        options={{ label: "Inventory" }}
+        name="Inventory"
+        list={Inventory}
+        icon={Book}
+      />
+      <Resource
+        options={{ label: "Buy Orders" }}
+        name="Buy Orders"
+        list={Empty}
+        icon={Payment}
+      />
+      <Resource
+        options={{ label: "Leads" }}
+        name="Leads"
+        list={Empty}
+        icon={Pages}
+      />
+      <Resource
+        options={{ label: "Customers" }}
         name="Customers"
         list={Customers}
         icon={People}
       />
-      <Resource name="Transactions" list={Empty} icon={Business} />
-      <Resource name="Report" list={Empty} />
-      <Resource name="RTO" list={Rto} icon={History} />
-      <Resource name="Communications" list={Communication} icon={HeadsetMic} />
-      <Resource name="Support" list={Support} icon={Chat} />
+      <Resource
+        options={{ label: "Transactions" }}
+        name="Transactions"
+        list={Empty}
+        icon={Business}
+      />
+      <Resource options={{ label: "Reports" }} name="Report" list={Empty} />
+      <Resource
+        options={{ label: "RTO Process" }}
+        name="RTO"
+        list={Rto}
+        icon={History}
+      />
+      <Resource
+        options={{ label: "Communications" }}
+        name="Communication"
+        list={Communication}
+        icon={HeadsetMic}
+      />
+      <Resource
+        options={{ label: "Support" }}
+        name="Support"
+        list={Support}
+        icon={Chat}
+      />
     </Admin>
   </div>
 );

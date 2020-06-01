@@ -22,31 +22,33 @@ export const LoginScreen = (props) => {
   };
 
   return (
-    <Card className="login-container">
-      <div>
-        <img src={BaseLogo} alt="login" height="100px" />
-      </div>
-      <div className="input-conttainer">
-        <input
-          onChange={(e) => setName(e.target.value)}
-          className="login-input"
-          type="text"
-          placeholder="Username"
-        />
-      </div>
-      <div className="input-conttainer">
-        <input
-          onChange={(e) => setPassword(e.target.value)}
-          className="login-input"
-          type="password"
-          placeholder="Password"
-        />
-      </div>
-      <div>
-        <button onClick={handleLogin} className="login-button">
-          Login
-        </button>
-      </div>
-    </Card>
+    <div className="login-main">
+      <Card className="login-container">
+        <div>
+          <img src={BaseLogo} alt="login" height="100px" />
+        </div>
+        <div className="input-conttainer">
+          <input
+            onChange={(e) => setName(e.target.value)}
+            className="login-input"
+            type="text"
+            placeholder="Username"
+          />
+        </div>
+        <div className="input-conttainer">
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            className="login-input"
+            type="password"
+            placeholder="Password"
+          />
+        </div>
+        <div>
+          <button onClick={handleLogin} className="login-button">
+            Login
+          </button>
+        </div>
+      </Card>
+    </div>
   );
 };
