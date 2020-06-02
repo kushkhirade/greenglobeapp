@@ -1,0 +1,36 @@
+.modal {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 5px;
+}
+
+
+
+.tabs-container {
+    display: flex;
+    .tab-button {
+        padding: 10px;
+        margin: 2px;
+        min-width: 100px;
+        text-align: center;
+        border-radius: 7px;
+        border: 2px solid #48a89c;
+        color: black;
+        &:hover{ 
+            cursor: pointer;
+        }
+    }
+    .active {
+        background-color: #48a89c;
+        color: white;
+    }
+}

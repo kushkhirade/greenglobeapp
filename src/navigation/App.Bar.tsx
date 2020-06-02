@@ -1,14 +1,12 @@
 //#region
-import { Avatar, Badge, ListItemText, Menu, MenuItem } from "@material-ui/core";
+import { Menu, MenuItem } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
 import { withStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
-import NotificationIcon from "@material-ui/icons/Notifications";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect, withRouter } from "react-router-dom";
@@ -20,11 +18,10 @@ import SpinnerDialog from "../spinner/Spinner";
 import { Alert } from "../state/Alert";
 import { AppState, isAuthenticated } from "../state/AppState";
 import AppDrawer, { routes } from "./App.Drawer";
+//#endregion
+import "./main.css";
 import { styles } from "./styles";
 const classNames = require("classnames");
-//#endregion
-
-import "./main.css";
 interface IAppProps extends IApplicationProps {
   classes: any;
   theme?: any;

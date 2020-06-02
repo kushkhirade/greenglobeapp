@@ -1,0 +1,66 @@
+.leads {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .card-container {
+        max-width: 300px;
+        text-align: left;
+
+        .card-data {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            text-align: left;
+        }
+
+        .card-element {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0px;
+        }
+    }
+}
+
+.assign-dealer-modal {
+    .head-title {
+        text-align: center;
+        font-size: 20px;
+    }
+}
+
+.dealer-name-container {
+    max-height: 200px;
+    overflow: scroll;
+    padding: 0 25px;
+    min-height: 200px;
+    min-width: 250px;
+
+    .dealer-name {
+        padding: 10px;
+        border: 1px solid #d8d8d8;
+        margin-bottom: 5px;
+        font-size: 16px;
+        width: 100%;
+    }
+}
+
+.assign-dealer-modal {
+    .form-input {
+        margin-left: 20px;
+    }
+}
+
+.clickable {
+    text-align: center;
+    width: 100%;
+    font-size: 12px;
+    margin-top: 12px;
+    color: #008661;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
