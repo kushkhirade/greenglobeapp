@@ -1,0 +1,51 @@
+.customer-card {
+    .card-container {
+        max-width: 400px;
+
+    }
+}
+
+.sub-form-heading {
+    padding: 15px 10px;
+    background-color: #e8e8e8;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
+
+
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0px;
+    margin: 10px 0px;
+    flex-wrap: wrap;
+
+    .upload-head {
+        background-color: #e8e8e8;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+
+    }
+
+    .upload-button {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        align-items: center;
+
+        .hidden-input {
+            display: none;
+        }
+        label {
+            background-color: #48a89c;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            &:hover{
+                cursor: pointer;
+            }
+        }
+    }
+}

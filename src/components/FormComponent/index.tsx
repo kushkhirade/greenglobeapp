@@ -10,68 +10,87 @@ import {
   InputLabel,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { store } from "../../store/Store";
 
 export const FormComponent = (props: any) => {
   const classes = useStyles();
   return (
     <Form
-      model="userForm"
-      onSubmit={(values) => {
-        console.log(">> values", values);
+      model={props.formModel}
+      className="form-content"
+      onSubmit={() => {
+        const values = store.getState().rxFormReducer[props.formModel];
+        props.onSubmit(values);
       }}
     >
-      {props.options.map((opt: any) => {
-        switch (opt.type) {
-          case "text":
-            return (
-              <Control
-                placeholder={opt.placeholder}
-                component={MUITextField}
-                type="text"
-                name={opt.name}
-                model={opt.model}
-              />
-            );
-          case "select":
-            return (
-              <Control
-                placeholder={opt.placeholder}
-                component={MUISelectField}
-                type="text"
-                name="Email"
-                model={opt.model}
-              />
-            );
+      <Grid container>
+        {props.options.map((opt: any) => {
+          switch (opt.type) {
+            case "text":
+              return (
+                <Control
+                  component={MUITextField}
+                  type="text"
+                  name={opt.name}
+                  model={`${props.formModel}${opt.model}`}
+                  label={opt.label}
+                />
+              );
+            case "select":
+              return (
+                <Control
+                  placeholder={opt.placeholder}
+                  component={MUISelectField}
+                  type="text"
+                  name="Email"
+                  model={`${props.formModel}${opt.model}`}
+                  label={opt.label}
+                />
+              );
 
-          default:
-            return "";
-        }
-      })}
-      <Button type="submit">Submit</Button>
+            default:
+              return "";
+          }
+        })}
+      </Grid>
+      {props.hasSubmit && (
+        <div className="button-container">
+          <Button variant="contained">Cancel</Button>
+          <Button variant="contained" color="primary" type="submit">
+            Submit
+          </Button>
+        </div>
+      )}
     </Form>
   );
 };
 
 const MUITextField = (props: any) => {
   return (
-    <TextField
-      placeholder={props.name}
-      label={props.name}
-      variant="outlined"
-      type={props.type}
-    />
+    <Grid item={true} xs={12} md={6} sm={6}>
+      <TextField
+        label={props.name}
+        variant="outlined"
+        className="form-input"
+        type={props.type}
+        {...props}
+      />
+    </Grid>
   );
 };
 
 const MUISelectField = (props: any) => {
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
-      <FormControl variant="outlined">
-        <InputLabel id="demo-simple-select-outlined-label">Age</InputLabel>
+      <FormControl variant="outlined" className="form-input">
+        <InputLabel id="demo-simple-select-outlined-label">
+          {props.label}
+        </InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
-          label="Age"
+          label={props.label}
+          {...props}
         >
           <MenuItem value="">
             <em>None</em>

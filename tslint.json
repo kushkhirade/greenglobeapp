@@ -45,6 +45,6 @@
       "check-separator",
       "check-type"
     ],
-    "quotemark": [true, "single", "jsx-double"]
+    "quotemark": [true, "double", "jsx-double"]
   }
 }

@@ -4,15 +4,13 @@
 
 .cards-main {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-wrap: wrap;
 
 }
 
 .card-container {
-    padding: 20px;
-    margin: 10px;
+    padding: 20px !important;
+    margin: 10px !important;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     background-color: white;
 }

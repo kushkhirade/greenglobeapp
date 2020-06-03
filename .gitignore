@@ -18,5 +18,5 @@ yarn-debug.log*
 yarn-error.log*
 functions/
 functions-src/
-
+/admin
 .vscode/settings.json

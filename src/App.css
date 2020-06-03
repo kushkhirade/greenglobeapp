@@ -32,6 +32,20 @@
   }
 }
 
+.padding-6 {
+  padding: 6px;
+}
+
+.align-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.align-center:hover {
+  cursor: pointer;
+}
+
 .drawer-link {
   text-decoration: none;
   color: black;

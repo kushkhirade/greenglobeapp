@@ -18,6 +18,7 @@ import SpinnerDialog from "../spinner/Spinner";
 import { Alert } from "../state/Alert";
 import { AppState, isAuthenticated } from "../state/AppState";
 import AppDrawer, { routes } from "./App.Drawer";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 //#endregion
 import "./main.css";
 import { styles } from "./styles";
@@ -129,23 +130,10 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
           >
             {this.state.routeName}
           </Typography>
-          <div>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={open}
-              onClose={this.handleMenuClose.bind(this, null)}
-            >
-              <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
-            </Menu>
+          <div className="align-center" onClick={this.handleLogout}>
+            &nbsp; Logout &nbsp;
+            <ExitToAppIcon />
+            &nbsp; &nbsp;
           </div>
         </Toolbar>
       </AppBar>

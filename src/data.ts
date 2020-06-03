@@ -223,7 +223,8 @@ const data = {
       {
         rtos: {
           id: "#1",
-          title: "Purchase Hang",
+          title: "RTO Document",
+          status: "Submitted",
           make: "Honda",
           type: "4 Wheeler",
           address: "ML 243, AL",
@@ -236,8 +237,9 @@ const data = {
       {
         rtos: {
           id: "#2",
-          title: "Purchase Hang",
           make: "Honda",
+          title: "Insurance Documents",
+          status: "Document Collected",
           type: "4 Wheeler",
           address: "ML 243, AL",
           phone: "20200526",

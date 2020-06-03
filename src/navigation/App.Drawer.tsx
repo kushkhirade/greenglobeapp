@@ -44,6 +44,11 @@ export const routes = [
   { path: "/buy-orders", title: "Buy Orders", icon: () => <Payment /> },
   { path: "/leads", title: "Leads", icon: () => <Pages /> },
   { path: "/customers", title: "Customer", icon: () => <People /> },
+  {
+    hidden: true,
+    path: "/customer/add-new-customer",
+    title: "Add New Customer",
+  },
   { path: "/transactions", title: "Transactions", icon: () => <Book /> },
   { path: "/rto-process", title: "RTO Process", icon: () => <HeadsetMic /> },
   { path: "/communication", title: "Communications", icon: () => <Book /> },
@@ -90,22 +95,24 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
           </div>
         </div>
         <Divider />
-        {routes.map((route, index) => {
-          return (
-            <NavLink
-              key={index}
-              onClick={() => this.props.onRouteChange(route.title)}
-              exact={true}
-              className="drawer-link"
-              to={route.path}
-            >
-              <ListItem button={true}>
-                <ListItemIcon>{route.icon()}</ListItemIcon>
-                <ListItemText primary={route.title} />
-              </ListItem>
-            </NavLink>
-          );
-        })}
+        {routes
+          .filter((x) => !x.hidden)
+          .map((route, index) => {
+            return (
+              <NavLink
+                key={index}
+                onClick={() => this.props.onRouteChange(route.title)}
+                exact={true}
+                className="drawer-link"
+                to={route.path}
+              >
+                <ListItem button={true}>
+                  <ListItemIcon>{route.icon()}</ListItemIcon>
+                  <ListItemText primary={route.title} />
+                </ListItem>
+              </NavLink>
+            );
+          })}
         <Divider />
       </Drawer>
     );

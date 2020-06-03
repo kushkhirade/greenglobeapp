@@ -6,8 +6,8 @@ import "./Login.scss";
 import { withRouter } from "react-router-dom";
 
 const LoginScreenImpl = (props: any) => {
-  const [userName, setName] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [userName, setName] = React.useState("Demo");
+  const [password, setPassword] = React.useState("demo");
 
   const handleLogin = () => {
     if (isEmpty(userName) || isEmpty(password)) {
@@ -29,12 +29,14 @@ const LoginScreenImpl = (props: any) => {
             <input
               onChange={(e) => setName(e.target.value)}
               className="login-input"
+              value={"Demo"}
               type="text"
               placeholder="Username"
             />
           </div>
           <div className="input-conttainer">
             <input
+              value={"demo"}
               onChange={(e) => setPassword(e.target.value)}
               className="login-input"
               type="password"
