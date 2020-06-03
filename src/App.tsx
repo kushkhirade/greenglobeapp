@@ -11,6 +11,7 @@ import { Inventory } from "./pages/Inventory";
 import { Profile } from "./pages/Profile";
 import { Leads } from "./pages/Leads";
 import { AddNewLead } from "./pages/Leads/AddLead";
+import { Customers } from "./pages/Cutomers";
 
 class App extends React.Component {
   public render() {
@@ -27,7 +28,7 @@ class App extends React.Component {
               exact={true}
               component={AddNewLead}
             />
-            <Route path="/customers" exact={true} component={HomePage} />
+            <Route path="/customers" exact={true} component={Customers} />
             <Route path="/transactions" exact={true} component={Support} />
             <Route path="/rto-process" exact={true} component={Support} />
             <Route path="/buy-orders" exact={true} component={BuyOrders} />

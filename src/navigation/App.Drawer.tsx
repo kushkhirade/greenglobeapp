@@ -17,6 +17,7 @@ import {
   Pages,
   Payment,
   People,
+  PersonPin,
 } from "@material-ui/icons";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -38,6 +39,7 @@ interface IAppDrawer {
 }
 export const routes = [
   { path: "/home", title: "Home", icon: () => <DashboardIcon /> },
+  { path: "/profile", title: "Profile", icon: () => <PersonPin /> },
   { path: "/inventory", title: "Inventory", icon: () => <Book /> },
   { path: "/buy-orders", title: "Buy Orders", icon: () => <Payment /> },
   { path: "/leads", title: "Leads", icon: () => <Pages /> },
@@ -64,10 +66,17 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
         open={utility.drawerOpen}
       >
         <div className="profile">
-          <div className="content" >
+          <div className="content">
             <AccountCircle className="profile-icon" fontSize="large" />
             <Typography variant="h5" color="inherit" noWrap={true}>
-              Profile
+              <NavLink
+                onClick={() => this.props.onRouteChange("Profile")}
+                exact={true}
+                className="drawer-link"
+                to={"/profile"}
+              >
+                Profile
+              </NavLink>
             </Typography>
           </div>
           <div className={classes.toolbar}>

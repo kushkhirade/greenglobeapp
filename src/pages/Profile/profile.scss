@@ -1,0 +1,22 @@
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    .card-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-data {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+
+        div {
+            display: flex;
+            align-items: center;
+        }
+    }
+}

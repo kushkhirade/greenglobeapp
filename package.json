@@ -8,8 +8,8 @@
     "@types/immutable": "^3.8.7",
     "@types/lodash": "^4.14.119",
     "@types/material-ui": "^0.21.7",
-    "@types/mui-datatables": "^2.14.2",
     "@types/moment": "^2.13.0",
+    "@types/mui-datatables": "^2.14.2",
     "@types/react-redux": "^6.0.13",
     "@types/react-router-dom": "^4.3.1",
     "@types/recharts": "^1.1.6",
@@ -54,6 +54,7 @@
     "react-dom": "^16.13.1",
     "react-mobx": "0.0.3",
     "react-redux": "^5.1.1",
+    "react-redux-form": "^1.16.14",
     "react-router-dom": "^4.3.1",
     "react-select": "^3.1.0",
     "recharts": "^1.4.2",
@@ -87,7 +88,8 @@
     "build": "webpack --mode production --config webpack.config.js --progress",
     "test": "node scripts/test.js --env=jsdom",
     "postinstall": "npm run build",
-    "deploy": "node server.js"
+    "deploy": "node server.js",
+    "buildProd": "node buildScripts/build.js"
   },
   "devDependencies": {
     "@types/jest": "^22.2.3",
@@ -149,5 +151,17 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
