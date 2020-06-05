@@ -34,6 +34,7 @@ export const FormComponent = (props: any) => {
                   name={opt.name}
                   model={`${props.formModel}${opt.model}`}
                   label={opt.label}
+                  errors={{ hasError: true }}
                 />
               );
             case "select":
@@ -47,8 +48,18 @@ export const FormComponent = (props: any) => {
                   label={opt.label}
                 />
               );
+            case "number":
+              return (
+                <Control
+                  component={MUITextField}
+                  type="number"
+                  name={opt.name}
+                  model={`${props.formModel}${opt.model}`}
+                  label={opt.label}
+                />
+              );
             case "custom":
-              const Custom = otp.custom();
+              const Custom = opt.custom();
               return <Custom />;
 
             default:
@@ -60,7 +71,7 @@ export const FormComponent = (props: any) => {
         <div className="button-container">
           <Button variant="contained">Cancel</Button>
           <Button variant="contained" color="primary" type="submit">
-            Submit
+            {props.submitTitle || "Submit"}
           </Button>
         </div>
       )}
@@ -77,7 +88,10 @@ const MUITextField = (props: any) => {
         className="form-input"
         type={props.type}
         {...props}
-      />
+      />{" "}
+      <div className={`error-text-hidden ${props.hasError} "error-text-show"}`}>
+        Please fill in this field
+      </div>
     </Grid>
   );
 };

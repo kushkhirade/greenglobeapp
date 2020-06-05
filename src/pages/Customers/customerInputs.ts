@@ -84,7 +84,7 @@ export const options = [
   {
     label: "WhatApp Number",
     model: ".whatAppNumber",
-    type: "text",
+    type: "number",
   },
 ];
 
@@ -113,5 +113,38 @@ export const streetInputs = [
     label: "Country",
     model: ".country",
     type: "text",
+  },
+];
+
+export const leadSource = [
+  {
+    label: "Lead Type",
+    model: ".leadType",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Lead Source",
+    model: ".leadSource",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Lead Status",
+    model: ".leadStatus",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Sub Lead Source",
+    model: ".subLeadSource",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Rating",
+    model: ".rating",
+    type: "select",
+    options: [],
   },
 ];

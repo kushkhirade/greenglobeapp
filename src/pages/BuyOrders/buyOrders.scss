@@ -50,13 +50,12 @@
 }
 
 .increaser {
-    width: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
     border: 1.4px solid #cccccc;
     padding: 8px;
-    margin-left: 10px;
+    margin: 10px;
     border-radius: 4px;
 
     .plus {
@@ -111,16 +110,19 @@
     }
 }
 
-.modal-margin {
+.product-selection {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 15px;
     flex-wrap: wrap;
 
+    .r-select {
+        margin: 10px;
+    }
+
     .MuiOutlinedInput-root {
         margin: 13px;
-
     }
 }
 
@@ -136,18 +138,6 @@
     min-width: 200px;
 }
 
-.stepper-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 30px;
-}
-
-.step-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-}
 
 .button-container {
     display: flex;

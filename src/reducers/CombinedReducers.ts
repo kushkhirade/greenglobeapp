@@ -8,6 +8,8 @@ import { combineForms } from "react-redux-form";
 
 const rxFormReducer = combineForms({
   userForm: { name: "", email: "" },
+  leadForm: { name: "", email: "" },
+  customerForm: {},
 });
 
 export const reducers = combineReducers({

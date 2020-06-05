@@ -1,21 +1,22 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import { Tabs } from "src/components/Tabs";
-import data from "../../data";
-import AppBar from "src/navigation/App.Bar";
-import "./leads.scss";
+import { Button, Fab, Grid, TextField } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
+import ChatIcon from "@material-ui/icons/Chat";
 import MailIcon from "@material-ui/icons/Mail";
 import PersonIcon from "@material-ui/icons/Person";
 import PhoneIcon from "@material-ui/icons/Phone";
-import { Button, Fab, TextField } from "@material-ui/core";
-import { BaseModal } from "src/components/BaseModal";
-import { Add } from "@material-ui/icons";
+import * as React from "react";
+import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-
+import { BaseModal } from "src/components/BaseModal";
+import { Tabs } from "src/components/Tabs";
+import AppBar from "src/navigation/App.Bar";
+import data from "../../data";
+import "./leads.scss";
 export interface ILeadsProps {
   history: {
     push: (path: string) => void;
   };
+  isDealer: boolean;
 }
 
 export class LeadsImpl extends React.Component<
@@ -149,13 +150,44 @@ export class LeadsImpl extends React.Component<
     );
   };
 
+  tabDataForDealer = [
+    {
+      tabName: "All(50)",
+      component: (
+        <Grid container>
+          {data.leads.data.map((d) => {
+            return <CardDetailsForDealer details={d} />;
+          })}
+        </Grid>
+      ),
+    },
+    {
+      tabName: "LeadType",
+    },
+    {
+      tabName: "Sub Lead Type",
+    },
+    {
+      tabName: "Rating",
+    },
+    {
+      tabName: "Walk Ins",
+    },
+  ];
+
   public render() {
     return (
       <AppBar>
         {this.renderAssignDealerModal()}
         <div className="leads">
-          <Tabs tabsData={this.tabData} />
-          <Tabs tabsData={this.tabDataToDisplay} />
+          {this.props.isDealer ? (
+            <Tabs tabsData={this.tabDataForDealer} />
+          ) : (
+            <React.Fragment>
+              <Tabs tabsData={this.tabData} />
+              <Tabs tabsData={this.tabDataToDisplay} />
+            </React.Fragment>
+          )}
         </div>
         <span
           onClick={() => this.props.history.push("/leads/add-new-lead")}
@@ -170,7 +202,9 @@ export class LeadsImpl extends React.Component<
   }
 }
 export function mapStateToProps() {
-  return {};
+  return {
+    isDealer: true,
+  };
 }
 export const Leads = withRouter(
   connect<{}, {}, ILeadsProps>(mapStateToProps)(LeadsImpl) as any
@@ -198,5 +232,54 @@ const CardDetails = (props: any) => {
         </div>
       </div>
     </div>
+  );
+};
+
+const CardDetailsForDealer = (props: any) => {
+  const { details } = props;
+  return (
+    <Grid item xs={12} md={6} lg={6} sm={6}>
+      <div className="card-container">
+        <Grid container className="padding-15 align-left">
+          <Grid item className="padding-6" xs={6} md={12}>
+            <span className="description-text">Name:</span> {details.name}
+          </Grid>
+          <Grid className="padding-6" item xs={6} md={12}>
+            <span className="description-text">Contact</span>{" "}
+            {details.mobileNumber}
+          </Grid>
+        </Grid>{" "}
+        <Grid container className="padding-15 align-left">
+          <Grid item className="padding-6" xs={6} md={12}>
+            <span className="description-text">Email:</span> {details.email}
+          </Grid>
+          <Grid className="padding-6" item xs={6} md={12}>
+            <span className="description-text">Delaer Rating</span>{" "}
+            {details.rating}
+          </Grid>
+        </Grid>{" "}
+        <Grid container className="padding-15 align-left">
+          <Grid item className="padding-6" xs={6} md={12}>
+            <span className="description-text">Vehicle Type:</span>{" "}
+            {details.vehicleType}
+          </Grid>
+          <Grid className="padding-6" item xs={6} md={12}>
+            <span className="description-text">Dealer Generated Lead</span>{" "}
+            {details.mobileNumber}
+          </Grid>
+        </Grid>{" "}
+        <Grid container className="padding-15 align-left">
+          <Grid className="padding-6" item xs={6} md={12}>
+            <div className="icon-container">
+              <PhoneIcon className="phone-icon" />
+              &nbsp;
+              <ChatIcon className="chat-icon" />
+              &nbsp;
+              <MailIcon className="mail-icon" />
+            </div>
+          </Grid>
+        </Grid>{" "}
+      </div>
+    </Grid>
   );
 };

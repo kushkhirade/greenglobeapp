@@ -15,6 +15,40 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
     usersTableRowsPerPage: 5,
   };
 
+  leadStatus = [
+    {
+      label: "Stores",
+      name: "stores",
+      options: {
+        filter: true,
+        sort: false,
+      },
+    },
+    {
+      label: "Count",
+      name: "count",
+      options: {
+        filter: true,
+        sort: false,
+      },
+    },
+  ];
+
+  leadData = [
+    {
+      stores: "New",
+      count: 50,
+    },
+    {
+      stores: "Negotiating",
+      count: 100,
+    },
+    {
+      stores: "Converted",
+      count: 100,
+    },
+  ];
+
   public render(): JSX.Element {
     const { classes } = this.props;
     const columns = [
@@ -72,6 +106,12 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
           />
           <Grid item={true} lg={3} xs={12} sm={12}>
             Expected Turnover / Revenue - 984532120{" "}
+            <TableWithGrid
+              title={"Leads Status"}
+              data={this.leadData}
+              columns={this.leadStatus}
+              options={options as any}
+            />
           </Grid>
         </div>
       </AppBar>

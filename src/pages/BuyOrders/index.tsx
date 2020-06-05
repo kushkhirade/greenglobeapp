@@ -69,6 +69,10 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
       product2: null,
       product3: null,
       product4: null,
+      qty1: 10,
+      qty2: 10,
+      qty3: 10,
+      qty4: 10,
     };
   }
 
@@ -84,53 +88,87 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     });
   };
 
-  public renderValueManipulator = () => (
+  public renderValueManipulator = (key) => (
     <div className="increaser">
-      <div className="plus">+</div>
-      <div className="value">10</div>
-      <div className="minus">-</div>
+      <div
+        onClick={() => this.setState({ [key]: this.state[key] + 1 })}
+        className="plus hover"
+      >
+        +
+      </div>
+      <div className="value">{this.state[key]}</div>
+      <div
+        onClick={() => this.setState({ [key]: this.state[key] - 1 })}
+        className="minus hover"
+      >
+        -
+      </div>
     </div>
   );
 
   public renderForm = () => {
     return (
       <div className="card-container no-hover">
-        <div className="modal-margin">
-          <Select
-            className="r-select"
-            value={this.state.product1}
-            onChange={(v: any) => this.handleChange(v, "product1")}
-            options={products}
-          />
-          {this.renderValueManipulator()}
-        </div>
-        <div className="modal-margin">
-          <Select
-            className="r-select"
-            value={this.state.product2}
-            options={products}
-            onChange={(v: any) => this.handleChange(v, "product2")}
-          />{" "}
-          {this.renderValueManipulator()}
-        </div>
-        <div className="modal-margin">
-          <Select
-            className="r-select"
-            value={this.state.product3}
-            options={products}
-            onChange={(v: any) => this.handleChange(v, "product3")}
-          />{" "}
-          {this.renderValueManipulator()}
-        </div>
-        <div className="modal-margin">
-          <Select
-            className="r-select"
-            value={this.state.product3}
-            onChange={(v: any) => this.handleChange(v, "product4")}
-            options={products}
-          />{" "}
-          {this.renderValueManipulator()}
-        </div>
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid xs={12} md={6} sm={6}>
+              <Select
+                className="r-select"
+                value={this.state.product1}
+                onChange={(v: any) => this.handleChange(v, "product1")}
+                options={products}
+              />
+            </Grid>
+            <Grid xs={12} md={4} sm={4}>
+              {this.renderValueManipulator("qty1")}
+            </Grid>
+          </div>
+        </Grid>
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid xs={12} md={6} sm={6}>
+              <Select
+                className="r-select"
+                value={this.state.product2}
+                options={products}
+                onChange={(v: any) => this.handleChange(v, "product2")}
+              />{" "}
+            </Grid>
+            <Grid xs={12} md={4} sm={4}>
+              {this.renderValueManipulator("qty2")}
+            </Grid>
+          </div>
+        </Grid>
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid xs={12} md={6} sm={6}>
+              <Select
+                className="r-select"
+                value={this.state.product3}
+                options={products}
+                onChange={(v: any) => this.handleChange(v, "product3")}
+              />{" "}
+            </Grid>
+            <Grid xs={12} md={4} sm={4}>
+              {this.renderValueManipulator("qty3")}
+            </Grid>
+          </div>
+        </Grid>
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid xs={12} md={6} sm={6}>
+              <Select
+                className="r-select"
+                value={this.state.product4}
+                options={products}
+                onChange={(v: any) => this.handleChange(v, "product4")}
+              />{" "}
+            </Grid>
+            <Grid xs={12} md={4} sm={4}>
+              {this.renderValueManipulator("qty4")}
+            </Grid>
+          </div>
+        </Grid>
         <div className="button-container">
           <Button variant="contained" color="default">
             Cancel
@@ -269,7 +307,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 <Grid xs={12} md={6} lg={6}>
                   <div className="card-container no-hover payment-mode">
                     <div className="head-title">Payment Mode and Details</div>
-                    <div className="modal-margin">
+                    <div className="product-selection">
                       <Select
                         className="r-select"
                         value={null}
@@ -278,7 +316,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                         options={options}
                       />
                     </div>
-                    <div className="modal-margin">
+                    <div className="product-selection">
                       <Select
                         className="r-select"
                         value={null}
@@ -287,7 +325,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                         options={options1}
                       />
                     </div>{" "}
-                    <div className="modal-margin">
+                    <div className="product-selection">
                       <TextField
                         id="filled-textarea"
                         label="Remarks"
@@ -340,12 +378,12 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                   <Grid md={12} xs={12} lg={12}>
                     <span className="description-text">Courier Name -</span>{" "}
                     Blue Dart Express Ltd.
-                    <br/>
+                    <br />
                     <span className="description-text">
                       Consignment No. -
                     </span>{" "}
                     89712345676
-                    <br/>
+                    <br />
                     <span className="description-text"> Shipping Date - </span>
                     10/05/2020
                   </Grid>

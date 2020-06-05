@@ -20,6 +20,10 @@ body,
   color: white;
 }
 
+.hover:hover{
+  cursor: pointer;
+}
+
 .App-title {
   font-size: 1.5em;
 }

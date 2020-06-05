@@ -54,7 +54,12 @@ export const routes = [
     path: "/customer/add-new-customer",
     title: "Add New Customer",
   },
-  { path: "/transactions", title: "Transactions", icon: () => <Book /> },
+  {
+    hidden: true,
+    path: "/transactions",
+    title: "Transactions",
+    icon: () => <Book />,
+  },
   { path: "/rto-process", title: "RTO Process", icon: () => <HeadsetMic /> },
   { path: "/communication", title: "Communications", icon: () => <Book /> },
   { path: "/support", title: "Support", icon: () => <Chat /> },
