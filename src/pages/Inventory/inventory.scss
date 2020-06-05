@@ -3,13 +3,55 @@
     flex-wrap: wrap;
 
     .card-container {
-        min-width: 200px;
-        max-width: 200px;
-        width: 100%;
-
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        text-align: center;
     }
 
     .padding-6 {
         padding: 6px;
+    }
+
+    .inv-image {
+        width: 150px;
+        border-radius: 10px;
+        border: 2px solid;
+        padding: 0;
+    }
+
+
+}
+
+.support-modal {
+    .modal-content {
+        padding: 0;
+    }
+
+    img {
+        border: 3px solid;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .modal-margin {
+        display: flex;
+        flex-direction: column;
+        padding: 20px !important;
+
+    }
+
+    .text-left {
+        margin-top: 20px;
+        border-top: 1px solid;
+        padding-top: 11px;
+
+        .head {
+            text-align: center;
+        }
+    }
+
+    .description-text {
+        text-align: center;
     }
 }

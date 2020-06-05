@@ -10,9 +10,13 @@ export interface IBuyOrdersProps {
   data?: string;
 }
 const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
+  { value: "loan", label: "Loan" },
+  { value: "upfront", label: "Up Front" },
+];
+const options1 = [
+  { value: "cc/dc", label: "CC/DC" },
+  { value: "netbanking", label: "Net Banking" },
+  { value: "UPI", label: "UPI" },
 ];
 
 const products = [
@@ -20,6 +24,40 @@ const products = [
   { value: 1000, label: "Product 2" },
   { value: 1000, label: "Product 3" },
 ];
+
+const invoiceData = {
+  orderID: "IN915426",
+  dateOfIssue: "10/02/2020",
+  billedTo: "GGFS",
+  address: "Indiabulls, Lower Parel, Mumbai, MH 411093, India",
+  billHeads: ["Item Name", "Unit Cost", "Qty", "Amount"],
+  billData: [
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+  ],
+};
 
 export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   constructor(props: IBuyOrdersProps) {
@@ -46,9 +84,17 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     });
   };
 
+  public renderValueManipulator = () => (
+    <div className="increaser">
+      <div className="plus">+</div>
+      <div className="value">10</div>
+      <div className="minus">-</div>
+    </div>
+  );
+
   public renderForm = () => {
     return (
-      <div className="card-container">
+      <div className="card-container no-hover">
         <div className="modal-margin">
           <Select
             className="r-select"
@@ -56,15 +102,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
             onChange={(v: any) => this.handleChange(v, "product1")}
             options={products}
           />
-          <TextField
-            id="outlined-number"
-            label="Number"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-          />
+          {this.renderValueManipulator()}
         </div>
         <div className="modal-margin">
           <Select
@@ -73,15 +111,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
             options={products}
             onChange={(v: any) => this.handleChange(v, "product2")}
           />{" "}
-          <TextField
-            id="outlined-number"
-            label="Number"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-          />
+          {this.renderValueManipulator()}
         </div>
         <div className="modal-margin">
           <Select
@@ -89,16 +119,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
             value={this.state.product3}
             options={products}
             onChange={(v: any) => this.handleChange(v, "product3")}
-          />
-          <TextField
-            id="outlined-number"
-            label="Number"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-          />
+          />{" "}
+          {this.renderValueManipulator()}
         </div>
         <div className="modal-margin">
           <Select
@@ -106,16 +128,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
             value={this.state.product3}
             onChange={(v: any) => this.handleChange(v, "product4")}
             options={products}
-          />
-          <TextField
-            id="outlined-number"
-            label="Number"
-            type="number"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-          />
+          />{" "}
+          {this.renderValueManipulator()}
         </div>
         <div className="button-container">
           <Button variant="contained" color="default">
@@ -142,17 +156,20 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
             component: (
               <div className="card-container">
                 <Grid container={true}>
-                  <Grid item={true} xs={6} md={6}>
-                    Order ID - ON-26541
+                  <Grid item={true} className="padding-6" xs={6} md={6}>
+                    <span className="description-text"> Order ID -</span>{" "}
+                    ON-26541
                   </Grid>
-                  <Grid item={true} xs={6} md={6}>
-                    Order Date - 10/05/2020
+                  <Grid item={true} className="padding-6" xs={6} md={6}>
+                    <span className="description-text"> Order Date - </span>{" "}
+                    10/05/2020
                   </Grid>
-                  <Grid item={true} xs={6} md={6}>
-                    Total Items - 25 Order
+                  <Grid item={true} className="padding-6" xs={6} md={6}>
+                    <span className="description-text"> Total Items -</span> 25
+                    Order
                   </Grid>
-                  <Grid item={true} xs={6} md={6}>
-                    Total - 1742000
+                  <Grid item={true} className="padding-6" xs={6} md={6}>
+                    <span className="description-text">Total -</span> 1742000
                   </Grid>
                 </Grid>
               </div>
@@ -161,62 +178,181 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
           {
             label: "PI Raised",
             component: (
-              <div className="card-container">
-                <div className="head-title">Performance Invoice</div>
-                <div className="invoice-date">
-                  <div>Invoice No - IN915426</div>
-                  <div> Date of Issue - 10/02/2020</div>
-                </div>
-                <div>
-                  Billed to- GGFS Indiabulls, Lower Parel, Mumbai, MH 411093,
-                  India
-                </div>
-              </div>
+              <Grid container>
+                <Grid xs={12} md={4} lg={4}>
+                  <div className="card-container no-hover">
+                    <div className="head-title padding-6 ">
+                      Performance Invoice
+                    </div>
+                    <div className="invoice-date padding-6">
+                      <div>
+                        {" "}
+                        <span className="description-text">
+                          Invoice No -{" "}
+                        </span>{" "}
+                        IN915426
+                      </div>
+                      <div>
+                        {" "}
+                        <span className="description-text">
+                          {" "}
+                          Date of Issue -
+                        </span>{" "}
+                        10/02/2020
+                      </div>
+                    </div>
+                    <div className="padding-6">
+                      Billed to- GGFS Indiabulls, Lower Parel, Mumbai, MH
+                      411093, India
+                    </div>
+
+                    <div className="invoice-table">
+                      <div className="table-heads">
+                        {invoiceData.billHeads.map((name) => (
+                          <div className="heading">{name}</div>
+                        ))}
+                      </div>
+                      <div className="table-data">
+                        {invoiceData.billData.map((b) => (
+                          <div className="data-inner">
+                            <div className="data">{b.itemName}</div>
+                            <div className="data">{b.unitCost}</div>
+                            <div className="data">{b.qty}</div>
+                            <div className="data">{b.amount}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="bill-total">
+                        <div>
+                          <span className="description-text">Sub Total:</span>
+                          {invoiceData.billData.reduce(
+                            (s, a) => Number(a.amount) + s,
+                            0
+                          )}
+                        </div>
+                        <div>
+                          <span className="description-text">Tax - 18% -</span>
+                          {(invoiceData.billData.reduce(
+                            (s, a) => Number(a.amount) + s,
+                            0
+                          ) /
+                            100) *
+                            18}
+                        </div>
+                        <div className="invoice-total">
+                          {" "}
+                          <span className="description-text">
+                            Invoice Total -
+                          </span>
+                          {invoiceData.billData.reduce(
+                            (s, a) => Number(a.amount) + s,
+                            0
+                          ) +
+                            (invoiceData.billData.reduce(
+                              (s, a) => Number(a.amount) + s,
+                              0
+                            ) /
+                              100) *
+                              18}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Grid>
+              </Grid>
             ),
           },
           {
             label: "Payment Details",
             component: (
+              <Grid container>
+                <Grid xs={12} md={6} lg={6}>
+                  <div className="card-container no-hover payment-mode">
+                    <div className="head-title">Payment Mode and Details</div>
+                    <div className="modal-margin">
+                      <Select
+                        className="r-select"
+                        value={null}
+                        placeholder="Select Payment Type"
+                        onChange={this.handleChange}
+                        options={options}
+                      />
+                    </div>
+                    <div className="modal-margin">
+                      <Select
+                        className="r-select"
+                        value={null}
+                        onChange={this.handleChange}
+                        placeholder="Select Payment Method"
+                        options={options1}
+                      />
+                    </div>{" "}
+                    <div className="modal-margin">
+                      <TextField
+                        id="filled-textarea"
+                        label="Remarks"
+                        placeholder="Placeholder"
+                        rows={4}
+                        variant="filled"
+                        multiline={true}
+                        className="r-select"
+                      />
+                    </div>{" "}
+                    <div className="button-container">
+                      <Button variant="contained" color="default">
+                        Cancel
+                      </Button>
+                      <Button variant="contained" color="primary">
+                        Submit
+                      </Button>
+                    </div>
+                  </div>
+                </Grid>
+              </Grid>
+            ),
+          },
+          {
+            label: "Dispatched",
+            component: (
               <div className="card-container">
-                <div className="head-title">Payment Mode and Details</div>
-                <div className="modal-margin">
-                  <Select
-                    className="r-select"
-                    value={null}
-                    onChange={this.handleChange}
-                    options={options}
-                  />
-                </div>
-                <div className="modal-margin">
-                  <Select
-                    className="r-select"
-                    value={null}
-                    onChange={this.handleChange}
-                    options={options}
-                  />
-                </div>{" "}
-                <div className="modal-margin">
-                  <TextField
-                    id="filled-textarea"
-                    label="Multiline Placeholder"
-                    placeholder="Placeholder"
-                    rows={4}
-                    variant="filled"
-                    multiline={true}
-                  />
-                </div>{" "}
-                <div className="button-container">
-                  <Button variant="contained" color="default">
-                    Cancel
-                  </Button>
-                  <Button variant="contained" color="primary">
-                    Submit
-                  </Button>
-                </div>
+                <div>Dispatched</div>
+                <Grid container className="padding-6">
+                  <Grid md={6} xs={6} lg={6}>
+                    <span className="description-text">Order ID -</span>
+                    {invoiceData.orderID}
+                  </Grid>
+                  <Grid md={6} xs={6} lg={6}>
+                    <span className="description-text">Order Date:</span>
+                    {invoiceData.dateOfIssue}
+                  </Grid>
+                </Grid>
+                <Grid container className="padding-6">
+                  <Grid md={6} xs={6} lg={6}>
+                    <span className="description-text">Order ID -</span>
+                    {invoiceData.orderID}
+                  </Grid>
+                  <Grid md={6} xs={6} lg={6}>
+                    <span className="description-text">Order Date:</span>
+                    {invoiceData.dateOfIssue}
+                  </Grid>
+                </Grid>
+                <Grid container className="padding-6">
+                  <Grid md={12} xs={12} lg={12}>
+                    <span className="description-text">Courier Name -</span>{" "}
+                    Blue Dart Express Ltd.
+                    <br/>
+                    <span className="description-text">
+                      Consignment No. -
+                    </span>{" "}
+                    89712345676
+                    <br/>
+                    <span className="description-text"> Shipping Date - </span>
+                    10/05/2020
+                  </Grid>
+                </Grid>
               </div>
             ),
           },
-          { label: "Dispatched", component: <div>Dispatched</div> },
           { label: "Add Inventory", component: this.renderForm() },
         ]}
       >

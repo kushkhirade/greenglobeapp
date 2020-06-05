@@ -39,7 +39,12 @@ interface IAppDrawer {
 }
 export const routes = [
   { path: "/home", title: "Home", icon: () => <DashboardIcon /> },
-  { path: "/profile", title: "Profile", icon: () => <PersonPin /> },
+  {
+    hidden: true,
+    path: "/profile",
+    title: "Profile",
+    icon: () => <PersonPin />,
+  },
   { path: "/inventory", title: "Inventory", icon: () => <Book /> },
   { path: "/buy-orders", title: "Buy Orders", icon: () => <Payment /> },
   { path: "/leads", title: "Leads", icon: () => <Pages /> },

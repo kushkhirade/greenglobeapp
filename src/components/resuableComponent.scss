@@ -10,6 +10,7 @@
 .modal-content {
     background-color: white;
     padding: 30px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     border-radius: 5px;
 }
 
@@ -17,18 +18,27 @@
 
 .tabs-container {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
     .tab-button {
-        padding: 10px;
+        padding: 5px 0px;
         margin: 2px;
         min-width: 100px;
         text-align: center;
         border-radius: 7px;
         border: 2px solid #48a89c;
         color: black;
-        &:hover{ 
+        font-size: 13px;
+        font-weight: 300;
+
+        &:hover {
             cursor: pointer;
+            background-color: #48a89c;
+            color: white;
         }
     }
+
     .active {
         background-color: #48a89c;
         color: white;

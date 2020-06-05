@@ -1,9 +1,18 @@
-import { Button, Fab, TextField } from "@material-ui/core";
+import { Button, Fab, TextField, Grid } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import * as React from "react";
 import { BaseModal } from "src/components/BaseModal";
 import AppBar from "src/navigation/App.Bar";
 import "./support.scss";
+
+const supportData = [
+  {
+    case: "Case 101",
+    title: "Kit Replacement",
+    desc:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  },
+];
 
 export class Support extends React.PureComponent<{}, { isModalOpen: boolean }> {
   public state = { isModalOpen: false };
@@ -12,6 +21,20 @@ export class Support extends React.PureComponent<{}, { isModalOpen: boolean }> {
     return (
       <AppBar>
         <h3>Support Requests</h3>
+        <Grid container>
+          {supportData.map((sup) => (
+            <Grid item xs={12} sm={6} lg={6}>
+              <div className="card-container no-hover">
+                <div className="case"> {sup.case}</div>
+                <div className="title">
+                  <span className="description-text">Case For:</span>{" "}
+                  {sup.title}
+                </div>
+                <div className="desc">{sup.desc}</div>
+              </div>
+            </Grid>
+          ))}
+        </Grid>
         <BaseModal
           className="support-modal"
           contentClassName="support-content"

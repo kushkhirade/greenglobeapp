@@ -12,7 +12,7 @@ export class ProfileImpl extends React.PureComponent<IProfileProps, {}> {
     return (
       <AppBar>
         <div className="profile-container">
-          <div className="card-container">
+          <div className="card-container no-hover">
             <div className="profile-data">
               <b>Dealer ID : 2555</b>
             </div>

@@ -5,6 +5,7 @@ import data from "../../data";
 import "./inventory.scss";
 import { BaseModal } from "src/components/BaseModal";
 import { Grid } from "@material-ui/core";
+import { Tabs } from "src/components/Tabs";
 export interface IInventoryProps {}
 
 export class InventoryImpl extends React.PureComponent<
@@ -39,7 +40,7 @@ export class InventoryImpl extends React.PureComponent<
           <Grid item className="modal-margin" xs={12} md={12}>
             <div>
               <img src={currentItem.imageURL} height="100px" alt="dta" />
-              <div>Product Images</div>
+              <div className="description-text">Product Images</div>
             </div>
             <div className="text-left">
               <div className="head">
@@ -49,7 +50,7 @@ export class InventoryImpl extends React.PureComponent<
               {dataToDisplay.map((data) => (
                 <Grid container className="padding-6">
                   <Grid item md={6} xs={6} className="grid-label">
-                    {data.label}
+                    <span className="description-text">{data.label}</span>
                   </Grid>
                   <Grid item md={6} xs={6}>
                     {currentItem[data.value]}
@@ -69,15 +70,37 @@ export class InventoryImpl extends React.PureComponent<
       openEditModal: true,
     });
   };
+
+  tabData = [
+    {
+      tabName: "All(50)",
+    },
+    {
+      tabName: "3W ACE",
+    },
+    {
+      tabName: "3W PRO(12)",
+    },
+    {
+      tabName: "4W ACE(10)",
+    },
+    {
+      tabName: "4W PRO(50)",
+    },
+  ];
+
   public render() {
     return (
       <AppBar>
-          {this.renderModal()}
+        {this.renderModal()}
+        <Tabs tabsData={this.tabData} />
         <div className="inventory-container">
-          <InventoryCards
-            onClickItem={this.handleItemClick}
-            data={data.inventory.data}
-          />
+          <Grid container>
+            <InventoryCards
+              onClickItem={this.handleItemClick}
+              data={data.inventory.data}
+            />
+          </Grid>
         </div>
       </AppBar>
     );
@@ -93,34 +116,42 @@ export const Inventory = connect<{}, {}, IInventoryProps>(mapStateToProps)(
 const InventoryCards = (props: any) => {
   return props.data.map((inData: any, key: string) => {
     return (
-      <div
-        onClick={() => props.onClickItem(inData)}
-        key={key}
-        className="card-container"
-      >
-        <div className="inventory-card">
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div className="padding-6">{inData.model}</div>
-            <img
-              height="16px"
-              src="https://img.icons8.com/material/24/000000/menu-2--v1.png"
-              alt="menu"
-            />
-          </div>
-          <div className="content">
+      <Grid item xs={12} md={4} lg={4}>
+        <div
+          onClick={() => props.onClickItem(inData)}
+          key={key}
+          className="card-container"
+        >
+          <div className="inventory-card">
+            {" "}
             <div>
               <img
-                className="padding-6"
                 src={inData.imageURL}
                 width="80px"
                 alt="bike"
+                className="inv-image"
               />
             </div>
-            <div className="padding-6">{inData.price}</div>
+            <div>
+              <div className="padding-6">
+                {" "}
+                <span className="description-text">Model: </span> {inData.model}
+              </div>
+              <div className="padding-6">
+                <span className="description-text">Price - </span>
+                {inData.price}
+              </div>{" "}
+              <div className="padding-6">
+                <span className="description-text">
+                  {" "}
+                  Added to Inventory on{" "}
+                </span>
+                {inData.addedOn}
+              </div>
+            </div>
           </div>
-          <div className="padding-6">{inData.addedOn}</div>
         </div>
-      </div>
+      </Grid>
     );
   });
 };

@@ -1,3 +1,9 @@
+html,
+body,
+#root {
+  font-family: 'Raleway', sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -34,6 +40,12 @@
 
 .padding-6 {
   padding: 6px;
+}
+
+.description-text {
+  font-size: 14px;
+  color: #6d6d6d;
+  margin-right: 10px;
 }
 
 .align-center {

@@ -9,6 +9,7 @@ import "./rtoProcess.scss";
 import { BaseModal } from "src/components/BaseModal";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import { Tabs } from "src/components/Tabs";
 
 export interface IRTOProcessProps {}
 
@@ -110,11 +111,21 @@ export class RTOProcessImpl extends React.PureComponent<
     );
   };
 
+  tabs = [
+    {
+      tabName: "Pending",
+    },
+    {
+      tabName: "Cleared",
+    },
+  ];
+
   render() {
     return (
       <AppBar>
         {this.renderModal()}
         <Typography variant="h4">RTO Process</Typography>
+        <Tabs tabsData={this.tabs} />
         <Grid container={true}>
           <RTOList
             onClickEdit={this.showEditPopup}

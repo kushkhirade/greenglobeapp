@@ -11,8 +11,77 @@
 .card-container {
     padding: 20px !important;
     margin: 10px !important;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
     background-color: white;
+
+    &:hover {
+        cursor: pointer;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    }
+}
+
+.table-heads {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10px;
+    background-color: #d8d8d8;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.table-data {
+    flex-direction: column;
+    display: flex;
+    padding: 10px;
+}
+
+.bill-total {
+    text-align: right;
+}
+
+.data-inner {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 10px;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+.increaser {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1.4px solid #cccccc;
+    padding: 8px;
+    margin-left: 10px;
+    border-radius: 4px;
+
+    .plus {
+        border-right: 1px solid #cccccc;
+        width: 30px;
+        text-align: center;
+    }
+
+    .value {
+        width: 40px;
+        text-align: center;
+    }
+
+    .minus {
+        width: 30px;
+        text-align: center;
+        border-left: 1px solid #cccccc;
+    }
+}
+
+.no-hover {
+    &:hover {
+        cursor: default;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    }
 }
 
 .row-data {
@@ -53,6 +122,14 @@
         margin: 13px;
 
     }
+}
+
+.payment-mode {
+
+    .r-select {
+        min-width: 100%;
+    }
+
 }
 
 .r-select {

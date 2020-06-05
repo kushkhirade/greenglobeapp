@@ -47,6 +47,9 @@ export const FormComponent = (props: any) => {
                   label={opt.label}
                 />
               );
+            case "custom":
+              const Custom = otp.custom();
+              return <Custom />;
 
             default:
               return "";
