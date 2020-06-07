@@ -13,6 +13,7 @@ export enum ActionType {
     LOGOUT_REQUEST,
     LOGOUT_SUCCESS,
     LOGOUT_FAIL
+    
 }
 
 export interface IAppAction extends Action<ActionType> {

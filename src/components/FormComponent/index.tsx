@@ -37,6 +37,18 @@ export const FormComponent = (props: any) => {
                   errors={{ hasError: true }}
                 />
               );
+            case "textarea":
+              return (
+                <Control
+                  component={MUITextArea}
+                  type="text"
+                  name={opt.name}
+                  model={`${props.formModel}${opt.model}`}
+                  label={opt.label}
+                  errors={{ hasError: true }}
+                  rows={4}
+                />
+              );
             case "select":
               return (
                 <Control
@@ -69,7 +81,9 @@ export const FormComponent = (props: any) => {
       </Grid>
       {props.hasSubmit && (
         <div className="button-container">
-          <Button variant="contained">Cancel</Button>
+          <Button variant="contained" onClick={props.onCancel}>
+            Cancel
+          </Button>
           <Button variant="contained" color="primary" type="submit">
             {props.submitTitle || "Submit"}
           </Button>
@@ -88,6 +102,25 @@ const MUITextField = (props: any) => {
         className="form-input"
         type={props.type}
         {...props}
+      />{" "}
+      <div className={`error-text-hidden ${props.hasError} "error-text-show"}`}>
+        Please fill in this field
+      </div>
+    </Grid>
+  );
+};
+
+const MUITextArea = (props: any) => {
+  return (
+    <Grid item={true} xs={12} md={6} sm={6}>
+      <TextField
+        label={props.name}
+        variant="outlined"
+        className="form-input"
+        type={props.type}
+        {...props}
+        multiline
+        rows={4}
       />{" "}
       <div className={`error-text-hidden ${props.hasError} "error-text-show"}`}>
         Please fill in this field

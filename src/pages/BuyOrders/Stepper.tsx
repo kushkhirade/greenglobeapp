@@ -12,7 +12,7 @@ export const Stepper = (props: any) => {
               onClick={() => setActiveStep(index)}
               className={`step ${index === activeStep ? "active" : ""}`}
             >
-              <StpperBG fill={index === activeStep ? "red" : "green"} />
+              <StpperBG fill={index === activeStep ? "#48a89c" : "#b5b5b5"} />
               <div className="step-label">{step.label}</div>
             </div>
           );

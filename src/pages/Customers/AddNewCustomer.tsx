@@ -6,8 +6,15 @@ import { Typography, Button } from "@material-ui/core";
 import "./customers.scss";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { options, vehicleInputs, streetInputs } from "./customerInputs";
+import {
+  options,
+  vehicleInputs,
+  streetInputs,
+  leadDealer,
+  addressDetails,
+} from "./customerInputs";
 import { Tabs } from "src/components/Tabs";
+import { Stepper } from "../BuyOrders/Stepper";
 
 export interface IAddNewCustomerProps {}
 
@@ -73,7 +80,10 @@ export class AddNewCustomerImpl extends React.PureComponent<
   renderRelated = () => {
     return (
       <SubFormHeading>
-        Opportunities <Button variant="contained" color="primary">New</Button>{" "}
+        Opportunities{" "}
+        <Button variant="contained" color="primary">
+          New
+        </Button>{" "}
       </SubFormHeading>
     );
   };
@@ -93,7 +103,7 @@ export class AddNewCustomerImpl extends React.PureComponent<
   render() {
     return (
       <AppBar>
-        <div className="card-container">
+        <div className="card-container no-hover">
           <Typography variant="h5" color="inherit" noWrap={true}>
             Add New Customer
           </Typography>

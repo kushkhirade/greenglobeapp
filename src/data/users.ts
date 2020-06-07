@@ -1,6 +1,9 @@
-const Resourcer = require('redux-rest-resource');
+export const userReducer = (state = {}, action) => {
+  switch (action.type) {
+    case "SAVE_DEALER_DETAILS":
+      return { ...state, data: action.data };
 
-export const { types, actions, rootReducer } = Resourcer.createResource({
-    name: 'user',
-    url: `https://5b1b0a966e0fd400146aaee2.mockapi.io/users/:id`
-});
+    default:
+      return state;
+  }
+};

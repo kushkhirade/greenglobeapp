@@ -40,38 +40,69 @@ export class LeadsImpl extends React.Component<
   };
 
   public renderCustomersAssigned = () => {
-    return data.leads.data.map((d) => {
-      if (!d.isDealer && d.assigned) {
-        return <CardDetails details={d} />;
-      }
-      return " ";
-    });
+    return (
+      <Grid container>
+        {data.leads.data.map((d) => {
+          if (!d.isDealer && d.assigned) {
+            return (
+              <Grid item xs={12} md={6} sm={6}>
+                <CardDetails details={d} />
+              </Grid>
+            );
+          }
+          return " ";
+        })}
+      </Grid>
+    );
   };
   public renderCustomersUnAssigned = () => {
-    return data.leads.data.map((d: any) => {
-      if (!d.isDealer && !d.assigned) {
-        return (
-          <CardDetails details={d} onClickAssign={this.openAssignDealerModal} />
-        );
-      }
-      return " ";
-    });
+    return (
+      <Grid container>
+        {data.leads.data.map((d) => {
+          if (!d.isDealer && !d.assigned) {
+            return (
+              <Grid item xs={12} md={6} sm={6}>
+                <CardDetails
+                  onClickAssign={this.openAssignDealerModal}
+                  details={d}
+                />
+              </Grid>
+            );
+          }
+          return " ";
+        })}
+      </Grid>
+    );
   };
   public renderDealersAssigned = () => {
-    return data.leads.data.map((d: any) => {
-      if (d.isDealer && d.assigned) {
-        return <CardDetails details={d} />;
-      }
-      return " ";
-    });
+    return (
+      <Grid container>
+        {data.leads.data.map((d) => {
+          if (d.isDealer && d.assigned) {
+            return (
+              <Grid item xs={12} md={6} sm={6}>
+                <CardDetails details={d} />
+              </Grid>
+            );
+          }
+          return " ";
+        })}
+      </Grid>
+    );
   };
   public renderDealersUnAssigned = () => {
-    return data.leads.data.map((d: any) => {
-      if (d.isDealer && !d.assigned) {
-        return <CardDetails details={d} />;
-      }
-      return " ";
-    });
+    <Grid container>
+      {data.leads.data.map((d) => {
+        if (d.isDealer && !d.assigned) {
+          return (
+            <Grid item xs={12} md={6} sm={6}>
+              <CardDetails details={d} />
+            </Grid>
+          );
+        }
+        return " ";
+      })}
+    </Grid>;
   };
 
   public tabData = [
@@ -140,7 +171,13 @@ export class LeadsImpl extends React.Component<
               : "No Dealer Found"}
           </div>
           <div className="button-container">
-            <Button variant="contained">Cancel</Button>
+            <Button
+              onClick={() => this.setState({ openEditModal: false })}
+              variant="contained"
+              color="default"
+            >
+              Cancel
+            </Button>{" "}
             <Button variant="contained" color="primary">
               Submit
             </Button>
@@ -203,7 +240,7 @@ export class LeadsImpl extends React.Component<
 }
 export function mapStateToProps() {
   return {
-    isDealer: true,
+    isDealer: false,
   };
 }
 export const Leads = withRouter(
@@ -269,7 +306,7 @@ const CardDetailsForDealer = (props: any) => {
           </Grid>
         </Grid>{" "}
         <Grid container className="padding-15 align-left">
-          <Grid className="padding-6" item xs={6} md={12}>
+          <Grid className="padding-6" item xs={12} md={12}>
             <div className="icon-container">
               <PhoneIcon className="phone-icon" />
               &nbsp;

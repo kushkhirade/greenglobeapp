@@ -48,6 +48,7 @@ export const routes = [
   { path: "/inventory", title: "Inventory", icon: () => <Book /> },
   { path: "/buy-orders", title: "Buy Orders", icon: () => <Payment /> },
   { path: "/leads", title: "Leads", icon: () => <Pages /> },
+  { path: "/assign-dealers", title: "Assigned Dealers", icon: () => <Pages /> },
   { path: "/customers", title: "Customer", icon: () => <People /> },
   {
     hidden: true,
@@ -62,7 +63,14 @@ export const routes = [
   },
   { path: "/rto-process", title: "RTO Process", icon: () => <HeadsetMic /> },
   { path: "/communication", title: "Communications", icon: () => <Book /> },
+  { path: "/my-users", title: "My Users", icon: () => <Book /> },
   { path: "/support", title: "Support", icon: () => <Chat /> },
+  {
+    path: "/dealers/dealer-details",
+    title: "Dealer Details",
+    hidden: true,
+    icon: () => <Chat />,
+  },
 ];
 
 class AppDrawer extends React.Component<IAppDrawer, {}> {

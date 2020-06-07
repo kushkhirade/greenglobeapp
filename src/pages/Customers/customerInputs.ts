@@ -116,6 +116,69 @@ export const streetInputs = [
   },
 ];
 
+export const leadDealer = [
+  {
+    label: "First Name",
+    model: ".firstName",
+    type: "text",
+  },
+  {
+    label: "Middle Name",
+    model: ".middleName",
+    type: "text",
+  },
+  {
+    label: "Last Name",
+    model: ".lastName",
+    type: "text",
+  },
+  {
+    label: "Company",
+    model: ".company",
+    type: "text",
+  },
+  {
+    label: "Email",
+    model: ".email",
+    type: "text",
+  },
+  {
+    label: "WhatApp Number",
+    model: ".whatAppNumber",
+    type: "number",
+  },
+  {
+    label: "Lead Type",
+    model: ".leadType",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Lead Source",
+    model: ".leadSource",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Lead Status",
+    model: ".leadStatus",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Sub Lead Source",
+    model: ".subLeadSource",
+    type: "select",
+    options: [],
+  },
+  {
+    label: "Rating",
+    model: ".rating",
+    type: "select",
+    options: [],
+  },
+];
+
 export const leadSource = [
   {
     label: "Lead Type",
@@ -146,5 +209,18 @@ export const leadSource = [
     model: ".rating",
     type: "select",
     options: [],
+  },
+];
+
+export const addressDetails = [
+  {
+    label: "Billing Address",
+    model: ".billingAddress",
+    type: "textarea",
+  },
+  {
+    label: "Shipping Address",
+    model: ".shippingAddress",
+    type: "textarea",
   },
 ];

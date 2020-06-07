@@ -12,6 +12,8 @@ import {
   streetInputs,
   vehicleInputs,
   leadSource,
+  leadDealer,
+  addressDetails,
 } from "../Customers/customerInputs";
 import Image, { Shimmer } from "react-shimmer";
 import { TableWithGrid } from "src/components/TableWithGrid";
@@ -452,7 +454,11 @@ export class AddNewLeadImpl extends React.PureComponent<
           </div>
         </Grid>
         <div className="button-container">
-          <Button variant="contained" color="default">
+          <Button
+            onClick={() => this.setState({ openEditModal: false })}
+            variant="contained"
+            color="default"
+          >
             Cancel
           </Button>
           <Button variant="contained" color="primary">
@@ -532,7 +538,59 @@ export class AddNewLeadImpl extends React.PureComponent<
             Add New Lead
           </Typography>
           <div className="">
-            <Tabs tabsData={this.tabData} />
+            <Stepper
+              stepData={[
+                {
+                  label: "Draft",
+                  component: (
+                    <div>
+                      <SubFormHeading>Lead Basic Details</SubFormHeading>
+                      <FormComponent
+                        onSubmit={(v: any) => {
+                          console.log(">> v", v);
+                        }}
+                        formModel="userForm"
+                        hasSubmit={false}
+                        options={leadDealer}
+                      />
+                      <SubFormHeading>Lead Basic Details</SubFormHeading>
+                      <FormComponent
+                        onSubmit={(v: any) => {
+                          console.log(">> v", v);
+                        }}
+                        formModel="userForm"
+                        hasSubmit={true}
+                        options={addressDetails}
+                      />
+                    </div>
+                  ),
+                },
+                {
+                  label: "Documents Collection",
+                  component: (
+                    <div>
+                      <SubFormHeading>
+                        Regular Business Documentation
+                      </SubFormHeading>
+                      <SubFormHeading>Workshop Approval Process</SubFormHeading>
+                      <FormComponent
+                        onSubmit={(v: any) => {
+                          console.log(">> v", v);
+                        }}
+                        formModel="userForm"
+                        hasSubmit={true}
+                        options={[]}
+                      />
+                    </div>
+                  ),
+                },
+                {
+                  label: "Approval",
+                  component: <div>Approvals {`&`} Inventory Load</div>,
+                },
+              ]}
+            />
+            {/* <Tabs tabsData={this.tabData} /> */}
           </div>
         </div>
       </AppBar>

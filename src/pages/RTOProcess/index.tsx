@@ -124,7 +124,6 @@ export class RTOProcessImpl extends React.PureComponent<
     return (
       <AppBar>
         {this.renderModal()}
-        <Typography variant="h4">RTO Process</Typography>
         <Tabs tabsData={this.tabs} />
         <Grid container={true}>
           <RTOList

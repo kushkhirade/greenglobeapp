@@ -20,16 +20,17 @@ export class ProfileImpl extends React.PureComponent<IProfileProps, {}> {
               Sachin T.{" "}
               <div>
                 <MailIcon color="primary" />
-                &nbsp; Sachin@gmail.com
+                <span style={{ paddingRight: "5px" }}></span> Sachin@gmail.com
               </div>
             </div>
             <div className="profile-data">
-              <div>
-                <PhoneIcon color="primary" /> &nbsp; 9876543210
+              <div className="align-center">
+                <PhoneIcon color="primary" />
+                <span style={{ paddingRight: "5px" }}></span> 9876543210
               </div>
-              <div>
+              <div className="align-center">
                 <ChatIcon className="sdfd" />
-                &nbsp; 9876543210
+                <span style={{ paddingRight: "5px" }}></span> 9876543210
               </div>
             </div>
             <div className="profile-data">

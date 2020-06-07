@@ -58,7 +58,12 @@ export class Support extends React.PureComponent<{}, { isModalOpen: boolean }> {
               variant="outlined"
             />
             <div className="button-container">
-              <Button variant="contained">Attach File</Button>
+              <Button
+                onClick={() => this.setState({ isModalOpen: false })}
+                variant="contained"
+              >
+                Attach File
+              </Button>
               <Button variant="contained" color="primary">
                 Submit
               </Button>

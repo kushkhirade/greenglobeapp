@@ -87,6 +87,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
     ];
     const options = {
       filterType: "checkbox",
+      responsive: "scrollMaxHeight",
     };
 
     return (

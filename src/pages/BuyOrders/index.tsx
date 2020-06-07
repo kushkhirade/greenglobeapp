@@ -329,11 +329,10 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                       <TextField
                         id="filled-textarea"
                         label="Remarks"
-                        placeholder="Placeholder"
                         rows={4}
-                        variant="filled"
+                        variant="outlined"
                         multiline={true}
-                        className="r-select"
+                        className="form-input"
                       />
                     </div>{" "}
                     <div className="button-container">
@@ -393,9 +392,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
           },
           { label: "Add Inventory", component: this.renderForm() },
         ]}
-      >
-        sadsd
-      </Stepper>
+      ></Stepper>
     );
   };
 

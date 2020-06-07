@@ -62,13 +62,22 @@ const Support = React.lazy(() =>
 // import { Support } from "./pages/support";
 import { store } from "./store/Store";
 import "./main.scss";
+import { MyUsers } from "./pages/MyUsers";
+import { AssignedDealers } from "./pages/AssignedDealers";
+import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
+
+const Loader = () => (
+  <div className="loader-main">
+    <div className="hourglass"></div>
+  </div>
+);
 
 class App extends React.Component {
   public render() {
     return (
       <Provider store={store}>
         <Router>
-          <React.Suspense fallback={<div>Loading...</div>}>
+          <React.Suspense fallback={<Loader />}>
             <Switch>
               <Route path="/" exact={true} component={LoginScreen} />
               <Route path="/home" exact={true} component={HomePage} />
@@ -86,6 +95,16 @@ class App extends React.Component {
                 component={AddNewCustomer}
               />
               <Route path="/transactions" exact={true} component={Support} />
+              <Route
+                path="/assign-dealers"
+                exact={true}
+                component={AssignedDealers}
+              />
+              <Route
+                path="/dealers/dealer-details"
+                exact={true}
+                component={DealerDetails}
+              />
               <Route path="/rto-process" exact={true} component={RTOProcess} />
               <Route path="/buy-orders" exact={true} component={BuyOrders} />
               <Route
@@ -95,6 +114,7 @@ class App extends React.Component {
               />
               <Route path="/support" exact={true} component={Support} />
               <Route path="/profile" exact={true} component={Profile} />
+              <Route path="/my-users" exact={true} component={MyUsers} />
             </Switch>
           </React.Suspense>
         </Router>

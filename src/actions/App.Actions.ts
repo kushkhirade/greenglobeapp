@@ -42,7 +42,7 @@ export const showPopup = (data: Alert): IAppAction => {
   return store.dispatch({
     type: ActionType.OPEN_ALERT,
     payload: data,
-  }) ;
+  });
 };
 
 export const closePopup = (): IAppAction => {
@@ -61,13 +61,19 @@ export const showSpinner = (message: string): IAppAction => {
 export const hideSpinner = (): IAppAction => {
   return store.dispatch({
     type: ActionType.CLOSE_SPINNER,
-  }) ;
+  });
 };
 
 export const login = (data: any): IAppAction => {
-  return store.dispatch({ type: ActionType.LOGIN_REQUEST, payload: data })
+  return store.dispatch({ type: ActionType.LOGIN_REQUEST, payload: data });
 };
 
 export const logout = (): IAppAction => {
-  return store.dispatch({ type: ActionType.LOGOUT_REQUEST })
+  return store.dispatch({ type: ActionType.LOGOUT_REQUEST });
 };
+
+export const saveDealerData = (data) =>
+  store.dispatch({
+    type: "SAVE_DEALER_DETAILS",
+    data,
+  });

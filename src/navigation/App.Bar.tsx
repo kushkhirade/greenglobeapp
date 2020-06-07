@@ -131,7 +131,9 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
             {this.state.routeName}
           </Typography>
           <div className="align-center" onClick={this.handleLogout}>
-            &nbsp; Logout &nbsp;
+            <div>
+              Logout <span style={{ paddingRight: "3px" }} />{" "}
+            </div>
             <ExitToAppIcon />
             &nbsp; &nbsp;
           </div>
