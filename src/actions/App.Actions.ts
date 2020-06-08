@@ -1,6 +1,6 @@
-import { IAppAction, ActionType } from "./Helpers";
+import { IAppAction, ActionType, SAVE_LOGGED_IN_USER_DATA } from "./Helpers";
 import { match } from "react-router";
-import { Utility } from "../state/Utility";
+import { Utility, dispatch } from "../state/Utility";
 import { Alert } from "../state/Alert";
 import { Spinner } from "../state/Spinner";
 import { User } from "../state/User";
@@ -77,3 +77,10 @@ export const saveDealerData = (data) =>
     type: "SAVE_DEALER_DETAILS",
     data,
   });
+
+export function saveLoggedInUserDetails(data) {
+  return dispatch({
+    type: SAVE_LOGGED_IN_USER_DATA,
+    data,
+  });
+}

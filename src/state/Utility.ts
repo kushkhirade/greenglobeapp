@@ -33,3 +33,15 @@ export function dispatch(action) {
 export function changeValuesInStore(key, value) {
   dispatch(actions.change(key, value));
 }
+
+export function isLoggedIn() {
+  return JSON.parse(localStorage.getItem("userData"));
+}
+
+export function saveLoggedInUserData(data) {
+  return localStorage.setItem("userData", JSON.stringify(data));
+}
+
+export function isDealer() {
+  return store.getState().users.get("currentUser").isDealer;
+}

@@ -17,8 +17,8 @@ module.exports = {
   entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "build"),
-    filename: "./static/js/[name].[chunkhash:8].js",
-    chunkFilename: "./static/js/[name].[chunkhash:8].chunk.js",
+    filename: `static/js/[name].[chunkhash:8]${new Date().getTime()}.js`,
+    chunkFilename: `static/js/[name].[chunkhash:8]${new Date().getTime()}.chunk.js`,
   },
   devtool: "source-map",
   devServer: {

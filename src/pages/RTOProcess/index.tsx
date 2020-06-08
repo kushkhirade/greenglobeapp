@@ -3,15 +3,20 @@ import { connect } from "react-redux";
 import data from "../../data";
 import AppBar from "src/navigation/App.Bar";
 import Typography from "@material-ui/core/Typography";
-import { Grid, Button } from "@material-ui/core";
-import { Edit, Button, PersonPin, Phone } from "@material-ui/icons";
+import { Grid, Button, Fab } from "@material-ui/core";
+import { Edit, PersonPin, Phone, Add } from "@material-ui/icons";
 import "./rtoProcess.scss";
 import { BaseModal } from "src/components/BaseModal";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { Tabs } from "src/components/Tabs";
+import { withRouter } from "react-router-dom";
 
-export interface IRTOProcessProps {}
+export interface IRTOProcessProps {
+  history: {
+    push: (path) => void;
+  };
+}
 
 export class RTOProcessImpl extends React.PureComponent<
   IRTOProcessProps,
@@ -44,6 +49,7 @@ export class RTOProcessImpl extends React.PureComponent<
     const updatedData = this.state.rtoDataMain.map((rto) => {
       if (rto.rtos.id === this.state.currentData.id) {
         rto.rtos.status = this.state.stage;
+        rto.rtos.isCleared = true;
       }
       return rto;
     });
@@ -111,12 +117,32 @@ export class RTOProcessImpl extends React.PureComponent<
     );
   };
 
-  tabs = [
+  tabs = () => [
     {
       tabName: "Pending",
+      component: (
+        <Grid container={true}>
+          <RTOList
+            onClickEdit={this.showEditPopup}
+            rtoDataMain={this.state.rtoDataMain.filter(
+              (rto) => !rto.rtos.isCleared
+            )}
+          />
+        </Grid>
+      ),
     },
     {
       tabName: "Cleared",
+      component: (
+        <Grid container={true}>
+          <RTOList
+            onClickEdit={this.showEditPopup}
+            rtoDataMain={this.state.rtoDataMain.filter(
+              (rto) => rto.rtos.isCleared
+            )}
+          />
+        </Grid>
+      ),
     },
   ];
 
@@ -124,13 +150,15 @@ export class RTOProcessImpl extends React.PureComponent<
     return (
       <AppBar>
         {this.renderModal()}
-        <Tabs tabsData={this.tabs} />
-        <Grid container={true}>
-          <RTOList
-            onClickEdit={this.showEditPopup}
-            rtoDataMain={this.state.rtoDataMain}
-          />
-        </Grid>
+        <Tabs tabsData={this.tabs()} />
+        <span
+          style={{ position: "absolute", right: 20, bottom: 20 }}
+          onClick={() => this.props.history.push("/lead/add-new-lead")}
+        >
+          <Fab color="secondary" aria-labelledby="add-ticket">
+            <Add />
+          </Fab>
+        </span>
       </AppBar>
     );
   }
@@ -138,8 +166,8 @@ export class RTOProcessImpl extends React.PureComponent<
 export function mapStateToProps() {
   return {};
 }
-export const RTOProcess = connect<{}, {}, IRTOProcessProps>(mapStateToProps)(
-  RTOProcessImpl
+export const RTOProcess = withRouter(
+  connect<{}, {}, IRTOProcessProps>(mapStateToProps)(RTOProcessImpl) as any
 );
 
 const RTOList = (props: any) => {
@@ -177,18 +205,25 @@ const RTOList = (props: any) => {
             <Grid item xs={6} md={6}>
               Chassis No.
             </Grid>
-            <Grid item xs={6} md={6}>
-              {rtoData.status}
+            <Grid className="rto-status" item xs={6} md={6}>
+              {rtoData.status || "Pending"}
             </Grid>
           </Grid>
-          <div className="edit-button-container">
-            <div
-              className="edit-button"
-              onClick={() => props.onClickEdit(rtoData)}
-            >
-              <Edit />
+          {!rtoData.isCleared && (
+            <div className="edit-button-container">
+              <div
+                className="edit-button"
+                onClick={() => props.onClickEdit(rtoData)}
+              >
+                <Edit />
+              </div>
             </div>
-          </div>
+          )}
+          {rtoData.isCleared && (
+            <div className="generate-doc">
+              <span>Generate Docs</span>{" "}
+            </div>
+          )}
         </Grid>
       </React.Fragment>
     );

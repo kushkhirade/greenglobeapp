@@ -12,6 +12,7 @@ import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./leads.scss";
+import { isDealer } from "src/state/Utility";
 export interface ILeadsProps {
   history: {
     push: (path: string) => void;
@@ -172,7 +173,7 @@ export class LeadsImpl extends React.Component<
           </div>
           <div className="button-container">
             <Button
-              onClick={() => this.setState({ openEditModal: false })}
+              onClick={() => this.setState({ isModalOpen: false })}
               variant="contained"
               color="default"
             >
@@ -217,7 +218,7 @@ export class LeadsImpl extends React.Component<
       <AppBar>
         {this.renderAssignDealerModal()}
         <div className="leads">
-          {this.props.isDealer ? (
+          {isDealer() ? (
             <Tabs tabsData={this.tabDataForDealer} />
           ) : (
             <React.Fragment>
@@ -227,7 +228,7 @@ export class LeadsImpl extends React.Component<
           )}
         </div>
         <span
-          onClick={() => this.props.history.push("/leads/add-new-lead")}
+          onClick={() => this.props.history.push("/lead/add-new-lead")}
           style={{ position: "absolute", right: 20, bottom: 20 }}
         >
           <Fab color="secondary" aria-labelledby="add-ticket">

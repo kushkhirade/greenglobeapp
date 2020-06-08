@@ -82,7 +82,7 @@ export const FormComponent = (props: any) => {
       {props.hasSubmit && (
         <div className="button-container">
           <Button variant="contained" onClick={props.onCancel}>
-            Cancel
+            {props.cancelTitle || "Cancel"}
           </Button>
           <Button variant="contained" color="primary" type="submit">
             {props.submitTitle || "Submit"}

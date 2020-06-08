@@ -1,8 +1,10 @@
-import { Grid, TextField, Button } from "@material-ui/core";
+import { Button, Grid, TextField } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import Select from "react-select";
+import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
+import { isDealer } from "src/state/Utility";
 import "./buyOrders.scss";
 import { Stepper } from "./Stepper";
 
@@ -106,7 +108,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     </div>
   );
 
-  public renderForm = () => {
+  public renderForm = (label) => {
     return (
       <div className="card-container no-hover">
         <Grid container spacing={4}>
@@ -174,7 +176,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
             Cancel
           </Button>
           <Button variant="contained" color="primary">
-            Submit
+            {label}
           </Button>
         </div>
       </div>
@@ -187,36 +189,16 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
         stepData={[
           {
             label: "Draft",
-            component: this.renderForm(),
+            component: this.renderForm("Submit"),
           },
           {
             label: "Submitted",
-            component: (
-              <div className="card-container">
-                <Grid container={true}>
-                  <Grid item={true} className="padding-6" xs={6} md={6}>
-                    <span className="description-text"> Order ID -</span>{" "}
-                    ON-26541
-                  </Grid>
-                  <Grid item={true} className="padding-6" xs={6} md={6}>
-                    <span className="description-text"> Order Date - </span>{" "}
-                    10/05/2020
-                  </Grid>
-                  <Grid item={true} className="padding-6" xs={6} md={6}>
-                    <span className="description-text"> Total Items -</span> 25
-                    Order
-                  </Grid>
-                  <Grid item={true} className="padding-6" xs={6} md={6}>
-                    <span className="description-text">Total -</span> 1742000
-                  </Grid>
-                </Grid>
-              </div>
-            ),
+            component: <SubmittedScreen />,
           },
           {
             label: "PI Raised",
             component: (
-              <Grid container>
+              <Grid container className="align-center">
                 <Grid xs={12} md={4} lg={4}>
                   <div className="card-container no-hover">
                     <div className="head-title padding-6 ">
@@ -302,95 +284,13 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
           },
           {
             label: "Payment Details",
-            component: (
-              <Grid container>
-                <Grid xs={12} md={6} lg={6}>
-                  <div className="card-container no-hover payment-mode">
-                    <div className="head-title">Payment Mode and Details</div>
-                    <div className="product-selection">
-                      <Select
-                        className="r-select"
-                        value={null}
-                        placeholder="Select Payment Type"
-                        onChange={this.handleChange}
-                        options={options}
-                      />
-                    </div>
-                    <div className="product-selection">
-                      <Select
-                        className="r-select"
-                        value={null}
-                        onChange={this.handleChange}
-                        placeholder="Select Payment Method"
-                        options={options1}
-                      />
-                    </div>{" "}
-                    <div className="product-selection">
-                      <TextField
-                        id="filled-textarea"
-                        label="Remarks"
-                        rows={4}
-                        variant="outlined"
-                        multiline={true}
-                        className="form-input"
-                      />
-                    </div>{" "}
-                    <div className="button-container">
-                      <Button variant="contained" color="default">
-                        Cancel
-                      </Button>
-                      <Button variant="contained" color="primary">
-                        Submit
-                      </Button>
-                    </div>
-                  </div>
-                </Grid>
-              </Grid>
-            ),
+            component: <PaymentDetailsScreen handleChange={this.hand} />,
           },
           {
             label: "Dispatched",
-            component: (
-              <div className="card-container">
-                <div>Dispatched</div>
-                <Grid container className="padding-6">
-                  <Grid md={6} xs={6} lg={6}>
-                    <span className="description-text">Order ID -</span>
-                    {invoiceData.orderID}
-                  </Grid>
-                  <Grid md={6} xs={6} lg={6}>
-                    <span className="description-text">Order Date:</span>
-                    {invoiceData.dateOfIssue}
-                  </Grid>
-                </Grid>
-                <Grid container className="padding-6">
-                  <Grid md={6} xs={6} lg={6}>
-                    <span className="description-text">Order ID -</span>
-                    {invoiceData.orderID}
-                  </Grid>
-                  <Grid md={6} xs={6} lg={6}>
-                    <span className="description-text">Order Date:</span>
-                    {invoiceData.dateOfIssue}
-                  </Grid>
-                </Grid>
-                <Grid container className="padding-6">
-                  <Grid md={12} xs={12} lg={12}>
-                    <span className="description-text">Courier Name -</span>{" "}
-                    Blue Dart Express Ltd.
-                    <br />
-                    <span className="description-text">
-                      Consignment No. -
-                    </span>{" "}
-                    89712345676
-                    <br />
-                    <span className="description-text"> Shipping Date - </span>
-                    10/05/2020
-                  </Grid>
-                </Grid>
-              </div>
-            ),
+            component: <DispatchedScreen />,
           },
-          { label: "Add Inventory", component: this.renderForm() },
+          { label: "Add Inventory", component: this.renderForm("Add") },
         ]}
       ></Stepper>
     );
@@ -443,10 +343,51 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     );
   };
 
+  public renderSellStepper = () => {
+    return (
+      <Stepper
+        stepData={[
+          {
+            label: "Draft",
+            component: this.renderForm("Submit"),
+          },
+          {
+            label: "Submitted",
+            component: <SubmittedScreen />,
+          },
+          {
+            label: "Payment Details",
+            component: <PaymentDetailsScreen />,
+          },
+          {
+            label: "Dispatched",
+            component: <DispatchedScreen />,
+          },
+        ]}
+      />
+    );
+  };
+
   public render() {
     return (
       <AppBar>
-        {this.state.showForm ? this.renderStepper() : this.renderCard()}
+        {isDealer() ? (
+          this.state.showForm ? (
+            this.renderStepper()
+          ) : (
+            this.renderCard()
+          )
+        ) : (
+          <Tabs
+            tabsData={[
+              { tabName: "Buy", component: this.renderStepper() },
+              {
+                tabName: "Sell",
+                component: this.renderSellStepper(),
+              },
+            ]}
+          />
+        )}
       </AppBar>
     );
   }
@@ -488,3 +429,111 @@ const data = [
     orderStatus: "Draft",
   },
 ];
+const DispatchedScreen = () => {
+  return (
+    <div className="card-container">
+      <div>Dispatched</div>
+      <Grid container className="padding-6">
+        <Grid md={6} xs={6} lg={6}>
+          <span className="description-text">Order ID -</span>
+          {invoiceData.orderID}
+        </Grid>
+        <Grid md={6} xs={6} lg={6}>
+          <span className="description-text">Order Date:</span>
+          {invoiceData.dateOfIssue}
+        </Grid>
+      </Grid>
+      <Grid container className="padding-6">
+        <Grid md={6} xs={6} lg={6}>
+          <span className="description-text">Order ID -</span>
+          {invoiceData.orderID}
+        </Grid>
+        <Grid md={6} xs={6} lg={6}>
+          <span className="description-text">Order Date:</span>
+          {invoiceData.dateOfIssue}
+        </Grid>
+      </Grid>
+      <Grid container className="padding-6">
+        <Grid md={12} xs={12} lg={12}>
+          <span className="description-text">Courier Name -</span> Blue Dart
+          Express Ltd.
+          <br />
+          <span className="description-text">Consignment No. -</span>{" "}
+          89712345676
+          <br />
+          <span className="description-text"> Shipping Date - </span>
+          10/05/2020
+        </Grid>
+      </Grid>
+    </div>
+  );
+};
+
+const PaymentDetailsScreen = (props) => {
+  return (
+    <Grid container className="align-center">
+      <Grid xs={12} md={6} lg={6}>
+        <div className="card-container no-hover payment-mode">
+          <div className="head-title">Payment Mode and Details</div>
+          <div className="product-selection">
+            <Select
+              className="r-select"
+              value={null}
+              placeholder="Select Payment Type"
+              onChange={props.handleChange}
+              options={options}
+            />
+          </div>
+          <div className="product-selection">
+            <Select
+              className="r-select"
+              value={null}
+              onChange={props.handleChange}
+              placeholder="Select Payment Method"
+              options={options1}
+            />
+          </div>{" "}
+          <div className="product-selection">
+            <TextField
+              id="filled-textarea"
+              label="Remarks"
+              rows={4}
+              variant="outlined"
+              multiline={true}
+              className="form-input"
+            />
+          </div>{" "}
+          <div className="button-container">
+            <Button variant="contained" color="default">
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary">
+              Submit
+            </Button>
+          </div>
+        </div>
+      </Grid>
+    </Grid>
+  );
+};
+
+const SubmittedScreen = () => {
+  return (
+    <div className="card-container">
+      <Grid container={true}>
+        <Grid item={true} className="padding-6" xs={6} md={6}>
+          <span className="description-text"> Order ID -</span> ON-26541
+        </Grid>
+        <Grid item={true} className="padding-6" xs={6} md={6}>
+          <span className="description-text"> Order Date - </span> 10/05/2020
+        </Grid>
+        <Grid item={true} className="padding-6" xs={6} md={6}>
+          <span className="description-text"> Total Items -</span> 25 Order
+        </Grid>
+        <Grid item={true} className="padding-6" xs={6} md={6}>
+          <span className="description-text">Total -</span> 1742000
+        </Grid>
+      </Grid>
+    </div>
+  );
+};

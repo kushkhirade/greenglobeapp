@@ -12,14 +12,14 @@ export const Stepper = (props: any) => {
               onClick={() => setActiveStep(index)}
               className={`step ${index === activeStep ? "active" : ""}`}
             >
-              <StpperBG fill={index === activeStep ? "#48a89c" : "#b5b5b5"} />
+              <StpperBG fill={index <= activeStep ? "#48a89c" : "#b5b5b5"} />
               <div className="step-label">{step.label}</div>
             </div>
           );
         })}
       </div>
 
-      <div className="stepper-content" >
+      <div className="stepper-content">
         {props.stepData[activeStep].component}
         {/* {props.stepData.length - 1 > activeStep && (
           <button onClick={() => setActiveStep(activeStep + 1)}>Next</button>

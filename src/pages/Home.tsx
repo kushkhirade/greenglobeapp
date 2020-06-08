@@ -3,6 +3,7 @@ import * as React from "react";
 import AppBar from "src/navigation/App.Bar";
 import { TableWithGrid } from "../components/TableWithGrid";
 import data from "../data";
+import { SubFormHeading } from "src/components/SubFormHeading";
 
 interface IPageState {
   usersTablePage?: number;
@@ -106,7 +107,9 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
             options={options as any}
           />
           <Grid item={true} lg={3} xs={12} sm={12}>
-            Expected Turnover / Revenue - 984532120{" "}
+            <SubFormHeading>
+              Expected Turnover / Revenue - 984532120{" "}
+            </SubFormHeading>
             <TableWithGrid
               title={"Leads Status"}
               data={this.leadData}

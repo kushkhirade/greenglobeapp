@@ -52,22 +52,22 @@ const CustomerList = (props: any) => {
     return (
       <div key={index} className="card-container ">
         <Grid container className="padding-15 align-left">
-          <Grid item className="bold-font center" xs={6} md={12}>
+          <Grid item className="bold-font padding-6 center" xs={6} md={12}>
             <PersonPin /> {customerData.firstName}
           </Grid>
-          <Grid className="bold-fon centert" item xs={6} md={12}>
+          <Grid className="bold-fon padding-6 centert" item xs={6} md={12}>
             <Phone /> {customerData.mobileNumber}
           </Grid>
         </Grid>
         <Grid container className="padding-15 align-left">
-          <Grid item xs={6} md={12}>
+          <Grid className="padding-6" item xs={6} md={12}>
             Purchased Product:
             {customerData.productPurchased}
           </Grid>
-          <Grid item xs={6} md={12}>
+          <Grid className="padding-6" item xs={6} md={12}>
             Dealer Rating:
           </Grid>{" "}
-          <Grid item xs={6} md={12}>
+          <Grid className="padding-6" item xs={6} md={12}>
             Dealer Rating:
             <Rating
               readOnly

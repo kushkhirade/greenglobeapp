@@ -1,9 +1,17 @@
-import { FormControlLabel, Grid, RadioGroup, TextField } from "@material-ui/core";
+import {
+  FormControlLabel,
+  Grid,
+  RadioGroup,
+  TextField,
+  Button,
+} from "@material-ui/core";
 import CancelIcon from "@material-ui/icons/Cancel";
 import * as React from "react";
 import { connect } from "react-redux";
 import Select from "react-select";
+import { BaseModal } from "src/components/BaseModal";
 import { FormComponent } from "src/components/FormComponent";
+import { SubFormHeading } from "src/components/SubFormHeading";
 import AppBar from "src/navigation/App.Bar";
 import { changeValuesInStore } from "src/state/Utility";
 import "./communications.scss";
@@ -35,6 +43,7 @@ export class CommunicationsImpl extends React.Component<
       rating: "female",
       commType: "",
       customers: [],
+      openDeliveryModal: false,
       formSubmitted: false,
     };
   }
@@ -51,6 +60,41 @@ export class CommunicationsImpl extends React.Component<
     this.setState({
       [key]: event.target.value,
     });
+  };
+
+  renderDeliveryModal = () => {
+    return (
+      <BaseModal
+        className="leads-modal"
+        contentClassName="leads-content"
+        onClose={() => this.setState({ openDeliveryModal: false })}
+        open={this.state.openDeliveryModal}
+      >
+        <Grid container spacing={1} className="">
+          <Grid item className="modal-margin" xs={12} md={12}>
+            <div className="padding-6 align-center">Delivery Report</div>
+            <div className="padding-6 align-center">SMS / Email send - 100</div>
+            <div className="padding-6 align-center">
+              SMS / Email Failed - 20
+            </div>
+            <SubFormHeading> SMS/Email Failed Recipients List </SubFormHeading>
+          </Grid>
+          <div
+            style={{ textAlign: "center", width: "100%" }}
+            className="align-center"
+          >
+            {" "}
+            <Button
+              variant="contained"
+              color="default"
+              onClick={() => this.setState({ openDeliveryModal: false })}
+            >
+              Close
+            </Button>
+          </div>
+        </Grid>
+      </BaseModal>
+    );
   };
 
   renderMessageScreen = () => {
@@ -80,10 +124,13 @@ export class CommunicationsImpl extends React.Component<
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
+            this.setState({
+              openDeliveryModal: true,
+            });
           }}
           formModel="customerForm"
           hasSubmit={true}
-          submitTitle="Done"
+          submitTitle="Send"
           options={[]}
         />
       </div>
@@ -179,6 +226,7 @@ export class CommunicationsImpl extends React.Component<
   render() {
     return (
       <AppBar>
+        {this.renderDeliveryModal()}
         <div className="communication-container card-container no-hover">
           {this.state.formSubmitted
             ? this.renderMessageScreen()

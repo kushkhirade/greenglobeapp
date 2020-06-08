@@ -17,7 +17,8 @@
     height: 30px;
     padding: 4px;
     justify-content: center;
-    &:hover{
+
+    &:hover {
         cursor: pointer;
     }
 }
@@ -25,4 +26,24 @@
 .edit-button-container {
     display: flex;
     justify-content: flex-end;
+}
+
+.rto-status {
+    background-color: #42aadc;
+    color: white;
+    text-align: center;
+    padding: 3px;
+    border-radius: 10px
+}
+
+.generate-doc {
+    text-align: right;
+    padding: 10px 0px;
+
+    span {
+        background-color: #abe252;
+        color: black;
+        border-radius: 10px;
+        padding: 3px 20px;
+    }
 }

@@ -1,6 +1,11 @@
 import * as React from "react";
 import { Provider } from "react-redux";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  HashRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import "./App.css";
 const LoginScreen = React.lazy(() =>
   import("./pages/account/Login").then(({ LoginScreen }) => ({
@@ -33,7 +38,7 @@ const Leads = React.lazy(() =>
   import("./pages/Leads").then(({ Leads }) => ({ default: Leads }))
 );
 const AddNewLead = React.lazy(() =>
-  import("./pages/Leads/AddLead").then(({ AddNewLead }) => ({
+  import("./pages/Leads/AddNewLead").then(({ AddNewLead }) => ({
     default: AddNewLead,
   }))
 );
@@ -65,12 +70,39 @@ import "./main.scss";
 import { MyUsers } from "./pages/MyUsers";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
+import { isLoggedIn, saveLoggedInUserData } from "./state/Utility";
+import { saveLoggedInUserDetails } from "./actions/App.Actions";
 
 const Loader = () => (
   <div className="loader-main">
     <div className="hourglass"></div>
   </div>
 );
+
+class ProtectedRoute extends React.Component<any, any> {
+  componentWillMount() {
+    if (!isLoggedIn()) {
+      return;
+    }
+    const { userName } = isLoggedIn();
+    if (userName === "Demo") {
+      saveLoggedInUserData({ userName });
+      saveLoggedInUserDetails({ userName, isDealer: true, isDist: false });
+    }
+    if (userName === "DemoDist") {
+      saveLoggedInUserData({ userName });
+      saveLoggedInUserDetails({ userName, isDealer: false, isDist: true });
+    }
+  }
+
+  render() {
+    const { path, component } = this.props;
+    if (isLoggedIn()) {
+      return <Route path={path} exact component={component} />;
+    }
+    return <Redirect to="/" />;
+  }
+}
 
 class App extends React.Component {
   public render() {
@@ -79,42 +111,37 @@ class App extends React.Component {
         <Router>
           <React.Suspense fallback={<Loader />}>
             <Switch>
-              <Route path="/" exact={true} component={LoginScreen} />
-              <Route path="/home" exact={true} component={HomePage} />
-              <Route path="/inventory" exact={true} component={Inventory} />
-              <Route path="/leads" exact={true} component={Leads} />
-              <Route
-                path="/leads/add-new-lead"
-                exact={true}
+              <Route path="/" exact component={LoginScreen} />
+              <ProtectedRoute path="/home" component={HomePage} />
+              <ProtectedRoute path="/inventory" component={Inventory} />
+              <ProtectedRoute path="/leads" component={Leads} />
+              <ProtectedRoute
+                path="/lead/add-new-lead"
                 component={AddNewLead}
               />
-              <Route path="/customers" exact={true} component={Customers} />
-              <Route
+              <ProtectedRoute path="/customers" component={Customers} />
+              <ProtectedRoute
                 path="/customer/add-new-customer"
-                exact={true}
                 component={AddNewCustomer}
               />
-              <Route path="/transactions" exact={true} component={Support} />
-              <Route
+              <ProtectedRoute path="/transactions" component={Support} />
+              <ProtectedRoute
                 path="/assign-dealers"
-                exact={true}
                 component={AssignedDealers}
               />
-              <Route
+              <ProtectedRoute
                 path="/dealers/dealer-details"
-                exact={true}
                 component={DealerDetails}
               />
-              <Route path="/rto-process" exact={true} component={RTOProcess} />
-              <Route path="/buy-orders" exact={true} component={BuyOrders} />
-              <Route
+              <ProtectedRoute path="/rto-process" component={RTOProcess} />
+              <ProtectedRoute path="/buy-orders" component={BuyOrders} />
+              <ProtectedRoute
                 path="/communication"
-                exact={true}
                 component={Communications}
               />
-              <Route path="/support" exact={true} component={Support} />
-              <Route path="/profile" exact={true} component={Profile} />
-              <Route path="/my-users" exact={true} component={MyUsers} />
+              <ProtectedRoute path="/support" component={Support} />
+              <ProtectedRoute path="/profile" component={Profile} />
+              <ProtectedRoute path="/my-users" component={MyUsers} />
             </Switch>
           </React.Suspense>
         </Router>

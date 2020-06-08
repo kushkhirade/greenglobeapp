@@ -25,7 +25,7 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import { User } from "../state/User";
-import { Utility } from "../state/Utility";
+import { Utility, isDealer } from "../state/Utility";
 import { styles } from "./styles";
 const classNames = require("classnames");
 
@@ -48,12 +48,22 @@ export const routes = [
   { path: "/inventory", title: "Inventory", icon: () => <Book /> },
   { path: "/buy-orders", title: "Buy Orders", icon: () => <Payment /> },
   { path: "/leads", title: "Leads", icon: () => <Pages /> },
-  { path: "/assign-dealers", title: "Assigned Dealers", icon: () => <Pages /> },
+  {
+    path: "/assign-dealers",
+    hideForDealer: true,
+    title: "Assigned Dealers",
+    icon: () => <Pages />,
+  },
   { path: "/customers", title: "Customer", icon: () => <People /> },
   {
     hidden: true,
     path: "/customer/add-new-customer",
     title: "Add New Customer",
+  },
+  {
+    hidden: true,
+    path: "/lead/add-new-lead",
+    title: "Add New Lead",
   },
   {
     hidden: true,
@@ -63,7 +73,12 @@ export const routes = [
   },
   { path: "/rto-process", title: "RTO Process", icon: () => <HeadsetMic /> },
   { path: "/communication", title: "Communications", icon: () => <Book /> },
-  { path: "/my-users", title: "My Users", icon: () => <Book /> },
+  {
+    path: "/my-users",
+    hideForDealer: true,
+    title: "My Users",
+    icon: () => <Book />,
+  },
   { path: "/support", title: "Support", icon: () => <Chat /> },
   {
     path: "/dealers/dealer-details",
@@ -115,6 +130,7 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
         <Divider />
         {routes
           .filter((x) => !x.hidden)
+          .filter((x) => (isDealer() ? !x.hideForDealer : true))
           .map((route, index) => {
             return (
               <NavLink

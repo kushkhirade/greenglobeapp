@@ -18,6 +18,7 @@ import {
   Legend,
   Bar,
 } from "recharts";
+import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
 export interface IAssignedDealersProps {}
 
@@ -61,7 +62,65 @@ export class DealerDetailsImpl extends React.PureComponent<
     this.state = { users: [], isLoading: false };
   }
 
-  tabData = [
+  componentWillMount() {
+    if (isEmpty(this.props.dealerDetails)) {
+      this.props.history.push("/assign-dealers");
+    }
+  }
+
+  tabData = () => [
+    {
+      tabName: "Details",
+      component: (
+        <Grid container>
+          <Grid item xs={12} md={12} lg={12}>
+            <div
+              onClick={() =>
+                this.props.dealerDetails.onClickItem(this.props.dealerDetails)
+              }
+              className="card-container"
+            >
+              <div className="inventory-card">
+                {" "}
+                <div className="padding-6">
+                  {" "}
+                  {this.props.dealerDetails.name}
+                </div>
+                <div className="margin-10 dealer-card">
+                  <img
+                    src={this.props.dealerDetails.imageURL}
+                    alt="bike"
+                    className="dealer-image"
+                  />
+                  <div>
+                    <div className="padding-6">
+                      {" "}
+                      {this.props.dealerDetails.address}
+                    </div>
+                    <div className="padding-6">
+                      {" "}
+                      <span className="description-text">
+                        Contact Person
+                      </span>{" "}
+                      {this.props.dealerDetails.cPerson}
+                    </div>
+                    <div className="padding-6">
+                      {" "}
+                      <span className="description-text">Phone</span>{" "}
+                      {this.props.dealerDetails.phone}
+                    </div>
+                  </div>
+                </div>
+                <div className="padding-6">
+                  <span className="description-text">Dealer Since</span>{" "}
+                  {this.props.dealerDetails.mDate}
+                </div>
+              </div>
+            </div>
+          </Grid>
+        </Grid>
+      ),
+    },
     {
       tabName: "Report",
       component: (
@@ -125,74 +184,37 @@ export class DealerDetailsImpl extends React.PureComponent<
         </div>
       ),
     },
-    {
-      tabName: "Details",
-      component: (
-        <Grid container>
-          <Grid item xs={12} md={12} lg={12}>
-            <div
-              onClick={() =>
-                this.props.dealerDetails.onClickItem(this.props.dealerDetails)
-              }
-              className="card-container"
-            >
-              <div className="inventory-card">
-                {" "}
-                <div className="padding-6">
-                  {" "}
-                  {this.props.dealerDetails.name}
-                </div>
-                <div className="margin-10 dealer-card">
-                  <img
-                    src={this.props.dealerDetails.imageURL}
-                    alt="bike"
-                    className="dealer-image"
-                  />
-                  <div>
-                    <div className="padding-6">
-                      {" "}
-                      {this.props.dealerDetails.address}
-                    </div>
-                    <div className="padding-6">
-                      {" "}
-                      <span className="description-text">
-                        Contact Person
-                      </span>{" "}
-                      {this.props.dealerDetails.cPerson}
-                    </div>
-                    <div className="padding-6">
-                      {" "}
-                      <span className="description-text">Phone</span>{" "}
-                      {this.props.dealerDetails.phone}
-                    </div>
-                  </div>
-                </div>
-                <div className="padding-6">
-                  <span className="description-text">Dealer Since</span>{" "}
-                  {this.props.dealerDetails.mDate}
-                </div>
-              </div>
-            </div>
-          </Grid>
-        </Grid>
-      ),
-    },
   ];
 
   render() {
     const { dealerDetails } = this.props;
     return (
       <AppBar>
-        <Tabs tabsData={this.tabData} />
+        <Tabs tabsData={this.tabData()} />
       </AppBar>
     );
   }
 }
 export function mapStateToProps(state) {
-  return { dealerDetails: state.users.data };
+  return { dealerDetails: state.users.get("data") };
 }
 export const DealerDetails = withRouter(
   connect<{}, {}, IAssignedDealersProps>(mapStateToProps)(
     DealerDetailsImpl
   ) as any
 );
+
+const distDetails = {
+  name: "Sachin T",
+  accountName: "GGFS",
+  whatApp: "",
+  email: "sadas@qdasdas.com",
+  mobile: "32321321321",
+  rating: "3.5",
+  billingAddress: "Indiabulls, Lower Parel, Mumbai, MH",
+  shippingAddress: "Indiabulls, Lower Parel, Mumbai, MH 411093, India",
+  gstNum: "27AACCN1235323",
+  bankName: "HDFC Bank",
+  IFSC: "HDFC0000646",
+  aaNum: "3242353243",
+};
