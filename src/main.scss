@@ -114,6 +114,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
+    margin-top: 30px;
 }
 
 .button-container {
@@ -220,9 +221,29 @@
 }
 
 .step {
-    max-width: 100px;
-    &:hover{
+    max-width: 150px;
+    position: relative;
+    margin: 0 -25px;
+
+    &:hover {
         cursor: pointer;
+    }
+
+    .step-label {
+        position: absolute;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        font-size: 14px;
+        text-align: center;
+        width: 100%;
+    }
+
+    .step-label-inner {
+        max-width: 80px;
+        color: white;
     }
 
 }
@@ -260,4 +281,12 @@
 
 .MuiButton-containedPrimary {
     background-color: #48a89c !important;
+}
+
+@media (min-width: 960px) {
+    .step {
+        max-width: 150px;
+        position: relative;
+        margin: 0 -27%;
+    }
 }

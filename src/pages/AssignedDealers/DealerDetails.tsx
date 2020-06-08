@@ -80,42 +80,115 @@ export class DealerDetailsImpl extends React.PureComponent<
               }
               className="card-container"
             >
-              <div className="inventory-card">
+              <SubFormHeading>Distributor Details</SubFormHeading>
+              <Grid container>
                 {" "}
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Name:</span>
+                  {distDetails.name}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Account Name:</span>
+                  {distDetails.accountName}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">WhatsApp No.:</span>
+                  {distDetails.whatApp}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Email:</span>
+                  {distDetails.email}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Mobile:</span>
+                  {distDetails.mobile}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Dealer Avg Rating:</span>
+                  {distDetails.rating}
+                </Grid>
+              </Grid>
+              <SubFormHeading>Distributor Details</SubFormHeading>
+              <Grid container>
+                {" "}
+                <Grid
+                  item
+                  className="padding-6"
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  sm={12}
+                >
+                  <span className="description-text">Billing Address:</span>
+                  {distDetails.billingAddress}
+                </Grid>
+                <Grid
+                  item
+                  className="padding-6"
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  sm={12}
+                >
+                  <span className="description-text">Shipping Address:</span>
+                  {distDetails.shippingAddress}
+                </Grid>
+              </Grid>
+              <SubFormHeading>Bank and KYC Details</SubFormHeading>
+              <Grid container>
                 <div className="padding-6">
-                  {" "}
-                  {this.props.dealerDetails.name}
+                  <b>GST Number - 27AACCN1235323</b>
                 </div>
-                <div className="margin-10 dealer-card">
-                  <img
-                    src={this.props.dealerDetails.imageURL}
-                    alt="bike"
-                    className="dealer-image"
-                  />
-                  <div>
-                    <div className="padding-6">
-                      {" "}
-                      {this.props.dealerDetails.address}
-                    </div>
-                    <div className="padding-6">
-                      {" "}
-                      <span className="description-text">
-                        Contact Person
-                      </span>{" "}
-                      {this.props.dealerDetails.cPerson}
-                    </div>
-                    <div className="padding-6">
-                      {" "}
-                      <span className="description-text">Phone</span>{" "}
-                      {this.props.dealerDetails.phone}
-                    </div>
-                  </div>
-                </div>
-                <div className="padding-6">
-                  <span className="description-text">Dealer Since</span>{" "}
-                  {this.props.dealerDetails.mDate}
-                </div>
-              </div>
+                <br />
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Bank Name:</span>
+                  {distDetails.bankName}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">IFSC:</span>
+                  {distDetails.IFSC}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Account Number:</span>
+                  {distDetails.aaNum}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">IFSC:</span>
+                  Saving
+                </Grid>
+              </Grid>
+              <SubFormHeading>Inventory Purchased</SubFormHeading>
+              <SubFormHeading>Related Customers</SubFormHeading>{" "}
+              <Grid container>
+                {distDetails.custDetails.map((x) => {
+                  return (
+                    <React.Fragment>
+                      <Grid
+                        item
+                        className="padding-6"
+                        xs={12}
+                        md={6}
+                        lg={6}
+                        sm={6}
+                      >
+                        <span className="description-text">Name -</span>
+                        {x.custName}
+                      </Grid>
+                      <Grid
+                        item
+                        className="padding-6"
+                        xs={12}
+                        md={6}
+                        lg={6}
+                        sm={6}
+                      >
+                        <span className="description-text">Mob No. -</span>
+                        {x.mobileNumber}
+                      </Grid>
+                    </React.Fragment>
+                  );
+                })}
+              </Grid>
             </div>
           </Grid>
         </Grid>
@@ -217,4 +290,8 @@ const distDetails = {
   bankName: "HDFC Bank",
   IFSC: "HDFC0000646",
   aaNum: "3242353243",
+  custDetails: [
+    { custName: "Ramesh T", mobileNumber: "21323231" },
+    { custName: "Ramesh T", mobileNumber: "21323231" },
+  ],
 };

@@ -123,22 +123,27 @@ const UserCard = (props) => {
   return (
     <Grid item xs={12} md={6} sm={6}>
       <div className="card-container">
-        <Grid container className="padding-6">
+        <Grid container className="padding-6 align-center">
           <Grid xs={12} md={6} sm={6}>
+            <span className="description-text">Name:</span>
             {props.name}
           </Grid>
           <Grid xs={12} md={6} sm={6}>
+            <span className="description-text">Email:</span>
             {props.email}
           </Grid>
         </Grid>
-        <Grid container className="padding-6">
+        <Grid container className="padding-6 align-center">
           <Grid xs={12} md={4} sm={4}>
+            <span className="description-text">Mobile Number:</span>
             {props.mobileNumber}
           </Grid>
           <Grid xs={12} md={4} sm={4}>
+            <span className="description-text">Role:</span>
             {props.role}
           </Grid>
           <Grid xs={12} md={4} sm={4}>
+            <span className="description-text">Options:</span>
             <Edit onClick={() => props.handleEditModelOprn(props)} />{" "}
             <span style={{ padding: "10px" }} />
             <DeleteIcon /> <span style={{ padding: "10px" }} />

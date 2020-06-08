@@ -13,7 +13,10 @@ export const Stepper = (props: any) => {
               className={`step ${index === activeStep ? "active" : ""}`}
             >
               <StpperBG fill={index <= activeStep ? "#48a89c" : "#b5b5b5"} />
-              <div className="step-label">{step.label}</div>
+              <div className="step-label">
+                {" "}
+                <div className="step-label-inner">{step.label}</div>{" "}
+              </div>
             </div>
           );
         })}
@@ -32,19 +35,19 @@ export const Stepper = (props: any) => {
 const StpperBG = (props: any) => {
   return (
     <svg
-      width="100"
-      height="100"
-      viewBox="0 0 1090 620"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      width="150"
+      height="50"
+      viewBox="0 0 979 382"
+      fill="none"
     >
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
-        d="M788.834 43H0V52.8147L262.719 310.971L0 569.127V577H788.834V43Z"
+        d="M793 26H0V32.4207L161.991 191.599L0 350.777V356H793V26Z"
         fill={props.fill}
       />
-      <path d="M1090 310L784 578.468L784 41.5321L1090 310Z" fill={props.fill} />
+      <path d="M979 191L791.5 356.411V25.5891L979 191Z" fill={props.fill} />
     </svg>
   );
 };
