@@ -106,7 +106,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
             columns={columns}
             options={options as any}
           />
-          <Grid item={true} lg={3} xs={12} sm={12}>
+          <Grid item={true} lg={12} xs={12} sm={12}>
             <SubFormHeading>
               Expected Turnover / Revenue - 984532120{" "}
             </SubFormHeading>

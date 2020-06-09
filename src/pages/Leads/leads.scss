@@ -80,14 +80,12 @@
     overflow: scroll;
     padding: 0 25px;
     min-height: 200px;
-    min-width: 250px;
 
     .dealer-name {
         padding: 10px;
         border: 1px solid #d8d8d8;
         margin-bottom: 5px;
         font-size: 16px;
-        width: 100%;
     }
 }
 
@@ -101,12 +99,6 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-}
-
-.assign-dealer-modal {
-    .form-input {
-        margin-left: 20px;
-    }
 }
 
 .clickable {
@@ -134,6 +126,7 @@
 .negotitation-container {
     display: flex;
     flex-direction: column;
+    width: 100%;
 
     .negotitation-content {
         display: flex;

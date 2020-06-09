@@ -75,6 +75,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
       qty2: 10,
       qty3: 10,
       qty4: 10,
+      activeStepBuy: 0,
+      activeStepSell: 0,
     };
   }
 
@@ -108,12 +110,12 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     </div>
   );
 
-  public renderForm = (label) => {
+  public renderForm = (label, type) => {
     return (
       <div className="card-container no-hover">
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid xs={12} md={6} sm={6}>
+            <Grid item xs={12} md={6} sm={6}>
               <Select
                 className="r-select"
                 value={this.state.product1}
@@ -121,14 +123,14 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 options={products}
               />
             </Grid>
-            <Grid xs={12} md={4} sm={4}>
+            <Grid item xs={12} md={4} sm={4}>
               {this.renderValueManipulator("qty1")}
             </Grid>
           </div>
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid xs={12} md={6} sm={6}>
+            <Grid item xs={12} md={6} sm={6}>
               <Select
                 className="r-select"
                 value={this.state.product2}
@@ -136,14 +138,14 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 onChange={(v: any) => this.handleChange(v, "product2")}
               />{" "}
             </Grid>
-            <Grid xs={12} md={4} sm={4}>
+            <Grid item xs={12} md={4} sm={4}>
               {this.renderValueManipulator("qty2")}
             </Grid>
           </div>
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid xs={12} md={6} sm={6}>
+            <Grid item xs={12} md={6} sm={6}>
               <Select
                 className="r-select"
                 value={this.state.product3}
@@ -151,14 +153,14 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 onChange={(v: any) => this.handleChange(v, "product3")}
               />{" "}
             </Grid>
-            <Grid xs={12} md={4} sm={4}>
+            <Grid item xs={12} md={4} sm={4}>
               {this.renderValueManipulator("qty3")}
             </Grid>
           </div>
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid xs={12} md={6} sm={6}>
+            <Grid item xs={12} md={6} sm={6}>
               <Select
                 className="r-select"
                 value={this.state.product4}
@@ -166,7 +168,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 onChange={(v: any) => this.handleChange(v, "product4")}
               />{" "}
             </Grid>
-            <Grid xs={12} md={4} sm={4}>
+            <Grid item xs={12} md={4} sm={4}>
               {this.renderValueManipulator("qty4")}
             </Grid>
           </div>
@@ -175,7 +177,19 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
           <Button variant="contained" color="default">
             Cancel
           </Button>
-          <Button variant="contained" color="primary">
+          <Button
+            onClick={() => {
+              if (type === "sell") {
+                this.setState({
+                  activeStepSell: this.state.activeStepSell + 1,
+                });
+              } else {
+                this.setState({ activeStepBuy: this.state.activeStepBuy + 1 });
+              }
+            }}
+            variant="contained"
+            color="primary"
+          >
             {label}
           </Button>
         </div>
@@ -186,20 +200,27 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   public renderStepper = () => {
     return (
       <Stepper
+        activeStep={this.state.activeStepBuy}
         stepData={[
           {
             label: "Draft",
-            component: this.renderForm("Submit"),
+            component: this.renderForm("Submit", "buy"),
           },
           {
             label: "Submitted",
-            component: <SubmittedScreen />,
+            component: (
+              <SubmittedScreen
+                onClick={() =>
+                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
+                }
+              />
+            ),
           },
           {
             label: "PI Raised",
             component: (
               <Grid container className="align-center">
-                <Grid xs={12} md={4} lg={4}>
+                <Grid item xs={12} md={4} lg={4}>
                   <div className="card-container no-hover">
                     <div className="head-title padding-6 ">
                       Performance Invoice
@@ -221,20 +242,21 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                         10/02/2020
                       </div>
                     </div>
-                    <div className="padding-6">
+                    <div className="padding-6 invoce-add">
                       Billed to- GGFS Indiabulls, Lower Parel, Mumbai, MH
                       411093, India
                     </div>
-
                     <div className="invoice-table">
                       <div className="table-heads">
-                        {invoiceData.billHeads.map((name) => (
-                          <div className="heading">{name}</div>
+                        {invoiceData.billHeads.map((name, index) => (
+                          <div key={index} className="heading">
+                            {name}
+                          </div>
                         ))}
                       </div>
                       <div className="table-data">
-                        {invoiceData.billData.map((b) => (
-                          <div className="data-inner">
+                        {invoiceData.billData.map((b, index) => (
+                          <div key={index} className="data-inner">
                             <div className="data">{b.itemName}</div>
                             <div className="data">{b.unitCost}</div>
                             <div className="data">{b.qty}</div>
@@ -276,6 +298,19 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                               18}
                         </div>
                       </div>
+                    </div>{" "}
+                    <div className="align-center padding-6">
+                      <Button
+                        onClick={() =>
+                          this.setState({
+                            activeStepBuy: this.state.activeStepBuy + 1,
+                          })
+                        }
+                        variant="contained"
+                        color="primary"
+                      >
+                        Next
+                      </Button>
                     </div>
                   </div>
                 </Grid>
@@ -284,11 +319,27 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
           },
           {
             label: "Payment Details",
-            component: <PaymentDetailsScreen handleChange={this.hand} />,
+            component: (
+              <PaymentDetailsScreen
+                onClick={() =>
+                  this.setState({
+                    activeStepBuy: this.state.activeStepBuy + 1,
+                  })
+                }
+              />
+            ),
           },
           {
             label: "Dispatched",
-            component: <DispatchedScreen />,
+            component: (
+              <DispatchedScreen
+                onClick={() =>
+                  this.setState({
+                    activeStepBuy: this.state.activeStepBuy + 1,
+                  })
+                }
+              />
+            ),
           },
           { label: "Add Inventory", component: this.renderForm("Add") },
         ]}
@@ -346,22 +397,47 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   public renderSellStepper = () => {
     return (
       <Stepper
+        activeStep={this.state.activeStepSell}
         stepData={[
           {
             label: "Draft",
-            component: this.renderForm("Submit"),
+            component: this.renderForm("Submit", "sell"),
           },
           {
             label: "Submitted",
-            component: <SubmittedScreen />,
+            component: (
+              <SubmittedScreen
+                onClick={() => {
+                  this.setState({
+                    activeStepSell: this.state.activeStepSell + 1,
+                  });
+                }}
+              />
+            ),
           },
           {
             label: "Payment Details",
-            component: <PaymentDetailsScreen />,
+            component: (
+              <PaymentDetailsScreen
+                onClick={() => {
+                  this.setState({
+                    activeStepSell: this.state.activeStepSell + 1,
+                  });
+                }}
+              />
+            ),
           },
           {
             label: "Dispatched",
-            component: <DispatchedScreen />,
+            component: (
+              <DispatchedScreen
+                onClick={() => {
+                  this.setState({
+                    activeStepSell: this.state.activeStepSell + 1,
+                  });
+                }}
+              />
+            ),
           },
         ]}
       />
@@ -429,7 +505,7 @@ const data = [
     orderStatus: "Draft",
   },
 ];
-const DispatchedScreen = () => {
+const DispatchedScreen = (props) => {
   return (
     <div className="card-container">
       <div>Dispatched</div>
@@ -464,7 +540,12 @@ const DispatchedScreen = () => {
           <span className="description-text"> Shipping Date - </span>
           10/05/2020
         </Grid>
-      </Grid>
+      </Grid>{" "}
+      <div className="align-center padding-6">
+        <Button onClick={props.onClick} variant="contained" color="primary">
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
@@ -472,7 +553,7 @@ const DispatchedScreen = () => {
 const PaymentDetailsScreen = (props) => {
   return (
     <Grid container className="align-center">
-      <Grid xs={12} md={6} lg={6}>
+      <Grid item xs={12} md={6} lg={6}>
         <div className="card-container no-hover payment-mode">
           <div className="head-title">Payment Mode and Details</div>
           <div className="product-selection">
@@ -500,14 +581,14 @@ const PaymentDetailsScreen = (props) => {
               rows={4}
               variant="outlined"
               multiline={true}
-              className="form-input"
+              className="r-select"
             />
           </div>{" "}
           <div className="button-container">
             <Button variant="contained" color="default">
               Cancel
             </Button>
-            <Button variant="contained" color="primary">
+            <Button onClick={props.onClick} variant="contained" color="primary">
               Submit
             </Button>
           </div>
@@ -517,7 +598,7 @@ const PaymentDetailsScreen = (props) => {
   );
 };
 
-const SubmittedScreen = () => {
+const SubmittedScreen = (props) => {
   return (
     <div className="card-container">
       <Grid container={true}>
@@ -534,6 +615,11 @@ const SubmittedScreen = () => {
           <span className="description-text">Total -</span> 1742000
         </Grid>
       </Grid>
+      <div className="align-center padding-6">
+        <Button onClick={props.onClick} variant="contained" color="primary">
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

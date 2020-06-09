@@ -30,8 +30,8 @@ module.exports = {
   },
   output: {
     pathinfo: false,
-    filename: "static/js/bundle.js",
-    chunkFilename: "static/js/[name].chunk.js",
+    filename: `static/js/[name].[hash:8]${new Date().getTime()}.js`,
+    chunkFilename: `static/js/[name].[hash:8]${new Date().getTime()}.chunk.js`,
     publicPath: publicPath,
     devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/"),
@@ -154,7 +154,7 @@ module.exports = {
     // }),
     new webpack.DefinePlugin({
       "process.env": {
-        NODE_ENV: JSON.stringify('development'),
+        NODE_ENV: JSON.stringify("development"),
         SERVER_BASE_URL: JSON.stringify(process.env.SERVER_BASE_URL),
       },
     }),

@@ -251,7 +251,6 @@
 .r-select {
     min-width: 200px;
     margin: 10px;
-
 }
 
 .product-selection {
@@ -262,12 +261,9 @@
     flex-wrap: wrap;
 
     .r-select {
-        margin: 10px;
+        margin: 10px 0px;
     }
 
-    .MuiOutlinedInput-root {
-        margin: 13px;
-    }
 }
 
 .margin-10 {
@@ -289,4 +285,9 @@
         position: relative;
         margin: 0 -27%;
     }
+}
+
+.MuiFab-root {
+    background-color: #48a89c !important;
+
 }

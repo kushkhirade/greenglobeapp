@@ -10,9 +10,19 @@ export const Stepper = (props: any) => {
             <div
               key={index}
               onClick={() => setActiveStep(index)}
-              className={`step ${index === activeStep ? "active" : ""}`}
+              className={`step ${
+                index === activeStep || index === props.activeStep
+                  ? "active"
+                  : ""
+              }`}
             >
-              <StpperBG fill={index <= activeStep ? "#48a89c" : "#b5b5b5"} />
+              <StpperBG
+                fill={
+                  index <= activeStep || index <= props.activeStep
+                    ? "#48a89c"
+                    : "#b5b5b5"
+                }
+              />
               <div className="step-label">
                 {" "}
                 <div className="step-label-inner">{step.label}</div>{" "}
@@ -23,7 +33,9 @@ export const Stepper = (props: any) => {
       </div>
 
       <div className="stepper-content">
-        {props.stepData[activeStep].component}
+        {props.activeStep && props.activeStep < props.stepData.length
+          ? props.stepData[props.activeStep].component
+          : props.stepData[activeStep].component}
         {/* {props.stepData.length - 1 > activeStep && (
           <button onClick={() => setActiveStep(activeStep + 1)}>Next</button>
         )} */}
@@ -42,8 +54,8 @@ const StpperBG = (props: any) => {
       fill="none"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M793 26H0V32.4207L161.991 191.599L0 350.777V356H793V26Z"
         fill={props.fill}
       />

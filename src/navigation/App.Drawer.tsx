@@ -63,7 +63,7 @@ export const routes = [
   {
     hidden: true,
     path: "/lead/add-new-lead",
-    title: "Add New Lead",
+    title: "Lead Details - Customer",
   },
   {
     hidden: true,

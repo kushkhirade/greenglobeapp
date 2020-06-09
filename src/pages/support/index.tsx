@@ -64,6 +64,7 @@ export class Support extends React.PureComponent<{}, { isModalOpen: boolean }> {
               >
                 Attach File
               </Button>
+              <span style={{ padding: "5px" }} />
               <Button variant="contained" color="primary">
                 Submit
               </Button>

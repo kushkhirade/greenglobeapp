@@ -234,7 +234,7 @@ export class AddNewLeadImpl extends React.PureComponent<
   // Closed
   renderClosedTab = () => {
     return (
-      <div>
+      <div style={{ width: "100%" }}>
         <TableWithGrid
           title={"Products Sold"}
           data={[
@@ -545,7 +545,7 @@ export class AddNewLeadImpl extends React.PureComponent<
         <div className="card-container no-hover add-leads-page">
           {this.renderModal()}
           <Typography variant="h5" color="inherit" noWrap={true}>
-            Add New Lead
+            Lead Details - Customer{" "}
           </Typography>
           <div className="">
             {!isDealer() ? (

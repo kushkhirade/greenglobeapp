@@ -200,7 +200,7 @@ export class LeadsImpl extends React.Component<
       ),
     },
     {
-      tabName: "LeadType",
+      tabName: "Lead Type",
     },
     {
       tabName: "Sub Lead Type",

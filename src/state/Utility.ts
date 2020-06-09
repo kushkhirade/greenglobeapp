@@ -45,3 +45,7 @@ export function saveLoggedInUserData(data) {
 export function isDealer() {
   return store.getState().users.get("currentUser").isDealer;
 }
+
+export function isLocalhost() {
+  return location.host.includes("localhost");
+}
