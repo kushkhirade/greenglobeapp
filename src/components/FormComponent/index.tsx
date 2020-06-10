@@ -84,7 +84,12 @@ export const FormComponent = (props: any) => {
           <Button variant="contained" onClick={props.onCancel}>
             {props.cancelTitle || "Cancel"}
           </Button>
-          <Button variant="contained" color="primary" type="submit">
+          <Button
+            onClick={props.onSubmit}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
             {props.submitTitle || "Submit"}
           </Button>
         </div>

@@ -32,14 +32,14 @@ export class InventoryImpl extends React.PureComponent<
     return (
       <BaseModal
         open={this.state.openEditModal}
-        className="support-modal"
-        contentClassName="support-content"
+        className="inventory-modal"
+        contentClassName="inventory-modal"
         onClose={() => this.setState({ openEditModal: false })}
       >
-        <Grid container spacing={1} className="modal-content">
+        <Grid container spacing={1} className="">
           <Grid item className="modal-margin" xs={12} md={12}>
             <div>
-              <img src={currentItem.imageURL} height="100px" alt="dta" />
+              <img src={currentItem.imageURL} height="200px" alt="dta" />
               <div className="description-text">Product Images</div>
             </div>
             <div className="text-left">
@@ -132,7 +132,7 @@ const InventoryCards = (props: any) => {
                 className="inv-image"
               />
             </div>
-            <div>
+            <div className="text-left" >
               <div className="padding-6">
                 {" "}
                 <span className="description-text">Model: </span> {inData.model}

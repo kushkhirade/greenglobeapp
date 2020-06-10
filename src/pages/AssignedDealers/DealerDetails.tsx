@@ -237,6 +237,7 @@ export class DealerDetailsImpl extends React.PureComponent<
             >
               View Leads
             </Button>
+            <span style={{ padding: "4px" }} />
             <Button
               onClick={() => this.props.history.push("/inventory")}
               variant="contained"
@@ -244,7 +245,8 @@ export class DealerDetailsImpl extends React.PureComponent<
               type="submit"
             >
               View Inventory
-            </Button>
+            </Button>{" "}
+            <span style={{ padding: "4px" }} />
             <Button
               onClick={() => this.props.history.push("/customers")}
               variant="contained"

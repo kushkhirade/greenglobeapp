@@ -87,11 +87,11 @@ const products = [
 
 export class AddNewLeadImpl extends React.PureComponent<
   IAddNewLeadProps,
-  { openEditModal: boolean; activeTab: number }
+  { openEditModal: boolean; activeTab: number; activeStep: number }
 > {
   constructor(props: IAddNewLeadProps) {
     super(props);
-    this.state = { openEditModal: false, activeTab: 0 };
+    this.state = { openEditModal: false, activeTab: 0, activeStep: 0 };
   }
   // Basic Details Form
   public renderForm = () => {
@@ -127,6 +127,9 @@ export class AddNewLeadImpl extends React.PureComponent<
         <SubFormHeading>Vehicle Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
+            this.setState({
+              activeStep: this.state.activeStep + 1,
+            });
             console.log(">> v", v);
           }}
           formModel="leadForm"
@@ -171,6 +174,9 @@ export class AddNewLeadImpl extends React.PureComponent<
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
+            this.setState({
+              activeStep: this.state.activeStep + 1,
+            });
           }}
           formModel="leadForm"
           hasSubmit={true}
@@ -219,6 +225,9 @@ export class AddNewLeadImpl extends React.PureComponent<
         </div>{" "}
         <FormComponent
           onSubmit={(v: any) => {
+            this.setState({
+              activeStep: this.state.activeStep + 1,
+            });
             console.log(">> v", v);
           }}
           submitTitle="Next"
@@ -269,6 +278,9 @@ export class AddNewLeadImpl extends React.PureComponent<
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
+            this.setState({
+              activeStep: this.state.activeStep + 1,
+            });
           }}
           formModel="leadForm"
           hasSubmit={true}
@@ -500,6 +512,7 @@ export class AddNewLeadImpl extends React.PureComponent<
   renderStepper = () => {
     return (
       <Stepper
+        activeStep={this.state.activeStep}
         stepData={[
           {
             label: "Basic Details",
@@ -526,7 +539,7 @@ export class AddNewLeadImpl extends React.PureComponent<
     );
   };
 
-  public tabData = [
+  public tabData = () => [
     {
       tabName: "Details",
       component: this.renderStepper(),
@@ -550,6 +563,7 @@ export class AddNewLeadImpl extends React.PureComponent<
           <div className="">
             {!isDealer() ? (
               <Stepper
+                activeStep={this.state.activeStep}
                 stepData={[
                   {
                     label: "Draft",
@@ -564,10 +578,14 @@ export class AddNewLeadImpl extends React.PureComponent<
                           hasSubmit={false}
                           options={leadDealer}
                         />
-                        <SubFormHeading>Lead Basic Details</SubFormHeading>
+                        <SubFormHeading>Address Details</SubFormHeading>
                         <FormComponent
                           onSubmit={(v: any) => {
                             console.log(">> v", v);
+                            console.log('>> this', this);
+                            this.setState({
+                              activeStep: this.state.activeStep + 1,
+                            });
                           }}
                           formModel="userForm"
                           hasSubmit={true}
@@ -588,6 +606,9 @@ export class AddNewLeadImpl extends React.PureComponent<
                         </SubFormHeading>
                         <FormComponent
                           onSubmit={(v: any) => {
+                            this.setState({
+                              activeStep: this.state.activeStep + 1,
+                            });
                             console.log(">> v", v);
                           }}
                           formModel="userForm"
@@ -604,7 +625,7 @@ export class AddNewLeadImpl extends React.PureComponent<
                 ]}
               />
             ) : (
-              <Tabs tabsData={this.tabData} />
+              <Tabs tabsData={this.tabData()} />
             )}
           </div>
         </div>

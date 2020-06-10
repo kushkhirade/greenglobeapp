@@ -17,6 +17,7 @@ import {
   Pages,
   Payment,
   People,
+  Share,
   PersonPin,
 } from "@material-ui/icons";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -52,7 +53,7 @@ export const routes = [
     path: "/assign-dealers",
     hideForDealer: true,
     title: "Assigned Dealers",
-    icon: () => <Pages />,
+    icon: () => <Share />,
   },
   { path: "/customers", title: "Customer", icon: () => <People /> },
   {

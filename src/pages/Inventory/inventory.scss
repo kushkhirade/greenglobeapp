@@ -23,35 +23,7 @@
 
 }
 
-.support-modal {
-    .modal-content {
-        padding: 0;
-    }
-
-    img {
-        border: 3px solid;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-
-    .modal-margin {
-        display: flex;
-        flex-direction: column;
-        padding: 20px !important;
-
-    }
-
-    .text-left {
-        margin-top: 20px;
-        border-top: 1px solid;
-        padding-top: 11px;
-
-        .head {
-            text-align: center;
-        }
-    }
-
-    .description-text {
-        text-align: center;
-    }
+.text-left {
+    text-align: left;
+    padding: 10px;
 }

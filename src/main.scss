@@ -64,15 +64,14 @@
     justify-content: center;
 
     .tab-button {
-        padding: 5px 0px;
-        margin: 2px;
+        padding: 10px 10px;
         min-width: 100px;
         text-align: center;
-        border-radius: 7px;
-        border: 2px solid #48a89c;
+        border-bottom: 5px solid #48a89c;
         color: black;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 300;
+        background-color: #e4e4e4;
 
         &:hover {
             cursor: pointer;

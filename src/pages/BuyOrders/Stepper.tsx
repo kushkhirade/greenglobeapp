@@ -1,48 +1,79 @@
 import * as React from "react";
+import { Button } from "@material-ui/core";
 
-export const Stepper = (props: any) => {
-  const [activeStep, setActiveStep] = React.useState(0);
-  return (
-    <div className="stepper-container">
-      <div className="step-container">
-        {props.stepData.map((step: any, index: number) => {
-          return (
-            <div
-              key={index}
-              onClick={() => setActiveStep(index)}
-              className={`step ${
-                index === activeStep || index === props.activeStep
-                  ? "active"
-                  : ""
-              }`}
-            >
-              <StpperBG
-                fill={
-                  index <= activeStep || index <= props.activeStep
-                    ? "#48a89c"
-                    : "#b5b5b5"
-                }
-              />
-              <div className="step-label">
-                {" "}
-                <div className="step-label-inner">{step.label}</div>{" "}
+export class Stepper extends React.Component<any, any> {
+  state = { activeStep: 0, stepData: this.props.stepData };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.activeStep && nextState.activeStep !== nextProps.activeStep) {
+      this.setState({
+        activeStep: nextProps.activeStep,
+      });
+      return true;
+    }
+    if (this.props.identifier !== nextProps.identifier) {
+      this.setState({
+        activeStep: nextProps.activeStep || 0,
+      });
+      return true;
+    }
+    if (this.state.activeStep !== nextState.activeStep) {
+      return true;
+    }
+    return false;
+  }
+
+  render() {
+    const {
+      props,
+      state: { activeStep },
+    } = this;
+    return (
+      <div className="stepper-container">
+        <div className="step-container">
+          {props.stepData.map((step: any, index: number) => {
+            return (
+              <div
+                key={index}
+                onClick={() => {
+                  if (this.props.activeStep) {
+                    return;
+                  }
+                  this.setState({ activeStep: index });
+                }}
+                className={`step ${
+                  index === activeStep || index === props.activeStep
+                    ? "active"
+                    : ""
+                }`}
+              >
+                <StpperBG
+                  fill={
+                    index <= activeStep || index <= props.activeStep
+                      ? "#48a89c"
+                      : "#b5b5b5"
+                  }
+                />
+                <div className="step-label">
+                  {" "}
+                  <div className="step-label-inner">{step.label}</div>{" "}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="stepper-content">
-        {props.activeStep && props.activeStep < props.stepData.length
-          ? props.stepData[props.activeStep].component
-          : props.stepData[activeStep].component}
-        {/* {props.stepData.length - 1 > activeStep && (
+            );
+          })}
+        </div>
+        <div className="stepper-content">
+          {props.activeStep && props.activeStep < props.stepData.length
+            ? props.stepData[props.activeStep].component
+            : props.stepData[activeStep].component}
+          {/* {props.stepData.length - 1 > activeStep && (
           <button onClick={() => setActiveStep(activeStep + 1)}>Next</button>
         )} */}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 const StpperBG = (props: any) => {
   return (

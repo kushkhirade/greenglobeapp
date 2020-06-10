@@ -12,8 +12,6 @@ import { connect } from "react-redux";
 import { Redirect, withRouter } from "react-router-dom";
 import * as AppActionCreators from "../actions/App.Actions";
 import { IApplicationProps } from "../actions/App.Actions";
-import { AlertDialog } from "../alert/Alert";
-import { getMailitems, getMaterialChartItems } from "../selectors";
 import SpinnerDialog from "../spinner/Spinner";
 import { Alert } from "../state/Alert";
 import { AppState, isAuthenticated } from "../state/AppState";
@@ -78,12 +76,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
 
   private renderAlert(): JSX.Element {
     if (this.props.utility.alert) {
-      return (
-        <AlertDialog
-          handleClose={AppActionCreators.closePopup}
-          data={this.props.utility.alert}
-        />
-      );
+      return <div></div>;
     }
 
     return null;
@@ -182,8 +175,6 @@ const mapStateToProps = (state: AppState) => ({
   authentication: state.authentication,
   users: state.users,
   materials: state.materials,
-  materialCharts: getMaterialChartItems(state),
-  mail: getMailitems(state),
 });
 
 export default withRouter(

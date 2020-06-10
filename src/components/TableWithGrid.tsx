@@ -29,7 +29,12 @@ export class TableWithGrid extends React.PureComponent<
             title={title}
             data={data}
             columns={columns}
-            options={options as any}
+            options={
+              {
+                ...options,
+                ...{ search: false, selectableRows: false },
+              } as any
+            }
           />
         </Grid>
       </Grid>
