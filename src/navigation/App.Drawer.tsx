@@ -87,6 +87,12 @@ export const routes = [
     hidden: true,
     icon: () => <Chat />,
   },
+  {
+    path: "/buy-order/add-new-order",
+    title: "Orders",
+    hidden: true,
+    icon: () => <Chat />,
+  },
 ];
 
 class AppDrawer extends React.Component<IAppDrawer, {}> {

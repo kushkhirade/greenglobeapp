@@ -219,6 +219,10 @@
     }
 }
 
+.hidden {
+    display: none;
+}
+
 .step {
     max-width: 150px;
     position: relative;
@@ -289,4 +293,18 @@
 .MuiFab-root {
     background-color: #48a89c !important;
 
+}
+
+.ct-toast-success,
+.ct-toast-error,
+.ct-toast-loading,
+.ct-toast-warning {
+    font-family: Raleway;
+}
+
+.sort-container {
+    display: flex;
+    justify-content: center;
+    height: 42px;
+    align-items: center;
 }

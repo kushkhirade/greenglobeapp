@@ -1,20 +1,24 @@
+import { Grid } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
+import { BaseModal } from "src/components/BaseModal";
+import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./inventory.scss";
-import { BaseModal } from "src/components/BaseModal";
-import { Grid } from "@material-ui/core";
-import { Tabs } from "src/components/Tabs";
 export interface IInventoryProps {}
 
 export class InventoryImpl extends React.PureComponent<
   IInventoryProps,
-  { currentItem: any; openEditModal: boolean }
+  { currentItem: any; openEditModal: boolean; data: any }
 > {
   constructor(props: IInventoryProps) {
     super(props);
-    this.state = { currentItem: null, openEditModal: false };
+    this.state = {
+      currentItem: null,
+      openEditModal: false,
+      data: data.inventory.data,
+    };
   }
 
   public renderModal = () => {
@@ -93,12 +97,12 @@ export class InventoryImpl extends React.PureComponent<
     return (
       <AppBar>
         {this.renderModal()}
-        <Tabs tabsData={this.tabData} />
+        <Tabs hasSort={true} tabsData={this.tabData}  />
         <div className="inventory-container">
           <Grid container>
             <InventoryCards
               onClickItem={this.handleItemClick}
-              data={data.inventory.data}
+              data={this.state.data}
             />
           </Grid>
         </div>
@@ -132,7 +136,7 @@ const InventoryCards = (props: any) => {
                 className="inv-image"
               />
             </div>
-            <div className="text-left" >
+            <div className="text-left">
               <div className="padding-6">
                 {" "}
                 <span className="description-text">Model: </span> {inData.model}

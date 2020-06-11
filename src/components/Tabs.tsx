@@ -1,8 +1,11 @@
 import * as React from "react";
 import "./resuableComponent.scss";
+import { SortComponent } from "./Sort";
 
 export interface TabsProps {
   tabsData: any;
+  onSortChange?: (value) => void;
+  hasSort?: boolean;
 }
 
 export class Tabs extends React.Component<
@@ -16,6 +19,10 @@ export class Tabs extends React.Component<
       activeTab: tabData,
       activeTabIndex: index,
     });
+  };
+
+  handleSortChange = (value) => {
+    this.props.onSortChange && this.props.onSortChange(value);
   };
 
   public render() {
@@ -38,6 +45,15 @@ export class Tabs extends React.Component<
               </div>
             );
           })}
+          {this.props.hasSort && (
+            <SortComponent
+              onChange={this.handleSortChange}
+              options={[
+                { label: "Assending", value: "asc" },
+                { label: "Descending", value: "dsc" },
+              ]}
+            />
+          )}
         </div>
         {
           this.props.tabsData.find(

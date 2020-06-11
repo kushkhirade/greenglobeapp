@@ -1,8 +1,9 @@
-import { Model } from "./Helpers";
-import { Alert } from "./Alert";
-import { Spinner } from "./Spinner";
+import cogoToast from "cogo-toast";
 import { actions } from "react-redux-form";
 import { store } from "src/store/Store";
+import { Alert } from "./Alert";
+import { Model } from "./Helpers";
+import { Spinner } from "./Spinner";
 
 export interface IUtility {
   drawerOpen?: boolean;
@@ -15,6 +16,10 @@ export const UtilityModel = Model<IUtility>({
   alert: null,
   spinner: null,
 });
+
+export interface IHistory {
+  push: (path: string) => void;
+}
 
 export class Utility extends UtilityModel {
   public static DRAWER_OPEN = "drawerOpen";
@@ -48,4 +53,19 @@ export function isDealer() {
 
 export function isLocalhost() {
   return location.host.includes("localhost");
+}
+
+export function showNotification(content, type, successMsg = "Done") {
+  if (type === "suceess") {
+    cogoToast.success(content);
+  }
+  if (type === "error") {
+    cogoToast.error(content);
+  }
+  if (type === "warning") {
+    cogoToast.success(content);
+  }
+  if (type === "loading") {
+    cogoToast.loading(content).then(() => cogoToast.success(successMsg))
+  }
 }

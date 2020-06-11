@@ -82,9 +82,9 @@ export const options = [
     type: "text",
   },
   {
-    label: "WhatApp Number",
-    model: ".whatAppNumber",
-    type: "number",
+    label: "WhatsApp Number",
+    model: ".whatsAppNumber",
+    type: "text",
   },
 ];
 
@@ -143,9 +143,9 @@ export const leadDealer = [
     type: "text",
   },
   {
-    label: "WhatApp Number",
-    model: ".whatAppNumber",
-    type: "number",
+    label: "WhatsApp Number",
+    model: ".whatsAppNumber",
+    type: "text",
   },
   {
     label: "Lead Type",

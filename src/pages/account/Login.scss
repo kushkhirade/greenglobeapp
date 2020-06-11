@@ -48,4 +48,20 @@
     padding: 10px;
     font-size: 13px;
     color: #1592af;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.forgot-password-text {
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+
+.error {
+    font-size: 12px;
+    color: red;
+    margin-top: -6px;
+    margin-bottom: 25px;
 }

@@ -23,18 +23,13 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
       <AppBar>
         <div className="cards-main customer-card">
           <Grid container={true}>
-            <CustomerList customerData={data.customers.data} />
+            <CustomerList
+              onClick={() =>
+                this.props.history.push("/customer/add-new-customer")
+              }
+              customerData={data.customers.data}
+            />
           </Grid>
-          <span
-            style={{ position: "absolute", right: 20, bottom: 20 }}
-            onClick={() =>
-              this.props.history.push("/customer/add-new-customer")
-            }
-          >
-            <Fab color="secondary" aria-labelledby="add-ticket">
-              <Add />
-            </Fab>
-          </span>
         </div>
       </AppBar>
     );
@@ -50,25 +45,30 @@ export const Customers = withRouter(
 const CustomerList = (props: any) => {
   return props.customerData.map((customerData: any, index: any) => {
     return (
-      <div key={index} className="card-container ">
+      <div onClick={props.onClick} key={index} className="card-container ">
         <Grid container className="padding-15 align-left">
           <Grid item className="bold-font padding-6 center" xs={6} md={12}>
-            <PersonPin /> {customerData.firstName}
+            <PersonPin /> <span style={{ padding: "5px" }} />
+            {customerData.firstName}
           </Grid>
           <Grid className="bold-fon padding-6 centert" item xs={6} md={12}>
-            <Phone /> {customerData.mobileNumber}
+            <Phone /> <span style={{ padding: "5px" }} />
+            {customerData.mobileNumber}
           </Grid>
         </Grid>
         <Grid container className="padding-15 align-left">
           <Grid className="padding-6" item xs={6} md={12}>
-            Purchased Product:
+            <span className="description-text"> Purchased Product:</span>
             {customerData.productPurchased}
           </Grid>
-          <Grid className="padding-6" item xs={6} md={12}>
-            Dealer Rating:
-          </Grid>{" "}
-          <Grid className="padding-6" item xs={6} md={12}>
-            Dealer Rating:
+          <Grid
+            className="padding-6 align-center"
+            style={{ justifyContent: "flex-start" }}
+            item
+            xs={6}
+            md={12}
+          >
+            <span className="description-text">Dealer Rating:</span>
             <Rating
               readOnly
               precision={0.5}

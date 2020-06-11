@@ -18,6 +18,8 @@ import { AppState, isAuthenticated } from "../state/AppState";
 import AppDrawer, { routes } from "./App.Drawer";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 //#endregion
+import ButterToast from "butter-toast";
+
 import "./main.css";
 import { styles } from "./styles";
 const classNames = require("classnames");
@@ -160,6 +162,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     }
     return (
       <div className={classes.root}>
+        <ButterToast />
         {this.renderAppBar()}
         {this.renderDrawer()}
         <div className="page-base"> {this.props.children}</div>

@@ -117,59 +117,21 @@ export class AddNewCustomerImpl extends React.PureComponent<
               <Grid item xs={12} md={6} sm={12} lg={6}>
                 <div className="card-container">
                   <Grid container>
-                    <Grid item xs={12} lg={3} sm={3} md={3}>
+                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
                       <span className="description-text">Opportunity Name</span>
+                      <br /> {x.opp}
                     </Grid>
-                    <Grid item xs={12} lg={3} sm={3} md={3}>
+                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
                       <span className="description-text">Stage</span>
+                      <br /> {x.stage}
                     </Grid>
-                    <Grid item xs={12} lg={3} sm={3} md={3}>
+                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
                       <span className="description-text">Amount</span>
+                      <br /> {x.amount}
                     </Grid>
-                    <Grid item xs={12} lg={3} sm={3} md={3}>
+                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
                       <span className="description-text">Close Date</span>
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid
-                      className="padding-6"
-                      item
-                      xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
-                    >
-                      {x.opp}
-                    </Grid>
-                    <Grid
-                      className="padding-6"
-                      item
-                      xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
-                    >
-                      {x.stage}
-                    </Grid>
-                    <Grid
-                      className="padding-6"
-                      item
-                      xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
-                    >
-                      {x.amount}
-                    </Grid>
-                    <Grid
-                      className="padding-6"
-                      item
-                      xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
-                    >
-                      {x.date}
+                      <br /> {x.date}
                     </Grid>
                   </Grid>
                 </div>

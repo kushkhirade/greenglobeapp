@@ -1,16 +1,15 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import data from "../../data";
-import AppBar from "src/navigation/App.Bar";
-import Typography from "@material-ui/core/Typography";
-import { Grid, Button, Fab } from "@material-ui/core";
-import { Edit, PersonPin, Phone, Add } from "@material-ui/icons";
-import "./rtoProcess.scss";
-import { BaseModal } from "src/components/BaseModal";
+import { Button, Fab, Grid } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import { Tabs } from "src/components/Tabs";
+import { Add, Edit, PersonPin, Phone } from "@material-ui/icons";
+import * as React from "react";
+import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import { BaseModal } from "src/components/BaseModal";
+import { Tabs } from "src/components/Tabs";
+import AppBar from "src/navigation/App.Bar";
+import data from "../../data";
+import "./rtoProcess.scss";
 
 export interface IRTOProcessProps {
   history: {
@@ -179,7 +178,7 @@ const RTOList = (props: any) => {
           <div className="rto-card-title">{rtoData.title}</div>
           <Grid key={index} container className="padding-6 align-left">
             <Grid item className="bold-font center" xs={6} md={6}>
-              <PersonPin /> {rtoData.name}
+              <PersonPin /> {rtoData.fullname}
             </Grid>
             <Grid className="bold-fon centert" item xs={6} md={6}>
               <Phone /> {rtoData.phone}

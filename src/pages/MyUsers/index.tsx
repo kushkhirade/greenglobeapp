@@ -46,9 +46,9 @@ const userFormOptions = [
     model: ".email",
   },
   {
-    label: "WhatApp Number",
+    label: "WhatsApp Number",
     type: "text",
-    model: ".whatappNumber",
+    model: ".whatsappNumber",
   },
   {
     label: "Role",

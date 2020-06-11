@@ -219,7 +219,7 @@ export class LeadsImpl extends React.Component<
         {this.renderAssignDealerModal()}
         <div className="leads">
           {isDealer() ? (
-            <Tabs tabsData={this.tabDataForDealer} />
+            <Tabs tabsData={this.tabDataForDealer} hasSort={true} />
           ) : (
             <React.Fragment>
               <Tabs tabsData={this.tabData} />

@@ -14,8 +14,11 @@ const supportData = [
   },
 ];
 
-export class Support extends React.PureComponent<{}, { isModalOpen: boolean }> {
-  public state = { isModalOpen: false };
+export class Support extends React.PureComponent<
+  {},
+  { fileName: string; isModalOpen: boolean }
+> {
+  public state = { fileName: "", isModalOpen: false };
 
   public render() {
     return (
@@ -31,6 +34,7 @@ export class Support extends React.PureComponent<{}, { isModalOpen: boolean }> {
                   {sup.title}
                 </div>
                 <div className="desc">{sup.desc}</div>
+                <div className="view-attachment">View Attachment</div>
               </div>
             </Grid>
           ))}
@@ -57,12 +61,23 @@ export class Support extends React.PureComponent<{}, { isModalOpen: boolean }> {
               rowsMax={4}
               variant="outlined"
             />
+            <div style={{ maxWidth: "300px" }} className="description-text">
+              {this.state.fileName}
+            </div>
             <div className="button-container">
               <Button
-                onClick={() => this.setState({ isModalOpen: false })}
+                // onClick={() => this.setState({ isModalOpen: false })}
                 variant="contained"
               >
-                Attach File
+                <input
+                  onChange={(e) =>
+                    this.setState({ fileName: e.target.files[0].name })
+                  }
+                  id="attachFile"
+                  className="hidden"
+                  type="file"
+                />
+                <label htmlFor="attachFile">Attach File</label>
               </Button>
               <span style={{ padding: "5px" }} />
               <Button variant="contained" color="primary">

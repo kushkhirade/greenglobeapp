@@ -72,6 +72,8 @@ import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
 import { isLoggedIn, saveLoggedInUserData } from "./state/Utility";
 import { saveLoggedInUserDetails } from "./actions/App.Actions";
+import { AddNewOrder } from "./pages/BuyOrders/AddNewOrder";
+import { ForgotPassword } from "./pages/account/ForgotPassword";
 
 const Loader = () => (
   <div className="loader-main">
@@ -112,6 +114,7 @@ class App extends React.Component {
           <React.Suspense fallback={<Loader />}>
             <Switch>
               <Route path="/" exact component={LoginScreen} />
+              <Route path="/forgot-password" exact component={ForgotPassword} />
               <ProtectedRoute path="/home" component={HomePage} />
               <ProtectedRoute path="/inventory" component={Inventory} />
               <ProtectedRoute path="/leads" component={Leads} />
@@ -135,6 +138,10 @@ class App extends React.Component {
               />
               <ProtectedRoute path="/rto-process" component={RTOProcess} />
               <ProtectedRoute path="/buy-orders" component={BuyOrders} />
+              <ProtectedRoute
+                path="/buy-order/add-new-order"
+                component={AddNewOrder}
+              />
               <ProtectedRoute
                 path="/communication"
                 component={Communications}

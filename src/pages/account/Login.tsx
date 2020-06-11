@@ -53,7 +53,12 @@ const LoginScreenImpl = (props: any) => {
               placeholder="Password"
             />
           </div>
-          <div className="forgot-password">Forgot Password ?</div>
+          <div
+            onClick={() => props.history.push("/forgot-password")}
+            className="forgot-password"
+          >
+            Forgot Password ?
+          </div>
           <div>
             <button onClick={handleLogin} className="login-button">
               Login

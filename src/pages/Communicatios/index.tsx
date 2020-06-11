@@ -18,10 +18,10 @@ import "./communications.scss";
 import { StyledRadioButton } from "./StyledRadioButton";
 export interface ICommunicationsProps {}
 export const colourOptions = [
-  { value: "ocean", label: "Ocean", color: "#00B8D9", isFixed: true },
-  { value: "blue", label: "Blue", color: "#0052CC", isDisabled: true },
+  { value: "ocean", label: "Ocean", color: "#00B8D9" },
+  { value: "blue", label: "Blue", color: "#0052CC" },
   { value: "purple", label: "Purple", color: "#5243AA" },
-  { value: "red", label: "Red", color: "#FF5630", isFixed: true },
+  { value: "red", label: "Red", color: "#FF5630" },
   { value: "orange", label: "Orange", color: "#FF8B00" },
   { value: "yellow", label: "Yellow", color: "#FFC400" },
   { value: "green", label: "Green", color: "#36B37E" },
@@ -109,12 +109,13 @@ export class CommunicationsImpl extends React.Component<
           label="Enter Message"
           className="form-input"
         />
+        <SubFormHeading>Recipients Selected</SubFormHeading>
         <div className="selected-customer-list">
           {this.state.customers.map((custData) => {
             return (
               <div className="customer-row">
                 {custData.label}{" "}
-                <span>
+                <span style={{ paddingLeft: "5px" }}>
                   <CancelIcon />
                 </span>
               </div>
@@ -198,7 +199,7 @@ export class CommunicationsImpl extends React.Component<
         <div style={{ width: "100%", marginTop: "20px" }}>
           <Select
             isMulti
-            placeholder="Select Customers"
+            placeholder="Search Recipient"
             name="customers"
             options={colourOptions}
             className="basic-multi-select"

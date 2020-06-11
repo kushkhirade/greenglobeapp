@@ -23,6 +23,7 @@ import {
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
+import { GSelect } from "src/components/GSelect";
 
 const detailsObj = [
   {
@@ -85,7 +86,7 @@ const products = [
   },
 ];
 
-export class AddNewLeadImpl extends React.PureComponent<
+export class AddNewLeadImpl extends React.Component<
   IAddNewLeadProps,
   { openEditModal: boolean; activeTab: number; activeStep: number }
 > {
@@ -160,17 +161,20 @@ export class AddNewLeadImpl extends React.PureComponent<
         <SubFormHeading style={{ textAlign: "center" }}>
           Documents Required for RTO
         </SubFormHeading>
-        <UploadContainer heading="Original R.C. Book" />
-        <UploadContainer heading="Bank NOC In case of Hypothecation" />
-        <UploadContainer heading="Valid Insurance Photocopy" />
-        <UploadContainer heading="Permit" />
-        <UploadContainer heading="Tax" />
-        <UploadContainer heading="Passing" />
+        <UploadContainer valKey={1} heading="Original R.C. Book" />
+        <UploadContainer
+          valKey={2}
+          heading="Bank NOC In case of Hypothecation"
+        />
+        <UploadContainer valKey={3} heading="Valid Insurance Photocopy" />
+        <UploadContainer valKey={4} heading="Permit" />
+        <UploadContainer valKey={5} heading="Tax" />
+        <UploadContainer valKey={6} heading="Passing" />
         <SubFormHeading style={{ textAlign: "center" }}>
           Documents Required Loan
         </SubFormHeading>
-        <UploadContainer heading="Aadhaar Card" />
-        <UploadContainer heading="PAN Card" />{" "}
+        <UploadContainer valKey={7} heading="Aadhaar Card" />
+        <UploadContainer valKey={8} heading="PAN Card" />{" "}
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
@@ -428,14 +432,14 @@ export class AddNewLeadImpl extends React.PureComponent<
         <Grid container spacing={4}>
           <div className="product-selection">
             <Grid xs={12} md={6} sm={6}>
-              <Select
+              <GSelect
                 className="r-select"
                 placeholder="Subject"
                 options={products}
               />
             </Grid>
             <Grid xs={12} md={4} sm={4}>
-              <Select
+              <GSelect
                 className="r-select"
                 placeholder="Subject"
                 options={products}
@@ -446,14 +450,14 @@ export class AddNewLeadImpl extends React.PureComponent<
         <Grid container spacing={4}>
           <div className="product-selection">
             <Grid xs={12} md={6} sm={6}>
-              <Select
+              <GSelect
                 className="r-select"
                 placeholder="Rating"
                 options={products}
               />
             </Grid>
             <Grid xs={12} md={4} sm={4}>
-              <Select
+              <GSelect
                 className="r-select"
                 placeholder="Status"
                 options={products}
@@ -464,14 +468,14 @@ export class AddNewLeadImpl extends React.PureComponent<
         <Grid container spacing={4}>
           <div className="product-selection">
             <Grid xs={12} md={6} sm={6}>
-              <Select
+              <GSelect
                 className="r-select"
                 placeholder="Call Result"
                 options={products}
               />
             </Grid>
             <Grid xs={12} md={4} sm={4}>
-              <Select className="r-select" options={products} />{" "}
+              <GSelect className="r-select" options={products} />{" "}
             </Grid>
           </div>
         </Grid>
@@ -582,7 +586,7 @@ export class AddNewLeadImpl extends React.PureComponent<
                         <FormComponent
                           onSubmit={(v: any) => {
                             console.log(">> v", v);
-                            console.log('>> this', this);
+                            console.log(">> this", this);
                             this.setState({
                               activeStep: this.state.activeStep + 1,
                             });
@@ -647,16 +651,34 @@ const SubFormHeading = (props: any) => (
 );
 
 const UploadContainer = (props: any) => {
+  const [file, setFile] = React.useState({
+    name: `File${props.valKey}`,
+    file: { name: "" },
+  });
   return (
-    <div className="upload-container">
+    <div key={props.valKey} className="upload-container">
       <div className="upload-head">{props.heading}</div>
       <div className="upload-button">
         <label title="Click To Upload File" htmlFor="upload">
           Upload Photo
         </label>
-        <input type="file" className="hidden-input" id="upload" />
+        <input
+          onChange={(e) => {
+            const fileData = e.target.files[0];
+            setFile({ name: file.name, file: fileData });
+          }}
+          type="file"
+          className="hidden-input"
+          id="upload"
+        />
+        <span style={{ width: "100px" }}>{file.file.name}</span>
         <VisibilityIcon />
-        <DeleteIcon />
+        <DeleteIcon
+          key={props.valKey}
+          onClick={() => {
+            setFile({ name: "", file: { name: "" } });
+          }}
+        />
       </div>
     </div>
   );
