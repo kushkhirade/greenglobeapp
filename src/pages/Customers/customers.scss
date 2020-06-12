@@ -4,3 +4,25 @@
 
     }
 }
+
+.upload-details {
+    display: flex;
+    flex-wrap: wrap;
+
+    .upload-container {
+        width: 47%;
+        margin: 10px 10px;
+
+    }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) {
+    .upload-details {
+
+        .upload-container {
+            width: 100%;
+            margin: 10px 0px;
+
+        }
+    }
+}

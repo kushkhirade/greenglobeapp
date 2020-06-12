@@ -224,3 +224,16 @@ export const addressDetails = [
     type: "textarea",
   },
 ];
+
+export const gstDetails = [
+  {
+    label: "GST Number",
+    model: ".gstNumber",
+    type: "text",
+  },
+  {
+    label: "Compnay Name",
+    model: ".compnayName",
+    type: "text",
+  },
+];

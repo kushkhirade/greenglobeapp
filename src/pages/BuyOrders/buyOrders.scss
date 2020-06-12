@@ -5,6 +5,12 @@
 .cards-main {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+
+    .card-container {
+        min-width: 320px;
+
+    }
 
 }
 
@@ -86,10 +92,8 @@
     margin: 0 15px;
     font-size: 15px;
     width: 50%;
-    display: flex;
     text-align: left;
-    justify-content: left;
-    align-items: center;
+
 
     .view {
         color: #0aa3ff;
@@ -118,5 +122,14 @@
 
 .invoice-add {
     font-size: 14px;
+    padding: 20px 0px;
+}
+
+.disp-details {
+    padding: 10px 0;
+
+}
+
+.invoice-data {
     padding: 20px 0px;
 }

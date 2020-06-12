@@ -17,6 +17,7 @@
     "@types/redux": "^3.6.31",
     "@types/redux-devtools-extension": "^2.13.2",
     "@types/redux-thunk": "^2.1.32",
+    "array-unique": "^0.3.2",
     "autoprefixer": "7.1.6",
     "axios": "^0.19.2",
     "babel-jest": "^22.1.0",

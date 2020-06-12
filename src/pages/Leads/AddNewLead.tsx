@@ -19,6 +19,7 @@ import {
   options,
   streetInputs,
   vehicleInputs,
+  gstDetails,
 } from "../Customers/customerInputs";
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
@@ -309,6 +310,18 @@ export class AddNewLeadImpl extends React.Component<
   renderJobCard = () => {
     return (
       <div className="job-card-container">
+        <SubFormHeading>GST Details</SubFormHeading>
+        <FormComponent
+          onSubmit={(v: any) => {
+            console.log(">> v", v);
+            this.setState({
+              activeStep: this.state.activeStep + 1,
+            });
+          }}
+          formModel="leadForm"
+          hasSubmit={false}
+          options={gstDetails}
+        />
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
         </div>

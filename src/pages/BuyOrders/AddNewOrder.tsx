@@ -31,6 +31,8 @@ const invoiceData = {
   dateOfIssue: "10/02/2020",
   billedTo: "GGFS",
   address: "Indiabulls, Lower Parel, Mumbai, MH 411093, India",
+  totalItems: 25,
+  orderTotal: 23123213,
   billHeads: ["Item Name", "Unit Cost", "Qty", "Amount"],
   billData: [
     {
@@ -243,7 +245,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                         10/02/2020
                       </div>
                     </div>
-                    <div className="padding-6 invoce-add">
+                    <div className="padding-6 invoice-add">
                       Billed to- GGFS Indiabulls, Lower Parel, Mumbai, MH
                       411093, India
                     </div>
@@ -428,39 +430,44 @@ export const AddNewOrder = connect<{}, {}, IAddNewOrderProps>(mapStateToProps)(
 
 const DispatchedScreen = (props) => {
   return (
-    <div className="card-container">
+    <div style={{ width: "100%" }} className="card-container dispatch-card">
       <div>Dispatched</div>
       <Grid container className="padding-6">
         <Grid md={6} xs={6} lg={6}>
           <span className="description-text">Order ID -</span> <br />
-          {invoiceData.orderID}
+          <div className="disp-details"> {invoiceData.orderID}</div>
         </Grid>
         <Grid md={6} xs={6} lg={6}>
           <span className="description-text">Order Date:</span> <br />
-          {invoiceData.dateOfIssue}
+          <div className="disp-details"> {invoiceData.dateOfIssue}</div>
         </Grid>
       </Grid>
       <Grid container className="padding-6">
         <Grid md={6} xs={6} lg={6}>
-          <span className="description-text">Order ID -</span> <br />
-          {invoiceData.orderID}
+          <span className="description-text">Total Items -</span> <br />
+          <div className="disp-details"> {invoiceData.totalItems}</div>
         </Grid>
         <Grid md={6} xs={6} lg={6}>
-          <span className="description-text">Order Date:</span> <br />
-          {invoiceData.dateOfIssue}
+          <span className="description-text">Order Total:</span> <br />
+          <div className="disp-details"> {invoiceData.orderTotal}</div>
         </Grid>
       </Grid>
       <Grid container className="padding-6">
-        <Grid md={12} xs={12} lg={12} className="padding-6">
+        <Grid md={12} xs={12} lg={12}>
           <span className="description-text">Courier Name -</span> <br /> Blue
           Dart Express Ltd.
           <br />
-          <span className="description-text">
-            Consignment No. -
-          </span> <br /> 89712345676
+          <div className="disp-details">
+            {" "}
+            <span className="description-text">
+              Consignment No. -
+            </span> <br /> 89712345676
+          </div>
           <br />
-          <span className="description-text"> Shipping Date - </span>
-          10/05/2020
+          <div className="disp-details">
+            <span className="description-text"> Shipping Date - </span>
+            10/05/2020
+          </div>
         </Grid>
       </Grid>{" "}
       <div className="align-center padding-6">

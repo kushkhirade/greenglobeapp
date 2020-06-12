@@ -58,7 +58,7 @@ export class Support extends React.PureComponent<
               id="outlined-basic"
               label="Message"
               multiline={true}
-              rowsMax={4}
+              rows={4}
               variant="outlined"
             />
             <div style={{ maxWidth: "300px" }} className="description-text">

@@ -64,12 +64,14 @@ export class AddNewCustomerImpl extends React.PureComponent<
         <SubFormHeading style={{ textAlign: "center" }}>
           Documents Required for RTO
         </SubFormHeading>
-        <UploadContainer heading="Original R.C. Book" />
-        <UploadContainer heading="Bank NOC In case of Hypothecation" />
-        <UploadContainer heading="Valid Insurance Photocopy" />
-        <UploadContainer heading="Permit" />
-        <UploadContainer heading="Tax" />
-        <UploadContainer heading="Passing" />
+        <div className="upload-details" >
+          <UploadContainer heading="Original R.C. Book" />
+          <UploadContainer heading="Bank NOC In case of Hypothecation" />
+          <UploadContainer heading="Valid Insurance Photocopy" />
+          <UploadContainer heading="Permit" />
+          <UploadContainer heading="Tax" />
+          <UploadContainer heading="Passing" />
+        </div>
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
@@ -117,19 +119,47 @@ export class AddNewCustomerImpl extends React.PureComponent<
               <Grid item xs={12} md={6} sm={12} lg={6}>
                 <div className="card-container">
                   <Grid container>
-                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
+                    <Grid
+                      item
+                      className="padding-6"
+                      xs={12}
+                      lg={3}
+                      sm={3}
+                      md={3}
+                    >
                       <span className="description-text">Opportunity Name</span>
                       <br /> {x.opp}
                     </Grid>
-                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
+                    <Grid
+                      item
+                      className="padding-6"
+                      xs={12}
+                      lg={3}
+                      sm={3}
+                      md={3}
+                    >
                       <span className="description-text">Stage</span>
                       <br /> {x.stage}
                     </Grid>
-                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
+                    <Grid
+                      item
+                      className="padding-6"
+                      xs={12}
+                      lg={3}
+                      sm={3}
+                      md={3}
+                    >
                       <span className="description-text">Amount</span>
                       <br /> {x.amount}
                     </Grid>
-                    <Grid item className="padding-6" xs={12} lg={3} sm={3} md={3}>
+                    <Grid
+                      item
+                      className="padding-6"
+                      xs={12}
+                      lg={3}
+                      sm={3}
+                      md={3}
+                    >
                       <span className="description-text">Close Date</span>
                       <br /> {x.date}
                     </Grid>

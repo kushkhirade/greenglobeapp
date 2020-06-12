@@ -23,6 +23,7 @@
     background-color: #e8e8e8;
     margin: 10px 0;
     border-radius: 10px;
+    width: 100%;
 }
 
 .modal {
@@ -288,6 +289,10 @@
         position: relative;
         margin: 0 -27%;
     }
+
+    .cards-main {
+        justify-content: flex-start;
+    }
 }
 
 .MuiFab-root {
@@ -307,4 +312,20 @@
     justify-content: center;
     height: 42px;
     align-items: center;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) {
+    .increaser {
+        width: 100px;
+        margin: 0;
+    }
+
+    .upload-details {
+
+        .upload-container {
+            width: 100%;
+            margin: 10px 0px;
+
+        }
+    }
 }

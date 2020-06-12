@@ -66,7 +66,6 @@ const Support = React.lazy(() =>
 // import { RTOProcess } from "./pages/RTOProcess";
 // import { Support } from "./pages/support";
 import { store } from "./store/Store";
-import "./main.scss";
 import { MyUsers } from "./pages/MyUsers";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
@@ -74,6 +73,7 @@ import { isLoggedIn, saveLoggedInUserData } from "./state/Utility";
 import { saveLoggedInUserDetails } from "./actions/App.Actions";
 import { AddNewOrder } from "./pages/BuyOrders/AddNewOrder";
 import { ForgotPassword } from "./pages/account/ForgotPassword";
+import "./main.scss";
 
 const Loader = () => (
   <div className="loader-main">
