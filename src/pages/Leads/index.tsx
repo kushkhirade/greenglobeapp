@@ -13,6 +13,30 @@ import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
+
+const filterOptions = [
+  {
+    name: "all",
+    label: "All",
+  },
+  {
+    name: "fresh",
+    label: "Fresh",
+  },
+  {
+    name: "followups",
+    label: "Followups",
+  },
+  {
+    name: "followups td",
+    label: "Followups Today",
+  },
+  {
+    name: "followups",
+    label: "Followups Pending",
+  },
+];
+
 export interface ILeadsProps {
   history: {
     push: (path: string) => void;
@@ -27,13 +51,16 @@ export class LeadsImpl extends React.Component<
     activeTabType: string;
     isModalOpen: boolean;
     dealers: any;
+    showFiletOptions: boolean;
   }
 > {
   public state = {
     topActiveTab: "Customer",
     activeTabType: "Assigned",
     isModalOpen: false,
-    dealers: data.dealers,
+    showFiletOptions: false,
+    selectedFilter: "",
+    dealers: data.leads.data,
   };
 
   public openAssignDealerModal = () => {
@@ -92,18 +119,20 @@ export class LeadsImpl extends React.Component<
     );
   };
   public renderDealersUnAssigned = () => {
-    <Grid container>
-      {data.leads.data.map((d) => {
-        if (d.isDealer && !d.assigned) {
-          return (
-            <Grid item xs={12} md={6} sm={6}>
-              <CardDetails details={d} />
-            </Grid>
-          );
-        }
-        return " ";
-      })}
-    </Grid>;
+    return (
+      <Grid container>
+        {data.leads.data.map((d) => {
+          if (d.isDealer && !d.assigned) {
+            return (
+              <Grid item xs={12} md={6} sm={6}>
+                <CardDetails details={d} />
+              </Grid>
+            );
+          }
+          return " ";
+        })}
+      </Grid>
+    );
   };
 
   public tabData = [
@@ -188,6 +217,54 @@ export class LeadsImpl extends React.Component<
     );
   };
 
+  public renderFilterModal = () => {
+    return (
+      <BaseModal
+        className="assign-dealer-modal"
+        onClose={() => this.setState({ showFiletOptions: false })}
+        contentClassName="support-content"
+        open={this.state.showFiletOptions}
+      >
+        <div className="head-title">Filters</div>
+        <form className="form-content" autoComplete="off">
+          <div className="dealer-name-container">
+            {filterOptions.map((fData, index) => (
+              <div
+                key={index}
+                onClick={() =>
+                  this.setState({
+                    selectedFilter: fData.label,
+                  })
+                }
+                className={`dealer-name ${
+                  this.state.selectedFilter === fData.label && "active"
+                }`}
+              >
+                {fData.label}
+              </div>
+            ))}
+          </div>
+          <div className="button-container">
+            <Button
+              onClick={() => this.setState({ showFiletOptions: false })}
+              variant="contained"
+              color="default"
+            >
+              Cancel
+            </Button>{" "}
+            <Button
+              onClick={() => this.setState({ showFiletOptions: false })}
+              variant="contained"
+              color="primary"
+            >
+              Apply
+            </Button>
+          </div>
+        </form>
+      </BaseModal>
+    );
+  };
+
   tabDataForDealer = [
     {
       tabName: "All(50)",
@@ -198,6 +275,7 @@ export class LeadsImpl extends React.Component<
           })}
         </Grid>
       ),
+      onTabSelect: (tabName) => this.setState({ showFiletOptions: true }),
     },
     {
       tabName: "Lead Type",
@@ -217,6 +295,7 @@ export class LeadsImpl extends React.Component<
     return (
       <AppBar>
         {this.renderAssignDealerModal()}
+        {this.renderFilterModal()}
         <div className="leads">
           {isDealer() ? (
             <Tabs tabsData={this.tabDataForDealer} hasSort={true} />
@@ -292,8 +371,8 @@ const CardDetailsForDealer = (props: any) => {
             <span className="description-text">Email:</span> {details.email}
           </Grid>
           <Grid className="padding-6" item xs={6} md={12}>
-            <span className="description-text">Delaer Rating</span>{" "}
-            {details.rating}
+            <span className="description-text">Kit Enquiry</span>{" "}
+            {details.kitEnq}
           </Grid>
         </Grid>{" "}
         <Grid container className="padding-15 align-left">
@@ -314,6 +393,11 @@ const CardDetailsForDealer = (props: any) => {
               <ChatIcon className="chat-icon" />
               &nbsp;
               <MailIcon className="mail-icon" />
+              &nbsp;
+              <img
+                height="44px"
+                src="https://img.icons8.com/color/48/000000/whatsapp.png"
+              />{" "}
             </div>
           </Grid>
         </Grid>{" "}

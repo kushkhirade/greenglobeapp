@@ -1,19 +1,22 @@
-import { Grid, Theme, withStyles } from "@material-ui/core";
+import { Theme, withStyles } from "@material-ui/core";
+import { Assessment } from "@material-ui/icons";
 import * as React from "react";
+import { BaseModal } from "src/components/BaseModal";
 import AppBar from "src/navigation/App.Bar";
 import { TableWithGrid } from "../components/TableWithGrid";
 import data from "../data";
-import { SubFormHeading } from "src/components/SubFormHeading";
-
+import { isDealer } from "src/state/Utility";
 interface IPageState {
   usersTablePage?: number;
   usersTableRowsPerPage: number;
+  showStatsModal: boolean;
 }
 
 class HomePageImpl extends React.Component<{ classes: any }, {}> {
   public state: IPageState = {
     usersTablePage: 0,
     usersTableRowsPerPage: 5,
+    showStatsModal: false,
   };
 
   leadStatus = [
@@ -92,7 +95,25 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
     };
 
     return (
-      <AppBar>
+      <AppBar
+        sideButton={
+          <div style={{ marginRight: "20px" }}>
+            <Assessment
+              onClick={() => this.setState({ showStatsModal: true })}
+            />
+          </div>
+        }
+      >
+        <BaseModal
+          className="assign-dealer-modal"
+          onClose={() => this.setState({ showStatsModal: false })}
+          contentClassName="support-content"
+          open={this.state.showStatsModal}
+        >
+          <div style={{ width: "200px", height: "300px" }}>
+            TODAYS Follow up and pending task
+          </div>
+        </BaseModal>
         <div className={classes.root}>
           <TableWithGrid
             title={"Annual Sales Target"}
@@ -106,6 +127,20 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
             columns={columns}
             options={options as any}
           />
+          <TableWithGrid
+            title={"Lead Status"}
+            data={this.leadData}
+            columns={this.leadStatus}
+            options={options as any}
+          />
+          {!isDealer() && (
+            <TableWithGrid
+              title={"Store Status"}
+              data={this.leadData}
+              columns={this.leadStatus}
+              options={options as any}
+            />
+          )}
         </div>
       </AppBar>
     );

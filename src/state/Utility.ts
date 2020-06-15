@@ -48,7 +48,10 @@ export function saveLoggedInUserData(data) {
 }
 
 export function isDealer() {
-  return store.getState().users.get("currentUser").isDealer;
+  return (
+    store.getState().users.get("currentUser") &&
+    store.getState().users.get("currentUser").isDealer
+  );
 }
 
 export function isLocalhost() {
@@ -66,6 +69,6 @@ export function showNotification(content, type, successMsg = "Done") {
     cogoToast.success(content);
   }
   if (type === "loading") {
-    cogoToast.loading(content).then(() => cogoToast.success(successMsg))
+    cogoToast.loading(content).then(() => cogoToast.success(successMsg));
   }
 }

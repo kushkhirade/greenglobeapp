@@ -8,6 +8,7 @@ import { isDealer } from "src/state/Utility";
 import { Stepper } from "./Stepper";
 import "./buyOrders.scss";
 import { GSelect } from "src/components/GSelect";
+import { BaseModal } from "src/components/BaseModal";
 
 export interface IAddNewOrderProps {}
 const options = [
@@ -181,6 +182,9 @@ export class AddNewOrderImpl extends React.PureComponent<
           </Button>
           <Button
             onClick={() => {
+              if (label === "Add") {
+                return;
+              }
               if (type === "sell") {
                 this.setState({
                   activeStepSell: this.state.activeStepSell + 1,
@@ -433,27 +437,27 @@ const DispatchedScreen = (props) => {
     <div style={{ width: "100%" }} className="card-container dispatch-card">
       <div>Dispatched</div>
       <Grid container className="padding-6">
-        <Grid md={6} xs={6} lg={6}>
+        <Grid item md={6} xs={6} lg={6}>
           <span className="description-text">Order ID -</span> <br />
           <div className="disp-details"> {invoiceData.orderID}</div>
         </Grid>
-        <Grid md={6} xs={6} lg={6}>
+        <Grid item md={6} xs={6} lg={6}>
           <span className="description-text">Order Date:</span> <br />
           <div className="disp-details"> {invoiceData.dateOfIssue}</div>
         </Grid>
       </Grid>
       <Grid container className="padding-6">
-        <Grid md={6} xs={6} lg={6}>
+        <Grid item md={6} xs={6} lg={6}>
           <span className="description-text">Total Items -</span> <br />
           <div className="disp-details"> {invoiceData.totalItems}</div>
         </Grid>
-        <Grid md={6} xs={6} lg={6}>
+        <Grid item md={6} xs={6} lg={6}>
           <span className="description-text">Order Total:</span> <br />
           <div className="disp-details"> {invoiceData.orderTotal}</div>
         </Grid>
       </Grid>
       <Grid container className="padding-6">
-        <Grid md={12} xs={12} lg={12}>
+        <Grid item md={12} xs={12} lg={12}>
           <span className="description-text">Courier Name -</span> <br /> Blue
           Dart Express Ltd.
           <br />
@@ -488,6 +492,7 @@ const PaymentDetailsScreen = (props) => {
           <div className="product-selection">
             <GSelect
               className="r-select"
+              classNamePrefix="r-select-pre"
               placeholder="Select Payment Type"
               onChange={props.handleChange}
               options={options}

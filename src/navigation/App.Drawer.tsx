@@ -47,7 +47,11 @@ export const routes = [
     icon: () => <PersonPin />,
   },
   { path: "/inventory", title: "Inventory", icon: () => <Book /> },
-  { path: "/buy-orders", title: "Buy Orders", icon: () => <Payment /> },
+  {
+    path: "/buy-orders",
+    title: isDealer() ? "Buy Orders" : "Buy/Sell Orders",
+    icon: () => <Payment />,
+  },
   { path: "/leads", title: "Leads", icon: () => <Pages /> },
   {
     path: "/assign-dealers",

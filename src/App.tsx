@@ -73,6 +73,7 @@ import { isLoggedIn, saveLoggedInUserData } from "./state/Utility";
 import { saveLoggedInUserDetails } from "./actions/App.Actions";
 import { AddNewOrder } from "./pages/BuyOrders/AddNewOrder";
 import { ForgotPassword } from "./pages/account/ForgotPassword";
+import { SignupScreen } from "src/pages/account/Signup/Signup";
 import "./main.scss";
 
 const Loader = () => (
@@ -114,6 +115,7 @@ class App extends React.Component {
           <React.Suspense fallback={<Loader />}>
             <Switch>
               <Route path="/" exact component={LoginScreen} />
+              <Route path="/signup" exact={true} component={SignupScreen} />
               <Route path="/forgot-password" exact component={ForgotPassword} />
               <ProtectedRoute path="/home" component={HomePage} />
               <ProtectedRoute path="/inventory" component={Inventory} />

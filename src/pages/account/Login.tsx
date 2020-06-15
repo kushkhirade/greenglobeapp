@@ -4,7 +4,7 @@ import Card from "@material-ui/core/Card";
 import { isEmpty } from "lodash";
 import "./Login.scss";
 import Axios from "axios";
-import { withRouter } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
 import { saveLoggedInUserData } from "src/state/Utility";
 import { saveLoggedInUserDetails } from "src/actions/App.Actions";
 
@@ -66,6 +66,9 @@ const LoginScreenImpl = (props: any) => {
           </div>
           <div className="forgot-password">Apply for Dealer/Distributor</div>
         </Card>
+        <div className="account-note">
+          Have not an account yet? <NavLink to="/signup"> Sign up</NavLink>
+        </div>
       </div>
     </div>
   );

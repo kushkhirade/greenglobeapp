@@ -92,6 +92,10 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {distDetails.accountName}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Account Type:</span>
+                  Savings
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">WhatsApp No.:</span>
                   {distDetails.whatApp}
                 </Grid>
@@ -108,7 +112,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {distDetails.rating}
                 </Grid>
               </Grid>
-              <SubFormHeading>Distributor Details</SubFormHeading>
+              <SubFormHeading>Address Details</SubFormHeading>
               <Grid container>
                 {" "}
                 <Grid

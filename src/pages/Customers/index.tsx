@@ -30,7 +30,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
               customerData={data.customers.data}
             />
           </Grid>
-        </div>
+        </div>  
       </AppBar>
     );
   }

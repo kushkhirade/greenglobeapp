@@ -2,9 +2,17 @@ import * as React from "react";
 import { Button } from "@material-ui/core";
 
 export class Stepper extends React.Component<any, any> {
-  state = { activeStep: 0, stepData: this.props.stepData };
+  state = { activeStep: this.props.activeStep, stepData: this.props.stepData };
 
   shouldComponentUpdate(nextProps, nextState) {
+    const current = document.getElementsByClassName("active")[0];
+    if (current) {
+      current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }
     if (nextProps.activeStep && nextState.activeStep !== nextProps.activeStep) {
       this.setState({
         activeStep: nextProps.activeStep,
@@ -64,11 +72,12 @@ export class Stepper extends React.Component<any, any> {
         </div>
         <div className="stepper-content">
           {props.activeStep && props.activeStep < props.stepData.length
-            ? props.stepData[props.activeStep].component
-            : props.stepData[activeStep].component}
-          {/* {props.stepData.length - 1 > activeStep && (
-          <button onClick={() => setActiveStep(activeStep + 1)}>Next</button>
-        )} */}
+            ? props.stepData[props.activeStep]
+              ? props.stepData[props.activeStep].component
+              : props.stepData[0].component
+            : props.stepData[activeStep]
+            ? props.stepData[activeStep].component
+            : props.stepData[0].component}
         </div>
       </div>
     );

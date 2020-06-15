@@ -35,6 +35,22 @@
 }
 
 .modal-content {
+    background: transparent;
+}
+
+.modal-header {
+    text-align: right;
+}
+
+.close {
+    font-size: 20px;
+    border-radius: 10px;
+    border: 2px solid;
+    background-color: #48a89c;
+    color: white;
+}
+
+.modal-content-main {
     background-color: white;
     padding: 30px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
@@ -314,10 +330,48 @@
     align-items: center;
 }
 
+.account-note {
+    margin-top: 20px;
+    font-weight: 600;
+
+    a {
+        color: #48a89c;
+        text-decoration: none;
+
+        position: relative;
+
+        &:before {
+            content: '';
+            width: 0;
+            height: 1px;
+            position: absolute;
+            background-color: #48a89c;
+            transition: all .3s ease-in-out;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        &:hover {
+            &:before {
+                width: 100%;
+            }
+        }
+    }
+}
+
 @media only screen and (min-device-width: 320px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) {
     .increaser {
         width: 100px;
         margin: 0;
+    }
+
+    .step-container {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        margin: 10px;
+        overflow: scroll;
     }
 
     .upload-details {
@@ -328,4 +382,21 @@
 
         }
     }
+}
+
+.r-select-pre__menu {
+    z-index: 2 !important;
+}
+
+.modal-container-main {
+    background-color: #00000061;
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    margin: 0;
 }
