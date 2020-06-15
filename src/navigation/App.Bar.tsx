@@ -38,7 +38,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
   public state: IState = {
     anchorEl: null,
     notificationEl: null,
-    routeName: routes.find((routeData) =>
+    routeName: routes(this.props.isDealer).find((routeData) =>
       window.location.hash.includes(routeData.path)
     ).title as string,
   };
@@ -179,6 +179,7 @@ const mapStateToProps = (state: AppState) => ({
   authentication: state.authentication,
   users: state.users,
   materials: state.materials,
+  isDealer: state.users.get("currentUser").isDealer,
 });
 
 export default withRouter(

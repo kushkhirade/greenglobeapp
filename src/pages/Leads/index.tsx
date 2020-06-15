@@ -341,13 +341,39 @@ const CardDetails = (props: any) => {
         <div className="card-element">
           <MailIcon /> &nbsp;{details.email}
         </div>
-        <div className="card-element">{details.kitEnq}</div>
-        <div className="card-element">{details.assignedDealer}</div>
-        <div className="card-element">{details.vehicleType}</div>
+        <Grid className="padding-6" item xs={6} md={12}>
+          <span className="description-text">Kit Enquiry</span> {details.kitEnq}
+        </Grid>{" "}
+        <Grid container className="padding-15 align-left">
+          <Grid item className="padding-6" xs={6} md={12}>
+            <span className="description-text">Vehicle Type:</span>{" "}
+            {details.vehicleType}
+          </Grid>
+          <Grid className="padding-6" item xs={6} md={12}>
+            <span className="description-text">Dealer Generated Lead</span>{" "}
+            {details.mobileNumber}
+          </Grid>
+        </Grid>
         <div className="clickable" onClick={props.onClickAssign}>
           {!details.assigned ? "Click To Assign Dealer" : ""}
         </div>
       </div>
+      <Grid container className="padding-15 align-left">
+        <Grid className="padding-6" item xs={12} md={12}>
+          <div className="icon-container">
+            <PhoneIcon className="phone-icon" />
+            &nbsp;
+            <ChatIcon className="chat-icon" />
+            &nbsp;
+            <MailIcon className="mail-icon" />
+            &nbsp;
+            <img
+              height="44px"
+              src="https://img.icons8.com/color/48/000000/whatsapp.png"
+            />{" "}
+          </div>
+        </Grid>
+      </Grid>{" "}
     </div>
   );
 };

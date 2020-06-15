@@ -150,14 +150,6 @@ export class RTOProcessImpl extends React.PureComponent<
       <AppBar>
         {this.renderModal()}
         <Tabs tabsData={this.tabs()} />
-        <span
-          style={{ position: "absolute", right: 20, bottom: 20 }}
-          onClick={() => this.props.history.push("/lead/add-new-lead")}
-        >
-          <Fab color="secondary" aria-labelledby="add-ticket">
-            <Add />
-          </Fab>
-        </span>
       </AppBar>
     );
   }

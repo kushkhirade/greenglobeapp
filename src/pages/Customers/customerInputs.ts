@@ -237,3 +237,51 @@ export const gstDetails = [
     type: "text",
   },
 ];
+
+export const distCust = [
+  {
+    label: "First Name",
+    model: ".firstName",
+    type: "text",
+  },
+  {
+    label: "Middle Name",
+    model: ".middleName",
+    type: "text",
+  },
+  {
+    label: "Last Name",
+    model: ".lastName",
+    type: "text",
+  },
+  {
+    label: "City",
+    model: ".city",
+    type: "text",
+  },
+  {
+    label: "Vehicle No.",
+    model: ".vehicleNumber",
+    type: "text",
+  },
+  {
+    label: "Vehicle Type",
+    model: ".vehicleType",
+    type: "text",
+  },
+  {
+    label: "Kit Installed",
+    model: ".kitIns",
+    type: "text",
+  },
+  {
+    label: "Assigned Dealer",
+    model: ".assignedDealers",
+    type: "text",
+  },
+  {
+    label: "Dealer Rating",
+    model: ".dealerRating",
+    type: "text",
+  },
+];

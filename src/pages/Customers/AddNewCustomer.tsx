@@ -10,12 +10,14 @@ import {
   options,
   vehicleInputs,
   streetInputs,
+  distCust,
   leadDealer,
   addressDetails,
 } from "./customerInputs";
 import { Tabs } from "src/components/Tabs";
 import { Stepper } from "../BuyOrders/Stepper";
 import { withRouter } from "react-router-dom";
+import { isDealer } from "src/state/Utility";
 
 export interface IAddNewCustomerProps {
   history: {
@@ -64,7 +66,7 @@ export class AddNewCustomerImpl extends React.PureComponent<
         <SubFormHeading style={{ textAlign: "center" }}>
           Documents Required for RTO
         </SubFormHeading>
-        <div className="upload-details" >
+        <div className="upload-details">
           <UploadContainer heading="Original R.C. Book" />
           <UploadContainer heading="Bank NOC In case of Hypothecation" />
           <UploadContainer heading="Valid Insurance Photocopy" />
@@ -188,13 +190,25 @@ export class AddNewCustomerImpl extends React.PureComponent<
   render() {
     return (
       <AppBar>
+       
         <div className="card-container no-hover">
           <Typography variant="h5" color="inherit" noWrap={true}>
             Customer Details
           </Typography>
-          <div className="">
-            <Tabs tabsData={this.tabData} />
-          </div>
+          {isDealer() ? (
+            <div className="">
+              <Tabs tabsData={this.tabData} />
+            </div>
+          ) : (
+            <FormComponent
+              onSubmit={(v: any) => {
+                console.log(">> v", v);
+              }}
+              formModel="userForm"
+              hasSubmit={true}
+              options={distCust}
+            />
+          )}
         </div>
       </AppBar>
     );
@@ -216,16 +230,36 @@ const SubFormHeading = (props: any) => (
 );
 
 const UploadContainer = (props: any) => {
+  const [file, setFile] = React.useState({
+    name: `File${props.valKey}`,
+    file: { name: "" },
+  });
   return (
-    <div className="upload-container">
+    <div key={props.valKey} className="upload-container">
       <div className="upload-head">{props.heading}</div>
       <div className="upload-button">
         <label title="Click To Upload File" htmlFor="upload">
           Upload Photo
         </label>
-        <input type="file" className="hidden-input" id="upload" />
-        <VisibilityIcon />
-        <DeleteIcon />
+        <input
+          onChange={(e) => {
+            const fileData = e.target.files[0];
+            setFile({ name: file.name, file: fileData });
+          }}
+          type="file"
+          className="hidden-input"
+          id="upload"
+        />
+        <span className="filename">{file.file.name}</span>
+        <div>
+          <VisibilityIcon />
+          <DeleteIcon
+            key={props.valKey}
+            onClick={() => {
+              setFile({ name: "", file: { name: "" } });
+            }}
+          />
+        </div>
       </div>
     </div>
   );

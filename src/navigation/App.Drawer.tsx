@@ -28,6 +28,7 @@ import { NavLink } from "react-router-dom";
 import { User } from "../state/User";
 import { Utility, isDealer } from "../state/Utility";
 import { styles } from "./styles";
+import { connect } from "react-redux";
 const classNames = require("classnames");
 
 interface IAppDrawer {
@@ -38,7 +39,7 @@ interface IAppDrawer {
   theme?: Theme;
   handleDrawerClose?: () => void;
 }
-export const routes = [
+export const routes = (isDealerApp) => [
   { path: "/home", title: "Home", icon: () => <DashboardIcon /> },
   {
     hidden: true,
@@ -49,7 +50,7 @@ export const routes = [
   { path: "/inventory", title: "Inventory", icon: () => <Book /> },
   {
     path: "/buy-orders",
-    title: isDealer() ? "Buy Orders" : "Buy/Sell Orders",
+    title: isDealerApp ? "Buy Orders" : "Buy/Sell Orders",
     icon: () => <Payment />,
   },
   { path: "/leads", title: "Leads", icon: () => <Pages /> },
@@ -139,7 +140,7 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
           </div>
         </div>
         <Divider />
-        {routes
+        {routes(this.props.isDealer)
           .filter((x) => !x.hidden)
           .filter((x) => (isDealer() ? !x.hideForDealer : true))
           .map((route, index) => {
@@ -159,11 +160,23 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
             );
           })}
         <Divider />
+        <div className="cp-root">
+          <div>
+            <div className="copyright padding-6">Copyright © 2020</div>
+            <div className="company padding-6">Green Globe Fuel Solutions</div>
+          </div>
+          <div className="ver">App Ver - 1.0</div>
+        </div>{" "}
+        <Divider />
       </Drawer>
     );
   }
 }
 
-export default withStyles(styles as any, { withTheme: true })(
-  AppDrawer as any
-) as any;
+const mapStateToProps = (state) => {
+  return { isDealer: isDealer(), state };
+};
+
+export default connect(mapStateToProps)(
+  withStyles(styles as any, { withTheme: true })(AppDrawer as any) as any
+);

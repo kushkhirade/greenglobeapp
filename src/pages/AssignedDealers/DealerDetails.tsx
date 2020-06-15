@@ -157,7 +157,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {distDetails.aaNum}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
-                  <span className="description-text">IFSC:</span>
+                  <span className="description-text">Account Type:</span>
                   Saving
                 </Grid>
               </Grid>

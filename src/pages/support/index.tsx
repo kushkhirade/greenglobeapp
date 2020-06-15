@@ -7,6 +7,7 @@ import "./support.scss";
 
 const supportData = [
   {
+    sr: 101,
     case: "Case 101",
     title: "Kit Replacement",
     desc:
@@ -14,18 +15,30 @@ const supportData = [
   },
 ];
 
-export class Support extends React.PureComponent<
-  {},
-  { fileName: string; isModalOpen: boolean }
-> {
-  public state = { fileName: "", isModalOpen: false };
+export class Support extends React.PureComponent<{}, any> {
+  public state = { fileName: "", isModalOpen: false, data: supportData };
+
+  handleSubmit = () => {
+    const d = this.state.data;
+    const last = this.state.data[this.state.data.length - 1];
+    d.push({
+      case: `Case ${last.sr + 1}`,
+      sr: last.sr + 1,
+      title: this.state.sub,
+      desc: this.state.msg,
+    });
+    this.setState({
+      data: d,
+      isModalOpen: false,
+    });
+  };
 
   public render() {
     return (
       <AppBar>
         <h3>Support Requests</h3>
         <Grid container>
-          {supportData.map((sup) => (
+          {this.state.data.map((sup) => (
             <Grid item xs={12} sm={6} lg={6}>
               <div className="card-container no-hover">
                 <div className="case"> {sup.case}</div>
@@ -51,6 +64,7 @@ export class Support extends React.PureComponent<
               id="outlined-basic"
               label="Subject Line"
               className="form-input"
+              onChange={(e) => this.setState({ sub: e.target.value })}
               variant="outlined"
             />
             <TextField
@@ -60,15 +74,13 @@ export class Support extends React.PureComponent<
               multiline={true}
               rows={4}
               variant="outlined"
+              onChange={(e) => this.setState({ msg: e.target.value })}
             />
             <div style={{ maxWidth: "300px" }} className="description-text">
               {this.state.fileName}
             </div>
             <div className="button-container">
-              <Button
-                // onClick={() => this.setState({ isModalOpen: false })}
-                variant="contained"
-              >
+              <Button variant="contained" onClick={this.handleSubmit}>
                 <input
                   onChange={(e) =>
                     this.setState({ fileName: e.target.files[0].name })
@@ -80,7 +92,11 @@ export class Support extends React.PureComponent<
                 <label htmlFor="attachFile">Attach File</label>
               </Button>
               <span style={{ padding: "5px" }} />
-              <Button variant="contained" color="primary">
+              <Button
+                onClick={this.handleSubmit}
+                variant="contained"
+                color="primary"
+              >
                 Submit
               </Button>
             </div>

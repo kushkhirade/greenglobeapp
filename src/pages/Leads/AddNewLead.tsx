@@ -1,4 +1,4 @@
-import { Button, Grid, Typography } from "@material-ui/core";
+import { Button, Grid, Typography, TextField } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Edit } from "@material-ui/icons";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -340,7 +340,6 @@ export class AddNewLeadImpl extends React.Component<
                 >
                   <div className="label-text">{checkbox}</div>
                   <Checkbox
-                    defaultChecked
                     color="primary"
                     inputProps={{ "aria-label": "secondary checkbox" }}
                   />
@@ -444,32 +443,30 @@ export class AddNewLeadImpl extends React.Component<
       <div className="lead-modal-form">
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid xs={12} md={6} sm={6}>
+            <Grid xs={12} md={5} sm={5}>
               <GSelect
                 className="r-select"
                 placeholder="Subject"
                 options={products}
               />
-            </Grid>
-            <Grid xs={12} md={4} sm={4}>
-              <GSelect
-                className="r-select"
-                placeholder="Subject"
-                options={products}
-              />{" "}
+            </Grid>{" "}
+            <span style={{ padding: "10px" }} />
+            <Grid xs={12} md={5} sm={5}>
+              <input type="date" className="r-select" />{" "}
             </Grid>
           </div>
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid xs={12} md={6} sm={6}>
+            <Grid xs={12} md={5} sm={5}>
               <GSelect
                 className="r-select"
                 placeholder="Rating"
                 options={products}
               />
-            </Grid>
-            <Grid xs={12} md={4} sm={4}>
+            </Grid>{" "}
+            <span style={{ padding: "10px" }} />
+            <Grid xs={12} md={5} sm={5}>
               <GSelect
                 className="r-select"
                 placeholder="Status"
@@ -480,15 +477,22 @@ export class AddNewLeadImpl extends React.Component<
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid xs={12} md={6} sm={6}>
+            <Grid xs={12} md={5} sm={5}>
               <GSelect
                 className="r-select"
                 placeholder="Call Result"
                 options={products}
               />
-            </Grid>
-            <Grid xs={12} md={4} sm={4}>
-              <GSelect className="r-select" options={products} />{" "}
+            </Grid>{" "}
+            <span style={{ padding: "10px" }} />
+            <Grid xs={12} md={5} sm={5}>
+              <TextField
+                multiline
+                rows={3}
+                className="r-select"
+                placeholder="Comments"
+                variant="outlined"
+              />{" "}
             </Grid>
           </div>
         </Grid>
@@ -536,7 +540,7 @@ export class AddNewLeadImpl extends React.Component<
             component: this.renderForm(),
           },
           {
-            label: "Documents Collected",
+            label: "Documents Collection",
             component: this.renderDocsForRTO(),
           },
           {
@@ -684,14 +688,16 @@ const UploadContainer = (props: any) => {
           className="hidden-input"
           id="upload"
         />
-        <span style={{ width: "100px" }}>{file.file.name}</span>
-        <VisibilityIcon />
-        <DeleteIcon
-          key={props.valKey}
-          onClick={() => {
-            setFile({ name: "", file: { name: "" } });
-          }}
-        />
+        <span className="filename" >{file.file.name}</span>
+        <div>
+          <VisibilityIcon />
+          <DeleteIcon
+            key={props.valKey}
+            onClick={() => {
+              setFile({ name: "", file: { name: "" } });
+            }}
+          />
+        </div>
       </div>
     </div>
   );

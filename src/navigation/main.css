@@ -16,3 +16,7 @@
     width: 100%;
     justify-content: space-around;
 }
+
+.MuiSvgIcon-colorPrimary {
+    color: #48a89c !important;
+}

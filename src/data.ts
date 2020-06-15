@@ -24,7 +24,7 @@ const data = {
       },
       {
         id: "o4",
-        product: "5W ACE",
+        product: "4W Pro",
         target: "50",
         achieved: "40",
         target_left: "10",

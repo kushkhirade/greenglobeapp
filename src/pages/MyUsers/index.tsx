@@ -1,8 +1,8 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Grid } from "@material-ui/core";
+import { Grid, Fab } from "@material-ui/core";
 import AppBar from "src/navigation/App.Bar";
-import { Edit } from "@material-ui/icons";
+import { Edit, Add } from "@material-ui/icons";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { BaseModal } from "src/components/BaseModal";
 import { SubFormHeading } from "src/components/SubFormHeading";
@@ -79,7 +79,7 @@ export class MyUsersImpl extends React.PureComponent<
       >
         <Grid container spacing={1} className="">
           <SubFormHeading>
-            Edit User {this.state.data && this.state.data.name}
+            Add User/Edit User {this.state.data && this.state.data.name}
           </SubFormHeading>
           <Grid item className="modal-margin" xs={12} md={12}>
             <FormComponent
@@ -107,6 +107,14 @@ export class MyUsersImpl extends React.PureComponent<
               {...us}
             />
           ))}
+          <span
+            style={{ position: "absolute", right: 20, bottom: 20 }}
+            onClick={() => this.setState({ openEditModal: true })}
+          >
+            <Fab color="secondary" aria-labelledby="add-ticket">
+              <Add />
+            </Fab>
+          </span>
         </Grid>
       </AppBar>
     );
@@ -123,30 +131,30 @@ const UserCard = (props) => {
   return (
     <Grid item xs={12} md={6} sm={6}>
       <div className="card-container">
-        <Grid container className="padding-6 align-center">
-          <Grid xs={12} md={6} sm={6}>
+        <Grid container className="">
+          <Grid xs={12} className="padding-6" md={6} sm={6}>
             <span className="description-text">Name:</span>
             <br />
             {props.name}
           </Grid>
-          <Grid xs={12} md={6} sm={6}>
+          <Grid xs={12} className="padding-6" md={6} sm={6}>
             <span className="description-text">Email:</span>
             <br />
             {props.email}
           </Grid>
         </Grid>
-        <Grid container className="padding-6 align-center">
-          <Grid xs={12} md={4} sm={4}>
+        <Grid container className="">
+          <Grid xs={12} className="padding-6" md={4} sm={4}>
             <span className="description-text">Mobile Number:</span>
             <br />
             {props.mobileNumber}
           </Grid>
-          <Grid xs={12} md={4} sm={4}>
+          <Grid xs={12} className="padding-6" md={4} sm={4}>
             <span className="description-text">Role:</span>
             <br />
             {props.role}
           </Grid>
-          <Grid xs={12} md={4} sm={4}>
+          <Grid xs={12} className="padding-6" md={4} sm={4}>
             <span className="description-text">Options:</span>
             <br />
             <Edit onClick={() => props.handleEditModelOprn(props)} />{" "}

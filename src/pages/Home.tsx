@@ -21,6 +21,25 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
 
   leadStatus = [
     {
+      label: "Stages",
+      name: "stages",
+      options: {
+        filter: true,
+        sort: false,
+      },
+    },
+    {
+      label: "Count",
+      name: "count",
+      options: {
+        filter: true,
+        sort: false,
+      },
+    },
+  ];
+
+  storeStatus = [
+    {
       label: "Stores",
       name: "stores",
       options: {
@@ -40,16 +59,27 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
 
   leadData = [
     {
-      stores: "New",
+      stages: "New",
       count: 50,
     },
     {
-      stores: "Negotiating",
+      stages: "Negotiating",
       count: 100,
     },
     {
-      stores: "Converted",
+      stages: "Converted",
       count: 100,
+    },
+  ];
+
+  storeData = [
+    {
+      stores: "Pending Stores",
+      count: 3,
+    },
+    {
+      stores: "Operational Stores",
+      count: 3,
     },
   ];
 
@@ -110,8 +140,9 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
           contentClassName="support-content"
           open={this.state.showStatsModal}
         >
-          <div style={{ width: "200px", height: "300px" }}>
-            TODAYS Follow up and pending task
+          <div style={{ height: "300px" }}>
+            Today's Tasks / Pending Tasks
+            <div style={{ padding: "30px" }}>No Task Added Today</div>
           </div>
         </BaseModal>
         <div className={classes.root}>
@@ -136,8 +167,8 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
           {!isDealer() && (
             <TableWithGrid
               title={"Store Status"}
-              data={this.leadData}
-              columns={this.leadStatus}
+              data={this.storeData}
+              columns={this.storeStatus}
               options={options as any}
             />
           )}

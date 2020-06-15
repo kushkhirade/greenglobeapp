@@ -23,7 +23,7 @@
     background-color: #e8e8e8;
     margin: 10px 0;
     border-radius: 10px;
-    width: 100%;
+    width: inherit;
 }
 
 .modal {
@@ -53,6 +53,7 @@
 .modal-content-main {
     background-color: white;
     padding: 30px;
+    margin: 0px 25px;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     border-radius: 5px;
 }
@@ -268,22 +269,28 @@
 
 }
 
-.r-select {
-    min-width: 200px;
-    margin: 10px;
-}
 
 .product-selection {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin: 15px;
+    align-items: flex-start;
+    padding: 10px;
     flex-wrap: wrap;
+    margin-left: 0;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 
-    .r-select {
-        margin: 10px 0px;
+    input,
+    textarea {
+        width: 100%;
     }
 
+    input {
+        padding: 8px 0px;
+        border: 2px solid #e5e5e5;
+        border-radius: 5px;
+    }
 }
 
 .margin-10 {
@@ -308,6 +315,28 @@
 
     .cards-main {
         justify-content: flex-start;
+    }
+
+    .r-select {
+        min-width: 200px;
+        margin: 10px;
+    }
+
+    .product-selection {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-left: unset;
+        margin-right: unset;
+        margin: 15px;
+        flex-wrap: wrap;
+
+        .r-select {
+            margin: 10px 0px;
+            width: 100%;
+            min-width: 250px;
+        }
+
     }
 }
 
@@ -360,10 +389,45 @@
     }
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) {
+.filename {
+    width: 250px;
+}
+
+
+.upload-details {
+    display: flex;
+    flex-wrap: wrap;
+
+    .upload-container {
+        width: 47%;
+        margin: 10px 10px;
+    }
+}
+
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 812px) {
     .increaser {
         width: 100px;
         margin: 0;
+    }
+
+    .align-left {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        flex-direction: column
+    }
+
+    ;
+
+    .upload-details {
+        .upload-container {
+            width: 100%;
+        }
+    }
+
+    .filename {
+        width: 100px;
     }
 
     .step-container {
@@ -375,7 +439,6 @@
     }
 
     .upload-details {
-
         .upload-container {
             width: 100%;
             margin: 10px 0px;
@@ -399,4 +462,23 @@
     height: 100%;
     top: 0;
     margin: 0;
+}
+
+.cp-root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .copyright {
+        font-size: 12px;
+    }
+
+    .company {
+        font-size: 14px;
+    }
+
+    .ver {
+        font-size: 8px;
+
+    }
 }

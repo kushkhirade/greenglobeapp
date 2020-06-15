@@ -7,6 +7,9 @@ import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./customers.scss";
 import { withRouter } from "react-router-dom";
+import filter from "./filter.svg";
+import Search from "@material-ui/icons/Search";
+
 export interface ICustomersProps {
   history: {
     push: (path: string) => void;
@@ -21,6 +24,18 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
   public render() {
     return (
       <AppBar>
+        {" "}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          {" "}
+          <Search fontSize="large" color="primary" />
+          <img height="26px" src={filter} />
+        </div>
         <div className="cards-main customer-card">
           <Grid container={true}>
             <CustomerList
@@ -30,7 +45,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
               customerData={data.customers.data}
             />
           </Grid>
-        </div>  
+        </div>
       </AppBar>
     );
   }
@@ -57,7 +72,7 @@ const CustomerList = (props: any) => {
           </Grid>
         </Grid>
         <Grid container className="padding-15 align-left">
-          <Grid className="padding-6" item xs={6} md={12}>
+          <Grid className="padding-6" item xs={12} md={12}>
             <span className="description-text"> Purchased Product:</span>
             {customerData.productPurchased}
           </Grid>
@@ -65,7 +80,7 @@ const CustomerList = (props: any) => {
             className="padding-6 align-center"
             style={{ justifyContent: "flex-start" }}
             item
-            xs={6}
+            xs={12}
             md={12}
           >
             <span className="description-text">Dealer Rating:</span>

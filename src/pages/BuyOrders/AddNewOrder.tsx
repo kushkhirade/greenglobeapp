@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from "@material-ui/core";
+import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import Select from "react-select";
@@ -118,7 +118,7 @@ export class AddNewOrderImpl extends React.PureComponent<
       <div className="card-container no-hover">
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid item xs={12} md={6} sm={6}>
+            <Grid item xs={4} md={6} sm={6}>
               <GSelect
                 className="r-select"
                 value={this.state.product1}
@@ -126,14 +126,14 @@ export class AddNewOrderImpl extends React.PureComponent<
                 options={products}
               />
             </Grid>
-            <Grid item xs={12} md={4} sm={4}>
+            <Grid item xs={4} md={4} sm={4}>
               {this.renderValueManipulator("qty1")}
             </Grid>
           </div>
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid item xs={12} md={6} sm={6}>
+            <Grid item xs={4} md={6} sm={6}>
               <GSelect
                 className="r-select"
                 value={this.state.product2}
@@ -141,14 +141,14 @@ export class AddNewOrderImpl extends React.PureComponent<
                 onChange={(v: any) => this.handleChange(v, "product2")}
               />{" "}
             </Grid>
-            <Grid item xs={12} md={4} sm={4}>
+            <Grid item xs={4} md={4} sm={4}>
               {this.renderValueManipulator("qty2")}
             </Grid>
           </div>
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid item xs={12} md={6} sm={6}>
+            <Grid item xs={4} md={6} sm={6}>
               <GSelect
                 className="r-select"
                 value={this.state.product3}
@@ -156,14 +156,14 @@ export class AddNewOrderImpl extends React.PureComponent<
                 onChange={(v: any) => this.handleChange(v, "product3")}
               />{" "}
             </Grid>
-            <Grid item xs={12} md={4} sm={4}>
+            <Grid item xs={4} md={4} sm={4}>
               {this.renderValueManipulator("qty3")}
             </Grid>
           </div>
         </Grid>
         <Grid container spacing={4}>
           <div className="product-selection">
-            <Grid item xs={12} md={6} sm={6}>
+            <Grid item xs={4} md={6} sm={6}>
               <GSelect
                 className="r-select"
                 value={this.state.product4}
@@ -171,7 +171,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                 onChange={(v: any) => this.handleChange(v, "product4")}
               />{" "}
             </Grid>
-            <Grid item xs={12} md={4} sm={4}>
+            <Grid item xs={4} md={4} sm={4}>
               {this.renderValueManipulator("qty4")}
             </Grid>
           </div>
@@ -435,39 +435,36 @@ export const AddNewOrder = connect<{}, {}, IAddNewOrderProps>(mapStateToProps)(
 const DispatchedScreen = (props) => {
   return (
     <div style={{ width: "100%" }} className="card-container dispatch-card">
-      <div>Dispatched</div>
-      <Grid container className="padding-6">
-        <Grid item md={6} xs={6} lg={6}>
-          <span className="description-text">Order ID -</span> <br />
-          <div className="disp-details"> {invoiceData.orderID}</div>
-        </Grid>
-        <Grid item md={6} xs={6} lg={6}>
-          <span className="description-text">Order Date:</span> <br />
-          <div className="disp-details"> {invoiceData.dateOfIssue}</div>
-        </Grid>
-      </Grid>
-      <Grid container className="padding-6">
-        <Grid item md={6} xs={6} lg={6}>
-          <span className="description-text">Total Items -</span> <br />
-          <div className="disp-details"> {invoiceData.totalItems}</div>
-        </Grid>
-        <Grid item md={6} xs={6} lg={6}>
-          <span className="description-text">Order Total:</span> <br />
-          <div className="disp-details"> {invoiceData.orderTotal}</div>
+      <Typography variant="h4">Dispatched</Typography>
+      <Grid container className="">
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order ID -</span>
+          <span className="disp-details"> {invoiceData.orderID}</span>
+          </Grid>
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order Date:</span>
+          <span className="disp-details"> {invoiceData.dateOfIssue}</span>
         </Grid>
       </Grid>
-      <Grid container className="padding-6">
-        <Grid item md={12} xs={12} lg={12}>
-          <span className="description-text">Courier Name -</span> <br /> Blue
-          Dart Express Ltd.
-          <br />
+      <Grid container className="">
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Total Items -</span>
+          <span className="disp-details"> {invoiceData.totalItems}</span>
+          </Grid>
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order Total:</span>
+          <span className="disp-details"> {invoiceData.orderTotal}</span>
+        </Grid>
+      </Grid>
+      <Grid container className="">
+        <Grid item className="padding-6" md={12} xs={12} lg={12}>
+          <span className="description-text">Courier Name -</span> Blue Dart
+          Express Ltd.
           <div className="disp-details">
             {" "}
-            <span className="description-text">
-              Consignment No. -
-            </span> <br /> 89712345676
+            <span className="description-text">Consignment No. -</span>{" "}
+            89712345676
           </div>
-          <br />
           <div className="disp-details">
             <span className="description-text"> Shipping Date - </span>
             10/05/2020
@@ -537,16 +534,20 @@ const SubmittedScreen = (props) => {
     <div className="card-container">
       <Grid container={true}>
         <Grid item={true} className="padding-6" xs={6} md={6}>
-          <span className="description-text"> Order ID -</span> ON-26541
+          <span className="description-text"> Order ID -</span>
+          <br /> ON-26541
         </Grid>
         <Grid item={true} className="padding-6" xs={6} md={6}>
-          <span className="description-text"> Order Date - </span> 10/05/2020
+          <span className="description-text"> Order Date - </span> <br />
+          10/05/2020
         </Grid>
         <Grid item={true} className="padding-6" xs={6} md={6}>
-          <span className="description-text"> Total Items -</span> 25 Order
+          <span className="description-text"> Total Items -</span>
+          <br /> 25 Order
         </Grid>
         <Grid item={true} className="padding-6" xs={6} md={6}>
-          <span className="description-text">Total -</span> 1742000
+          <span className="description-text">Total -</span>
+          <br /> 1742000
         </Grid>
       </Grid>
       <div className="align-center padding-6">

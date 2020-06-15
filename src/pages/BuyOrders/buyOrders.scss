@@ -7,7 +7,9 @@
     flex-wrap: wrap;
     justify-content: center;
 
-    .card-container {}
+    .card-container {
+        width: 100%;
+    }
 
 }
 
@@ -60,7 +62,7 @@
     padding: 8px;
     margin: 10px;
     border-radius: 4px;
-
+    height: 24px;
     .plus {
         border-right: 1px solid #cccccc;
         width: 30px;
