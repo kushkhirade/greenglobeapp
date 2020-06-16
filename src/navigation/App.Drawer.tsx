@@ -69,7 +69,7 @@ export const routes = (isDealerApp) => [
   {
     hidden: true,
     path: "/lead/add-new-lead",
-    title: "Lead Details - Customer",
+    title: isDealer() ? "Lead Details - Customer" : "Lead - Dealer",
   },
   {
     hidden: true,

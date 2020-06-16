@@ -145,7 +145,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
             <div style={{ padding: "30px" }}>No Task Added Today</div>
           </div>
         </BaseModal>
-        <div className={classes.root}>
+        <div className={classes.root + " home"}>
           <TableWithGrid
             title={"Annual Sales Target"}
             data={data.sales.data}

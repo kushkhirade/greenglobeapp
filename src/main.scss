@@ -18,6 +18,31 @@
     }
 }
 
+.textarea-full {
+    width: 100%;
+}
+
+.home {
+    padding: 10px;
+}
+
+.form-control {
+    width: 100%;
+
+    .form-input {
+        width: 100%;
+
+    }
+
+}
+
+.modal-buttons {
+
+    .button-container {
+        margin: 0;
+    }
+}
+
 .sub-form-heading {
     padding: 15px 10px;
     background-color: #e8e8e8;
@@ -357,6 +382,11 @@
     justify-content: center;
     height: 42px;
     align-items: center;
+
+    .r-select {
+        min-width: 121px;
+
+    }
 }
 
 .account-note {
@@ -405,11 +435,14 @@
 }
 
 
+
+
 @media only screen and (min-device-width: 320px) and (max-device-width: 812px) {
     .increaser {
-        width: 100px;
         margin: 0;
     }
+
+
 
     .align-left {
         display: flex;
@@ -418,7 +451,11 @@
         flex-direction: column
     }
 
-    ;
+    .cards-main {
+        .card-container {
+            width: 100%;
+        }
+    }
 
     .upload-details {
         .upload-container {
@@ -480,5 +517,17 @@
     .ver {
         font-size: 8px;
 
+    }
+}
+
+@media only screen and (device-width: 320px) {
+    .product-selection {
+        .r-select {
+            min-width: 160px;
+        }
+    }
+
+    .increaser {
+        width: auto;
     }
 }

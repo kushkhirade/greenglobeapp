@@ -18,18 +18,23 @@ export const userData = [
 ];
 export const chartData = [
   {
-    name: "Page A",
+    name: "3W ACE",
     uv: 4000,
     pv: 2400,
   },
   {
-    name: "Page B",
+    name: "3W PRO",
     uv: 3000,
     pv: 1398,
   },
   {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
+    name: "4W ACE",
+    uv: 4000,
+    pv: 2400,
+  },
+  {
+    name: "4W PRO",
+    uv: 3000,
+    pv: 1398,
   },
 ];

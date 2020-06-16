@@ -4,10 +4,6 @@
     justify-content: center;
     align-items: center;
 
-    .tab-button {
-        margin: 10px;
-    }
-
     .card-container {
         text-align: left;
 
@@ -80,7 +76,6 @@
 }
 
 .dealer-name-container {
-    overflow: scroll;
     padding: 0 25px;
     min-height: 200px;
     min-width: 220px;

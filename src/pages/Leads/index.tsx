@@ -341,15 +341,15 @@ const CardDetails = (props: any) => {
         <div className="card-element">
           <MailIcon /> &nbsp;{details.email}
         </div>
-        <Grid className="padding-6" item xs={6} md={12}>
+        <Grid className="padding-6" item xs={12} md={12}>
           <span className="description-text">Kit Enquiry</span> {details.kitEnq}
         </Grid>{" "}
         <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={6} md={12}>
+          <Grid item className="padding-6" xs={12} md={12}>
             <span className="description-text">Vehicle Type:</span>{" "}
             {details.vehicleType}
           </Grid>
-          <Grid className="padding-6" item xs={6} md={12}>
+          <Grid className="padding-6" item xs={12} md={12}>
             <span className="description-text">Dealer Generated Lead</span>{" "}
             {details.mobileNumber}
           </Grid>
@@ -384,29 +384,29 @@ const CardDetailsForDealer = (props: any) => {
     <Grid item xs={12} md={6} lg={6} sm={6}>
       <div className="card-container">
         <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={6} md={12}>
+          <Grid item className="padding-6" xs={12} md={12}>
             <span className="description-text">Name:</span> {details.name}
           </Grid>
-          <Grid className="padding-6" item xs={6} md={12}>
+          <Grid className="padding-6" item xs={12} md={12}>
             <span className="description-text">Contact</span>{" "}
             {details.mobileNumber}
           </Grid>
         </Grid>{" "}
         <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={6} md={12}>
+          <Grid item className="padding-6" xs={12} md={12}>
             <span className="description-text">Email:</span> {details.email}
           </Grid>
-          <Grid className="padding-6" item xs={6} md={12}>
+          <Grid className="padding-6" item xs={12} md={12}>
             <span className="description-text">Kit Enquiry</span>{" "}
             {details.kitEnq}
           </Grid>
         </Grid>{" "}
         <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={6} md={12}>
+          <Grid item className="padding-6" xs={12} md={12}>
             <span className="description-text">Vehicle Type:</span>{" "}
             {details.vehicleType}
           </Grid>
-          <Grid className="padding-6" item xs={6} md={12}>
+          <Grid className="padding-6" item xs={12} md={12}>
             <span className="description-text">Dealer Generated Lead</span>{" "}
             {details.mobileNumber}
           </Grid>

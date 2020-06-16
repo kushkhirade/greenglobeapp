@@ -29,26 +29,26 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
               <div className="card-content">
                 <div className="row-data">
                   <div className="data-content">
-                    <span> Order ID: </span> <br />
+                    <span> Order ID: </span>
                     {dataValue.orderId}{" "}
                   </div>
                   <div className="data-content">
-                    <span> Order Date: </span> <br />
+                    <span> Order Date: </span>
                     {dataValue.orderDate}{" "}
                   </div>
                 </div>
                 <div className="row-data">
                   <div className="data-content">
-                    <span>Item Quantity:</span> <br />
+                    <span>Item Quantity:</span>
                     {dataValue.quantity}{" "}
                   </div>
                   <div className="data-content">
-                    <span>Total Price:</span> <br /> {dataValue.totalPrice}{" "}
+                    <span>Total Price:</span> {dataValue.totalPrice}{" "}
                   </div>
                 </div>
                 <div className="row-data">
                   <div className="data-content">
-                    <span> Order Status:</span> <br /> {dataValue.orderStatus}{" "}
+                    <span> Order Status:</span> {dataValue.orderStatus}{" "}
                   </div>
                   <div className="data-content">
                     <span

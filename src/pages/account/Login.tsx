@@ -7,12 +7,14 @@ import Axios from "axios";
 import { NavLink, withRouter } from "react-router-dom";
 import { saveLoggedInUserData } from "src/state/Utility";
 import { saveLoggedInUserDetails } from "src/actions/App.Actions";
+import * as AppActionCreators from "../../actions/App.Actions";
 
 const LoginScreenImpl = (props: any) => {
   const [userName, setName] = React.useState("Demo");
   const [password, setPassword] = React.useState("demo");
 
   const handleLogin = async () => {
+    AppActionCreators.closeDrawer();
     if (isEmpty(userName) || isEmpty(password)) {
       return;
     }

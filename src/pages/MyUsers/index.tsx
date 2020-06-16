@@ -134,29 +134,22 @@ const UserCard = (props) => {
         <Grid container className="">
           <Grid xs={12} className="padding-6" md={6} sm={6}>
             <span className="description-text">Name:</span>
-            <br />
             {props.name}
           </Grid>
           <Grid xs={12} className="padding-6" md={6} sm={6}>
             <span className="description-text">Email:</span>
-            <br />
             {props.email}
           </Grid>
-        </Grid>
-        <Grid container className="">
-          <Grid xs={12} className="padding-6" md={4} sm={4}>
+          <Grid xs={12} className="padding-6" md={6} sm={6}>
             <span className="description-text">Mobile Number:</span>
-            <br />
             {props.mobileNumber}
           </Grid>
-          <Grid xs={12} className="padding-6" md={4} sm={4}>
+          <Grid xs={12} className="padding-6" md={6} sm={6}>
             <span className="description-text">Role:</span>
-            <br />
             {props.role}
           </Grid>
-          <Grid xs={12} className="padding-6" md={4} sm={4}>
+          <Grid xs={12} className="padding-6" md={6} sm={6}>
             <span className="description-text">Options:</span>
-            <br />
             <Edit onClick={() => props.handleEditModelOprn(props)} />{" "}
             <span style={{ padding: "10px" }} />
             <DeleteIcon /> <span style={{ padding: "10px" }} />

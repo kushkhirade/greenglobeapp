@@ -125,45 +125,45 @@ export class AddNewCustomerImpl extends React.PureComponent<
                       item
                       className="padding-6"
                       xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
+                      lg={12}
+                      sm={12}
+                      md={12}
                     >
                       <span className="description-text">Opportunity Name</span>
-                      <br /> {x.opp}
+                      {x.opp}
                     </Grid>
                     <Grid
                       item
                       className="padding-6"
                       xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
+                      lg={12}
+                      sm={12}
+                      md={12}
                     >
                       <span className="description-text">Stage</span>
-                      <br /> {x.stage}
+                      {x.stage}
                     </Grid>
                     <Grid
                       item
                       className="padding-6"
                       xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
+                      lg={12}
+                      sm={12}
+                      md={12}
                     >
                       <span className="description-text">Amount</span>
-                      <br /> {x.amount}
+                      {x.amount}
                     </Grid>
                     <Grid
                       item
                       className="padding-6"
                       xs={12}
-                      lg={3}
-                      sm={3}
-                      md={3}
+                      lg={12}
+                      sm={12}
+                      md={12}
                     >
                       <span className="description-text">Close Date</span>
-                      <br /> {x.date}
+                      {x.date}
                     </Grid>
                   </Grid>
                 </div>
@@ -190,7 +190,6 @@ export class AddNewCustomerImpl extends React.PureComponent<
   render() {
     return (
       <AppBar>
-       
         <div className="card-container no-hover">
           <Typography variant="h5" color="inherit" noWrap={true}>
             Customer Details
@@ -234,6 +233,8 @@ const UploadContainer = (props: any) => {
     name: `File${props.valKey}`,
     file: { name: "" },
   });
+  const spllited = file.file.name.split(".");
+  const ext = spllited[spllited.length - 1];
   return (
     <div key={props.valKey} className="upload-container">
       <div className="upload-head">{props.heading}</div>
@@ -250,7 +251,11 @@ const UploadContainer = (props: any) => {
           className="hidden-input"
           id="upload"
         />
-        <span className="filename">{file.file.name}</span>
+        <span className="filename">{`${
+          file.file.name.length > 10
+            ? `${file.file.name.substr(0, 10)}...${ext}`
+            : ""
+        }`}</span>{" "}
         <div>
           <VisibilityIcon />
           <DeleteIcon

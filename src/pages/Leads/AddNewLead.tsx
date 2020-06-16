@@ -489,7 +489,7 @@ export class AddNewLeadImpl extends React.Component<
               <TextField
                 multiline
                 rows={3}
-                className="r-select"
+                className="r-select textarea-full"
                 placeholder="Comments"
                 variant="outlined"
               />{" "}
@@ -579,7 +579,9 @@ export class AddNewLeadImpl extends React.Component<
         <div className="card-container no-hover add-leads-page">
           {this.renderModal()}
           <Typography variant="h5" color="inherit" noWrap={true}>
-            Lead Details - Customer{" "}
+            {isDealer()
+              ? "Lead Details - Customer"
+              : "Lead - Dealer"}
           </Typography>
           <div className="">
             {!isDealer() ? (
@@ -672,6 +674,8 @@ const UploadContainer = (props: any) => {
     name: `File${props.valKey}`,
     file: { name: "" },
   });
+  const spllited = file.file.name.split(".");
+  const ext = spllited[spllited.length - 1];
   return (
     <div key={props.valKey} className="upload-container">
       <div className="upload-head">{props.heading}</div>
@@ -688,7 +692,11 @@ const UploadContainer = (props: any) => {
           className="hidden-input"
           id="upload"
         />
-        <span className="filename" >{file.file.name}</span>
+        <span className="filename">{`${
+          file.file.name.length > 10
+            ? `${file.file.name.substr(0, 10)}...${ext}`
+            : ""
+        }`}</span>
         <div>
           <VisibilityIcon />
           <DeleteIcon

@@ -140,10 +140,16 @@ export class DealerDetailsImpl extends React.PureComponent<
               </Grid>
               <SubFormHeading>Bank and KYC Details</SubFormHeading>
               <Grid container>
-                <div className="padding-6">
+                <Grid
+                  item
+                  className="padding-6"
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  sm={12}
+                >
                   <b>GST Number - 27AACCN1235323</b>
-                </div>
-                <br />
+                </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Bank Name:</span>
                   {distDetails.bankName}
@@ -227,7 +233,6 @@ export class DealerDetailsImpl extends React.PureComponent<
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="pv" fill="#8884d8" />
                 <Bar dataKey="uv" fill="#82ca9d" />
               </BarChart>
             </ResponsiveContainer>
@@ -269,7 +274,9 @@ export class DealerDetailsImpl extends React.PureComponent<
     const { dealerDetails } = this.props;
     return (
       <AppBar>
-        <Tabs tabsData={this.tabData()} />
+        <div style={{ padding: "20px" }}>
+          <Tabs tabsData={this.tabData()} />
+        </div>
       </AppBar>
     );
   }
@@ -298,6 +305,6 @@ const distDetails = {
   aaNum: "3242353243",
   custDetails: [
     { custName: "Ramesh T", mobileNumber: "21323231" },
-    { custName: "Ramesh T", mobileNumber: "21323231" },
+    { custName: "Suresh T", mobileNumber: "21323231" },
   ],
 };

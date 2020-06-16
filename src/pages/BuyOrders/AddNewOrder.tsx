@@ -440,7 +440,7 @@ const DispatchedScreen = (props) => {
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Order ID -</span>
           <span className="disp-details"> {invoiceData.orderID}</span>
-          </Grid>
+        </Grid>
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Order Date:</span>
           <span className="disp-details"> {invoiceData.dateOfIssue}</span>
@@ -450,7 +450,7 @@ const DispatchedScreen = (props) => {
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Total Items -</span>
           <span className="disp-details"> {invoiceData.totalItems}</span>
-          </Grid>
+        </Grid>
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Order Total:</span>
           <span className="disp-details"> {invoiceData.orderTotal}</span>
@@ -533,21 +533,21 @@ const SubmittedScreen = (props) => {
   return (
     <div className="card-container">
       <Grid container={true}>
-        <Grid item={true} className="padding-6" xs={6} md={6}>
+        <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Order ID -</span>
-          <br /> ON-26541
+          ON-26541
         </Grid>
-        <Grid item={true} className="padding-6" xs={6} md={6}>
-          <span className="description-text"> Order Date - </span> <br />
+        <Grid item={true} className="padding-6" xs={12} md={6}>
+          <span className="description-text"> Order Date - </span>
           10/05/2020
         </Grid>
-        <Grid item={true} className="padding-6" xs={6} md={6}>
+        <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Total Items -</span>
-          <br /> 25 Order
+          25 Order
         </Grid>
-        <Grid item={true} className="padding-6" xs={6} md={6}>
+        <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text">Total -</span>
-          <br /> 1742000
+          1742000
         </Grid>
       </Grid>
       <div className="align-center padding-6">
