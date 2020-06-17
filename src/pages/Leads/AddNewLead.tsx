@@ -338,11 +338,22 @@ export class AddNewLeadImpl extends React.Component<
                   lg={6}
                   sm={6}
                 >
-                  <div className="label-text">{checkbox}</div>
-                  <Checkbox
-                    color="primary"
-                    inputProps={{ "aria-label": "secondary checkbox" }}
-                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <div className="label-text">{checkbox}</div>
+                    <div>
+                      <Checkbox
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
+                    </div>
+                  </div>
                 </Grid>
               </React.Fragment>
             ))}
@@ -392,7 +403,7 @@ export class AddNewLeadImpl extends React.Component<
         <Grid container>
           {detailsObj.map((dData) => {
             return (
-              <Grid item xs={12} md={6} lg={6}>
+              <Grid item xs={12} md={12} lg={12}>
                 <div className="activity-card card-container">
                   <div className="details-text">
                     <span className="description-text">S. No</span>{" "}
@@ -579,9 +590,7 @@ export class AddNewLeadImpl extends React.Component<
         <div className="card-container no-hover add-leads-page">
           {this.renderModal()}
           <Typography variant="h5" color="inherit" noWrap={true}>
-            {isDealer()
-              ? "Lead Details - Customer"
-              : "Lead - Dealer"}
+            {isDealer() ? "Lead Details - Customer" : "Lead - Dealer"}
           </Typography>
           <div className="">
             {!isDealer() ? (

@@ -331,32 +331,34 @@ const CardDetails = (props: any) => {
   const { details } = props;
   return (
     <div className="card-container">
-      <div className="card-data">
-        <div className="card-element">
-          <PersonIcon /> &nbsp; {details.name}
-        </div>
-        <div className="card-element">
-          <PhoneIcon /> &nbsp;{details.phoneNumber}
-        </div>
-        <div className="card-element">
-          <MailIcon /> &nbsp;{details.email}
-        </div>
-        <Grid className="padding-6" item xs={12} md={12}>
-          <span className="description-text">Kit Enquiry</span> {details.kitEnq}
-        </Grid>{" "}
-        <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={12} md={12}>
-            <span className="description-text">Vehicle Type:</span>{" "}
-            {details.vehicleType}
-          </Grid>
-          <Grid className="padding-6" item xs={12} md={12}>
-            <span className="description-text">Dealer Generated Lead</span>{" "}
-            {details.mobileNumber}
-          </Grid>
+      <Grid container>
+        <Grid className="padding-6" item xs={6} md={6}>
+          <span className="description-text">Name:</span>
+          {details.name}
         </Grid>
-        <div className="clickable" onClick={props.onClickAssign}>
-          {!details.assigned ? "Click To Assign Dealer" : ""}
-        </div>
+        <Grid className="padding-6" item xs={6} md={6}>
+          <span className="description-text">Contact:</span>
+          {details.mobileNumber || "NA"}
+        </Grid>
+        <Grid className="padding-6" item xs={6} md={6}>
+          <span className="description-text">Email:</span>
+          {details.email}
+        </Grid>
+        <Grid className="padding-6" item xs={6} md={6}>
+          <span className="description-text">Kit Enquiry:</span>
+          {details.kitEnq || "NA"}
+        </Grid>
+        <Grid className="padding-6" item xs={6} md={6}>
+          <span className="description-text">Vehicle Type:</span>
+          {details.vehicleType || "NA"}
+        </Grid>
+        <Grid className="padding-6" item xs={6} md={6}>
+          <span className="description-text">Dealer Generated Lead:</span>
+          {details.dealer || "NA"}
+        </Grid>
+      </Grid>
+      <div className="clickable" onClick={props.onClickAssign}>
+        {!details.assigned ? "Click To Assign Dealer" : ""}
       </div>
       <Grid container className="padding-15 align-left">
         <Grid className="padding-6" item xs={12} md={12}>
