@@ -62,26 +62,47 @@ const CustomerList = (props: any) => {
     return (
       <div onClick={props.onClick} key={index} className="card-container ">
         <Grid container className="padding-15 align-left">
-          <Grid item className="bold-font padding-6 center" xs={6} md={12}>
+          <Grid
+            item
+            className="bold-font padding-6-corners center"
+            xs={6}
+            md={6}
+          >
             <PersonPin /> <span style={{ padding: "5px" }} />
             {customerData.firstName}
           </Grid>
-          <Grid className="bold-fon padding-6 centert" item xs={6} md={12}>
+          <Grid
+            className="bold-fon padding-6-corners centert"
+            item
+            xs={6}
+            md={6}
+          >
             <Phone /> <span style={{ padding: "5px" }} />
             {customerData.mobileNumber}
           </Grid>
         </Grid>
         <Grid container className="padding-15 align-left">
-          <Grid className="padding-6" item xs={12} md={12}>
+          <Grid className="padding-6-corners" item xs={6} md={6}>
+            <span className="description-text"> Email:</span>
+            {customerData.email || 'NA'}
+          </Grid>
+          <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Purchased Product:</span>
             {customerData.productPurchased}
           </Grid>
+         
+        </Grid>
+        <Grid container className="padding-15 align-left">
+          <Grid className="padding-6-corners" item xs={6} md={6}>
+            <span className="description-text"> Dealer Code:</span>
+            {customerData.dealerCode || "NA"}
+          </Grid>
           <Grid
-            className="padding-6 align-center"
+            className="padding-6-corners align-center"
             style={{ justifyContent: "flex-start" }}
             item
-            xs={12}
-            md={12}
+            xs={6}
+            md={6}
           >
             <span className="description-text">Dealer Rating:</span>
             <Rating

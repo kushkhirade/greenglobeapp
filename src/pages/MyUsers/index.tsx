@@ -132,24 +132,29 @@ const UserCard = (props) => {
     <Grid item xs={12} md={6} sm={6}>
       <div className="card-container">
         <Grid container className="">
-          <Grid xs={12} className="padding-6" md={6} sm={6}>
+          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Name:</span>
             {props.name}
           </Grid>
-          <Grid xs={12} className="padding-6" md={6} sm={6}>
+          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Email:</span>
             {props.email}
           </Grid>
-          <Grid xs={12} className="padding-6" md={6} sm={6}>
+          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Mobile Number:</span>
             {props.mobileNumber}
           </Grid>
-          <Grid xs={12} className="padding-6" md={6} sm={6}>
+          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Role:</span>
             {props.role}
           </Grid>
-          <Grid xs={12} className="padding-6" md={6} sm={6}>
-            <span className="description-text">Options:</span>
+          <Grid
+            xs={12}
+            className="padding-6-corners"
+            md={12}
+            sm={12}
+            style={{ textAlign: "right" }}
+          >
             <Edit onClick={() => props.handleEditModelOprn(props)} />{" "}
             <span style={{ padding: "10px" }} />
             <DeleteIcon /> <span style={{ padding: "10px" }} />

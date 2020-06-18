@@ -143,7 +143,7 @@ export class LeadsImpl extends React.Component<
     },
     {
       tabName: "Dealer",
-      component: "",
+      component: this.renderDealersAssigned(),
       onTabSelect: (tabName: any) => this.setState({ topActiveTab: tabName }),
     },
   ];
@@ -302,7 +302,9 @@ export class LeadsImpl extends React.Component<
           ) : (
             <React.Fragment>
               <Tabs tabsData={this.tabData} />
-              <Tabs tabsData={this.tabDataToDisplay} />
+              {this.state.topActiveTab === "Customer" && (
+                <Tabs tabsData={this.tabDataToDisplay} />
+              )}
             </React.Fragment>
           )}
         </div>
@@ -356,6 +358,20 @@ const CardDetails = (props: any) => {
           <span className="description-text">Dealer Generated Lead:</span>
           {details.dealer || "NA"}
         </Grid>
+        {details.assigned ? (
+          <React.Fragment>
+            <Grid className="padding-6" item xs={6} md={6}>
+              <span className="description-text">Assigned Dealer:</span>
+              {details.dealer || "NA"}
+            </Grid>
+            <Grid className="padding-6" item xs={6} md={6}>
+              <span className="description-text">Lead Rating:</span>
+              {details.dealer || "NA"}
+            </Grid>
+          </React.Fragment>
+        ) : (
+          ""
+        )}
       </Grid>
       <div className="clickable" onClick={props.onClickAssign}>
         {!details.assigned ? "Click To Assign Dealer" : ""}
