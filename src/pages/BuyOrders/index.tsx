@@ -3,9 +3,10 @@ import { connect } from "react-redux";
 import AppBar from "src/navigation/App.Bar";
 import "./buyOrders.scss";
 import { withRouter } from "react-router-dom";
-import { IHistory } from "src/state/Utility";
+import { IHistory, isDealer } from "src/state/Utility";
 import { Fab } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import { Tabs } from "src/components/Tabs";
 
 export interface IBuyOrdersProps {
   data?: string;
@@ -71,7 +72,19 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   public render() {
     return (
       <AppBar>
-        {this.renderCard()}
+         {isDealer() ? (
+          this.renderCard()
+        ) : (
+          <Tabs
+            tabsData={[
+              { tabName: "Buy", component: this.renderCard() },
+              {
+                tabName: "Sell",
+                component: '',
+              },
+            ]}
+          />
+        )}
         <span
           style={{ position: "absolute", right: 20, bottom: 20 }}
           onClick={() => this.props.history.push("/buy-order/add-new-order")}
