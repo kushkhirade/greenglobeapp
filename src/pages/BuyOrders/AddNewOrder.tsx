@@ -411,16 +411,7 @@ export class AddNewOrderImpl extends React.PureComponent<
         {isDealer() ? (
           this.renderStepper()
         ) : (
-          <Tabs
-            tabsData={[
-              { tabName: "Buy", component: this.renderStepper() },
-              {
-                tabName: "Sell",
-                component: this.renderSellStepper(),
-              },
-            ]}
-          />
-        )}
+          this.renderStepper())}
       </AppBar>
     );
   }
@@ -558,3 +549,16 @@ const SubmittedScreen = (props) => {
     </div>
   );
 };
+
+
+
+//   <Tabs
+//     tabsData={[
+//       { tabName: "Buy", component: this.renderStepper() },
+//       {
+//         tabName: "Sell",
+//         component: this.renderSellStepper(),
+//       },
+//     ]}
+//   />
+// )}
