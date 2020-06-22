@@ -96,7 +96,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
       },
       {
         name: "target",
-        label: "Target123",
+        label: "TargetTesting",
         options: {
           filter: true,
           sort: false,
