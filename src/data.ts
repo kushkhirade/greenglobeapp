@@ -144,7 +144,7 @@ const data = {
       {
         distID: 2555,
         name: "Sachin T. Assined",
-        email: "Sachin@gmail.com",
+        email: "SachinDealer@gmail.com",
         phoneNumber: "12346423423",
         whatsApp: "12346423423",
         assignedDealer: "Jack",

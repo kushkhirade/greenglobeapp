@@ -77,10 +77,10 @@ export class InventoryImpl extends React.PureComponent<
 
   tabData = [
     {
-      tabName: "All(50)",
+      tabName: "All(92)",
     },
     {
-      tabName: "3W ACE",
+      tabName: "3W ACE(20)",
     },
     {
       tabName: "3W PRO(12)",
@@ -139,7 +139,7 @@ const InventoryCards = (props: any) => {
             <div className="text-left">
               <div className="padding-6">
                 {" "}
-                <span className="description-text">Model: </span> {inData.model}
+                <span className="description-text">Model - </span> {inData.model}
               </div>
               <div className="padding-6">
                 <span className="description-text">Price - </span>
@@ -148,7 +148,7 @@ const InventoryCards = (props: any) => {
               <div className="padding-6">
                 <span className="description-text">
                   {" "}
-                  Added to Inventory on{" "}
+                  Added to Inventory on -{" "}
                 </span>
                 {inData.addedOn}
               </div>

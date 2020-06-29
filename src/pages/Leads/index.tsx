@@ -4,6 +4,7 @@ import ChatIcon from "@material-ui/icons/Chat";
 import MailIcon from "@material-ui/icons/Mail";
 import PersonIcon from "@material-ui/icons/Person";
 import PhoneIcon from "@material-ui/icons/Phone";
+import WhatsappIcon from "./wtsapimg.png";
 import * as React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
@@ -14,7 +15,7 @@ import data from "../../data";
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
 
-const filterOptions = [
+const allfilterOptions = [
   {
     name: "all",
     label: "All",
@@ -37,6 +38,55 @@ const filterOptions = [
   },
 ];
 
+const leadfilterOptions = [
+  {
+    name: "Lead Type - 3W",
+    label: "Lead Type - 3W",
+  },
+  {
+    name: "Lead Type - 3W",
+    label: "Lead Type - 3W",
+  },
+];
+
+const subfilterOptions = [
+  {
+    name: "Lead Sub Type - Customer",
+    label: "Lead Sub Type - Customer",
+  },
+  {
+    name: "Lead Sub Type - Lead",
+    label: "Lead Sub Type - Lead",
+  },
+  {
+    name: "Lead Sub Type - Infuencer",
+    label: "Lead Sub Type - Infuencer",
+  },
+  {
+    name: "Lead Sub Type - Fitment",
+    label: "Lead Sub Type - Fitment",
+  },
+  {
+    name: "Lead Sub Type - Servicing",
+    label: "Lead Sub Type - Servicing",
+  },
+];
+
+const ratingfilterOptions = [
+  {
+    name: "Rating - Hot ",
+    label: "Rating - Hot ",
+  },
+  {
+    name: "Rating - Cold",
+    label: "Rating - Cold",
+  },
+  {
+    name: "Rating - Warm ",
+    label: "Rating - Warm ",
+  },
+];
+
 export interface ILeadsProps {
   history: {
     push: (path: string) => void;
@@ -51,16 +101,18 @@ export class LeadsImpl extends React.Component<
     activeTabType: string;
     isModalOpen: boolean;
     dealers: any;
-    showFiletOptions: boolean;
+    showFilerOptions: boolean;
+    filterType: string;
   }
 > {
   public state = {
     topActiveTab: "Customer",
     activeTabType: "Assigned",
     isModalOpen: false,
-    showFiletOptions: false,
+    showFilerOptions: false,
     selectedFilter: "",
     dealers: data.leads.data,
+    filterType: ""
   };
 
   public openAssignDealerModal = () => {
@@ -82,26 +134,45 @@ export class LeadsImpl extends React.Component<
         })}
       </Grid>
     );
+    // const AssignedCust = data.leads.data.map((d) => {
+    //   if (!d.isDealer && d.assigned)
+    //     return d;
+    //   else ""
+    // });
+    // return (
+    //   <Grid container >
+    //   {console.log("card details: ", AssignedCust)}
+    //     <CardDetails details={AssignedCust} history={this.props.history} />
+    //   </Grid>
+    // );
   };
+
   public renderCustomersUnAssigned = () => {
+    // return (
+    //   <Grid container>
+    //     {data.leads.data.map((d) => {
+    //            if (!d.isDealer && !d.assigned) {
+    //         return (
+    //           <Grid item xs={12} md={6} sm={6}>
+    //             <CardDetails details={d} />
+    //           </Grid>
+    //         );
+    //       }
+    //       return " ";
+    //     })}
+    //   </Grid>
+    // );
+    const UnassignedCust = data.leads.data.map((d) => {
+      if (!d.isDealer && !d.assigned)
+        return d;
+    });
     return (
-      <Grid container>
-        {data.leads.data.map((d) => {
-          if (!d.isDealer && !d.assigned) {
-            return (
-              <Grid item xs={12} md={6} sm={6}>
-                <CardDetails
-                  onClickAssign={this.openAssignDealerModal}
-                  details={d}
-                />
-              </Grid>
-            );
-          }
-          return " ";
-        })}
+      <Grid container >
+        <CardDetails details={UnassignedCust} history={this.props.history} />
       </Grid>
     );
   };
+
   public renderDealersAssigned = () => {
     return (
       <Grid container>
@@ -117,7 +188,18 @@ export class LeadsImpl extends React.Component<
         })}
       </Grid>
     );
+
+    // const AssignedDealer = data.leads.data.map((d) => {
+    //   if (d.isDealer && d.assigned)
+    //     return d;
+    // });
+    // return (
+    //   <Grid container >
+    //     <CardDetails details={AssignedDealer} history={this.props.history} />
+    //   </Grid>
+    // );
   };
+
   public renderDealersUnAssigned = () => {
     return (
       <Grid container>
@@ -133,6 +215,16 @@ export class LeadsImpl extends React.Component<
         })}
       </Grid>
     );
+
+    // const  UnassignedDealer = data.leads.data.map((d) => {
+    //   if (d.isDealer && !d.assigned)
+    //     return d;
+    // })
+    // return (
+    //   <Grid container >
+    //     <CardDetails details={UnassignedDealer} history={this.props.history} />
+    //   </Grid>
+    // );
   };
 
   public tabData = [
@@ -147,6 +239,7 @@ export class LeadsImpl extends React.Component<
       onTabSelect: (tabName: any) => this.setState({ topActiveTab: tabName }),
     },
   ];
+
   public tabDataToDisplay = [
     {
       tabName: "Assigned",
@@ -221,14 +314,49 @@ export class LeadsImpl extends React.Component<
     return (
       <BaseModal
         className="assign-dealer-modal"
-        onClose={() => this.setState({ showFiletOptions: false })}
+        onClose={() => this.setState({ showFilerOptions: false })}
         contentClassName="support-content"
-        open={this.state.showFiletOptions}
+        open={this.state.showFilerOptions}
       >
         <div className="head-title">Filters</div>
         <form className="form-content" autoComplete="off">
           <div className="dealer-name-container">
-            {filterOptions.map((fData, index) => (
+            {this.state.filterType === "All" ?
+              allfilterOptions.map((fData, index) => (
+                <div
+                  key={index}
+                  onClick={() =>
+                    this.setState({
+                      selectedFilter: fData.label,
+                    })
+                  }
+                  className={`dealer-name ${
+                    this.state.selectedFilter === fData.label && "active"
+                  }`}
+                >
+                  {fData.label}
+                </div>
+              ))
+            : null }
+            {this.state.filterType === "Lead Type" ?
+              leadfilterOptions.map((fData, index) => (
+                <div
+                  key={index}
+                  onClick={() =>
+                    this.setState({
+                      selectedFilter: fData.label,
+                    })
+                  }
+                  className={`dealer-name ${
+                    this.state.selectedFilter === fData.label && "active"
+                  }`}
+                >
+                  {fData.label}
+                </div>
+              ))
+            : null }
+            {this.state.filterType === "Sub Lead Type" ?
+            subfilterOptions.map((fData, index) => (
               <div
                 key={index}
                 onClick={() =>
@@ -242,18 +370,36 @@ export class LeadsImpl extends React.Component<
               >
                 {fData.label}
               </div>
-            ))}
+            ))
+          : null }
+          {this.state.filterType === "Rating" ?
+              ratingfilterOptions.map((fData, index) => (
+                <div
+                  key={index}
+                  onClick={() =>
+                    this.setState({
+                      selectedFilter: fData.label,
+                    })
+                  }
+                  className={`dealer-name ${
+                    this.state.selectedFilter === fData.label && "active"
+                  }`}
+                >
+                  {fData.label}
+                </div>
+              ))
+            : null }
           </div>
           <div className="button-container">
             <Button
-              onClick={() => this.setState({ showFiletOptions: false })}
+              onClick={() => this.setState({ showFilerOptions: false })}
               variant="contained"
               color="default"
             >
               Cancel
             </Button>{" "}
             <Button
-              onClick={() => this.setState({ showFiletOptions: false })}
+              onClick={() => this.setState({ showFilerOptions: false })}
               variant="contained"
               color="primary"
             >
@@ -269,22 +415,43 @@ export class LeadsImpl extends React.Component<
     {
       tabName: "All(50)",
       component: (
+        // <Grid container>
+        //   {data.leads.data.map((d) => {
+        //     return <CardDetailsForDealer details={d} />;
+        //   })}
+        // </Grid>
         <Grid container>
-          {data.leads.data.map((d) => {
-            return <CardDetailsForDealer details={d} />;
-          })}
+           <CardDetailsForDealer details={data.leads.data} history={this.props.history} />;
         </Grid>
       ),
-      onTabSelect: (tabName) => this.setState({ showFiletOptions: true }),
+      onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "All" }),
     },
     {
       tabName: "Lead Type",
+      component: (
+        <Grid container>
+           {/* <CardDetailsForDealer details={data.leads.data} history={this.props.history} />; */}
+        </Grid>
+      ),
+      onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Lead Type" }),
     },
     {
       tabName: "Sub Lead Type",
+      component: (
+        <Grid container>
+           {/* <CardDetailsForDealer details={data.leads.data} history={this.props.history} />; */}
+        </Grid>
+      ),
+      onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Sub Lead Type" }),
     },
     {
       tabName: "Rating",
+      component: (
+        <Grid container>
+           {/* <CardDetailsForDealer details={data.leads.data} history={this.props.history} />; */}
+        </Grid>
+      ),
+      onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Rating" }),
     },
     {
       tabName: "Walk Ins",
@@ -331,121 +498,135 @@ export const Leads = withRouter(
 
 const CardDetails = (props: any) => {
   const { details } = props;
-  return (
-    <div className="card-container">
-      <Grid container>
-        <Grid className="padding-6" item xs={6} md={6}>
-          <span className="description-text">Name:</span>
-          {details.name}
-        </Grid>
-        <Grid className="padding-6" item xs={6} md={6}>
-          <span className="description-text">Contact:</span>
-          {details.mobileNumber || "NA"}
-        </Grid>
-        <Grid className="padding-6" item xs={6} md={6}>
-          <span className="description-text">Email:</span>
-          {details.email}
-        </Grid>
-        <Grid className="padding-6" item xs={6} md={6}>
-          <span className="description-text">Kit Enquiry:</span>
-          {details.kitEnq || "NA"}
-        </Grid>
-        <Grid className="padding-6" item xs={6} md={6}>
-          <span className="description-text">Vehicle Type:</span>
-          {details.vehicleType || "NA"}
-        </Grid>
-        <Grid className="padding-6" item xs={6} md={6}>
-          <span className="description-text">Dealer Generated Lead:</span>
-          {details.dealer || "NA"}
-        </Grid>
-        {details.assigned ? (
-          <React.Fragment>
-            <Grid className="padding-6" item xs={6} md={6}>
-              <span className="description-text">Assigned Dealer:</span>
-              {details.dealer || "NA"}
+  // return (
+  //   <div className="cards-main">
+  //     {details.map((dataValue: any, index: number) => {
+        return (
+          <div className="card-container">
+            <Grid container >
+              <Grid className="padding-6" item md={6} >
+                <span className="description-text">Name:</span>
+                {details.name || "NA"}
+              </Grid>
+              <Grid className="padding-6" item>
+                <span className="description-text">Contact:</span>
+                {details.phoneNumber || "NA"}
+              </Grid>
             </Grid>
-            <Grid className="padding-6" item xs={6} md={6}>
-              <span className="description-text">Lead Rating:</span>
-              {details.dealer || "NA"}
+            <Grid container >
+              <Grid className="padding-6" item md={6}>
+                <span className="description-text">Email:</span>
+                {details.email}
+              </Grid>
+              <Grid className="padding-6" item >
+                <span className="description-text">Kit Enquiry:</span>
+                {details.kitEnq || "NA"}
+              </Grid>
             </Grid>
-          </React.Fragment>
-        ) : (
-          ""
-        )}
-      </Grid>
-      <div className="clickable" onClick={props.onClickAssign}>
-        {!details.assigned ? "Click To Assign Dealer" : ""}
-      </div>
-      <Grid container className="padding-15 align-left">
-        <Grid className="padding-6" item xs={12} md={12}>
-          <div className="icon-container">
-            <PhoneIcon className="phone-icon" />
-            &nbsp;
-            <ChatIcon className="chat-icon" />
-            &nbsp;
-            <MailIcon className="mail-icon" />
-            &nbsp;
-            <img
-              height="44px"
-              src="https://img.icons8.com/color/48/000000/whatsapp.png"
-            />{" "}
+            <Grid container >
+              <Grid className="padding-6" item md={6}>
+                <span className="description-text">Vehicle Type:</span>
+                {details.vehicleType || "NA"}
+              </Grid>
+              <Grid className="padding-6" item>
+                <span className="description-text">Dealer Generated Lead:</span>
+                {details.dealer || "NA"}
+              </Grid>
+            </Grid>
+              {details.assigned ? (
+                // <React.Fragment>
+                  <Grid container xs={12}>
+                    <Grid className="padding-6" item md={6}>
+                      <span className="description-text">Assigned Dealer :</span>
+                      {details.dealer || "NA"}
+                    </Grid>
+                    <Grid className="padding-6" item>
+                      <span className="description-text">Lead's Rating :</span>
+                      {details.dealer || "NA"}
+                    </Grid>
+                  </Grid>
+                // </React.Fragment>
+              ) : (
+                ""
+              )}
+              <div className="clickable" onClick={props.onClickAssign}>
+                {!details.assigned ? "Click To Assign Dealer" : ""}
+              </div>
+            <Grid container className="padding-15 align-left">
+              <Grid className="padding-6" item xs={12} md={12}>
+                <div className="icon-container">
+                  <PhoneIcon className="phone-icon" />
+                  &nbsp;
+                  <ChatIcon className="chat-icon" />
+                  &nbsp;
+                  <MailIcon className="mail-icon" />
+                  &nbsp;
+                  <img
+                    height="42px"
+                    src={WhatsappIcon}
+                    // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+                  />{" "}
+                </div>
+              </Grid>
+            </Grid>{" "}
           </div>
-        </Grid>
-      </Grid>{" "}
-    </div>
-  );
-};
+        )}
+//       )}
+//     </div>
+//   );
+// };
 
 const CardDetailsForDealer = (props: any) => {
   const { details } = props;
   return (
-    <Grid item xs={12} md={6} lg={6} sm={6}>
-      <div className="card-container">
-        <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={12} md={12}>
-            <span className="description-text">Name:</span> {details.name}
-          </Grid>
-          <Grid className="padding-6" item xs={12} md={12}>
-            <span className="description-text">Contact</span>{" "}
-            {details.mobileNumber}
-          </Grid>
-        </Grid>{" "}
-        <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={12} md={12}>
-            <span className="description-text">Email:</span> {details.email}
-          </Grid>
-          <Grid className="padding-6" item xs={12} md={12}>
-            <span className="description-text">Kit Enquiry</span>{" "}
-            {details.kitEnq}
-          </Grid>
-        </Grid>{" "}
-        <Grid container className="padding-15 align-left">
-          <Grid item className="padding-6" xs={12} md={12}>
-            <span className="description-text">Vehicle Type:</span>{" "}
-            {details.vehicleType}
-          </Grid>
-          <Grid className="padding-6" item xs={12} md={12}>
-            <span className="description-text">Dealer Generated Lead</span>{" "}
-            {details.mobileNumber}
-          </Grid>
-        </Grid>{" "}
-        <Grid container className="padding-15 align-left">
-          <Grid className="padding-6" item xs={12} md={12}>
-            <div className="icon-container">
-              <PhoneIcon className="phone-icon" />
-              &nbsp;
-              <ChatIcon className="chat-icon" />
-              &nbsp;
-              <MailIcon className="mail-icon" />
-              &nbsp;
-              <img
-                height="44px"
-                src="https://img.icons8.com/color/48/000000/whatsapp.png"
-              />{" "}
-            </div>
-          </Grid>
-        </Grid>{" "}
-      </div>
-    </Grid>
+    <div className="cards-main">
+      {details.map((dataValue: any, index: number) => {
+        return (
+          <div className="card-container">
+            <Grid container xs={12} >
+              <Grid className="padding-6" >
+                <span className="description-text">Name :</span> {dataValue.name}
+              </Grid>
+              <Grid className="padding-6">
+                <span className="description-text">Contact</span>{" "} {dataValue.phoneNumber}
+              </Grid>
+            </Grid>{" "}
+            <Grid container>
+              <Grid className="padding-6" >
+                <span className="description-text">Email :</span> {dataValue.email}
+              </Grid>
+              <Grid className="padding-6" >
+                <span className="description-text">Kit Enquiry :</span>{" "} {dataValue.kitEnq}
+              </Grid>
+            </Grid>{" "}
+            <Grid container>
+              <Grid className="padding-6" >
+                <span className="description-text">Vehicle Type :</span>{" "} {dataValue.vehicleType}
+              </Grid>
+              <Grid className="padding-6" >
+                <span className="description-text">Dealer Generated Lead :</span>{" "}  {dataValue.phoneNumber}
+              </Grid>
+            </Grid>{" "}
+            <Grid container className="padding-15 align-left">
+              <Grid className="padding-6" item xs={12} >
+                <div className="icon-container">
+                  <PhoneIcon className="phone-icon" />
+                  &nbsp;
+                  <ChatIcon className="chat-icon" />
+                  &nbsp;
+                  <MailIcon className="mail-icon" />
+                  &nbsp;
+                  <img
+                    height="42px"
+                    src={WhatsappIcon}
+                    // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+                  />{" "}
+                </div>
+              </Grid>
+            </Grid>{" "}
+          </div>
+        );
+      })}
+    </div>
   );
 };

@@ -6,12 +6,15 @@
 
     .card-container {
         text-align: left;
+        flex-Direction: column;
+        justify-Content: space-around;
+        // flex-wrap: wrap;
 
         .card-data {
             display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
-            text-align: left;
+            // flex-wrap: wrap;
+            text-align: right;
         }
 
         .card-element {
@@ -195,4 +198,13 @@
 
 .mail-icon {
     @include svgColor(#e0b017)
+}
+
+.wtsapp-icon {
+    @include svgColor(#4FCE5D)
+}
+
+.view {
+    color: #0aa3ff;
+    font-size: 16px;
 }

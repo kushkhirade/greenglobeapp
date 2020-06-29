@@ -16,7 +16,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
   public state: IPageState = {
     usersTablePage: 0,
     usersTableRowsPerPage: 5,
-    showStatsModal: false,
+    showStatsModal: true,
   };
 
   leadStatus = [

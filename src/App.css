@@ -46,11 +46,12 @@ body,
 
 .padding-6 {
   padding: 6px;
+  padding-right: 20px;
 }
 
 .description-text {
   font-size: 14px;
-  color: #6d6d6d;
+  color:#4A4847;
   margin-right: 10px;
 }
 

@@ -61,10 +61,10 @@ const CustomerList = (props: any) => {
   return props.customerData.map((customerData: any, index: any) => {
     return (
       <div onClick={props.onClick} key={index} className="card-container ">
-        <Grid container className="padding-15 align-left">
+        <Grid container >
           <Grid
             item
-            className="bold-font padding-6-corners center"
+            className="padding-6-corners"
             xs={6}
             md={6}
           >
@@ -72,7 +72,7 @@ const CustomerList = (props: any) => {
             {customerData.firstName}
           </Grid>
           <Grid
-            className="bold-fon padding-6-corners centert"
+            className="padding-6-corners"
             item
             xs={6}
             md={6}
@@ -81,7 +81,7 @@ const CustomerList = (props: any) => {
             {customerData.mobileNumber}
           </Grid>
         </Grid>
-        <Grid container className="padding-15 align-left">
+        <Grid container >
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Email:</span>
             {customerData.email || 'NA'}
@@ -92,7 +92,7 @@ const CustomerList = (props: any) => {
           </Grid>
          
         </Grid>
-        <Grid container className="padding-15 align-left">
+        <Grid container >
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Dealer Code:</span>
             {customerData.dealerCode || "NA"}

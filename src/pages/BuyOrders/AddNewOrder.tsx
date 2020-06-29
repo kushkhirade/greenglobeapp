@@ -7,6 +7,8 @@ import AppBar from "src/navigation/App.Bar";
 import { isDealer } from "src/state/Utility";
 import { Stepper } from "./Stepper";
 import "./buyOrders.scss";
+import { Add } from "@material-ui/icons";
+import { Fab } from "@material-ui/core";
 import { GSelect } from "src/components/GSelect";
 import { BaseModal } from "src/components/BaseModal";
 
@@ -176,14 +178,26 @@ export class AddNewOrderImpl extends React.PureComponent<
             </Grid>
           </div>
         </Grid>
+        {/* <Grid container spacing={4}>
+          <Grid item xs={8} md={6} sm={6}></Grid>
+          <Grid item xs={4} md={6} sm={6}>
+          <Button >
+            <Fab color="secondary" aria-labelledby="add-ticket" style={{height:"20px", width:"40px"}}>
+              <Add />
+            </Fab>
+          </Button>
+        </Grid>
+        </Grid> */}
         <div className="button-container">
-          <Button variant="contained" color="default">
+          <Button variant="contained" color="default"
+          onClick={() => this.props.history.goBack()}>
             Cancel
           </Button>
           <Button
             onClick={() => {
               if (label === "Add") {
-                return;
+                this.props.history.goBack()
+                // return;
               }
               if (type === "sell") {
                 this.setState({
@@ -230,7 +244,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                 <Grid item xs={12} md={4} lg={4}>
                   <div className="card-container no-hover">
                     <div className="head-title padding-6 ">
-                      Performa Invoice
+                      Proforma Invoice
                     </div>
                     <div className="invoice-date padding-6">
                       <div>
@@ -333,6 +347,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                     activeStepBuy: this.state.activeStepBuy + 1,
                   })
                 }
+                history= {this.props.history}
               />
             ),
           },
@@ -507,7 +522,8 @@ const PaymentDetailsScreen = (props) => {
             />
           </div>{" "}
           <div className="button-container">
-            <Button variant="contained" color="default">
+            <Button variant="contained" color="default"
+            onClick={() => props.history.goBack()}>
               Cancel
             </Button>
             <Button onClick={props.onClick} variant="contained" color="primary">
