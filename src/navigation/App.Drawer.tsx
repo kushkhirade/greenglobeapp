@@ -40,6 +40,7 @@ interface IAppDrawer {
   handleDrawerClose?: () => void;
 }
 export const routes = (isDealerApp) => [
+
   { path: "/home", title: "Home", icon: () => <DashboardIcon /> },
   {
     hidden: true,
