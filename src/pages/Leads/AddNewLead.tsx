@@ -159,7 +159,7 @@ export class AddNewLeadImpl extends React.Component<
   renderDocsForRTO = () => {
     return (
       <React.Fragment>
-        <SubFormHeading style={{ textAlign: "center" }}>
+        <SubFormHeading >
           Documents Required for RTO
         </SubFormHeading>
         <UploadContainer valKey={1} heading="Original R.C. Book" />

@@ -6,15 +6,15 @@
 
     .card-container {
         text-align: left;
-        flex-Direction: column;
-        justify-Content: space-around;
+        // flex-Direction: column;
+        // justify-Content: space-around;
         // flex-wrap: wrap;
 
         .card-data {
             display: flex;
             justify-content: space-between;
-            // flex-wrap: wrap;
-            text-align: right;
+            flex-wrap: wrap;
+            text-align: left;
         }
 
         .card-element {
