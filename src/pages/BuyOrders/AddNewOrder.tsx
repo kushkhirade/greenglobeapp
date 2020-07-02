@@ -12,7 +12,13 @@ import { Fab } from "@material-ui/core";
 import { GSelect } from "src/components/GSelect";
 import { BaseModal } from "src/components/BaseModal";
 
-export interface IAddNewOrderProps {}
+export interface IAddNewOrderProps {
+  history: {
+    push: (path: string) => void;
+    goBack;
+  };
+  isDealer: boolean;
+}
 const options = [
   { value: "loan", label: "Loan" },
   { value: "upfront", label: "Up Front" },
@@ -69,7 +75,7 @@ export class AddNewOrderImpl extends React.PureComponent<
   IAddNewOrderProps,
   any
 > {
-  constructor(props: IAddNewOrderProps) {
+  constructor(props: IAddNewOrderProps, any) {
     super(props);
     this.state = {
       value: "",
@@ -85,13 +91,6 @@ export class AddNewOrderImpl extends React.PureComponent<
       qty4: 10,
       list:[1,2,3]
     };
-  }
-
-  public onClickChng =() => {
-    var val = this.state.list;
-    val.push(this.state.list.length + 1);
-    this.setState({list : val });
-    console.log(this.state.list);
   }
 
   public onStepChange = (tabName: string) => {
@@ -128,28 +127,10 @@ export class AddNewOrderImpl extends React.PureComponent<
     </div>
   );
 
-  public renderAddProduct = () => {
-    return(
-      <div className="product-selection">
-        <Grid item xs={4} md={6} sm={6}>
-          <GSelect
-            className="r-select"
-            // value={this.state.product4}
-            options={products}
-            onChange={(v: any) => this.handleChange(v, "product4")}
-          />{" "}
-        </Grid>
-        <Grid item xs={4} md={4} sm={4}>
-          {this.renderValueManipulator("qty4")}
-        </Grid>
-      </div>
-    )
-  }
-
   public renderForm = (label, type) => {
     return (
       <div className="card-container no-hover">
-        {/* <Grid container spacing={4}>
+        <Grid container spacing={4}>
           <div className="product-selection">
             <Grid item xs={4} md={6} sm={6}>
               <GSelect
@@ -209,26 +190,8 @@ export class AddNewOrderImpl extends React.PureComponent<
             </Grid>
           </div>
         </Grid>
-         */}
-        {console.log(this.state.list)}
-         
-         {this.state.list.map(item => (
-            // item
-            <Grid container spacing={4}>
-                {this.renderAddProduct()}
-            </Grid>
-
-          ))}
-        <Grid container spacing={4}>
-          <Grid item xs={8} md={6} sm={6}></Grid>
-          <Grid item xs={4} md={6} sm={6}>
-          <Button onClick={this.onClickChng}>
-            <Fab color="secondary" aria-labelledby="add-ticket" style={{height:"20px", width:"40px"}}>
-              <Add />
-            </Fab>
-          </Button>
-        </Grid>
-        </Grid>
+        
+       
         <div className="button-container">
           <Button variant="contained" color="default"
           onClick={() => this.props.history.goBack()}>
@@ -408,9 +371,9 @@ export class AddNewOrderImpl extends React.PureComponent<
               />
             ),
           },
-          { label: "Add Inventory", 
+          { label: "GRN", 
             component: 
-            <RenderForm label="Add" type="buy" history={this.props.history}
+            <RenderForm label="Confirm" type="buy" history={this.props.history}
             onClick={() => {
               this.setState({activeStepBuy: this.state.activeStepBuy + 1});
               this.props.history.goBack();
@@ -501,7 +464,7 @@ export const AddNewOrder = connect<{}, {}, IAddNewOrderProps>(mapStateToProps)(
   AddNewOrderImpl
 );
 
-class RenderForm extends React.Component {
+class RenderForm extends React.Component <any> {
   constructor(props){
     super(props);
   }
@@ -576,46 +539,37 @@ class RenderForm extends React.Component {
                 {this.renderAddProduct()}
             </Grid>
           ))}
-        <Grid container spacing={4}>
-          <Grid item xs={6} md={6} sm={6}></Grid>
-            <Grid item xs={6} md={6} sm={6}>
-              <Button onClick={this.onClickChng} variant="contained" color="primary" >
-                {/* <Fab color="secondary" aria-labelledby="add-ticket" style={{height:"20px", width:"60px"}}> */}
-                  {/* <Add /> */}
-                  ADD PRODUCT
-                {/* </Fab> */}
-              </Button>
+        {this.props.label !== "Confirm" ?
+          <Grid container spacing={4}>
+            <Grid item xs={6} md={6} sm={6}></Grid>
+              <Grid item xs={6} md={6} sm={6}>
+                <Button onClick={this.onClickChng} variant="contained" color="primary" >                
+                    ADD PRODUCT
+                </Button>
+            </Grid>
           </Grid>
-        </Grid>
+        : null}
 
-        <div className="button-container">
-          <Button variant="contained" color="default"
-          onClick={() => this.props.history.goBack() }>
-            Cancel
-          </Button>
-          <Button onClick={this.props.onClick}
-            // onClick={() => {
-            //   if (this.props.label === "Add") {
-            //     console.log(this.props.label);
-            //     this.props.onClick
-            //     // return;
-            //   }
-            //   if (this.props.type === "sell") {
-            //     console.log(this.props.type);
-            //     this.props.onClick
-            //     // this.setState({activeStepSell: this.state.activeStepSell + 1 });
-            //   } else {
-            //     this.props.onClick
-            //     // this.setState({ activeStepBuy: this.state.activeStepBuy + 1 });
-            //   }
-            // }}
-            variant="contained"
-            color="primary"
-          >
-            {this.props.label}
-          </Button>
-        </div>
-        
+        {this.props.label !== "Confirm" ?
+          <div className="button-container">
+            <Button variant="contained" color="default"
+            onClick={() => this.props.history.goBack() }>
+              Cancel
+            </Button>
+            <Button onClick={this.props.onClick}
+              variant="contained"
+              color="primary"
+            >
+              {this.props.label}
+            </Button>
+          </div>
+        :
+          <div className="align-center padding-6" style={{marginTop: 25}}>
+            <Button onClick={this.props.onClick} variant="contained" color="primary">
+              {this.props.label}
+            </Button>
+          </div>
+        }
       </div>
     );
   }

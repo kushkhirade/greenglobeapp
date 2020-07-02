@@ -171,8 +171,8 @@ export class AddNewLeadImpl extends React.Component<
         <UploadContainer valKey={4} heading="Permit" />
         <UploadContainer valKey={5} heading="Tax" />
         <UploadContainer valKey={6} heading="Passing" />
-        <SubFormHeading style={{ textAlign: "center" }}>
-          Documents Required Loan
+        <SubFormHeading >
+          KYC Documents
         </SubFormHeading>
         <UploadContainer valKey={7} heading="Aadhaar Card" />
         <UploadContainer valKey={8} heading="PAN Card" />{" "}

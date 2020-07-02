@@ -16,7 +16,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
   public state: IPageState = {
     usersTablePage: 0,
     usersTableRowsPerPage: 5,
-    showStatsModal: true,
+    showStatsModal: this.props.location.showStatsModal ? this.props.location.showStatsModal : false ,
   };
 
   leadStatus = [
@@ -123,7 +123,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
       filterType: "checkbox",
       responsive: "scrollMaxHeight",
     };
-
+    console.log("props ",this.props)
     return (
       <AppBar
         sideButton={

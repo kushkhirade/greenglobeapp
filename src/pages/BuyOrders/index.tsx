@@ -52,13 +52,18 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                     <span> Order Status:</span> {dataValue.orderStatus}{" "}
                   </div>
                   <div className="data-content">
+                    <span> Payment Mode:</span> {dataValue.PaymentMode}{" "}
+                  </div>
+                </div>
+                <div className="row-data">
+                  <div className="data-content">
                     <span
                       onClick={() =>
                         this.props.history.push("/buy-order/add-new-order")
                       }
                       className="view"
                     >
-                      View Details
+                    View Details
                     </span>
                   </div>
                 </div>
@@ -111,6 +116,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Front",
   },
   {
     orderId: "ON-26541",
@@ -118,6 +124,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Back",
   },
   {
     orderId: "ON-26541",
@@ -125,6 +132,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Back",
   },
   {
     orderId: "ON-26541",
@@ -132,5 +140,6 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Front",
   },
 ];

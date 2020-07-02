@@ -21,12 +21,12 @@ const LoginScreenImpl = (props: any) => {
     if (userName === "Demo" && password === "demo") {
       saveLoggedInUserData({ userName });
       saveLoggedInUserDetails({ userName, isDealer: true, isDist: false });
-      props.history.push("/home");
+      props.history.push({pathname: "/home", showStatsModal: true});
     }
     if (userName === "DemoDist" && password === "demo") {
       saveLoggedInUserData({ userName });
       saveLoggedInUserDetails({ userName, isDealer: false, isDist: true });
-      props.history.push("/home");
+      props.history.push({pathname: "/home", showStatsModal: true});
     }
   };
 

@@ -1,5 +1,9 @@
 import { Fab, Grid } from "@material-ui/core";
 import { Add, PersonPin, Phone } from "@material-ui/icons";
+import ChatIcon from "@material-ui/icons/Chat";
+import MailIcon from "@material-ui/icons/Mail";
+import PhoneIcon from "@material-ui/icons/Phone";
+import WhatsappIcon from "./wtsapimg.png";
 import Rating from "@material-ui/lab/Rating";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -111,6 +115,17 @@ const CustomerList = (props: any) => {
               value={customerData.dealerRating}
             />
           </Grid>
+        </Grid>
+        <Grid className="padding-15 align-left">
+          <div className="icon-container">
+            <PhoneIcon className="phone-icon" />
+            &nbsp;
+            <ChatIcon className="chat-icon" />
+            &nbsp;
+            <MailIcon className="mail-icon" />
+            &nbsp;
+            <img height="42px" src={WhatsappIcon}/>
+          </div>
         </Grid>
       </div>
     );

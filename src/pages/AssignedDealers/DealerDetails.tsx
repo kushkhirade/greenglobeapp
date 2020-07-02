@@ -233,7 +233,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="uv" fill="#82ca9d" />
+                <Bar dataKey="uv" fill="#82ca9d" barSize ={100} />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -1,8 +1,9 @@
 import { Button, Fab, Grid, TextField } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
+import PersonIcon from "@material-ui/icons/Person";
+import { Add, PersonPin, Phone } from "@material-ui/icons";
+import Rating from "@material-ui/lab/Rating";
 import ChatIcon from "@material-ui/icons/Chat";
 import MailIcon from "@material-ui/icons/Mail";
-import PersonIcon from "@material-ui/icons/Person";
 import PhoneIcon from "@material-ui/icons/Phone";
 import WhatsappIcon from "./wtsapimg.png";
 import * as React from "react";
@@ -55,12 +56,8 @@ const subfilterOptions = [
     label: "Lead Sub Type - Customer",
   },
   {
-    name: "Lead Sub Type - Lead",
-    label: "Lead Sub Type - Lead",
-  },
-  {
-    name: "Lead Sub Type - Infuencer",
-    label: "Lead Sub Type - Infuencer",
+    name: "Lead Sub Type - Influencer",
+    label: "Lead Sub Type - Influencer",
   },
   {
     name: "Lead Sub Type - Fitment",
@@ -102,6 +99,7 @@ export class LeadsImpl extends React.Component<
     isModalOpen: boolean;
     dealers: any;
     showFilerOptions: boolean;
+    selectedFilter: string;
     filterType: string;
   }
 > {
@@ -418,7 +416,7 @@ export class LeadsImpl extends React.Component<
           {data.leads.data.map((d) => {
             return (
               <Grid item xs={12} md={6} >
-                <CardDetailsForDealer details={d} history={this.props.history}/>;
+                <CardDetailsForDealer details={d} history={this.props.history}/>
               </Grid>
             );
           })}
@@ -507,65 +505,64 @@ const CardDetails = (props: any) => {
         return (
           <div className="card-container">
             <Grid container >
-              <Grid className="padding-6" item xs={6} md={6} >
-                <span className="description-text">Name:</span>
+              <Grid className="padding-6-corners" item xs={6} md={6} >
+                {/* <span className="description-text">Name:</span> */}
                 {details.name || "NA"}
               </Grid>
-              <Grid className="padding-6" item xs={6} md={6}>
-                <span className="description-text">Contact:</span>
+              <Grid className="padding-6-corners" item xs={6} md={6}>
+                {/* <span className="description-text">Contact:</span> */}
                 {details.phoneNumber || "NA"}
               </Grid>
-            </Grid>
+            </Grid>           
             <Grid container >
-              <Grid className="padding-6" item xs={6} md={6}>
-                <span className="description-text">Email:</span>
-                {details.email}
-              </Grid>
-              <Grid className="padding-6" item xs={6} md={6} >
+              <Grid className="padding-6-corners" item xs={6} md={6} >
                 <span className="description-text">Kit Enquiry:</span>
                 {details.kitEnq || "NA"}
               </Grid>
-            </Grid>
-            <Grid container >
-              <Grid className="padding-6" item xs={6} md={6}>
+              <Grid className="padding-6-corners" item xs={6} md={6}>
                 <span className="description-text">Vehicle Type:</span>
                 {details.vehicleType || "NA"}
               </Grid>
-              <Grid className="padding-6" item xs={6} md={6}>
+            </Grid>
+            {details.assigned ? (
+              // <React.Fragment>
+                <Grid container>
+                  <Grid className="padding-6-corners" item xs={6} md={6}>
+                    <span className="description-text">Assigned Dealer :</span>
+                    {details.dealer || "NA"}
+                  </Grid>
+                  <Grid className="padding-6-corners" item xs={6} md={6}>
+                    <span className="description-text">Lead Rating :</span>
+                    <Rating
+                      readOnly
+                      precision={0.5}
+                      value={details.leadRating}
+                    />
+                  </Grid>
+                </Grid>
+              // </React.Fragment>
+            ) : (
+              ""
+            )}
+            <Grid container >
+              <Grid className="padding-6-corners" item xs={6} md={6}>
                 <span className="description-text">Dealer Generated Lead:</span>
                 {details.dealer || "NA"}
               </Grid>
-            </Grid>
-              {details.assigned ? (
-                // <React.Fragment>
-                  <Grid container xs={12}>
-                    <Grid className="padding-6" item xs={6} md={6}>
-                      <span className="description-text">Assigned Dealer :</span>
-                      {details.dealer || "NA"}
-                    </Grid>
-                    <Grid className="padding-6" item xs={6} md={6}>
-                      <span className="description-text">Lead Rating :</span>
-                      {details.dealer || "NA"}
-                    </Grid>
-                  </Grid>
-                // </React.Fragment>
-              ) : (
-                ""
-              )}
-            <Grid container >
-              <Grid className="padding-6" item xs={6} md={6}>
-                <span className="view" onClick={() => props.history.push("/lead/add-new-lead")}>
+              <Grid className="padding-6-corners" item xs={6} md={6}>
+                
+                  <span className="view" onClick={() => props.history.push("/lead/add-new-lead")}>
                   {details.assigned ? "View Details" : ""}
-                </span>
-              </Grid>
-              <Grid className="padding-6" item xs={6} md={6}>
-                <span className="clickable" onClick={props.onClickAssign}>
+                  </span>
+                
+                  <span className="clickable" onClick={props.onClickAssign}>
                   {!details.assigned ? "Click To Assign Dealer" : ""}
-                </span>
+                  </span>
+                
               </Grid>
             </Grid>
             <Grid container className="padding-15 align-left">
-              <Grid className="padding-6" item xs={12} md={12}>
+              <Grid className="padding-6-corners" item xs={12} md={12}>
                 <div className="icon-container">
                   <PhoneIcon className="phone-icon" />
                   &nbsp;
@@ -590,73 +587,138 @@ const CardDetails = (props: any) => {
 
 const CardDetailsForDealer = (props: any) => {
   const { details } = props;
-  // return (
-  //   <div className="cards-main">
-  //     {details.map((datavalue: any, index: number) => {
-        return (
-          <div className="card-container">
-            <Grid container >
-              <Grid className="padding-6" item xs={6} md={6}>
-                <span className="description-text">Name:</span>
-                {details.name}
-              </Grid>
-              <Grid className="padding-6" item xs={6} md={6}>
-                <span className="description-text">Contact:</span>
-                {details.phoneNumber}
-              </Grid>
-            </Grid>{" "}
-            <Grid container>
-              <Grid className="padding-6" item xs={6} md={6} >
-                <span className="description-text">Email:</span> 
-                {details.email}
-              </Grid>
-              <Grid className="padding-6" item xs={6} md={6} >
-                <span className="description-text">Kit Enquiry:</span>
-                {details.kitEnq}
-              </Grid>
-            </Grid>{" "}
-            <Grid container>
-              <Grid className="padding-6" item xs={6} md={6} >
-                <span className="description-text">Vehicle Type:</span>
-                {details.vehicleType}
-              </Grid>
-              <Grid className="padding-6" item xs={6} md={6} >
-                <span className="description-text">Dealer Generated Lead:</span> 
-                {details.phoneNumber}
-              </Grid>
-            </Grid>{" "}
-            <Grid container className="padding-15 align-left">
-              <Grid className="padding-6" item xs={6} md={6}> 
-                <span
-                  onClick={() =>
-                    props.history.push("/lead/add-new-lead")
-                  }
-                  className="view"
-                >
-                  View Details
-                </span>
-              </Grid>
-            </Grid>
-            <Grid container className="padding-15 align-left">
-              <Grid className="padding-6-corners" item xs={12} md={12}>
-                <div className="icon-container">
-                  <PhoneIcon className="phone-icon" />
-                  &nbsp;
-                  <ChatIcon className="chat-icon" />
-                  &nbsp;
-                  <MailIcon className="mail-icon" />
-                  &nbsp;
-                  <img
-                    height="42px"
-                    src={WhatsappIcon}
-                    // src="https://img.icons8.com/color/48/000000/whatsapp.png"
-                  />{" "}
-                </div>
-              </Grid>
-            </Grid>{" "}
+  return (
+    <div onClick={props.onClick} className="card-container ">
+      <Grid container >
+        <Grid item className="padding-6-corners" xs={6} md={6}>
+          {/* <PersonPin /> <span style={{ padding: "5px" }} /> */}
+          {details.name}
+        </Grid>
+        <Grid item className="padding-6-corners" xs={6} md={6}>
+          {/* <Phone /> <span style={{ padding: "5px" }} /> */}
+          {details.phoneNumber}
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text">Kit Enquiery :</span>
+          {details.kitEnq || 'NA'}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Vehicle Type</span>
+          {details.vehicleType}
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Dealer Generated Lead:</span>
+          {details.dealer || "NA"}
+        </Grid>
+        <Grid item className="padding-6-corners align-center" xs={6} md={6}
+          style={{ justifyContent: "flex-start" }}
+        >
+          <span className="description-text">Lead Rating:</span>
+          <Rating
+            readOnly
+            precision={0.5}
+            value={details.leadRating}
+          />
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={4} md={4}> 
+          <span
+            onClick={() =>
+              props.history.push("/lead/add-new-lead")
+            }
+            className="view"
+          >
+            View Details
+          </span>
+        </Grid>
+        <Grid className="padding-6-corners" item xs={8} md={8} >
+          <div className="icon-container">
+            <PhoneIcon className="phone-icon" />
+            &nbsp;
+            <ChatIcon className="chat-icon" />
+            &nbsp;
+            <MailIcon className="mail-icon" />
+            &nbsp;
+            <img
+              height="42px"
+              src={WhatsappIcon}
+              // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+            />{" "}
           </div>
-        );
-  //     })}
-  //   </div>
-  // );
+        </Grid>
+      </Grid>{" "}
+    </div>
+  );
+        // return (
+        //   <div className="card-container">
+        //     <Grid container >
+        //       <Grid className="padding-6-corners" item xs={6} md={6}>
+        //         {/* <span className="description-text">Name:</span> */}
+        //         <PersonPin /> <span style={{ padding: "5px" }} />
+        //         {details.name || "NA"}
+        //       </Grid>
+        //       <Grid className="padding-6-corners" item xs={6} md={6}>
+        //         {/* <span className="description-text">Contact:</span> */}
+        //         <Phone /> <span style={{ padding: "5px" }} />
+        //         {details.phoneNumber || "NA"}
+        //       </Grid>
+        //     </Grid>{" "}
+        //     <Grid container>
+        //       <Grid className="padding-6-corners" item xs={6} md={6} >
+        //         <span className="description-text">Kit Enquiry:</span>
+        //         {details.kitEnq || "NA"}
+        //       </Grid>
+        //       <Grid className="padding-6-corners" item xs={6} md={6} >
+        //         <span className="description-text">Vehicle Type:</span>
+        //         {details.vehicleType || "NA"}
+        //       </Grid>
+        //     </Grid>{" "}
+        //     <Grid container>
+        //       <Grid className="padding-6-corners" item xs={6} md={6} >
+        //         <span className="description-text">Dealer Generated Lead:</span> 
+        //         {details.dealer || "NA"}
+        //       </Grid>
+        //       <Grid className="padding-6-corners" item xs={6} md={6}>
+        //         <span className="description-text">Lead Rating :</span>
+        //         <Rating
+        //           readOnly
+        //           precision={0.5}
+        //           value={details.dealerRating}
+        //         />
+        //       </Grid>
+        //     </Grid>
+        //     <Grid container >
+        //     <Grid className="padding-6-corners" item xs={4} md={4}> 
+        //         <span
+        //           onClick={() =>
+        //             props.history.push("/lead/add-new-lead")
+        //           }
+        //           className="view"
+        //         >
+        //           View Details
+        //         </span>
+        //       </Grid>
+        //       <Grid className="padding-6-corners" item xs={8} md={8} >
+        //         <div className="icon-container">
+        //           <PhoneIcon className="phone-icon" />
+        //           &nbsp;
+        //           <ChatIcon className="chat-icon" />
+        //           &nbsp;
+        //           <MailIcon className="mail-icon" />
+        //           &nbsp;
+        //           <img
+        //             height="42px"
+        //             src={WhatsappIcon}
+        //             // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+        //           />{" "}
+        //         </div>
+        //       </Grid>
+        //     </Grid>{" "}
+        //   </div>
+        // );
 };
