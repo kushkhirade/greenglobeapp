@@ -19,6 +19,7 @@ import {
   People,
   Share,
   PersonPin,
+  FiberNew
 } from "@material-ui/icons";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -66,6 +67,11 @@ export const routes = (isDealerApp) => [
     hidden: true,
     path: "/customer/add-new-customer",
     title: "Add New Customer",
+  },
+  {
+    path: "/jobcard",
+    title: "Add New JobCard",
+    icon: () => <FiberNew/>
   },
   {
     hidden: true,

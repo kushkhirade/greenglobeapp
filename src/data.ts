@@ -46,7 +46,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
-        iAging: "5 Months",
+        iAging: "5 days",
       },
       {
         id: 2,
@@ -58,7 +58,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
-        iAging: "5 Months",
+        iAging: "5 days",
         imageURL:
           "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
       },
@@ -72,7 +72,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
-        iAging: "5 Months",
+        iAging: "5 days",
         imageURL:
           "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
       },
@@ -86,7 +86,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
-        iAging: "5 Months",
+        iAging: "5 days",
         imageURL:
           "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
       },

@@ -411,51 +411,46 @@ export class LeadsImpl extends React.Component<
   tabDataForDealer = [
     {
       tabName: "All(50)",
+      options: allfilterOptions,
       component: (
         <Grid container>
           {data.leads.data.map((d) => {
             return (
               <Grid item xs={12} md={6} >
-                <CardDetailsForDealer details={d} history={this.props.history}/>
+                <CardDetailsForDealer 
+                  onClick={() =>
+                  this.props.history.push("/lead/add-new-lead")
+                  }
+                details={d} history={this.props.history}/>
               </Grid>
             );
           })}
         </Grid>
-        // <Grid container>
-        //    <CardDetailsForDealer details={data.leads.data} history={this.props.history} />;
-        // </Grid>
       ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "All" }),
+      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
     },
     {
       tabName: "Lead Type",
-      component: (
-        <Grid container>
-           {/* <CardDetailsForDealer details={data.leads.data} history={this.props.history} />; */}
-        </Grid>
-      ),
+      options: leadfilterOptions,
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Lead Type" }),
+      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
     },
     {
       tabName: "Sub Lead Type",
-      component: (
-        <Grid container>
-           {/* <CardDetailsForDealer details={data.leads.data} history={this.props.history} />; */}
-        </Grid>
-      ),
+      options: subfilterOptions,
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Sub Lead Type" }),
+      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
     },
     {
       tabName: "Rating",
-      component: (
-        <Grid container>
-           {/* <CardDetailsForDealer details={data.leads.data} history={this.props.history} />; */}
-        </Grid>
-      ),
+      options: ratingfilterOptions,
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Rating" }),
+      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
     },
     {
       tabName: "Walk Ins",
+      options: [],
     },
   ];
 
@@ -628,9 +623,7 @@ const CardDetailsForDealer = (props: any) => {
       <Grid container >
         <Grid className="padding-6-corners" item xs={4} md={4}> 
           <span
-            onClick={() =>
-              props.history.push("/lead/add-new-lead")
-            }
+            onClick={props.onClick}
             className="view"
           >
             View Details

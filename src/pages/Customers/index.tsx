@@ -40,7 +40,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
           <Search fontSize="large" color="primary" />
           <img height="26px" src={filter} />
         </div>
-        <div className="cards-main customer-card">
+        {/* <div className="cards-main customer-card"> */}
           <Grid container={true}>
             <CustomerList
               onClick={() =>
@@ -49,7 +49,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
               customerData={data.customers.data}
             />
           </Grid>
-        </div>
+        {/* </div> */}
       </AppBar>
     );
   }
@@ -62,7 +62,9 @@ export const Customers = withRouter(
 );
 
 const CustomerList = (props: any) => {
-  return props.customerData.map((customerData: any, index: any) => {
+  return (
+    <div className="cards-main">
+    {props.customerData.map((customerData: any, index: any) => {
     return (
       <div onClick={props.onClick} key={index} className="card-container ">
         <Grid container >
@@ -129,5 +131,7 @@ const CustomerList = (props: any) => {
         </Grid>
       </div>
     );
-  });
+  })}
+  </div>
+  )
 };

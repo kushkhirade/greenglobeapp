@@ -53,6 +53,9 @@ const RTOProcess = React.lazy(() =>
 const Support = React.lazy(() =>
   import("./pages/support").then(({ Support }) => ({ default: Support }))
 );
+const AddNewJobCard = React.lazy(() =>
+  import("./pages/JobCard").then(({ AddNewJobCard }) => ({ default: AddNewJobCard }))
+);
 // import { LoginScreen } from "./pages/account/Login";
 // import { BuyOrders } from "./pages/BuyOrders";
 // import { Communications } from "./pages/Communicatios";
@@ -123,6 +126,10 @@ class App extends React.Component {
               <ProtectedRoute
                 path="/lead/add-new-lead"
                 component={AddNewLead}
+              />
+              <ProtectedRoute
+                path="/jobcard"
+                component={AddNewJobCard}
               />
               <ProtectedRoute path="/customers" component={Customers} />
               <ProtectedRoute

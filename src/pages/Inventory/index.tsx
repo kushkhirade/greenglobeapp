@@ -178,12 +178,12 @@ export class InventoryImpl extends React.PureComponent<
         <div className="inventory-container">
           {data.inventory.data.map((inData) => {
             return(
-              <Grid container>
+              // <Grid item xs={12} md={6}>
                 <InventoryCards
                   onClickItem={this.handleItemClick}
                   data={inData}
                 />
-            </Grid>
+            // </Grid>
             )
           })
         }

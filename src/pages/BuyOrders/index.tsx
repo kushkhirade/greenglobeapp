@@ -116,7 +116,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
-    PaymentMode: "Front",
+    PaymentMode: "Upfront",
   },
   {
     orderId: "ON-26541",
@@ -124,7 +124,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
-    PaymentMode: "Back",
+    PaymentMode: "Loan",
   },
   {
     orderId: "ON-26541",
@@ -132,7 +132,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
-    PaymentMode: "Back",
+    PaymentMode: "Loan",
   },
   {
     orderId: "ON-26541",
@@ -140,6 +140,6 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
-    PaymentMode: "Front",
+    PaymentMode: "Upfront",
   },
 ];
