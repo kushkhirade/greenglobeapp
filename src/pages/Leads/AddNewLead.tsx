@@ -620,8 +620,26 @@ export class AddNewLeadImpl extends React.Component<
                             });
                           }}
                           formModel="userForm"
-                          hasSubmit={true}
+                          hasSubmit={false}
                           options={addressDetails}
+                        />
+                        <SubFormHeading >
+                          KYC Documents
+                        </SubFormHeading>
+                        <UploadContainer valKey={7} heading="Aadhaar Card" />
+                        <UploadContainer valKey={8} heading="PAN Card" />{" "}
+                        <FormComponent
+                          onSubmit={(v: any) => {
+                            console.log(">> v", v);
+                            this.setState({
+                              activeStep: this.state.activeStep + 1,
+                            });
+                          }}
+                          formModel="leadForm"
+                          hasSubmit={true}
+                          options={[]}
+                          submitTitle="Next"
+                          cancelTitle="Previous"
                         />
                       </div>
                     ),

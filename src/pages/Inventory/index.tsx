@@ -59,7 +59,6 @@ export class InventoryImpl extends React.PureComponent<
       { label: "Manf. Date", value: "mDate" },
       { label: "Tank ID", value: "tankID" },
       { label: "Tank Capacity", value: "tankCapacity" },
-      { label: "Inventory Aging", value: "iAging"}
     ];
     return (
       <BaseModal
@@ -174,6 +173,7 @@ export class InventoryImpl extends React.PureComponent<
   tabData = [
     {
       tabName: "All(92)",
+      options: [],
       component: (
         <div className="inventory-container">
           {data.inventory.data.map((inData) => {
@@ -192,10 +192,12 @@ export class InventoryImpl extends React.PureComponent<
     },
     {
       tabName: "Product Type",
+      options: productsFilterOptions,
       onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
     },
     {
       tabName: "Tank Capacity",
+      options: tankFilterOptions,
       onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
     },
   ];
@@ -254,6 +256,10 @@ const InventoryCards = (props: any) => {
                 <span className="description-text">Price - </span>
                 {inData.price}
               </div>{" "} */}
+              <div className="padding-6">
+                <span className="description-text">Inventory Aging - </span>
+                {inData.iAging}
+              </div>
               <div className="padding-6">
                 <span className="description-text">
                   {" "}

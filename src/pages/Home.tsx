@@ -72,13 +72,35 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
     },
   ];
 
+  leadCustomerData = [
+    {
+      stages: "New",
+      count: 50,
+    },
+    {
+      stages: "Unassigned",
+      count: 100,
+    },
+  ];
+
+  leadDealerData = [
+    {
+      stages: "New",
+      count: 50,
+    },
+    {
+      stages: "Converted",
+      count: 100,
+    },
+  ];
+
   storeData = [
     {
-      stores: "Pending Stores",
+      stores: "Operational Stores",
       count: 3,
     },
     {
-      stores: "Operational Stores",
+      stores: "Pending Stores",
       count: 3,
     },
   ];
@@ -146,22 +168,11 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
           </div>
         </BaseModal>
         <div className={classes.root + " home"}>
-          <TableWithGrid
-            title={"Annual Sales Target"}
-            data={data.sales.data}
-            columns={columns}
-            options={options as any}
-          />
+          
           <TableWithGrid
             title={"Monthly Sales Target"}
             data={data.sales.data}
             columns={columns}
-            options={options as any}
-          />
-          <TableWithGrid
-            title={"Lead Status"}
-            data={this.leadData}
-            columns={this.leadStatus}
             options={options as any}
           />
           {!isDealer() && (
@@ -172,6 +183,36 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
               options={options as any}
             />
           )}
+          {isDealer() && (
+            <TableWithGrid
+              title={"Lead Status"}
+              data={this.leadData}
+              columns={this.leadStatus}
+              options={options as any}
+            />
+          )}
+          {!isDealer() && (
+            <TableWithGrid
+              title={"Lead Customer"}
+              data={this.leadCustomerData}
+              columns={this.leadStatus}
+              options={options as any}
+            />
+          )}
+          {!isDealer() && (
+            <TableWithGrid
+              title={"Lead Dealer"}
+              data={this.leadDealerData}
+              columns={this.leadStatus}
+              options={options as any}
+            />
+          )}
+          <TableWithGrid
+            title={"Annual Sales Target"}
+            data={data.sales.data}
+            columns={columns}
+            options={options as any}
+          />
         </div>
       </AppBar>
     );

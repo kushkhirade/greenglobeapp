@@ -47,10 +47,10 @@ export class Tabs extends React.Component<
                 }`}
                 key={index}
                 onClick={() => {
-                  tab.onTabSelect && tab.onTabSelect(tab.tabName);
+                  // tab.onTabSelect && tab.onTabSelect(tab.tabName);
                   this.handleTabChange(tab, index);
                 }}
-              >
+              > 
                 {/* <CardDetailsForDealer tabData={tab}/> */}
                 {/* <div {...getRootProps()}>
                   <label className={classes.label} {...getInputLabelProps()}>
@@ -81,12 +81,13 @@ export class Tabs extends React.Component<
                 </TextField> */}
                 {/* <Autocomplete
                   id="combo-box-demo"
+                  blurOnSelect={true}
                   options={tab.options}
                   onChange={(option)=> tab.onChangeTabValue(option.label)}
                   getOptionLabel={option => option.label}
                   style={{ width: 100 }}
                   renderInput={params => (
-                    <TextField {...params} label={tab.tabName} variant="filled"/>
+                    <TextField {...params} label={tab.tabName} style={{width: 100}}/>
                   )}
                 /> */}
                     {/* <Select

@@ -163,7 +163,7 @@ export class RTOProcessImpl extends React.PureComponent<
           <Grid item className="modal-margin" xs={12} md={12}>
             <FormControl variant="outlined" className="form-control">
               <InputLabel id="demo-simple-select-outlined-label">
-                Select Customer
+                Search Customer
               </InputLabel>
               <Select
                 labelId="demo-simple-select-helper-label"
@@ -280,9 +280,12 @@ const RTOList = (props: any) => {
               <Grid item xs={6} md={6}>
                 Chassis No.
               </Grid>
-              <Grid className="rto-status" item xs={6} md={6}>
-                {rtoData.status || "Pending"}
+              <Grid item xs={6} md={6}>
+                Delaer Name
               </Grid>
+            </Grid>
+            <Grid className="rto-status" item xs={6} md={6}>
+                {rtoData.status || "Pending"}
             </Grid>
             {!rtoData.isCleared && (
               <div className="edit-button-container">

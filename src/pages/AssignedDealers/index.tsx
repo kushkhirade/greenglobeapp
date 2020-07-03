@@ -67,6 +67,10 @@ const DealerCard = (props: any) => {
                 {" "}
                 <span className="description-text">Phone</span> {props.phone}
               </div>
+              <div className="padding-6">
+                {" "}
+                <span className="description-text">Area</span> {props.area}
+              </div>
             </div>
           </div>
           <div className="padding-6">
