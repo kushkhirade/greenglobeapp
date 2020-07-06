@@ -13,11 +13,10 @@ import "./customers.scss";
 import { withRouter } from "react-router-dom";
 import filter from "./filter.svg";
 import Search from "@material-ui/icons/Search";
+import { IHistory } from "src/state/Utility";
 
 export interface ICustomersProps {
-  history: {
-    push: (path: string) => void;
-  };
+  history: IHistory
 }
 
 export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {

@@ -17,12 +17,10 @@ import {
 import { Tabs } from "src/components/Tabs";
 import { Stepper } from "../BuyOrders/Stepper";
 import { withRouter } from "react-router-dom";
-import { isDealer } from "src/state/Utility";
+import { isDealer, IHistory } from "src/state/Utility";
 
 export interface IAddNewCustomerProps {
-  history: {
-    push: (path) => void;
-  };
+  history: IHistory;
 }
 
 export class AddNewCustomerImpl extends React.PureComponent<

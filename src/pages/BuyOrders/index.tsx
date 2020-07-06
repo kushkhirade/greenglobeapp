@@ -18,6 +18,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     super(props);
     this.state = {
       value: "",
+      topActiveTab: "Buy",
     };
   }
 
@@ -82,17 +83,21 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
         ) : (
           <Tabs
             tabsData={[
-              { tabName: "Buy", component: this.renderCard() },
+              { tabName: "Buy", 
+                component: this.renderCard(), 
+                onTabSelect: (tabName) => this.setState({topActiveTab: tabName}) 
+              },
               {
                 tabName: "Sell",
                 component: '',
+                onTabSelect: (tabName) => this.setState({topActiveTab: tabName})
               },
             ]}
           />
         )}
         <span
           style={{ position: "absolute", right: 20, bottom: 20 }}
-          onClick={() => this.props.history.push("/buy-order/add-new-order")}
+          onClick={() => this.props.history.push({pathname: "/buy-order/add-new-order", orderType: this.state.topActiveTab})}
         >
           <Fab color="secondary" aria-labelledby="add-ticket">
             <Add />

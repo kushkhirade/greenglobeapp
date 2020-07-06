@@ -47,7 +47,7 @@ export class Tabs extends React.Component<
                 }`}
                 key={index}
                 onClick={() => {
-                  // tab.onTabSelect && tab.onTabSelect(tab.tabName);
+                  tab.onTabSelect && tab.onTabSelect(tab.tabName);
                   this.handleTabChange(tab, index);
                 }}
               > 

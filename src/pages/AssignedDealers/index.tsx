@@ -6,10 +6,9 @@ import { userData } from "./usersData";
 import "./asssignedDealers.scss";
 import { saveDealerData } from "src/actions/App.Actions";
 import { withRouter } from "react-router-dom";
+import { IHistory } from "src/state/Utility";
 export interface IAssignedDealersProps {
-  history: {
-    push: (path) => void;
-  };
+  history: IHistory;
 }
 
 export class AssignedDealersImpl extends React.Component<

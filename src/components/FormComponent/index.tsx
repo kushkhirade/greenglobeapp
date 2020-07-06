@@ -24,6 +24,7 @@ export const FormComponent = (props: any) => {
       }}
     >
       <Grid container>
+      {console.log(props.options)}
         {props.options.map((opt: any) => {
           switch (opt.type) {
             case "text":
@@ -56,7 +57,7 @@ export const FormComponent = (props: any) => {
                   component={MUISelectField}
                   type="select"
                   // name="Email"
-                  onPointerOut={opt.options}
+                  options={opt.options}
                   name={opt.name}
                   model={`${props.formModel}${opt.model}`}
                   label={opt.label}
@@ -150,7 +151,7 @@ const MUISelectField = (props: any) => {
           {...props}
         >
           <MenuItem value=""><em>None</em></MenuItem>
-          {props.onPointerOut.map(opt => {
+          {props.options.map(opt => {
             return(
               <MenuItem value={opt.value}>{opt.label}</MenuItem>
             );

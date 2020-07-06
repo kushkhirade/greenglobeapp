@@ -4,20 +4,20 @@ import { connect } from "react-redux";
 import Select from "react-select";
 import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
-import { isDealer } from "src/state/Utility";
+import { isDealer, IHistory } from "src/state/Utility";
 import { Stepper } from "./Stepper";
 import "./buyOrders.scss";
 import { Add } from "@material-ui/icons";
 import { Fab } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete"
 import { GSelect } from "src/components/GSelect";
 import { BaseModal } from "src/components/BaseModal";
 
 export interface IAddNewOrderProps {
-  history: {
-    push: (path: string) => void;
-    goBack;
-  };
+  history: IHistory;
   isDealer: boolean;
+  orderType: string;
+  location: any;
 }
 const options = [
   { value: "loan", label: "Loan" },
@@ -451,8 +451,12 @@ export class AddNewOrderImpl extends React.PureComponent<
       <AppBar>
         {isDealer() ? (
           this.renderStepper()
-        ) : (
-          this.renderStepper())}
+          ) : (
+          this.props.location.orderType === "Buy" ?
+            this.renderStepper()
+          : this.renderSellStepper() 
+          )
+        }
       </AppBar>
     );
   }
@@ -530,10 +534,24 @@ class RenderForm extends React.Component <any> {
   }
   
   render(){
-    console.log("Props=> ", this.props)
     return(
       <div className="card-container no-hover">
-        {console.log(this.state.list)}
+        {!isDealer() ?
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={12} sm={12}>
+            <Autocomplete
+              id="combo-box-demo"
+              blurOnSelect={true}
+              options={[{label: "Dealer 1"}, {label: "Dealer 2"}, {label: "Dealer 3"}]}
+              getOptionLabel={option => option.label}
+              // style={{ width: 300 }}
+              renderInput={params => (
+                <TextField {...params} label="Select Dealer" variant="outlined" />
+              )}
+            />
+          </Grid>
+        </Grid>
+        : null}
         {this.state.list.map(item => (
             <Grid container spacing={4}>
                 {this.renderAddProduct()}

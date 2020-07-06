@@ -14,7 +14,7 @@ import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./leads.scss";
-import { isDealer } from "src/state/Utility";
+import { isDealer, IHistory } from "src/state/Utility";
 
 const allfilterOptions = [
   {
@@ -85,9 +85,7 @@ const ratingfilterOptions = [
 ];
 
 export interface ILeadsProps {
-  history: {
-    push: (path: string) => void;
-  };
+  history: IHistory;
   isDealer: boolean;
 }
 
