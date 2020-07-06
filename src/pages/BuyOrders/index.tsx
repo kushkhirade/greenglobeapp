@@ -7,6 +7,7 @@ import { IHistory, isDealer } from "src/state/Utility";
 import { Fab } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { Tabs } from "src/components/Tabs";
+import TrakingInfoBar from "src/components/TrakingInfoBar";
 
 export interface IBuyOrdersProps {
   data?: string;
@@ -55,6 +56,11 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                   <div className="data-content">
                     <span> Payment Mode:</span> {dataValue.PaymentMode}{" "}
                   </div>
+                </div>
+                <div className="row-data">
+                    <span>
+                      <TrakingInfoBar/>
+                    </span>
                 </div>
                 <div className="row-data">
                   <div className="data-content">
