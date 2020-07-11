@@ -50,8 +50,8 @@ export const vehicleInputs = [
     type: "text",
   },
   {
-    label: "Chesis Number",
-    model: ".chesis",
+    label: "Chassis Number",
+    model: ".chassis",
     type: "text",
   },
 ];
@@ -151,31 +151,73 @@ export const leadDealer = [
     label: "Lead Type",
     model: ".leadType",
     type: "select",
-    options: [],
+    options: [
+      {label: "B2B", value: "B2B"},
+      {label: "B2C", value: "B2C"},
+      {label: "B2G", value: "B2G"}
+    ]
   },
   {
     label: "Lead Source",
     model: ".leadSource",
     type: "select",
-    options: [],
+    options: [
+      {label: "Partner", value: "Partner"},
+      {label: "Website", value: "Website"},
+      {label: "Advertisement", value: "Advertisement"},
+      {label: "Webinar", value: "Webinar"},
+      {label: "Trade Show", value: "Trade Show"},
+      {label: "Employee Referral", value: "Employee Referral"},
+      {label: "Customer Event", value: "Customer Event"},
+      {label: "Google AdWords", value: "Google AdWords"},
+      {label: "Purchased List", value: "Purchased List"},
+      {label: "Consumers", value: "Consumers"},
+      {label: "Agents", value: "Agents"},
+      {label: "Events", value: "Events"},
+      {label: "ASM", value: "ASM"}
+    ]
   },
   {
     label: "Lead Status",
     model: ".leadStatus",
     type: "select",
-    options: [],
+    options: [
+      {label: "New", value: "New"},
+      {label: "Basic Details", value: "Basic Details"},
+      {label: "Document Collection", value: "Document Collection"},
+      {label: "Negotiation", value: "Negotiation"},
+      {label: "Closed", value: "Closed"},
+      {label: "Job card", value: "Job card"},
+      {label: "Qualified", value: "Qualified"}
+    ]
   },
   {
     label: "Sub Lead Source",
     model: ".subLeadSource",
     type: "select",
-    options: [],
+    options: [
+      {label: "Facebook", value: "Facebook"},
+      {label: "Google", value: "Google"},
+      {label: "Whatsapp", value: "Whatsapp"},
+      {label: "mass malling", value: "mass malling"},
+      {label: "mass messaging", value: "mass messaging"},
+      {label: "Instagram", value: "Instagram"},
+      {label: "YouTube", value: "YouTube"},
+      {label: "RTO", value: "RTO"},
+      {label: "BANK", value: "BANK"},
+      {label: "Patpedhi", value: "Patpedhi"},
+      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+    ],
   },
   {
     label: "Rating",
     model: ".rating",
     type: "select",
-    options: [],
+    options: [
+      {label: "Rating - Hot", value: "Rating - Hot"},
+      {label: "Rating - Cold", value: "Rating - Cold"},
+      {label: "rating - Warm", value: "Rating - Warm"}
+    ]
   },
 ];
 
@@ -184,31 +226,73 @@ export const leadSource = [
     label: "Lead Type",
     model: ".leadType",
     type: "select",
-    options: [],
+    options: [
+      {label: "B2B", value: "B2B"},
+      {label: "B2C", value: "B2C"},
+      {label: "B2G", value: "B2G"}
+    ]
   },
   {
     label: "Lead Source",
     model: ".leadSource",
     type: "select",
-    options: [],
+    options: [
+      {label: "Partner", value: "Partner"},
+      {label: "Website", value: "Website"},
+      {label: "Advertisement", value: "Advertisement"},
+      {label: "Webinar", value: "Webinar"},
+      {label: "Trade Show", value: "Trade Show"},
+      {label: "Employee Referral", value: "Employee Referral"},
+      {label: "Customer Event", value: "Customer Event"},
+      {label: "Google AdWords", value: "Google AdWords"},
+      {label: "Purchased List", value: "Purchased List"},
+      {label: "Consumers", value: "Consumers"},
+      {label: "Agents", value: "Agents"},
+      {label: "Events", value: "Events"},
+      {label: "ASM", value: "ASM"}
+    ]
   },
   {
     label: "Lead Status",
     model: ".leadStatus",
     type: "select",
-    options: [],
+    options: [
+      {label: "New", value: "New"},
+      {label: "Basic Details", value: "Basic Details"},
+      {label: "Document Collection", value: "Document Collection"},
+      {label: "Negotiation", value: "Negotiation"},
+      {label: "Closed", value: "Closed"},
+      {label: "Job card", value: "Job card"},
+      {label: "Qualified", value: "Qualified"}
+    ]
   },
   {
     label: "Sub Lead Source",
     model: ".subLeadSource",
     type: "select",
-    options: [],
+    options: [
+      {label: "Facebook", value: "Facebook"},
+      {label: "Google", value: "Google"},
+      {label: "Whatsapp", value: "Whatsapp"},
+      {label: "mass malling", value: "mass malling"},
+      {label: "mass messaging", value: "mass messaging"},
+      {label: "Instagram", value: "Instagram"},
+      {label: "YouTube", value: "YouTube"},
+      {label: "RTO", value: "RTO"},
+      {label: "BANK", value: "BANK"},
+      {label: "Patpedhi", value: "Patpedhi"},
+      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+    ],
   },
   {
     label: "Rating",
     model: ".rating",
     type: "select",
-    options: [],
+    options: [
+      {label: "Rating - Hot", value: "Rating - Hot"},
+      {label: "Rating - Cold", value: "Rating - Cold"},
+      {label: "rating - Warm", value: "Rating - Warm"}
+    ]
   },
 ];
 

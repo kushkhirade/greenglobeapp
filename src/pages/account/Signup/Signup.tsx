@@ -12,7 +12,7 @@ const SignupScreenImpl = (props: any) => {
 
   const handleSignup = () => {
     if (userName && password.length > 3 && password === confirmPassword && accept === '1') {
-      props.history.push("/home");
+      props.history.push({pathname: "/home", showStateModal: true});
     }
   };
 

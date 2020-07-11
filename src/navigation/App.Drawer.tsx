@@ -19,6 +19,7 @@ import {
   People,
   Share,
   PersonPin,
+  FiberNew
 } from "@material-ui/icons";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -40,7 +41,8 @@ interface IAppDrawer {
   handleDrawerClose?: () => void;
 }
 export const routes = (isDealerApp) => [
-  { path: "/home", title: "HomeTesting", icon: () => <DashboardIcon /> },
+
+  { path: "/home", title: "Home", icon: () => <DashboardIcon /> },
   {
     hidden: true,
     path: "/profile",
@@ -65,6 +67,11 @@ export const routes = (isDealerApp) => [
     hidden: true,
     path: "/customer/add-new-customer",
     title: "Add New Customer",
+  },
+  {
+    path: "/jobcard",
+    title: "Add New JobCard",
+    icon: () => <FiberNew/>
   },
   {
     hidden: true,

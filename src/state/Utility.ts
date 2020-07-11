@@ -18,7 +18,8 @@ export const UtilityModel = Model<IUtility>({
 });
 
 export interface IHistory {
-  push: (path: string) => void;
+  push: (path) => void;
+  goBack;
 }
 
 export class Utility extends UtilityModel {

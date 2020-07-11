@@ -4,13 +4,21 @@ import { connect } from "react-redux";
 import Select from "react-select";
 import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
-import { isDealer } from "src/state/Utility";
+import { isDealer, IHistory } from "src/state/Utility";
 import { Stepper } from "./Stepper";
 import "./buyOrders.scss";
+import { Add } from "@material-ui/icons";
+import { Fab } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete"
 import { GSelect } from "src/components/GSelect";
 import { BaseModal } from "src/components/BaseModal";
 
-export interface IAddNewOrderProps {}
+export interface IAddNewOrderProps {
+  history: IHistory;
+  isDealer: boolean;
+  orderType: string;
+  location: any;
+}
 const options = [
   { value: "loan", label: "Loan" },
   { value: "upfront", label: "Up Front" },
@@ -67,7 +75,7 @@ export class AddNewOrderImpl extends React.PureComponent<
   IAddNewOrderProps,
   any
 > {
-  constructor(props: IAddNewOrderProps) {
+  constructor(props: IAddNewOrderProps, any) {
     super(props);
     this.state = {
       value: "",
@@ -81,8 +89,10 @@ export class AddNewOrderImpl extends React.PureComponent<
       qty2: 10,
       qty3: 10,
       qty4: 10,
+      list:[1,2,3]
     };
   }
+
   public onStepChange = (tabName: string) => {
     this.setState({
       value: tabName,
@@ -93,6 +103,10 @@ export class AddNewOrderImpl extends React.PureComponent<
     this.setState({
       [key]: value as any,
     });
+  };
+
+  public activeStepBuyChange =() =>{
+    this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
   };
 
   public renderValueManipulator = (key) => (
@@ -176,14 +190,18 @@ export class AddNewOrderImpl extends React.PureComponent<
             </Grid>
           </div>
         </Grid>
+        
+       
         <div className="button-container">
-          <Button variant="contained" color="default">
+          <Button variant="contained" color="default"
+          onClick={() => this.props.history.goBack()}>
             Cancel
           </Button>
           <Button
             onClick={() => {
               if (label === "Add") {
-                return;
+                this.props.history.goBack()
+                // return;
               }
               if (type === "sell") {
                 this.setState({
@@ -211,7 +229,11 @@ export class AddNewOrderImpl extends React.PureComponent<
         stepData={[
           {
             label: "Draft",
-            component: this.renderForm("Submit", "buy"),
+            component: 
+            <RenderForm label="Submit" type="buy" history={this.props.history}
+            onClick={this.activeStepBuyChange} 
+            />
+            // this.renderForm("Submit", "buy"),
           },
           {
             label: "Submitted",
@@ -230,7 +252,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                 <Grid item xs={12} md={4} lg={4}>
                   <div className="card-container no-hover">
                     <div className="head-title padding-6 ">
-                      Performa Invoice
+                      Proforma Invoice
                     </div>
                     <div className="invoice-date padding-6">
                       <div>
@@ -333,6 +355,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                     activeStepBuy: this.state.activeStepBuy + 1,
                   })
                 }
+                history= {this.props.history}
               />
             ),
           },
@@ -348,7 +371,16 @@ export class AddNewOrderImpl extends React.PureComponent<
               />
             ),
           },
-          { label: "Add Inventory", component: this.renderForm("Add", "buy") },
+          { label: "GRN", 
+            component: 
+            <RenderForm label="Confirm" type="buy" history={this.props.history}
+            onClick={() => {
+              this.setState({activeStepBuy: this.state.activeStepBuy + 1});
+              this.props.history.goBack();
+            }} 
+            />
+            // this.renderForm("Add", "buy") ,
+        }
         ]}
       ></Stepper>
     );
@@ -362,7 +394,16 @@ export class AddNewOrderImpl extends React.PureComponent<
         stepData={[
           {
             label: "Draft",
-            component: this.renderForm("Submit", "sell"),
+            component: 
+            <RenderForm label="Submit" type="sell" 
+            onClick={() => {
+              this.setState({
+                activeStepSell: this.state.activeStepSell + 1,
+              });
+            }}
+            history={this.props.history}
+            />
+            // this.renderForm("Submit", "sell"),
           },
           {
             label: "Submitted",
@@ -410,8 +451,12 @@ export class AddNewOrderImpl extends React.PureComponent<
       <AppBar>
         {isDealer() ? (
           this.renderStepper()
-        ) : (
-          this.renderStepper())}
+          ) : (
+          this.props.location.orderType === "Buy" ?
+            this.renderStepper()
+          : this.renderSellStepper() 
+          )
+        }
       </AppBar>
     );
   }
@@ -422,6 +467,131 @@ export function mapStateToProps() {
 export const AddNewOrder = connect<{}, {}, IAddNewOrderProps>(mapStateToProps)(
   AddNewOrderImpl
 );
+
+class RenderForm extends React.Component <any> {
+  constructor(props){
+    super(props);
+  }
+  state = {
+    list: [1,2,3,4],
+    product1: null,
+    product2: null,
+    product3: null,
+    product4: null,
+    qty1: 10,
+    qty2: 10,
+    qty3: 10,
+    qty4: 10,
+  };
+
+  handleChange = (value: any, key: string) => {
+    this.setState({
+      [key]: value as any,
+    });
+  };
+
+  renderValueManipulator = (key) => (
+    <div className="increaser">
+      <div
+        onClick={() => this.setState({ [key]: this.state[key] + 1 })}
+        className="plus hover"
+      >
+        +
+      </div>
+      <div className="value">{this.state[key]}</div>
+      <div
+        onClick={() => this.setState({ [key]: this.state[key] - 1 })}
+        className="minus hover"
+      >
+        -
+      </div>
+    </div>
+  );
+
+  renderAddProduct = () => {
+    return(
+      <div className="product-selection">
+        <Grid item xs={4} md={6} sm={6}>
+          <GSelect
+            className="r-select"
+            // value={this.state.product4}
+            options={products}
+            onChange={(v: any) => this.handleChange(v, "product4")}
+          />{" "}
+        </Grid>
+        <Grid item xs={4} md={4} sm={4}>
+          {this.renderValueManipulator("qty4")}
+        </Grid>
+      </div>
+    )
+  }
+
+  onClickChng =() => {
+    var val = this.state.list;
+    val.push(this.state.list.length + 1);
+    this.setState({list : val });
+    console.log(this.state.list);
+  }
+  
+  render(){
+    return(
+      <div className="card-container no-hover">
+        {!isDealer() && this.props.label === "Sell"?
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={12} sm={12}>
+            <Autocomplete
+              id="combo-box-demo"
+              blurOnSelect={true}
+              options={[{label: "Dealer 1"}, {label: "Dealer 2"}, {label: "Dealer 3"}]}
+              getOptionLabel={option => option.label}
+              // style={{ width: 300 }}
+              renderInput={params => (
+                <TextField {...params} label="Select Dealer" variant="outlined" />
+              )}
+            />
+          </Grid>
+        </Grid>
+        : null}
+        {this.state.list.map(item => (
+            <Grid container spacing={4}>
+                {this.renderAddProduct()}
+            </Grid>
+          ))}
+        {this.props.label !== "Confirm" ?
+          <Grid container spacing={4}>
+            <Grid item xs={6} md={6} sm={6}></Grid>
+              <Grid item xs={6} md={6} sm={6}>
+                <Button onClick={this.onClickChng} variant="contained" color="primary" >                
+                    ADD PRODUCT
+                </Button>
+            </Grid>
+          </Grid>
+        : null}
+
+        {this.props.label !== "Confirm" ?
+          <div className="button-container">
+            <Button variant="contained" color="default"
+            onClick={() => this.props.history.goBack() }>
+              Cancel
+            </Button>
+            <Button onClick={this.props.onClick}
+              variant="contained"
+              color="primary"
+            >
+              {this.props.label}
+            </Button>
+          </div>
+        :
+          <div className="align-center padding-6" style={{marginTop: 25}}>
+            <Button onClick={this.props.onClick} variant="contained" color="primary">
+              {this.props.label}
+            </Button>
+          </div>
+        }
+      </div>
+    );
+  }
+}
 
 const DispatchedScreen = (props) => {
   return (
@@ -507,7 +677,8 @@ const PaymentDetailsScreen = (props) => {
             />
           </div>{" "}
           <div className="button-container">
-            <Button variant="contained" color="default">
+            <Button variant="contained" color="default"
+            onClick={() => props.history.goBack()}>
               Cancel
             </Button>
             <Button onClick={props.onClick} variant="contained" color="primary">
@@ -549,8 +720,6 @@ const SubmittedScreen = (props) => {
     </div>
   );
 };
-
-
 
 //   <Tabs
 //     tabsData={[

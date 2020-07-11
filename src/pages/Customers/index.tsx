@@ -1,5 +1,9 @@
 import { Fab, Grid } from "@material-ui/core";
 import { Add, PersonPin, Phone } from "@material-ui/icons";
+import ChatIcon from "@material-ui/icons/Chat";
+import MailIcon from "@material-ui/icons/Mail";
+import PhoneIcon from "@material-ui/icons/Phone";
+import WhatsappIcon from "./wtsapimg.png";
 import Rating from "@material-ui/lab/Rating";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -9,11 +13,10 @@ import "./customers.scss";
 import { withRouter } from "react-router-dom";
 import filter from "./filter.svg";
 import Search from "@material-ui/icons/Search";
+import { IHistory } from "src/state/Utility";
 
 export interface ICustomersProps {
-  history: {
-    push: (path: string) => void;
-  };
+  history: IHistory
 }
 
 export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
@@ -36,7 +39,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
           <Search fontSize="large" color="primary" />
           <img height="26px" src={filter} />
         </div>
-        <div className="cards-main customer-card">
+        {/* <div className="cards-main customer-card"> */}
           <Grid container={true}>
             <CustomerList
               onClick={() =>
@@ -45,7 +48,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
               customerData={data.customers.data}
             />
           </Grid>
-        </div>
+        {/* </div> */}
       </AppBar>
     );
   }
@@ -58,13 +61,15 @@ export const Customers = withRouter(
 );
 
 const CustomerList = (props: any) => {
-  return props.customerData.map((customerData: any, index: any) => {
+  return (
+    <div className="cards-main">
+    {props.customerData.map((customerData: any, index: any) => {
     return (
       <div onClick={props.onClick} key={index} className="card-container ">
-        <Grid container className="padding-15 align-left">
+        <Grid container >
           <Grid
             item
-            className="bold-font padding-6-corners center"
+            className="padding-6-corners"
             xs={6}
             md={6}
           >
@@ -72,7 +77,7 @@ const CustomerList = (props: any) => {
             {customerData.firstName}
           </Grid>
           <Grid
-            className="bold-fon padding-6-corners centert"
+            className="padding-6-corners"
             item
             xs={6}
             md={6}
@@ -81,7 +86,7 @@ const CustomerList = (props: any) => {
             {customerData.mobileNumber}
           </Grid>
         </Grid>
-        <Grid container className="padding-15 align-left">
+        <Grid container >
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Email:</span>
             {customerData.email || 'NA'}
@@ -92,7 +97,7 @@ const CustomerList = (props: any) => {
           </Grid>
          
         </Grid>
-        <Grid container className="padding-15 align-left">
+        <Grid container >
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Dealer Code:</span>
             {customerData.dealerCode || "NA"}
@@ -112,7 +117,20 @@ const CustomerList = (props: any) => {
             />
           </Grid>
         </Grid>
+        <Grid className="padding-15 align-left">
+          <div className="icon-container">
+            <PhoneIcon className="phone-icon" />
+            &nbsp;
+            <ChatIcon className="chat-icon" />
+            &nbsp;
+            <MailIcon className="mail-icon" />
+            &nbsp;
+            <img height="42px" src={WhatsappIcon}/>
+          </div>
+        </Grid>
       </div>
     );
-  });
+  })}
+  </div>
+  )
 };

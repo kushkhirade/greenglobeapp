@@ -13,6 +13,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { BaseModal } from "src/components/BaseModal";
+import { isDealer, IHistory } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
@@ -20,9 +21,7 @@ import "./rtoProcess.scss";
 import { FormComponent } from "src/components/FormComponent";
 
 export interface IRTOProcessProps {
-  history: {
-    push: (path) => void;
-  };
+  history: IHistory;
 }
 
 export class RTOProcessImpl extends React.PureComponent<
@@ -163,7 +162,7 @@ export class RTOProcessImpl extends React.PureComponent<
           <Grid item className="modal-margin" xs={12} md={12}>
             <FormControl variant="outlined" className="form-control">
               <InputLabel id="demo-simple-select-outlined-label">
-                Select Customer
+                Search Customer
               </InputLabel>
               <Select
                 labelId="demo-simple-select-helper-label"
@@ -280,9 +279,16 @@ const RTOList = (props: any) => {
               <Grid item xs={6} md={6}>
                 Chassis No.
               </Grid>
-              <Grid className="rto-status" item xs={6} md={6}>
+              {!isDealer() ?
+                <Grid item xs={6} md={6}>
+                  Dealer Name
+                </Grid>
+              :
+                <Grid item xs={6} md={6}></Grid>
+              }
+            </Grid>
+            <Grid className="rto-status" item xs={6} md={6}>
                 {rtoData.status || "Pending"}
-              </Grid>
             </Grid>
             {!rtoData.isCleared && (
               <div className="edit-button-container">

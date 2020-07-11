@@ -14,6 +14,7 @@ export const userData = [
     address: "Mumbai, Maharashtra",
     cPerson: "Virat",
     phone: "+91 9876543210",
+    area: "Dharvi"
   },
 ];
 export const chartData = [

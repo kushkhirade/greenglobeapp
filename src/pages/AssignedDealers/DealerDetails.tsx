@@ -226,14 +226,14 @@ export class DealerDetailsImpl extends React.PureComponent<
           </div>
           <div className="card-container">
             <SubFormHeading>Product wise sale</SubFormHeading>
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart width={730} height={250} data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="uv" fill="#82ca9d" />
+                <Bar dataKey="uv" fill="#82ca9d" barSize ={100} />
               </BarChart>
             </ResponsiveContainer>
           </div>

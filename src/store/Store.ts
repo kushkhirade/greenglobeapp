@@ -5,7 +5,8 @@ import { isLocalhost } from "src/state/Utility";
 
 function configureStore() {
   const composeEnhancers =
-    (isLocalhost() && window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"]) ||
+    (window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"]) ||
+    // (isLocalhost() && window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"]) ||
     compose;
   const storeData = createStore(
     reducers,

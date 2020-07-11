@@ -115,25 +115,29 @@
     justify-content: center;
 
     .tab-button {
-        padding: 10px 10px;
-        min-width: 100px;
+        padding: 5px 5px;
+        min-width: 150px;
         text-align: center;
-        border-bottom: 5px solid #48a89c;
+        // border-bottom: 5px solid #48a89c;
+        // border: 2px solid #48a89c;
         color: black;
-        font-size: 15px;
-        font-weight: 300;
+        font-size: 13px;
+        font-weight: 250;
         background-color: #e4e4e4;
 
         &:hover {
             cursor: pointer;
-            background-color: #48a89c;
-            color: white;
+            // background-color: #48a89c;
+            // color:white;
+            color:black;
         }
     }
 
     .active {
-        background-color: #48a89c;
-        color: white;
+        // background-color: #48a89c;
+        border-bottom: 5px solid #48a89c;
+        color: black;
+        // color: white;
     }
 }
 

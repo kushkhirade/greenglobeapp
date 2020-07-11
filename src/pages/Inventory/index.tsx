@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid, Button } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { BaseModal } from "src/components/BaseModal";
@@ -6,11 +6,35 @@ import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./inventory.scss";
+
+const productsFilterOptions = [
+  {label: "3W ACE(20)", value: "3W ACE"},
+  {label: "3W PRO(12)", value: "3W pro"},
+  {label: "4W ACE(10)", value: "4W ACE"},
+  {label: "4W PRO(50)", value: "4W PRO"},
+];
+
+const tankFilterOptions = [
+  {label: "30", value: "30"},
+  {label: "35", value: "35"},
+  {label: "60", value: "60"},
+  {label: "65", value: "65"},
+  {label: "70", value: "70"},
+  {label: "75", value: "75"},
+  {label: "90", value: "90"},
+]
+
 export interface IInventoryProps {}
 
 export class InventoryImpl extends React.PureComponent<
   IInventoryProps,
-  { currentItem: any; openEditModal: boolean; data: any }
+  { currentItem: any; 
+    openEditModal: boolean;
+     data: any;
+     isFilterOpen: boolean;
+     filterType: string;
+     selectedFilter: string;
+  }
 > {
   constructor(props: IInventoryProps) {
     super(props);
@@ -18,6 +42,9 @@ export class InventoryImpl extends React.PureComponent<
       currentItem: null,
       openEditModal: false,
       data: data.inventory.data,
+      isFilterOpen: false,
+      filterType: "",
+      selectedFilter: "",
     };
   }
 
@@ -75,21 +102,103 @@ export class InventoryImpl extends React.PureComponent<
     });
   };
 
+  public renderFilterModel = () => {
+    return(
+      <BaseModal
+        className="assign-dealer-modal"
+        contentClassName="support-content"
+        onClose={() => this.setState({ isFilterOpen: false })}
+        open={this.state.isFilterOpen}
+      >
+         <div className="head-title">Filters</div>
+        <form className="form-content" autoComplete="off">
+          <div className="dealer-name-container">
+            {this.state.filterType === "Product Type" ?
+              productsFilterOptions.map((fData, index) => (
+                <div
+                  key={index}
+                  onClick={() =>
+                    this.setState({
+                      selectedFilter: fData.label,
+                    })
+                  }
+                  className={`dealer-name ${
+                    this.state.selectedFilter === fData.label && "active"
+                  }`}
+                >
+                  {fData.label}
+                </div>
+              ))
+            : null }
+            {this.state.filterType === "Tank Capacity" ?
+              tankFilterOptions.map((fData, index) => (
+                <div
+                  key={index}
+                  onClick={() =>
+                    this.setState({
+                      selectedFilter: fData.label,
+                    })
+                  }
+                  className={`dealer-name ${
+                    this.state.selectedFilter === fData.label && "active"
+                  }`}
+                >
+                  {fData.label}
+                </div>
+              ))
+            : null }
+          </div>
+
+          <div className="button-container">
+            <Button
+              onClick={() => this.setState({ isFilterOpen: false })}
+              variant="contained"
+              color="default"
+            >
+              Cancel
+            </Button>{" "}
+            <Button
+              onClick={() => this.setState({ isFilterOpen: false })}
+              variant="contained"
+              color="primary"
+            >
+              Apply
+            </Button>
+          </div>
+        </form>
+      </BaseModal>
+    )
+  }
+
   tabData = [
     {
-      tabName: "All(50)",
+      tabName: "All(92)",
+      // options: [],
+      component: (
+        <div className="inventory-container">
+          {data.inventory.data.map((inData) => {
+            return(
+              // <Grid item xs={12} md={6}>
+                <InventoryCards
+                  onClickItem={this.handleItemClick}
+                  data={inData}
+                />
+            // </Grid>
+            )
+          })
+        }
+        </div>
+      ),
     },
     {
-      tabName: "3W ACE",
+      tabName: "Product Type",
+      options: productsFilterOptions,
+      onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
     },
     {
-      tabName: "3W PRO(12)",
-    },
-    {
-      tabName: "4W ACE(10)",
-    },
-    {
-      tabName: "4W PRO(50)",
+      tabName: "Tank Capacity",
+      options: tankFilterOptions,
+      onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
     },
   ];
 
@@ -97,15 +206,16 @@ export class InventoryImpl extends React.PureComponent<
     return (
       <AppBar>
         {this.renderModal()}
+        {/* {this.renderFilterModel()} */}
         <Tabs hasSort={true} tabsData={this.tabData}  />
-        <div className="inventory-container">
+        {/* <div className="inventory-container">
           <Grid container>
             <InventoryCards
               onClickItem={this.handleItemClick}
               data={this.state.data}
             />
           </Grid>
-        </div>
+        </div> */}
       </AppBar>
     );
   }
@@ -118,12 +228,13 @@ export const Inventory = connect<{}, {}, IInventoryProps>(mapStateToProps)(
 );
 
 const InventoryCards = (props: any) => {
-  return props.data.map((inData: any, key: string) => {
+  const inData =  props.data;
+  // return props.data.map((inData: any, key: string) => {
     return (
       <Grid item xs={12} md={4} lg={4}>
         <div
           onClick={() => props.onClickItem(inData)}
-          key={key}
+          // key={key}
           className="card-container"
         >
           <div className="inventory-card">
@@ -139,16 +250,20 @@ const InventoryCards = (props: any) => {
             <div className="text-left">
               <div className="padding-6">
                 {" "}
-                <span className="description-text">Model: </span> {inData.model}
+                <span className="description-text">Model - </span> {inData.model}
               </div>
-              <div className="padding-6">
+              {/* <div className="padding-6">
                 <span className="description-text">Price - </span>
                 {inData.price}
-              </div>{" "}
+              </div>{" "} */}
+              <div className="padding-6">
+                <span className="description-text">Inventory Aging - </span>
+                {inData.iAging}
+              </div>
               <div className="padding-6">
                 <span className="description-text">
                   {" "}
-                  Added to Inventory on{" "}
+                  Added to Inventory on -{" "}
                 </span>
                 {inData.addedOn}
               </div>
@@ -157,5 +272,5 @@ const InventoryCards = (props: any) => {
         </div>
       </Grid>
     );
-  });
+  // });
 };

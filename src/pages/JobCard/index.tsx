@@ -1,6 +1,6 @@
-import { Button, Grid, Typography, TextField } from "@material-ui/core";
+import { Button, Grid, Typography, Fab, TextField } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
-import { Edit } from "@material-ui/icons";
+import { Edit, Add } from "@material-ui/icons";
 import DeleteIcon from "@material-ui/icons/Delete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import * as React from "react";
@@ -11,6 +11,7 @@ import { BaseModal } from "src/components/BaseModal";
 import { FormComponent } from "src/components/FormComponent";
 import { TableWithGrid } from "src/components/TableWithGrid";
 import AppBar from "src/navigation/App.Bar";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Stepper } from "../BuyOrders/Stepper";
 import {
   addressDetails,
@@ -21,10 +22,11 @@ import {
   vehicleInputs,
   gstDetails,
 } from "../Customers/customerInputs";
-import "./leads.scss";
+import "./jobCard.scss";
 import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
 import { GSelect } from "src/components/GSelect";
+import data from "./../../data";
 
 const detailsObj = [
   {
@@ -59,7 +61,7 @@ const detailsObj = [
   },
 ];
 
-export interface IAddNewLeadProps {}
+export interface IAddNewJobCardProps {}
 
 const closedColumns = [
   {
@@ -87,18 +89,19 @@ const products = [
   },
 ];
 
-export class AddNewLeadImpl extends React.Component<
-  IAddNewLeadProps,
-  { openEditModal: boolean; activeTab: number; activeStep: number }
+export class AddNewJobCardImpl extends React.Component<
+  IAddNewJobCardProps,
+  { openEditModal: boolean; activeTab: number; activeStep: number, OpenAddJobCard: boolean }
 > {
-  constructor(props: IAddNewLeadProps) {
+  constructor(props: IAddNewJobCardProps) {
     super(props);
-    this.state = { openEditModal: false, activeTab: 0, activeStep: 0 };
+    this.state = { openEditModal: false, activeTab: 0, activeStep: 0, OpenAddJobCard: false };
   }
   // Basic Details Form
   public renderForm = () => {
     return (
       <React.Fragment>
+
         <SubFormHeading>Lead Basic Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
@@ -550,18 +553,18 @@ export class AddNewLeadImpl extends React.Component<
             label: "Basic Details",
             component: this.renderForm(),
           },
-          {
-            label: "Documents Collection",
-            component: this.renderDocsForRTO(),
-          },
-          {
-            label: "Negotiation",
-            component: this.renderNegotitation(),
-          },
-          {
-            label: "Closed",
-            component: this.renderClosedTab(),
-          },
+          // {
+          //   label: "Documents Collection",
+          //   component: this.renderDocsForRTO(),
+          // },
+          // {
+          //   label: "Negotiation",
+          //   component: this.renderNegotitation(),
+          // },
+          // {
+          //   label: "Closed",
+          //   component: this.renderClosedTab(),
+          // },
           {
             label: "Job Card",
             component: this.renderJobCard(),
@@ -587,98 +590,38 @@ export class AddNewLeadImpl extends React.Component<
   render() {
     return (
       <AppBar>
-        <div className="card-container no-hover add-leads-page">
+        <div className="card-container no-hover add-leads-page" style={{paddingBottom: 500}}>
           {this.renderModal()}
-          <Typography variant="h5" color="inherit" noWrap={true}>
-            {isDealer() ? "Lead Details - Customer" : "Lead - Dealer"}
-          </Typography>
+          {!this.state.OpenAddJobCard &&
+            <Autocomplete
+              id="combo-box-demo"
+              options={data.leads.data}
+              getOptionLabel={option => option.name}
+              style={{ width: 300 }}
+              renderInput={params => (
+                <TextField {...params} label="Search Customer or Lead" variant="outlined"/>
+              )}
+            />
+          }
+          {this.state.OpenAddJobCard &&
           <div className="">
-            {!isDealer() ? (
-              <Stepper
-                activeStep={this.state.activeStep}
-                stepData={[
-                  {
-                    label: "Draft",
-                    component: (
-                      <div>
-                        <SubFormHeading>Lead Basic Details</SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                          }}
-                          formModel="userForm"
-                          hasSubmit={false}
-                          options={leadDealer}
-                        />
-                        <SubFormHeading>Address Details</SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                            console.log(">> this", this);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="userForm"
-                          hasSubmit={false}
-                          options={addressDetails}
-                        />
-                        <SubFormHeading >
-                          KYC Documents
-                        </SubFormHeading>
-                        <UploadContainer valKey={7} heading="Aadhaar Card" />
-                        <UploadContainer valKey={8} heading="PAN Card" />{" "}
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="leadForm"
-                          hasSubmit={true}
-                          options={[]}
-                          submitTitle="Next"
-                          cancelTitle="Previous"
-                        />
-                      </div>
-                    ),
-                  },
-                  {
-                    label: "Documents Collection",
-                    component: (
-                      <div>
-                        <SubFormHeading>
-                          Regular Business Documentation
-                        </SubFormHeading>
-                        <SubFormHeading>
-                          Workshop Approval Process
-                        </SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                            console.log(">> v", v);
-                          }}
-                          formModel="userForm"
-                          hasSubmit={true}
-                          options={[]}
-                        />
-                      </div>
-                    ),
-                  },
-                  {
-                    label: "Approval",
-                    component: <div>Approvals {`&`} Inventory Load</div>,
-                  },
-                ]}
-              />
-            ) : (
-              <Tabs tabsData={this.tabData()} />
-            )}
-          </div>
+            <Typography variant="h5" color="inherit" >
+              Add New Job Card
+            </Typography>
+            
+            {this.renderStepper()}
+          </div>}
         </div>
+        {!this.state.OpenAddJobCard &&
+          <span
+            onClick={() => this.setState({OpenAddJobCard: true})}
+            style={{ position: "absolute", right: 20, bottom: 20 }}
+          >
+            <Fab color="secondary" aria-labelledby="add-ticket">
+              <Add />
+            </Fab>
+          </span>
+        }
       </AppBar>
     );
   }
@@ -686,8 +629,8 @@ export class AddNewLeadImpl extends React.Component<
 export function mapStateToProps() {
   return {};
 }
-export const AddNewLead = connect<{}, {}, IAddNewLeadProps>(mapStateToProps)(
-  AddNewLeadImpl
+export const AddNewJobCard = connect<{}, {}, IAddNewJobCardProps>(mapStateToProps)(
+  AddNewJobCardImpl
 );
 
 const SubFormHeading = (props: any) => (

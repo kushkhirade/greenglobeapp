@@ -38,7 +38,7 @@ const data = {
         id: 1,
         model: "3W-ACE-SKU9875",
         price: "Rs. 35620",
-        addedOn: " 06/05/2020",
+        addedOn: "06/05/2020",
         imageURL:
           "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
         pName: "ACE",
@@ -46,6 +46,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
+        iAging: "5 days",
       },
       {
         id: 2,
@@ -57,7 +58,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
-
+        iAging: "5 days",
         imageURL:
           "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
       },
@@ -71,7 +72,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
-
+        iAging: "5 days",
         imageURL:
           "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
       },
@@ -85,7 +86,7 @@ const data = {
         mDate: "02/05/2019",
         tankID: "TN98745",
         tankCapacity: "20",
-
+        iAging: "5 days",
         imageURL:
           "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
       },
@@ -144,7 +145,7 @@ const data = {
       {
         distID: 2555,
         name: "Sachin T. Assined",
-        email: "Sachin@gmail.com",
+        email: "SachinDealer@gmail.com",
         phoneNumber: "12346423423",
         whatsApp: "12346423423",
         assignedDealer: "Jack",
@@ -155,6 +156,7 @@ const data = {
         isDealer: false,
         assigned: true,
         country: "INDIA",
+        leadRating: "3.5"
       },
       {
         distID: 2555,
@@ -169,6 +171,7 @@ const data = {
         state: "MH",
         country: "INDIA",
         isDealer: true,
+        leadRating: "3.5"
       },
       {
         distID: 2555,
@@ -186,6 +189,7 @@ const data = {
         country: "INDIA",
         kitEnq: "PRO",
         isDealer: true,
+        leadRating: "3.5"
       },
       {
         distID: 2555,
@@ -200,6 +204,7 @@ const data = {
         country: "INDIA",
         isDealer: false,
         assigned: false,
+        leadRating: "3.5"
       },
       {
         distID: 2555,
@@ -214,6 +219,7 @@ const data = {
         isDealer: false,
         assigned: true,
         country: "INDIA",
+        leadRating: "3.5"
       },
     ],
     total: 1,

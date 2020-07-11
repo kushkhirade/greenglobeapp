@@ -7,6 +7,7 @@ import { IHistory, isDealer } from "src/state/Utility";
 import { Fab } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { Tabs } from "src/components/Tabs";
+import TrakingInfoBar from "src/components/TrakingInfoBar";
 
 export interface IBuyOrdersProps {
   data?: string;
@@ -18,6 +19,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     super(props);
     this.state = {
       value: "",
+      topActiveTab: "Buy",
     };
   }
 
@@ -52,13 +54,23 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                     <span> Order Status:</span> {dataValue.orderStatus}{" "}
                   </div>
                   <div className="data-content">
+                    <span> Payment Mode:</span> {dataValue.PaymentMode}{" "}
+                  </div>
+                </div>
+                <div className="row-data">
+                    {/* <span> */}
+                      <TrakingInfoBar/>
+                    {/* </span> */}
+                </div>
+                <div className="row-data">
+                  <div className="data-content">
                     <span
                       onClick={() =>
                         this.props.history.push("/buy-order/add-new-order")
                       }
                       className="view"
                     >
-                      View Details
+                    View Details
                     </span>
                   </div>
                 </div>
@@ -77,17 +89,21 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
         ) : (
           <Tabs
             tabsData={[
-              { tabName: "Buy", component: this.renderCard() },
+              { tabName: "Buy", 
+                component: this.renderCard(), 
+                onTabSelect: (tabName) => this.setState({topActiveTab: tabName}) 
+              },
               {
                 tabName: "Sell",
                 component: '',
+                onTabSelect: (tabName) => this.setState({topActiveTab: tabName})
               },
             ]}
           />
         )}
         <span
           style={{ position: "absolute", right: 20, bottom: 20 }}
-          onClick={() => this.props.history.push("/buy-order/add-new-order")}
+          onClick={() => this.props.history.push({pathname: "/buy-order/add-new-order", orderType: this.state.topActiveTab})}
         >
           <Fab color="secondary" aria-labelledby="add-ticket">
             <Add />
@@ -111,6 +127,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Upfront",
   },
   {
     orderId: "ON-26541",
@@ -118,6 +135,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Loan",
   },
   {
     orderId: "ON-26541",
@@ -125,6 +143,7 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Loan",
   },
   {
     orderId: "ON-26541",
@@ -132,5 +151,6 @@ const data = [
     quantity: 20,
     totalPrice: "Rs.56485",
     orderStatus: "Draft",
+    PaymentMode: "Upfront",
   },
 ];
