@@ -1,4 +1,5 @@
 import * as React from "react";
+import Select from "react-select";
 import { GSelect } from "./GSelect";
 
 export const SortComponent = (props) => {

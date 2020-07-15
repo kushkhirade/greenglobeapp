@@ -4,14 +4,16 @@ import { connect } from "react-redux";
 import { BaseModal } from "src/components/BaseModal";
 import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
+import getData from "src/utils/getData";
 import data from "../../data";
+import { getToken, isDealer } from "src/state/Utility";
 import "./inventory.scss";
 
 const productsFilterOptions = [
-  {label: "3W ACE(20)", value: "3W ACE"},
-  {label: "3W PRO(12)", value: "3W pro"},
-  {label: "4W ACE(10)", value: "4W ACE"},
-  {label: "4W PRO(50)", value: "4W PRO"},
+  {label: "3W ACE", value: "3 Wheeler Ace"},
+  {label: "3W Pro", value: "3 Wheeler Pro"},
+  {label: "4W Ace", value: "4 Wheeler Ace"},
+  {label: "4W Pro", value: "4 Wheeler Pro"},
 ];
 
 const tankFilterOptions = [
@@ -33,7 +35,9 @@ export class InventoryImpl extends React.PureComponent<
      data: any;
      isFilterOpen: boolean;
      filterType: string;
-     selectedFilter: string;
+     selectedProductFilter: string;
+     selectedTankFilter: string;
+     sortType: string;
   }
 > {
   constructor(props: IInventoryProps) {
@@ -41,24 +45,65 @@ export class InventoryImpl extends React.PureComponent<
     this.state = {
       currentItem: null,
       openEditModal: false,
-      data: data.inventory.data,
+      data: [],
       isFilterOpen: false,
       filterType: "",
-      selectedFilter: "",
+      selectedProductFilter: "",
+      selectedTankFilter: "",
+      sortType: "",
     };
+  };
+
+  async componentDidMount(){
+    const {data} = getToken();
+    // console.log("Inventory Component DId mount", data);
+    const res = await this.getAllInventoryData(data);
+    console.log("result ", res)
+    this.setState({data : res});
+    // this.setState({data: res.sort((a,b) => new Date(...a.date_purchased__c.split('-').reverse()) - new Date(...b.date_purchased__c.split('-').reverse()) )})
+    console.log("componentDidMount ", this.state.data)
+  }
+
+  getAllInventoryData = async (data) => {
+    // console.log("data: ",data);
+    let inventoryData;
+    try {
+      if(data.record_type === "0122w000000cwfSAAQ"){
+        inventoryData = await getData({
+          query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
+          Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
+          Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c
+          FROM salesforce.product2 WHERE sold_to_dealer__c = '${data.sfid}'`,
+          token: data.token
+        })
+      }else if(data.record_type === "0122w000000cwfNAAQ"){
+        inventoryData = await getData({
+          query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
+            Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
+            Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c
+            FROM salesforce.product2 WHERE sold_to_distributor__c ='${data.sfid}'`,
+          token: data.token
+        })
+      }
+        console.log("inventoryData =>", inventoryData);
+        return inventoryData.result;
+        
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
   }
 
   public renderModal = () => {
-    const { currentItem } = this.state;
+    const { currentItem, data } = this.state;
     if (!currentItem) {
-      return "";
+      return ;
     }
     const dataToDisplay = [
-      { label: "Product Name", value: "pName" },
-      { label: "SKU", value: "SKU" },
-      { label: "Manf. Date", value: "mDate" },
-      { label: "Tank ID", value: "tankID" },
-      { label: "Tank Capacity", value: "tankCapacity" },
+      { label: "Product Name", value: currentItem.family },
+      { label: "SKU", value: currentItem.stockkeepingunit },
+      { label: "Manf. Date", value: currentItem.manufacture_date__c },
+      { label: "Tank ID", value: currentItem.tank_id__c },
+      { label: "Tank Capacity", value: currentItem.tank_capacity__c },
     ];
     return (
       <BaseModal
@@ -70,7 +115,7 @@ export class InventoryImpl extends React.PureComponent<
         <Grid container spacing={1} className="">
           <Grid item className="modal-margin" xs={12} md={12}>
             <div>
-              <img src={currentItem.imageURL} height="200px" alt="dta" />
+              <img src={currentItem.image_url__c} height="200px" alt="dta" />
               <div className="description-text">Product Images</div>
             </div>
             <div className="text-left">
@@ -84,7 +129,7 @@ export class InventoryImpl extends React.PureComponent<
                     <span className="description-text">{data.label}</span>
                   </Grid>
                   <Grid item md={6} xs={6}>
-                    {currentItem[data.value]}
+                    {data.value}
                   </Grid>
                 </Grid>
               ))}
@@ -119,11 +164,11 @@ export class InventoryImpl extends React.PureComponent<
                   key={index}
                   onClick={() =>
                     this.setState({
-                      selectedFilter: fData.label,
+                      selectedProductFilter: fData.label,
                     })
                   }
                   className={`dealer-name ${
-                    this.state.selectedFilter === fData.label && "active"
+                    this.state.selectedProductFilter === fData.label && "active"
                   }`}
                 >
                   {fData.label}
@@ -136,11 +181,11 @@ export class InventoryImpl extends React.PureComponent<
                   key={index}
                   onClick={() =>
                     this.setState({
-                      selectedFilter: fData.label,
+                      selectedTankFilter: fData.label,
                     })
                   }
                   className={`dealer-name ${
-                    this.state.selectedFilter === fData.label && "active"
+                    this.state.selectedTankFilter === fData.label && "active"
                   }`}
                 >
                   {fData.label}
@@ -170,44 +215,114 @@ export class InventoryImpl extends React.PureComponent<
     )
   }
 
-  tabData = [
-    {
-      tabName: "All(92)",
-      // options: [],
-      component: (
-        <div className="inventory-container">
-          {data.inventory.data.map((inData) => {
-            return(
-              // <Grid item xs={12} md={6}>
-                <InventoryCards
-                  onClickItem={this.handleItemClick}
-                  data={inData}
-                />
-            // </Grid>
-            )
-          })
-        }
-        </div>
-      ),
-    },
-    {
-      tabName: "Product Type",
-      options: productsFilterOptions,
-      onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
-    },
-    {
-      tabName: "Tank Capacity",
-      options: tankFilterOptions,
-      onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
-    },
-  ];
-
   public render() {
+    console.log(this.state.sortType)
+    var invdata ;
+    if(this.state.sortType === "asc"){ 
+      invdata = this.state.data.sort((a,b) => new Date(a.date_purchased__c) - new Date(b.date_purchased__c))}
+    else if(this.state.sortType === "dsc"){
+      invdata = this.state.data.sort((a,b) => new Date(b.date_purchased__c) - new Date(a.date_purchased__c) )
+    }
+    else{
+      invdata = this.state.data
+    }
+    console.log("this.state.selectedTankFilter: ", this.state.selectedTankFilter)
+    console.log("this.state.selectedProductFilter: ", this.state.selectedProductFilter)
     return (
       <AppBar>
         {this.renderModal()}
         {/* {this.renderFilterModel()} */}
-        <Tabs hasSort={true} tabsData={this.tabData}  />
+        <Tabs 
+          hasSort={true} 
+          sortValue={(sortVal) => this.setState({sortType: sortVal})}
+          tabsData={ [
+            { tabName: "All("+ invdata.length +")",
+              // options: [],
+              component: (
+                <div className="inventory-container">
+                  { invdata.map((inData) => {
+                    {console.log("ALL")}
+                    return(              
+                      // <Grid item xs={12} md={6}>
+                        <InventoryCards
+                          onClickItem={this.handleItemClick}
+                          data={inData}
+                        />
+                    // </Grid>
+                    )
+                  })
+                }
+                </div>
+              ),
+              onTabSelect: (tabname) => this.setState({ selectedProductFilter: "", selectedTankFilter: ""}),
+            },
+            { tabName: "Product",
+              options: productsFilterOptions,
+              component: (
+                <div className="inventory-container">
+                  
+                  { invdata.map((inData) => {
+                    if(this.state.selectedTankFilter!==""){
+                      if(inData.family === this.state.selectedProductFilter && inData.tank_capacity__c === this.state.selectedTankFilter){
+                        // {console.log("product + tank")}
+                        return(              
+                          <InventoryCards
+                            onClickItem={this.handleItemClick}
+                            data={inData}
+                          />
+                        )
+                      }
+                    }
+                    else {if(inData.family === this.state.selectedProductFilter){
+                      // {console.log("product")}
+                      return(              
+                        <InventoryCards
+                          onClickItem={this.handleItemClick}
+                          data={inData}
+                        />
+                      )
+                    }}
+                  })
+                }
+                </div>
+              ),
+              onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
+              onChangeTabValue : (tabValue) => this.setState({ selectedProductFilter: tabValue }),
+            },
+            { tabName: "Tank",
+              options: tankFilterOptions,
+              component: (
+                <div className="inventory-container">
+                  { invdata.map((inData) => {
+                    if(this.state.selectedProductFilter !== "" ){
+                      if(inData.tank_capacity__c === this.state.selectedTankFilter && inData.family === this.state.selectedProductFilter){
+                        // {console.log("Tank + Product")}
+                        return(              
+                          <InventoryCards
+                            onClickItem={this.handleItemClick}
+                            data={inData}
+                          />
+                        )
+                      }
+                    }
+                    else {if(inData.tank_capacity__c === this.state.selectedTankFilter){
+                      // {console.log("tank")}
+                      return(              
+                        <InventoryCards
+                          onClickItem={this.handleItemClick}
+                          data={inData}
+                        />
+                      )
+                    }}
+                  })
+                }
+                </div>
+              ),
+              onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
+              onChangeTabValue : (tabValue) => this.setState({ selectedTankFilter: tabValue }),
+            },
+          ]}  
+        />
         {/* <div className="inventory-container">
           <Grid container>
             <InventoryCards
@@ -229,6 +344,10 @@ export const Inventory = connect<{}, {}, IInventoryProps>(mapStateToProps)(
 
 const InventoryCards = (props: any) => {
   const inData =  props.data;
+  var date1 = new Date();
+  var date2 = new Date(inData.date_purchased__c);
+  var diffinMonths = date1.getMonth() - date2.getMonth();
+  var diffinDays = (date1.getDate() - date2.getDate()) + (30 * diffinMonths);
   // return props.data.map((inData: any, key: string) => {
     return (
       <Grid item xs={12} md={4} lg={4}>
@@ -241,7 +360,7 @@ const InventoryCards = (props: any) => {
             {" "}
             <div>
               <img
-                src={inData.imageURL}
+                src={inData.image_url__c}
                 width="80px"
                 alt="bike"
                 className="inv-image"
@@ -250,7 +369,7 @@ const InventoryCards = (props: any) => {
             <div className="text-left">
               <div className="padding-6">
                 {" "}
-                <span className="description-text">Model - </span> {inData.model}
+                <span className="description-text">Model - </span> {inData.name}
               </div>
               {/* <div className="padding-6">
                 <span className="description-text">Price - </span>
@@ -258,15 +377,30 @@ const InventoryCards = (props: any) => {
               </div>{" "} */}
               <div className="padding-6">
                 <span className="description-text">Inventory Aging - </span>
-                {inData.iAging}
+                {diffinDays < 0 ? -diffinDays : diffinDays} days
               </div>
               <div className="padding-6">
                 <span className="description-text">
                   {" "}
                   Added to Inventory on -{" "}
                 </span>
-                {inData.addedOn}
+                {inData.date_purchased__c}
               </div>
+              {isDealer() ?
+                inData.sold_to_customer__c ? 
+                  <div className="padding-6">
+                    <span className="description-text">Sold to Customer -</span>
+                    {inData.sold_to_customer__c}
+                  </div>
+                : null
+              :
+                inData.sold_to_dealer__c ?
+                  <div className="padding-6">
+                    <span className="description-text">Sold to Dealer -</span>
+                    {inData.sold_to_dealer__c}
+                  </div>
+                : null
+              }
             </div>
           </div>
         </div>

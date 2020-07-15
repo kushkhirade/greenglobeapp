@@ -453,6 +453,7 @@ export class LeadsImpl extends React.Component<
   ];
 
   public render() {
+    console.log("selectedFilter ", this.state.selectedFilter)
     return (
       <AppBar>
         {this.renderAssignDealerModal()}

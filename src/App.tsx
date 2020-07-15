@@ -72,7 +72,7 @@ import { store } from "./store/Store";
 import { MyUsers } from "./pages/MyUsers";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
-import { isLoggedIn, saveLoggedInUserData } from "./state/Utility";
+import { getToken, isLoggedIn, saveLoggedInUserData, saveLoggedInUserToken, setInventoryData, getInventoryData } from "./state/Utility";
 import { saveLoggedInUserDetails } from "./actions/App.Actions";
 import { AddNewOrder } from "./pages/BuyOrders/AddNewOrder";
 import { ForgotPassword } from "./pages/account/ForgotPassword";
@@ -90,19 +90,34 @@ class ProtectedRoute extends React.Component<any, any> {
     if (!isLoggedIn()) {
       return;
     }
-    const { userName } = isLoggedIn();
-    if (userName === "Demo") {
-      saveLoggedInUserData({ userName });
-      saveLoggedInUserDetails({ userName, isDealer: true, isDist: false });
+    // const { userName } = isLoggedIn();
+    // if (userName === "Demo") {
+    //   saveLoggedInUserData({ userName });
+    //   saveLoggedInUserDetails({ userName, isDealer: true, isDist: false });
+    // }
+    // if (userName === "DemoDist") {
+    //   saveLoggedInUserData({ userName });
+    //   saveLoggedInUserDetails({ userName, isDealer: false, isDist: true });
+    // }
+    const { recordType } = isLoggedIn();
+    const  { data }  = getToken();
+    const { token, sfid } = data;
+
+    if (recordType === "0122w000000cwfSAAQ") {
+      saveLoggedInUserData({ recordType });
+      saveLoggedInUserToken({ data });
+      saveLoggedInUserDetails({ data, isDealer: true, isDist: false });
     }
-    if (userName === "DemoDist") {
-      saveLoggedInUserData({ userName });
-      saveLoggedInUserDetails({ userName, isDealer: false, isDist: true });
+    if (recordType === "0122w000000cwfNAAQ") {
+      saveLoggedInUserData({ recordType });
+      saveLoggedInUserToken({ data });
+      saveLoggedInUserDetails({ data, isDealer: false, isDist: true });
     }
   }
 
   render() {
     const { path, component } = this.props;
+    console.log("isLoggedIn: ", isLoggedIn());
     if (isLoggedIn()) {
       return <Route path={path} exact component={component} />;
     }

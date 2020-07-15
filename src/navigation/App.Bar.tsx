@@ -17,6 +17,7 @@ import { Alert } from "../state/Alert";
 import { AppState, isAuthenticated } from "../state/AppState";
 import AppDrawer, { routes } from "./App.Drawer";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import { getUserDetails } from "./../state/Utility"
 //#endregion
 import ButterToast from "butter-toast";
 
