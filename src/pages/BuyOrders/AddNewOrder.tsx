@@ -536,7 +536,11 @@ class RenderForm extends React.Component <any> {
   render(){
     return(
       <div className="card-container no-hover">
+<<<<<<< HEAD
         {!isDealer() && this.props.label === "Sell"?
+=======
+        {!isDealer() ?
+>>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
         <Grid container spacing={4}>
           <Grid item xs={12} md={12} sm={12}>
             <Autocomplete

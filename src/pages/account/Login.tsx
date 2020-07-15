@@ -23,6 +23,7 @@ const LoginScreenImpl = (props: any) => {
       return;
     }
     if (userName === "Demo" && password === "demo") {
+<<<<<<< HEAD
         saveLoggedInUserData({ userName });
         saveLoggedInUserDetails({ userName, isDealer: true, isDist: false });
         props.history.push({pathname: "/home", showStatsModal: true});
@@ -31,6 +32,16 @@ const LoginScreenImpl = (props: any) => {
         saveLoggedInUserData({ userName });
         saveLoggedInUserDetails({ userName, isDealer: false, isDist: true });
         props.history.push({pathname: "/home", showStatsModal: true});
+=======
+      saveLoggedInUserData({ userName });
+      saveLoggedInUserDetails({ userName, isDealer: true, isDist: false });
+      props.history.push({pathname: "/home", showStatsModal: true});
+    }
+    if (userName === "DemoDist" && password === "demo") {
+      saveLoggedInUserData({ userName });
+      saveLoggedInUserDetails({ userName, isDealer: false, isDist: true });
+      props.history.push({pathname: "/home", showStatsModal: true});
+>>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
     }
   };
 

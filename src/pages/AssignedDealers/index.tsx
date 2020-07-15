@@ -7,10 +7,13 @@ import "./asssignedDealers.scss";
 import { saveDealerData } from "src/actions/App.Actions";
 import { withRouter } from "react-router-dom";
 import { IHistory } from "src/state/Utility";
+<<<<<<< HEAD
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
 
 
+=======
+>>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
 export interface IAssignedDealersProps {
   history: IHistory;
 }
@@ -123,6 +126,10 @@ const DealerCard = (props: any) => {
               <div className="padding-6">
                 {" "}
                 <span className="description-text">Area</span> {data.area__c}
+              </div>
+              <div className="padding-6">
+                {" "}
+                <span className="description-text">Area</span> {props.area}
               </div>
             </div>
           </div>

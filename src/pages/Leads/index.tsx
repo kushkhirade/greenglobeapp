@@ -41,17 +41,27 @@ const allfilterOptions = [
 
 const leadfilterOptions = [
   {
+<<<<<<< HEAD
     value: "3W",
     label: "3W",
   },
   {
     value: "4W",
     label: "4W",
+=======
+    name: "Lead Type - 3W",
+    label: "Lead Type - 3W",
+  },
+  {
+    name: "Lead Type - 4W",
+    label: "Lead Type - 4W",
+>>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
   },
 ];
 
 const subfilterOptions = [
   {
+<<<<<<< HEAD
     value: "Customer",
     label: "Customer",
   },
@@ -66,11 +76,28 @@ const subfilterOptions = [
   {
     value: "Servicing",
     label: "Servicing",
+=======
+    name: "Lead Sub Type - Customer",
+    label: "Lead Sub Type - Customer",
+  },
+  {
+    name: "Lead Sub Type - Influencer",
+    label: "Lead Sub Type - Influencer",
+  },
+  {
+    name: "Lead Sub Type - Fitment",
+    label: "Lead Sub Type - Fitment",
+  },
+  {
+    name: "Lead Sub Type - Servicing",
+    label: "Lead Sub Type - Servicing",
+>>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
   },
 ];
 
 const ratingfilterOptions = [
   {
+<<<<<<< HEAD
     value: "Hot ",
     label: "Hot ",
   },
@@ -81,6 +108,18 @@ const ratingfilterOptions = [
   {
     value: "Warm ",
     label: "Warm ",
+=======
+    name: "Rating - Hot ",
+    label: "Rating - Hot ",
+  },
+  {
+    name: "Rating - Cold",
+    label: "Rating - Cold",
+  },
+  {
+    name: "Rating - Warm ",
+    label: "Rating - Warm ",
+>>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
   },
 ];
 
@@ -448,7 +487,11 @@ export class LeadsImpl extends React.Component<
     },
     {
       tabName: "Walk Ins",
+<<<<<<< HEAD
       // options: [],
+=======
+      options: [],
+>>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
     },
   ];
 
