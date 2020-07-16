@@ -58,15 +58,9 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                   </div>
                 </div>
                 <div className="row-data">
-<<<<<<< HEAD
                     {/* <span> */}
                       <TrakingInfoBar/>
                     {/* </span> */}
-=======
-                    <span>
-                      <TrakingInfoBar/>
-                    </span>
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
                 </div>
                 <div className="row-data">
                   <div className="data-content">

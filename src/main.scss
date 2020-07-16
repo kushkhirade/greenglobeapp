@@ -116,13 +116,10 @@
 
     .tab-button {
         padding: 5px 5px;
-        min-width: 100px;
+        min-width: 112px;
         text-align: center;
-        // border-bottom: 5px solid #48a89c;
-        // border: 2px solid #48a89c;
-        color: black;
-        font-size: 13px;
-        font-weight: 250;
+        font-size: 12px;
+        font-weight: 600;
         background-color: #e4e4e4;
 
         &:hover {
@@ -138,6 +135,16 @@
         border-bottom: 5px solid #48a89c;
         color: black;
         // color: white;
+    }
+
+    .tab-input {
+        font-size: 13px;
+        color: #837a7a;
+        text-align: center;
+        border: 1px solid #d4cdcd;
+        width: 112px; height: 34px;
+        background-color:white;
+        border-radius: 4px;
     }
 }
 

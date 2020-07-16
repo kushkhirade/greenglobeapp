@@ -10,17 +10,10 @@ import { getToken, isDealer } from "src/state/Utility";
 import "./inventory.scss";
 
 const productsFilterOptions = [
-<<<<<<< HEAD
   {label: "3W ACE", value: "3 Wheeler Ace"},
   {label: "3W Pro", value: "3 Wheeler Pro"},
   {label: "4W Ace", value: "4 Wheeler Ace"},
   {label: "4W Pro", value: "4 Wheeler Pro"},
-=======
-  {label: "3W ACE(20)", value: "3W ACE"},
-  {label: "3W PRO(12)", value: "3W pro"},
-  {label: "4W ACE(10)", value: "4W ACE"},
-  {label: "4W PRO(50)", value: "4W PRO"},
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
 ];
 
 const tankFilterOptions = [
@@ -42,13 +35,9 @@ export class InventoryImpl extends React.PureComponent<
      data: any;
      isFilterOpen: boolean;
      filterType: string;
-<<<<<<< HEAD
      selectedProductFilter: string;
      selectedTankFilter: string;
      sortType: string;
-=======
-     selectedFilter: string;
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
   }
 > {
   constructor(props: IInventoryProps) {
@@ -56,19 +45,12 @@ export class InventoryImpl extends React.PureComponent<
     this.state = {
       currentItem: null,
       openEditModal: false,
-<<<<<<< HEAD
       data: [],
       isFilterOpen: false,
       filterType: "",
       selectedProductFilter: "",
       selectedTankFilter: "",
       sortType: "",
-=======
-      data: data.inventory.data,
-      isFilterOpen: false,
-      filterType: "",
-      selectedFilter: "",
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
     };
   };
 
@@ -182,19 +164,11 @@ export class InventoryImpl extends React.PureComponent<
                   key={index}
                   onClick={() =>
                     this.setState({
-<<<<<<< HEAD
                       selectedProductFilter: fData.label,
                     })
                   }
                   className={`dealer-name ${
                     this.state.selectedProductFilter === fData.label && "active"
-=======
-                      selectedFilter: fData.label,
-                    })
-                  }
-                  className={`dealer-name ${
-                    this.state.selectedFilter === fData.label && "active"
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
                   }`}
                 >
                   {fData.label}
@@ -207,19 +181,11 @@ export class InventoryImpl extends React.PureComponent<
                   key={index}
                   onClick={() =>
                     this.setState({
-<<<<<<< HEAD
                       selectedTankFilter: fData.label,
                     })
                   }
                   className={`dealer-name ${
                     this.state.selectedTankFilter === fData.label && "active"
-=======
-                      selectedFilter: fData.label,
-                    })
-                  }
-                  className={`dealer-name ${
-                    this.state.selectedFilter === fData.label && "active"
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
                   }`}
                 >
                   {fData.label}
@@ -248,41 +214,6 @@ export class InventoryImpl extends React.PureComponent<
       </BaseModal>
     )
   }
-<<<<<<< HEAD
-=======
-
-  tabData = [
-    {
-      tabName: "All(92)",
-      options: [],
-      component: (
-        <div className="inventory-container">
-          {data.inventory.data.map((inData) => {
-            return(
-              // <Grid item xs={12} md={6}>
-                <InventoryCards
-                  onClickItem={this.handleItemClick}
-                  data={inData}
-                />
-            // </Grid>
-            )
-          })
-        }
-        </div>
-      ),
-    },
-    {
-      tabName: "Product Type",
-      options: productsFilterOptions,
-      onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
-    },
-    {
-      tabName: "Tank Capacity",
-      options: tankFilterOptions,
-      onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
-    },
-  ];
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
 
   public render() {
     console.log(this.state.sortType)
@@ -300,7 +231,6 @@ export class InventoryImpl extends React.PureComponent<
     return (
       <AppBar>
         {this.renderModal()}
-<<<<<<< HEAD
         {/* {this.renderFilterModel()} */}
         <Tabs 
           hasSort={true} 
@@ -393,10 +323,6 @@ export class InventoryImpl extends React.PureComponent<
             },
           ]}  
         />
-=======
-        {this.renderFilterModel()}
-        <Tabs hasSort={true} tabsData={this.tabData}  />
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
         {/* <div className="inventory-container">
           <Grid container>
             <InventoryCards
@@ -418,13 +344,11 @@ export const Inventory = connect<{}, {}, IInventoryProps>(mapStateToProps)(
 
 const InventoryCards = (props: any) => {
   const inData =  props.data;
-<<<<<<< HEAD
   var date1 = new Date();
   var date2 = new Date(inData.date_purchased__c);
   var diffinMonths = date1.getMonth() - date2.getMonth();
   var diffinDays = (date1.getDate() - date2.getDate()) + (30 * diffinMonths);
-=======
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
+
   // return props.data.map((inData: any, key: string) => {
     return (
       <Grid item xs={12} md={4} lg={4}>
@@ -446,11 +370,7 @@ const InventoryCards = (props: any) => {
             <div className="text-left">
               <div className="padding-6">
                 {" "}
-<<<<<<< HEAD
                 <span className="description-text">Model - </span> {inData.name}
-=======
-                <span className="description-text">Model - </span> {inData.model}
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
               </div>
               {/* <div className="padding-6">
                 <span className="description-text">Price - </span>
@@ -458,11 +378,7 @@ const InventoryCards = (props: any) => {
               </div>{" "} */}
               <div className="padding-6">
                 <span className="description-text">Inventory Aging - </span>
-<<<<<<< HEAD
                 {diffinDays < 0 ? -diffinDays : diffinDays} days
-=======
-                {inData.iAging}
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
               </div>
               <div className="padding-6">
                 <span className="description-text">
@@ -492,8 +408,4 @@ const InventoryCards = (props: any) => {
       </Grid>
     );
   // });
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 5e384d7ed5673aab7a9817831e0858aec7070ec1
