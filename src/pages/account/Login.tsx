@@ -98,8 +98,6 @@ const LoginScreenImpl = (props: any) => {
     } catch (e) {
         console.error("catch ERROR =>", e)
         setUserError(e);
-        setName("");
-        setPassword("");
     }
   }
 

@@ -2,8 +2,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import AppBar from "src/navigation/App.Bar";
 import { Grid, Button } from "@material-ui/core";
-import { chartData } from "./usersData";
-import "./asssignedDealers.scss";
+import { chartData } from "./../AssignedDealers/usersData";
+import "./../AssignedDealers/asssignedDealers.scss";
 import { Tabs } from "src/components/Tabs";
 import { TableWithGrid } from "src/components/TableWithGrid";
 import data from "src/data";
@@ -20,6 +20,7 @@ import {
 } from "recharts";
 import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
+import { isDealer } from "./../../state/Utility";
 export interface IAssignedDealersProps {}
 
 const columns = [
@@ -80,36 +81,36 @@ export class DealerDetailsImpl extends React.PureComponent<
               }
               className="card-container"
             >
-              <SubFormHeading>Dealer Details</SubFormHeading>
+              <SubFormHeading>Customer Details</SubFormHeading>
               <Grid container>
                 {" "}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Name:</span>
-                  {this.props.dealerDetails.dealer.name}
+                  {this.props.dealerDetails.name}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Name:</span>
-                  {this.props.dealerDetails.dealer.name}
+                  {this.props.dealerDetails.name}
                 </Grid>
                 {/* <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Type:</span>
-                  {this.props.dealerDetails.dealer.bank_account_type__c}
+                  {this.props.dealerDetails.bank_account_type__c}
                 </Grid> */}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">WhatsApp No.:</span>
-                  {this.props.dealerDetails.dealer.whatsapp_no__c}
+                  {this.props.dealerDetails.whatsapp_no__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Email:</span>
-                  {this.props.dealerDetails.dealer.email__c}
+                  {this.props.dealerDetails.email__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.dealer.phone}
+                  {this.props.dealerDetails.phone}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Dealer Avg Rating:</span>
-                  {this.props.dealerDetails.dealer.rating}
+                  {this.props.dealerDetails.rating}
                 </Grid>
               </Grid>
               <SubFormHeading>Address Details</SubFormHeading>
@@ -124,7 +125,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   sm={12}
                 >
                   <span className="description-text">Billing Address:</span>
-                  {this.props.dealerDetails.dealer.billingstreet} {this.props.dealerDetails.dealer.billingcity} {this.props.dealerDetails.dealer.billingpostalcode} {this.props.dealerDetails.dealer.billingstate}
+                  {this.props.dealerDetails.billingstreet} {this.props.dealerDetails.billingcity} {this.props.dealerDetails.billingpostalcode} {this.props.dealerDetails.billingstate}
                 </Grid>
                 <Grid
                   item
@@ -135,9 +136,12 @@ export class DealerDetailsImpl extends React.PureComponent<
                   sm={12}
                 >
                   <span className="description-text">Shipping Address:</span>
-                  {this.props.dealerDetails.dealer.shippingstreet} {this.props.dealerDetails.dealer.shippingcity} {this.props.dealerDetails.dealer.shippingpostalcode} {this.props.dealerDetails.dealer.shippingstate}
+                  {this.props.dealerDetails.shippingstreet} {this.props.dealerDetails.shippingcity} {this.props.dealerDetails.shippingpostalcode} {this.props.dealerDetails.shippingstate}
                 </Grid>
               </Grid>
+              
+            {isDealer() && (
+              <div>
               <SubFormHeading>Bank and KYC Details</SubFormHeading>
               <Grid container>
                 <Grid
@@ -148,126 +152,97 @@ export class DealerDetailsImpl extends React.PureComponent<
                   lg={12}
                   sm={12}
                 >
-                  <b>GST Number - {this.props.dealerDetails.dealer.gst_number__c}</b>
+                  <b>GST Number - {this.props.dealerDetails.gst_number__c}</b>
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Bank Name:</span>
-                  {this.props.dealerDetails.dealer.bank_name__c}
+                  {this.props.dealerDetails.bank_name__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">IFSC:</span>
-                  {this.props.dealerDetails.dealer.bank_ifsc_code__c}
+                  {this.props.dealerDetails.bank_ifsc_code__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Number:</span>
-                  {this.props.dealerDetails.dealer.bank_account_number__c}
+                  {this.props.dealerDetails.bank_account_number__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Type:</span>
-                  {this.props.dealerDetails.dealer.bank_account_type__c}
+                  {this.props.dealerDetails.bank_account_type__c}
                 </Grid>
               </Grid>
               <SubFormHeading>Inventory Purchased</SubFormHeading>
-              <SubFormHeading>Related Customers</SubFormHeading>{" "}
-              <Grid container>
-                {this.props.dealerDetails.customers.map((x) => {
-                  return (
-                    <React.Fragment>
-                      <Grid
-                        item
-                        className="padding-6"
-                        xs={12}
-                        md={6}
-                        lg={6}
-                        sm={6}
-                      >
-                        <span className="description-text">Name -</span>
-                        {x.name}
-                      </Grid>
-                      <Grid
-                        item
-                        className="padding-6"
-                        xs={12}
-                        md={6}
-                        lg={6}
-                        sm={6}
-                      >
-                        <span className="description-text">Mob No. -</span>
-                        {x.phone}
-                      </Grid>
-                    </React.Fragment>
-                  );
-                })}
-              </Grid>
+              </div>
+            )}
             </div>
           </Grid>
         </Grid>
       ),
     },
-    {
-      tabName: "Report",
-      component: (
-        <div className="margin-10">
-          <div className="margin-10">
-            <TableWithGrid
-              title={"Sale Target 3 wheeler"}
-              data={data.sales.data}
-              columns={columns}
-              options={options as any}
-            />{" "}
-          </div>
-          <div className="margin-10">
-            <TableWithGrid
-              title={"Sale Target 4 wheeler"}
-              data={data.sales.data}
-              columns={columns}
-              options={options as any}
-            />
-          </div>
-          <div className="card-container">
-            <SubFormHeading>Product wise sale</SubFormHeading>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart width={730} height={250} data={chartData}>
-                <CartesianGrid />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="uv" fill="#82ca9d" barSize ={100} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="button-container">
-            <Button
-              onClick={() => this.props.history.push("/leads")}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              View Leads
-            </Button>
-            <span style={{ padding: "4px" }} />
-            <Button
-              onClick={() => this.props.history.push({pathname: "/inventory", data: this.props.dealerDetails.dealer})}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              View Inventory
-            </Button>{" "}
-            <span style={{ padding: "4px" }} />
-            <Button
-              onClick={() => this.props.history.push("/customers")}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              View Customers
-            </Button>
-          </div>
-        </div>
-      ),
-    },
+    // {
+    //   tabName: "Report",
+    //   component: (
+    //     <div className="margin-10">
+    //       <div className="margin-10">
+    //         <TableWithGrid
+    //           title={"Sale Target 3 wheeler"}
+    //           data={data.sales.data}
+    //           columns={columns}
+    //           options={options as any}
+    //         />{" "}
+    //       </div>
+    //       <div className="margin-10">
+    //         <TableWithGrid
+    //           title={"Sale Target 4 wheeler"}
+    //           data={data.sales.data}
+    //           columns={columns}
+    //           options={options as any}
+    //         />
+    //       </div>
+    //       <div className="card-container">
+    //         <SubFormHeading>Product wise sale</SubFormHeading>
+    //         <ResponsiveContainer width="100%" height={300}>
+    //           <BarChart width={730} height={250} data={chartData}>
+    //             <CartesianGrid />
+    //             <XAxis dataKey="name" />
+    //             <YAxis />
+    //             <Tooltip />
+    //             <Legend />
+    //             <Bar dataKey="uv" fill="#82ca9d" barSize ={100} />
+    //           </BarChart>
+    //         </ResponsiveContainer>
+    //       </div>
+    //       <div className="button-container">
+    //         <Button
+    //           onClick={() => this.props.history.push("/leads")}
+    //           variant="contained"
+    //           color="primary"
+    //           type="submit"
+    //         >
+    //           View Leads
+    //         </Button>
+    //         <span style={{ padding: "4px" }} />
+    //         <Button
+    //           onClick={() => this.props.history.push({pathname: "/inventory", data: this.props.dealerDetails})}
+    //           variant="contained"
+    //           color="primary"
+    //           type="submit"
+    //         >
+    //           View Inventory
+    //         </Button>{" "}
+    //         <span style={{ padding: "4px" }} />
+    //         <Button
+    //           onClick={() => this.props.history.push("/customers")}
+    //           variant="contained"
+    //           color="primary"
+    //           type="submit"
+    //         >
+    //           View Customers
+    //         </Button>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
   ];
 
   render() {
@@ -285,7 +260,7 @@ export class DealerDetailsImpl extends React.PureComponent<
 export function mapStateToProps(state) {
   return { dealerDetails: state.users.get("data") };
 }
-export const DealerDetails = withRouter(
+export const CustomerLeadDetails = withRouter(
   connect<{}, {}, IAssignedDealersProps>(mapStateToProps)(
     DealerDetailsImpl
   ) as any

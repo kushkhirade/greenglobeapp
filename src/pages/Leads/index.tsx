@@ -12,10 +12,13 @@ import { withRouter } from "react-router-dom";
 import { BaseModal } from "src/components/BaseModal";
 import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
+import getData from "src/utils/getData";
 import data from "../../data";
+import { getToken, isDealer, IHistory } from "src/state/Utility";
+import { saveLeadsData, saveAssignedDealersData, saveDealerData } from "src/actions/App.Actions";
 import "./leads.scss";
-import { isDealer, IHistory } from "src/state/Utility";
 
+var loggedInUserDetails;
 const allfilterOptions = [
   {
     value: "all",
@@ -41,12 +44,12 @@ const allfilterOptions = [
 
 const leadfilterOptions = [
   {
-    value: "3W",
-    label: "3W",
+    value: "3 Wheeler",
+    label: "3 Wheeler",
   },
   {
-    value: "4W",
-    label: "4W",
+    value: "4 Wheeler",
+    label: "4 Wheeler",
   },
 ];
 
@@ -71,22 +74,24 @@ const subfilterOptions = [
 
 const ratingfilterOptions = [
   {
-    value: "Hot ",
-    label: "Hot ",
+    value: "Hot",
+    label: "Hot",
   },
   {
     value: "Cold",
     label: "Cold",
   },
   {
-    value: "Warm ",
-    label: "Warm ",
+    value: "Warm",
+    label: "Warm",
   },
 ];
 
 export interface ILeadsProps {
   history: IHistory;
   isDealer: boolean;
+  leadsData: any;
+  dealersData: any;
 }
 
 export class LeadsImpl extends React.Component<
@@ -98,7 +103,11 @@ export class LeadsImpl extends React.Component<
     dealers: any;
     showFilerOptions: boolean;
     selectedFilter: string;
+    selectedDealerAssignTo: string;
+    selectedCustomerToAssign: string;
+    selectedFilterValues: any;
     filterType: string;
+    sortType: string;
   }
 > {
   public state = {
@@ -107,26 +116,125 @@ export class LeadsImpl extends React.Component<
     isModalOpen: false,
     showFilerOptions: false,
     selectedFilter: "",
+    selectedDealerAssignTo: "",
+    selectedCustomerToAssign: "",
+    selectedFilterValues: [],
     dealers: data.leads.data,
-    filterType: ""
+    filterType: "",
+    sortType: "",
   };
 
-  public openAssignDealerModal = () => {
+  async componentDidMount(){
+    loggedInUserDetails = getToken().data;
+    this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type);
+    this.getAllAssignedDealers(loggedInUserDetails);
+  }
+
+  getAllLeadsData = async (token, sfid, recordtypeid) => {
+    console.log("token: ",token);
+    console.log("sfid: ",sfid);
+    console.log("recordtypeid: ",recordtypeid);
+    let leadsData;
+    try {
+      if(recordtypeid === "0122w000000cwfSAAQ"){
+        leadsData = await getData({
+          query: `SELECT LeadSource, Name, Phone, Whatsapp_number__c, Rating, X3_or_4_Wheeler__c, Kit_Enquiry__c,
+          RecordTypeId, Assigned_Dealer__c, Dealer_Generated_Lead__c, Sub_Lead_Type__c, CreatedDate, sfid
+          FROM salesforce.Lead 
+          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%')`,
+          token: token
+        })
+      }else if(recordtypeid === "0122w000000cwfNAAQ"){
+        leadsData = await getData({
+          query: `SELECT LeadSource ,Name, Phone, Whatsapp_number__c, Rating, X3_or_4_Wheeler__c, Kit_Enquiry__c,
+          RecordTypeId, Assigned_Dealer__c, Dealer_Generated_Lead__c, Sub_Lead_Type__c, CreatedDate, sfid
+          FROM salesforce.Lead 
+          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Distributor__c LIKE '%${sfid}%')`,
+          token: token
+        })
+      }
+        console.log("leadsData =>", leadsData);
+        // return leadsData.result;
+        saveLeadsData(leadsData.result)
+        
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
+  }
+
+  getAllAssignedDealers = async (data) => {
+    console.log("data: ",data);
+    try {
+        const assignedDealerData = await getData({
+          query: `SELECT * FROM 
+          salesforce.Account WHERE Assigned_Distributor__c = '${data.sfid}'`,
+          token: data.token
+        })
+
+        console.log("assignedDealerData =>", assignedDealerData);
+        saveAssignedDealersData(assignedDealerData.result);
+        
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
+  }
+
+  getAllCustomersAssignedToDelaer = async (token, sfid) => {
+    console.log("token: ",token);
+    console.log("sfid: ",sfid)
+    try {
+        const customerData = await getData({
+          query: `SELECT Name FROM salesforce.contact WHERE Assigned_Dealer__c LIKE '${sfid}%'`,
+          token: token
+        })
+
+        console.log("customerData =>", customerData);
+        return customerData.result;
+        
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
+  }
+  
+  assignCustomerLeadToDealer = async (data, custSFID, dealerSFID) => {
+    console.log("custSFID: ",custSFID);
+    console.log("dealerSFID: ",dealerSFID);
+    try {
+        const updateCustLeadAssigned = await getData({
+          query: `UPDATE salesforce.Lead
+          SET Assigned_dealer__c = '${dealerSFID}'
+          WHERE sfid LIKE '%${custSFID}%'`,
+          token: data.token
+        })
+
+        console.log("updateCustLeadAssigned =>", updateCustLeadAssigned);
+        return updateCustLeadAssigned.result;
+        
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
+  }
+  
+  public openAssignDealerModal = (custSFID) => {
+    console.log(custSFID)
     this.setState({ isModalOpen: true });
+    this.setState({ selectedCustomerToAssign: custSFID });
   };
 
-  public renderCustomersAssigned = () => {
+  public renderCustomersAssigned = (leadsData) => {
     return (
       <Grid container>
-        {data.leads.data.map((d) => {
-          if (!d.isDealer && d.assigned) {
+        {console.log("DEtails: ", this.props.leadsData)}
+        {leadsData && leadsData.map((d) => {
+          // console.log("DEtails: ", d)
+          // if (!d.isDealer && d.assigned) {
+            if (d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} history={this.props.history}/>
+                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} AssignedDealers={this.props.dealersData} history={this.props.history}/>
               </Grid>
             );
           }
-          return " ";
         })}
       </Grid>
     );
@@ -142,11 +250,12 @@ export class LeadsImpl extends React.Component<
     // );
   };
 
-  public renderCustomersUnAssigned = () => {
+  public renderCustomersUnAssigned = (leadsData) => {
     return (
       <Grid container>
-        {data.leads.data.map((d) => {
-          if (!d.isDealer && !d.assigned) {
+        {leadsData && leadsData.map((d) => {
+          // if (!d.isDealer && !d.assigned) {
+          if (!d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
                 <CardDetails details={d} onClickAssign={this.openAssignDealerModal} history={this.props.history}/>
@@ -171,15 +280,12 @@ export class LeadsImpl extends React.Component<
   public renderDealersAssigned = () => {
     return (
       <Grid container>
-        {data.leads.data.map((d) => {
-          if (d.isDealer && d.assigned) {
+        {this.props.dealersData && this.props.dealersData.map((d) => {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} history={this.props.history}/>
+                <CardDetails details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history}/>
               </Grid>
             );
-          }
-          return " ";
         })}
       </Grid>
     );
@@ -222,35 +328,35 @@ export class LeadsImpl extends React.Component<
     // );
   };
 
-  public tabData = [
+  public tabData = (leadsData) => [
     {
       tabName: "Customer",
       component: "",
-      onTabSelect: (tabName: any) => this.setState({ topActiveTab: tabName }),
+      onTabSelect: (tabName: any) => { this.setState({ topActiveTab: tabName })},
     },
     {
       tabName: "Dealer",
       component: this.renderDealersAssigned(),
-      onTabSelect: (tabName: any) => this.setState({ topActiveTab: tabName }),
+      onTabSelect: (tabName: any) => { this.getAllAssignedDealers(loggedInUserDetails), this.setState({ topActiveTab: tabName })},
     },
   ];
 
-  public tabDataToDisplay = [
+  public tabDataToDisplay = (leadsData) => [
     {
       tabName: "Assigned",
       component:
         this.state.topActiveTab === "Customer"
-          ? this.renderCustomersAssigned()
+          ? this.renderCustomersAssigned(leadsData)
           : this.renderDealersAssigned(),
-      onTabSelect: (tabName: any) => this.setState({ activeTabType: tabName }),
+      onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName })},
     },
     {
       tabName: "Unassigned",
       component:
         this.state.topActiveTab === "Customer"
-          ? this.renderCustomersUnAssigned()
+          ? this.renderCustomersUnAssigned(leadsData)
           : this.renderDealersUnAssigned(),
-      onTabSelect: (tabName: any) => this.setState({ activeTabType: tabName }),
+      onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName })},
     },
   ];
 
@@ -282,21 +388,37 @@ export class LeadsImpl extends React.Component<
             variant="outlined"
           />
           <div className="dealer-name-container">
-            {this.state.dealers.length
-              ? this.state.dealers.map((dealerData) => (
-                  <div className="dealer-name">{dealerData.name}</div>
+            {this.props.dealersData
+              ? this.props.dealersData.map((dealerData) => (
+                  <div  
+                    onClick={() =>
+                      this.setState({
+                        selectedDealerAssignTo: dealerData.sfid
+                      })
+                    }
+                    className={`dealer-name ${
+                      this.state.selectedDealerAssignTo === dealerData.sfid && "active"
+                    }`}
+                  >{dealerData.name}</div>
                 ))
               : "No Dealer Found"}
           </div>
           <div className="button-container">
             <Button
-              onClick={() => this.setState({ isModalOpen: false })}
+              onClick={() => this.setState({ isModalOpen: false }) }
               variant="contained"
               color="default"
             >
               Cancel
             </Button>{" "}
-            <Button variant="contained" color="primary">
+            <Button 
+              onClick={() => {
+                this.assignCustomerLeadToDealer(loggedInUserDetails, this.state.selectedCustomerToAssign, this.state.selectedDealerAssignTo), 
+                this.setState({ selectedFilter: "Assigned"}),
+                this.setState({ isModalOpen: false }) }}
+              variant="contained" 
+              color="primary"
+            >
               Submit
             </Button>
           </div>
@@ -406,66 +528,179 @@ export class LeadsImpl extends React.Component<
     );
   };
 
-  tabDataForDealer = [
+  tabDataForDealer = (leadsData) => [
     {
       tabName: "All(50)",
       options: allfilterOptions,
       component: (
         <Grid container>
-          {data.leads.data.map((d) => {
+          {leadsData && leadsData.map((d) => {
             return (
               <Grid item xs={12} md={6} >
                 <CardDetailsForDealer 
-                  onClick={() =>
-                  this.props.history.push("/lead/add-new-lead")
-                  }
-                details={d} history={this.props.history}/>
+                  onClickDetails={this.handleClickDealerDetails}
+                  details={d} history={this.props.history}/>
               </Grid>
             );
           })}
         </Grid>
       ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "All" }),
-      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
+      onChangeTabValue : (tabValue) => {
+        const arr = this.state.selectedFilterValues.filter((item) => item.label === "all" ? item.value = tabValue : null)
+        if(arr.length === 0 ){
+          this.state.selectedFilterValues.push({ label: "all", value: tabValue })
+        }
+      }
     },
     {
       tabName: "Lead Type",
       options: leadfilterOptions,
+      component: (
+        <Grid container>
+          {leadsData && leadsData.map((d) => {
+            const filter = this.state.selectedFilterValues.filter(item => item.label === "leadType")
+            if( filter && filter[0] && d.x3_or_4_wheeler__c === filter[0].value){
+              return (
+                <Grid item xs={12} md={6} >
+                  <CardDetailsForDealer 
+                    onClickDetails={this.handleClickDealerDetails}
+                    details={d} history={this.props.history}/>
+                </Grid>
+              );
+            }
+          })}
+        </Grid>
+      ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Lead Type" }),
-      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
+      onChangeTabValue : (tabValue) => {
+        const arr = this.state.selectedFilterValues.filter((item) => item.label === "leadType" ? item.value = tabValue : null)
+        if(arr.length === 0 ){
+          this.state.selectedFilterValues.push({ label: "leadType", value: tabValue })
+        }
+      }
     },
     {
       tabName: "Sub Lead Type",
       options: subfilterOptions,
+      component: (
+        <Grid container>
+          {leadsData && leadsData.map((d) => {
+            
+            const leadfilter = this.state.selectedFilterValues.filter(item => item.label === "subLeadType")
+
+            if(leadfilter && leadfilter[0] && d.sub_lead_type__c === leadfilter[0].value){
+              return (
+                <Grid item xs={12} md={6} >
+                  <CardDetailsForDealer 
+                    onClickDetails={this.handleClickDealerDetails}
+                    details={d} history={this.props.history}/>
+                </Grid>
+              );
+            }
+          })}
+        </Grid>
+      ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Sub Lead Type" }),
-      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
+      onChangeTabValue : (tabValue) => {
+        const arr = this.state.selectedFilterValues.filter((item) => item.label === "subLeadType" ? item.value = tabValue : null)
+        if(arr.length === 0 ){
+          this.state.selectedFilterValues.push({ label: "subLeadType", value: tabValue })
+        }
+      }
     },
     {
       tabName: "Rating",
       options: ratingfilterOptions,
+      component: (
+        <Grid container>
+          {leadsData && leadsData.map((d) => {
+            const leadfilter = this.state.selectedFilterValues.filter(item => item.label === "rating")
+            if(leadfilter && leadfilter[0] && d.rating === leadfilter[0].value){
+              return (
+                <Grid item xs={12} md={6} >
+                  <CardDetailsForDealer 
+                    onClickDetails={this.handleClickDealerDetails}
+                    details={d} history={this.props.history}/>
+                </Grid>
+              );
+            }
+          })}
+        </Grid>
+      ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Rating" }),
-      onChangeTabValue : (tabValue) => this.setState({ selectedFilter: tabValue }),
+      onChangeTabValue : (tabValue) => {
+        const arr = this.state.selectedFilterValues.filter((item) => item.label === "rating" ? item.value = tabValue : null)
+        if(arr.length === 0 ){
+          this.state.selectedFilterValues.push({ label: "rating", value: tabValue })
+        }
+      }
     },
     {
       tabName: "Walk Ins",
       // options: [],
+      component: (
+        <Grid container>
+          {leadsData && leadsData.map((d) => {
+            if(d.leadsource === "Store Visits"){
+            return (
+              <Grid item xs={12} md={6} >
+                <CardDetailsForDealer 
+                  onClickDetails={this.handleClickDealerDetails}
+                  details={d} history={this.props.history}/>
+              </Grid>
+            );
+            }
+          })}
+        </Grid>
+      ),
     },
   ];
 
+  handleClickDealerDetails = async (dealer) => {
+    console.log("dealer Data ", dealer)
+    const customers = await this.getAllCustomersAssignedToDelaer(loggedInUserDetails.token, dealer.sfid);
+    console.log("customer Data ", customers)
+    saveDealerData({dealer, customers});
+    this.props.history.push("/dealers/dealer-details");
+  };
+
+  handleCustomerDetails = async (customer) => {
+    console.log("customer Data ", customer)
+    saveDealerData(customer);
+    this.props.history.push("/customer/customer-lead-details");
+  };
+
   public render() {
-    console.log("selectedFilter ", this.state.selectedFilter)
+    var leadsData ;
+    console.log("this.state.activeTabType:", this.state.activeTabType) ;
+    if(this.state.sortType === "asc"){ 
+      leadsData = this.props.leadsData.sort((a,b) => new Date(a.createddate) - new Date(b.createddate))}
+    else if(this.props.leadsData === "dsc"){
+      leadsData = this.props.leadsData.sort((a,b) => new Date(b.createddate) - new Date(a.createddate) )
+    }
+    else{
+      leadsData = this.props.leadsData
+    }
+    console.log("this.state.selectedFilterValues ", this.state.selectedFilterValues)
     return (
       <AppBar>
         {this.renderAssignDealerModal()}
         {/* {this.renderFilterModal()} */}
         <div className="leads">
           {isDealer() ? (
-            <Tabs tabsData={this.tabDataForDealer} hasSort={true} />
+            <Tabs tabsData={this.tabDataForDealer(leadsData)} 
+              hasSort={true}
+              sortValue={(sortVal) => this.setState({sortType: sortVal})}
+             />
           ) : (
             <React.Fragment>
-              <Tabs tabsData={this.tabData} />
-              {this.state.topActiveTab === "Customer" && (
-                <Tabs tabsData={this.tabDataToDisplay} />
+              <Tabs tabsData={this.tabData(leadsData)} />
+              {/* {this.state.topActiveTab === "Customer" && (
+                <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
+              )} */}
+              {(this.state.selectedFilter === "Assigned" || this.state.topActiveTab === "Customer") && (
+                <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
               )}
             </React.Fragment>
           )}
@@ -482,9 +717,12 @@ export class LeadsImpl extends React.Component<
     );
   }
 }
-export function mapStateToProps() {
+export function mapStateToProps(state) {
+  console.log("state.user.leads: ",state.users.get("assigndealers"))
   return {
     isDealer: false,
+    leadsData: state.users.get("leads"),
+    dealersData: state.users.get("assigndealers"),
   };
 }
 export const Leads = withRouter(
@@ -492,12 +730,23 @@ export const Leads = withRouter(
 );
 
 const CardDetails = (props: any) => {
-  const { details } = props;
+  const { details, AssignedDealers } = props;
+
+  const assignedDealer = AssignedDealers && AssignedDealers.filter((item) => 
+                    item.sfid === details.assigned_dealer__c )
+  // console.log("details", assignedDealer[0]);
+
+  const CalRating = () => {
+    switch(details.rating){
+      case ("Cold"): return 1;
+      case ("Warm"): return 3;
+      case ("Hot"): return 5;
+  }}
   // return (
   //   <div className="cards-main">
   //     {details.map((datavalue: any, index: number) => {
         return (
-          <div className="card-container">
+          <div className="card-container" onClick={() => props.onClickDetails(details)}>
             <Grid container >
               <Grid className="padding-6-corners" item xs={6} md={6} >
                 {/* <span className="description-text">Name:</span> */}
@@ -505,33 +754,35 @@ const CardDetails = (props: any) => {
               </Grid>
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 {/* <span className="description-text">Contact:</span> */}
-                {details.phoneNumber || "NA"}
+                {details.phone|| "NA"}
               </Grid>
             </Grid>           
             <Grid container >
               <Grid className="padding-6-corners" item xs={6} md={6} >
                 <span className="description-text">Kit Enquiry:</span>
-                {details.kitEnq || "NA"}
+                {details.kit_enquiry__c || "NA"}
               </Grid>
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 <span className="description-text">Vehicle Type:</span>
-                {details.vehicleType || "NA"}
+                {details.x3_or_4_wheeler__c || "NA"}
               </Grid>
             </Grid>
-            {details.assigned ? (
+            {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ"? (
               // <React.Fragment>
                 <Grid container>
                   <Grid className="padding-6-corners" item xs={6} md={6}>
                     <span className="description-text">Assigned Dealer :</span>
-                    {details.dealer || "NA"}
+                    {assignedDealer && assignedDealer[0].name}
+                    {/* {details.assigned_dealer__c || "NA"} */}
                   </Grid>
                   <Grid className="padding-6-corners" item xs={6} md={6}>
                     <span className="description-text">Lead Rating :</span>
-                    <Rating
+                    {details.rating}
+                    {/* <Rating
                       readOnly
                       precision={0.5}
-                      value={details.leadRating}
-                    />
+                      value={CalRating()}
+                    /> */}
                   </Grid>
                 </Grid>
               // </React.Fragment>
@@ -541,16 +792,16 @@ const CardDetails = (props: any) => {
             <Grid container >
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 <span className="description-text">Dealer Generated Lead:</span>
-                {details.dealer || "NA"}
+                {details.dealer_generated_lead__c || "NA"}
               </Grid>
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 
-                  <span className="view" onClick={() => props.history.push("/lead/add-new-lead")}>
-                  {details.assigned ? "View Details" : ""}
+                  <span className="view" onClick={() => props.onClickDetails(details)}>
+                  {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ" ? "View Details" : ""}
                   </span>
                 
-                  <span className="clickable" onClick={props.onClickAssign}>
-                  {!details.assigned ? "Click To Assign Dealer" : ""}
+                  <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
+                  {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
                   </span>
                 
               </Grid>
@@ -581,8 +832,14 @@ const CardDetails = (props: any) => {
 
 const CardDetailsForDealer = (props: any) => {
   const { details } = props;
+  const CalRating = () => {
+    switch(details.rating){
+      case ("Cold"): return 1;
+      case ("Warm"): return 3;
+      case ("Hot"): return 5;
+  }}
   return (
-    <div onClick={props.onClick} className="card-container ">
+    <div onClick={() => props.onClickDetails(details)} className="card-container ">
       <Grid container >
         <Grid item className="padding-6-corners" xs={6} md={6}>
           {/* <PersonPin /> <span style={{ padding: "5px" }} /> */}
@@ -590,39 +847,40 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
         <Grid item className="padding-6-corners" xs={6} md={6}>
           {/* <Phone /> <span style={{ padding: "5px" }} /> */}
-          {details.phoneNumber}
+          {details.phone}
         </Grid>
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text">Kit Enquiery :</span>
-          {details.kitEnq || 'NA'}
+          {details.kit_enquiry__c || 'NA'}
         </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text"> Vehicle Type</span>
-          {details.vehicleType}
+          {details.x3_or_4_wheeler__c}
         </Grid>
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text"> Dealer Generated Lead:</span>
-          {details.dealer || "NA"}
+          {details.dealer_generated_lead__c || "NA"}
         </Grid>
         <Grid item className="padding-6-corners align-center" xs={6} md={6}
           style={{ justifyContent: "flex-start" }}
         >
           <span className="description-text">Lead Rating:</span>
-          <Rating
+          {details.rating}
+          {/* <Rating
             readOnly
             precision={0.5}
-            value={details.leadRating}
-          />
+            value={CalRating()}
+          /> */}
         </Grid>
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={4} md={4}> 
           <span
-            onClick={props.onClick}
+            onClick={() => props.onClickDetails(details)}
             className="view"
           >
             View Details

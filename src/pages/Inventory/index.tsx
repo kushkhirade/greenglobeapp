@@ -26,7 +26,7 @@ const tankFilterOptions = [
   {label: "90", value: "90"},
 ]
 
-export interface IInventoryProps {}
+export interface IInventoryProps {location?: any;}
 
 export class InventoryImpl extends React.PureComponent<
   IInventoryProps,
@@ -55,34 +55,37 @@ export class InventoryImpl extends React.PureComponent<
   };
 
   async componentDidMount(){
+    console.log("this.props ", this.props.location.data)
+
     const {data} = getToken();
-    // console.log("Inventory Component DId mount", data);
-    const res = await this.getAllInventoryData(data);
+    const sfid = this.props.location.data && this.props.location.data.sfid ? this.props.location.data.sfid : data.sfid;
+    const recordtypeid = this.props.location.data && this.props.location.data.recordtypeid ? this.props.location.data.recordtypeid : data.record_type;
+    const res = await this.getAllInventoryData(data.token,  sfid, recordtypeid );
     console.log("result ", res)
     this.setState({data : res});
-    // this.setState({data: res.sort((a,b) => new Date(...a.date_purchased__c.split('-').reverse()) - new Date(...b.date_purchased__c.split('-').reverse()) )})
-    console.log("componentDidMount ", this.state.data)
   }
 
-  getAllInventoryData = async (data) => {
-    // console.log("data: ",data);
+  getAllInventoryData = async (token, sfid, recordtypeid) => {
+    // console.log("token: ",token);
+    // console.log("sfid: ",sfid);
+    // console.log("recordtypeid: ",recordtypeid);
     let inventoryData;
     try {
-      if(data.record_type === "0122w000000cwfSAAQ"){
+      if(recordtypeid === "0122w000000cwfSAAQ"){
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
           Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
           Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c
-          FROM salesforce.product2 WHERE sold_to_dealer__c = '${data.sfid}'`,
-          token: data.token
+          FROM salesforce.product2 WHERE sold_to_dealer__c = '${sfid}'`,
+          token: token
         })
-      }else if(data.record_type === "0122w000000cwfNAAQ"){
+      }else if(recordtypeid === "0122w000000cwfNAAQ"){
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
             Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
             Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c
-            FROM salesforce.product2 WHERE sold_to_distributor__c ='${data.sfid}'`,
-          token: data.token
+            FROM salesforce.product2 WHERE sold_to_distributor__c ='${sfid}'`,
+          token: token
         })
       }
         console.log("inventoryData =>", inventoryData);
@@ -335,7 +338,7 @@ export class InventoryImpl extends React.PureComponent<
     );
   }
 }
-export function mapStateToProps() {
+export function mapStateToProps(state) {
   return {};
 }
 export const Inventory = connect<{}, {}, IInventoryProps>(mapStateToProps)(

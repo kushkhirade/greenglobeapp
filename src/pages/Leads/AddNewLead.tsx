@@ -5,6 +5,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import * as React from "react";
 import { connect } from "react-redux";
+import { Control, Form } from 'react-redux-form';
 import Select from "react-select";
 import Image, { Shimmer } from "react-shimmer";
 import { BaseModal } from "src/components/BaseModal";
@@ -600,48 +601,72 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Draft",
                     component: (
-                      <div>
-                        <SubFormHeading>Lead Basic Details</SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                          }}
-                          formModel="userForm"
-                          hasSubmit={false}
-                          options={leadDealer}
-                        />
-                        <SubFormHeading>Address Details</SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                            console.log(">> this", this);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="userForm"
-                          hasSubmit={false}
-                          options={addressDetails}
-                        />
-                        <SubFormHeading >
-                          KYC Documents
-                        </SubFormHeading>
-                        <UploadContainer valKey={7} heading="Aadhaar Card" />
-                        <UploadContainer valKey={8} heading="PAN Card" />{" "}
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="leadForm"
-                          hasSubmit={true}
-                          options={[]}
-                          submitTitle="Next"
-                          cancelTitle="Previous"
-                        />
-                      </div>
+                      <Form model="userForm" onSubmit={(val) => console.log(val)}>
+                        <label>Your name?</label>
+                        <Control.text model=".name" />
+                        <button>Submit!</button>
+                      </Form>
+                      // <div>
+                      //   <SubFormHeading>Lead Basic Details</SubFormHeading>
+                      //   {/* <FormComponent
+                      //     onSubmit={(v: any) => {
+                      //       console.log(">> v", v.target);
+                      //       this.setState({
+                      //         activeStep: this.state.activeStep + 1,
+                      //       });
+                      //     }}
+                      //     formModel="userForm"
+                      //     hasSubmit={true}
+                      //     submitTitle="Next"
+                      //     options={leadDealer}
+                      //   /> */}
+                      //   <Grid item={true} xs={12} md={6} sm={6}>
+                      //     <TextField
+                      //       label="firstname"
+                      //       variant="outlined"
+                      //       className="form-input"
+                      //     />{" "}
+                      //   </Grid>
+                      //   <SubFormHeading>Address Details</SubFormHeading>
+                      //   {/* <FormComponent
+                      //     onSubmit={(v: any) => {
+                      //       console.log(">> v", v);
+                      //       console.log(">> this", this);
+                      //       this.setState({
+                      //         activeStep: this.state.activeStep + 1,
+                      //       });
+                      //     }}
+                      //     formModel="userForm"
+                      //     hasSubmit={false}
+                      //     options={addressDetails}
+                      //   /> */}
+                      //   <Grid item={true} xs={12} md={6} sm={6}>
+                      //     <TextField
+                      //       label="firstname"
+                      //       variant="outlined"
+                      //       className="form-input"
+                      //     />{" "}
+                      //   </Grid>
+                      //   <SubFormHeading >
+                      //     KYC Documents
+                      //   </SubFormHeading>
+                      //   <UploadContainer valKey={7} heading="Aadhaar Card" />
+                      //   <UploadContainer valKey={8} heading="PAN Card" />{" "}
+                      //   {/* <FormComponent
+                      //     onSubmit={(v: any) => {
+                      //       console.log(">> v", v);
+                      //       this.setState({
+                      //         activeStep: this.state.activeStep + 1,
+                      //       });
+                      //     }}
+                      //     formModel="leadForm"
+                      //     hasSubmit={true}
+                      //     options={[]}
+                      //     submitTitle="Next"
+                      //     cancelTitle="Previous"
+                      //   /> */}
+                      //   <button type = "submit"> submit 123 </button>
+                      // </div>
                     ),
                   },
                   {

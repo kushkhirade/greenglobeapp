@@ -53,8 +53,7 @@ export class AssignedDealersImpl extends React.Component<
     console.log("sfid: ",sfid)
     try {
         const customerData = await getData({
-          query: `SELECT * FROM 
-          salesforce.Contact where accountid = '${sfid}'`,
+          query: `SELECT Name FROM salesforce.contact WHERE Assigned_Dealer__c LIKE '${sfid}%'`,
           token: token
         })
 

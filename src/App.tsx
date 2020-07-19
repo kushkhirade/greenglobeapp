@@ -72,7 +72,8 @@ import { store } from "./store/Store";
 import { MyUsers } from "./pages/MyUsers";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
-import { getToken, isLoggedIn, saveLoggedInUserData, saveLoggedInUserToken, setInventoryData, getInventoryData } from "./state/Utility";
+import { CustomerLeadDetails } from "./pages/Customers/CustomerLeadDetails";
+import { getToken, isLoggedIn, saveLoggedInUserData, saveLoggedInUserToken } from "./state/Utility";
 import { saveLoggedInUserDetails } from "./actions/App.Actions";
 import { AddNewOrder } from "./pages/BuyOrders/AddNewOrder";
 import { ForgotPassword } from "./pages/account/ForgotPassword";
@@ -141,6 +142,10 @@ class App extends React.Component {
               <ProtectedRoute
                 path="/lead/add-new-lead"
                 component={AddNewLead}
+              />
+              <ProtectedRoute
+                path="/customer/customer-lead-details"
+                component={CustomerLeadDetails}
               />
               <ProtectedRoute
                 path="/jobcard"

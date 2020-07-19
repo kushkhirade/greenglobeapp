@@ -18,7 +18,6 @@ export class Tabs extends React.Component<
   public state = { activeTabIndex: 0, activeTab: "", selectValue: "" };
 
   public handleTabChange = (tabData: any, index: number) => {
-    console.log("tab: ", tabData.tabName)
     this.setState({
       activeTab: tabData,
       activeTabIndex: index,
@@ -27,7 +26,7 @@ export class Tabs extends React.Component<
     if(tabData.tabName === this.props.tabsData[0].tabName){
       this.props.tabsData.map(tab=> {
         tabData.tabName !== tab.tabName 
-        ? tab.onChangeTabValuetab.onChangeTabValue(null)
+        ? tab.onChangeTabValue && tab.onChangeTabValue(null)
         : console.log("else: ", tab)
       })
     }
@@ -38,8 +37,6 @@ export class Tabs extends React.Component<
   };
 
   public render() {
-    console.log("activeTab",this.state.activeTab)
-    console.log("selectTab",this.state.selectValue)
     return (
       <React.Fragment>
         <div className="tabs-container">
@@ -79,8 +76,9 @@ export class Tabs extends React.Component<
               </div>
             );
           })}
-          <div className="tab-button">
+
           {this.props.hasSort && (
+            <div className="tab-button">
             <Select
               onChange={(e)=> this.props.sortValue(e.value)}
               placeholder="Sort"
@@ -90,8 +88,9 @@ export class Tabs extends React.Component<
                 { label: "Descending", value: "dsc" },
               ]}
             />
+            </div>
           )}
-          </div>
+          
         </div>
         {
           this.props.tabsData.find(

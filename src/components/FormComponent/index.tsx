@@ -11,15 +11,18 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { store } from "../../store/Store";
+import { changeValuesInStore } from "src/state/Utility";
 
 export const FormComponent = (props: any) => {
   const classes = useStyles();
+
   return (
     <Form
       model={props.formModel}
       className="form-content"
       onSubmit={() => {
         const values = store.getState().rxFormReducer[props.formModel];
+        console.log("Values: ", values)
         props.onSubmit(values);
       }}
     >
@@ -33,6 +36,7 @@ export const FormComponent = (props: any) => {
                   component={MUITextField}
                   type="text"
                   name={opt.name}
+                  onChange={e => changeValuesInStore(e.target.name, e.target.value)}
                   model={`${props.formModel}${opt.model}`}
                   label={opt.label}
                   errors={{ hasError: true }}
@@ -82,7 +86,7 @@ export const FormComponent = (props: any) => {
           }
         })}
       </Grid>
-      {props.hasSubmit && (
+      {/* {props.hasSubmit && ( */}
         <div className="button-container">
           <Button variant="contained" onClick={props.onCancel}>
             {props.cancelTitle || "Cancel"}
@@ -96,7 +100,7 @@ export const FormComponent = (props: any) => {
             {props.submitTitle || "Submit"}
           </Button>
         </div>
-      )}
+      {/* )} */}
     </Form>
   );
 };
