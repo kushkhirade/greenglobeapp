@@ -116,17 +116,19 @@
 
     .tab-button {
         padding: 5px 5px;
-        min-width: 112px;
+        min-width: 80px;
         text-align: center;
         font-size: 12px;
         font-weight: 600;
+        color:black;
         background-color: #e4e4e4;
 
         &:hover {
             cursor: pointer;
             // background-color: #48a89c;
             // color:white;
-            color:black;
+        font-weight: 600;
+        color:black;
         }
     }
 
@@ -142,7 +144,7 @@
         color: #837a7a;
         text-align: center;
         border: 1px solid #d4cdcd;
-        width: 112px; height: 34px;
+        width: 70px; height: 34px;
         background-color:white;
         border-radius: 4px;
     }

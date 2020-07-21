@@ -138,16 +138,14 @@ export class LeadsImpl extends React.Component<
     try {
       if(recordtypeid === "0122w000000cwfSAAQ"){
         leadsData = await getData({
-          query: `SELECT LeadSource, Name, Phone, Whatsapp_number__c, Rating, X3_or_4_Wheeler__c, Kit_Enquiry__c,
-          RecordTypeId, Assigned_Dealer__c, Dealer_Generated_Lead__c, Sub_Lead_Type__c, CreatedDate, sfid
+          query: `SELECT *
           FROM salesforce.Lead 
           WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%')`,
           token: token
         })
       }else if(recordtypeid === "0122w000000cwfNAAQ"){
         leadsData = await getData({
-          query: `SELECT LeadSource ,Name, Phone, Whatsapp_number__c, Rating, X3_or_4_Wheeler__c, Kit_Enquiry__c,
-          RecordTypeId, Assigned_Dealer__c, Dealer_Generated_Lead__c, Sub_Lead_Type__c, CreatedDate, sfid
+          query: `SELECT *
           FROM salesforce.Lead 
           WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Distributor__c LIKE '%${sfid}%')`,
           token: token
@@ -184,7 +182,9 @@ export class LeadsImpl extends React.Component<
     console.log("sfid: ",sfid)
     try {
         const customerData = await getData({
-          query: `SELECT Name FROM salesforce.contact WHERE Assigned_Dealer__c LIKE '${sfid}%'`,
+          query: `SELECT Name, Phone
+          FROM salesforce.Contact 
+          WHERE Assigned_Dealer__c LIKE '${sfid}%'`,
           token: token
         })
 
@@ -258,7 +258,7 @@ export class LeadsImpl extends React.Component<
           if (!d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} onClickAssign={this.openAssignDealerModal} history={this.props.history}/>
+                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} onClickAssign={this.openAssignDealerModal} history={this.props.history}/>
               </Grid>
             );
           }
@@ -538,7 +538,7 @@ export class LeadsImpl extends React.Component<
             return (
               <Grid item xs={12} md={6} >
                 <CardDetailsForDealer 
-                  onClickDetails={this.handleClickDealerDetails}
+                  onClickDetails={this.handleCustomerDetails}
                   details={d} history={this.props.history}/>
               </Grid>
             );
@@ -564,7 +564,7 @@ export class LeadsImpl extends React.Component<
               return (
                 <Grid item xs={12} md={6} >
                   <CardDetailsForDealer 
-                    onClickDetails={this.handleClickDealerDetails}
+                    onClickDetails={this.handleCustomerDetails}
                     details={d} history={this.props.history}/>
                 </Grid>
               );
@@ -593,7 +593,7 @@ export class LeadsImpl extends React.Component<
               return (
                 <Grid item xs={12} md={6} >
                   <CardDetailsForDealer 
-                    onClickDetails={this.handleClickDealerDetails}
+                    onClickDetails={this.handleCustomerDetails}
                     details={d} history={this.props.history}/>
                 </Grid>
               );
@@ -620,7 +620,7 @@ export class LeadsImpl extends React.Component<
               return (
                 <Grid item xs={12} md={6} >
                   <CardDetailsForDealer 
-                    onClickDetails={this.handleClickDealerDetails}
+                    onClickDetails={this.handleCustomerDetails}
                     details={d} history={this.props.history}/>
                 </Grid>
               );
@@ -646,7 +646,7 @@ export class LeadsImpl extends React.Component<
             return (
               <Grid item xs={12} md={6} >
                 <CardDetailsForDealer 
-                  onClickDetails={this.handleClickDealerDetails}
+                  onClickDetails={this.handleCustomerDetails}
                   details={d} history={this.props.history}/>
               </Grid>
             );
@@ -746,25 +746,27 @@ const CardDetails = (props: any) => {
   //   <div className="cards-main">
   //     {details.map((datavalue: any, index: number) => {
         return (
-          <div className="card-container" onClick={() => props.onClickDetails(details)}>
+          <div className="card-container" >
             <Grid container >
               <Grid className="padding-6-corners" item xs={6} md={6} >
                 {/* <span className="description-text">Name:</span> */}
-                {details.name || "NA"}
+                <PersonPin /> <span />
+                {details.name}
               </Grid>
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 {/* <span className="description-text">Contact:</span> */}
-                {details.phone|| "NA"}
+                <Phone /> <span />
+                {details.phone}
               </Grid>
             </Grid>           
             <Grid container >
               <Grid className="padding-6-corners" item xs={6} md={6} >
                 <span className="description-text">Kit Enquiry:</span>
-                {details.kit_enquiry__c || "NA"}
+                {details.kit_enquiry__c}
               </Grid>
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 <span className="description-text">Vehicle Type:</span>
-                {details.x3_or_4_wheeler__c || "NA"}
+                {details.x3_or_4_wheeler__c}
               </Grid>
             </Grid>
             {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ"? (
@@ -772,8 +774,8 @@ const CardDetails = (props: any) => {
                 <Grid container>
                   <Grid className="padding-6-corners" item xs={6} md={6}>
                     <span className="description-text">Assigned Dealer :</span>
-                    {assignedDealer && assignedDealer[0].name}
-                    {/* {details.assigned_dealer__c || "NA"} */}
+                    {assignedDealer && assignedDealer[0] && assignedDealer[0].name}
+                    {/* {details.assigned_dealer__c} */}
                   </Grid>
                   <Grid className="padding-6-corners" item xs={6} md={6}>
                     <span className="description-text">Lead Rating :</span>
@@ -792,19 +794,23 @@ const CardDetails = (props: any) => {
             <Grid container >
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 <span className="description-text">Dealer Generated Lead:</span>
-                {details.dealer_generated_lead__c || "NA"}
+                {details.dealer_generated_lead__c}
               </Grid>
               <Grid className="padding-6-corners" item xs={6} md={6}>
-                
-                  <span className="view" onClick={() => props.onClickDetails(details)}>
-                  {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ" ? "View Details" : ""}
-                  </span>
-                
-                  <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
-                  {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
-                  </span>
-                
+                <span className="view" 
+                  onClick={() => {
+                    
+                    props.onClickDetails(details) 
+
+                  }}>
+                  View Details
+                </span>
               </Grid>
+            </Grid>
+            <Grid container >
+              <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
+              {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
+              </span>
             </Grid>
             <Grid container className="padding-15 align-left">
               <Grid className="padding-6-corners" item xs={12} md={12}>
@@ -839,21 +845,21 @@ const CardDetailsForDealer = (props: any) => {
       case ("Hot"): return 5;
   }}
   return (
-    <div onClick={() => props.onClickDetails(details)} className="card-container ">
+    <div className="card-container">
       <Grid container >
         <Grid item className="padding-6-corners" xs={6} md={6}>
-          {/* <PersonPin /> <span style={{ padding: "5px" }} /> */}
+          <PersonPin /> <span />
           {details.name}
         </Grid>
         <Grid item className="padding-6-corners" xs={6} md={6}>
-          {/* <Phone /> <span style={{ padding: "5px" }} /> */}
+          <Phone /> <span />
           {details.phone}
         </Grid>
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text">Kit Enquiery :</span>
-          {details.kit_enquiry__c || 'NA'}
+          {details.kit_enquiry__c}
         </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text"> Vehicle Type</span>
@@ -863,7 +869,7 @@ const CardDetailsForDealer = (props: any) => {
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text"> Dealer Generated Lead:</span>
-          {details.dealer_generated_lead__c || "NA"}
+          {details.dealer_generated_lead__c}
         </Grid>
         <Grid item className="padding-6-corners align-center" xs={6} md={6}
           style={{ justifyContent: "flex-start" }}
@@ -910,28 +916,28 @@ const CardDetailsForDealer = (props: any) => {
         //       <Grid className="padding-6-corners" item xs={6} md={6}>
         //         {/* <span className="description-text">Name:</span> */}
         //         <PersonPin /> <span style={{ padding: "5px" }} />
-        //         {details.name || "NA"}
+        //         {details.name}
         //       </Grid>
         //       <Grid className="padding-6-corners" item xs={6} md={6}>
         //         {/* <span className="description-text">Contact:</span> */}
         //         <Phone /> <span style={{ padding: "5px" }} />
-        //         {details.phoneNumber || "NA"}
+        //         {details.phoneNumber}
         //       </Grid>
         //     </Grid>{" "}
         //     <Grid container>
         //       <Grid className="padding-6-corners" item xs={6} md={6} >
         //         <span className="description-text">Kit Enquiry:</span>
-        //         {details.kitEnq || "NA"}
+        //         {details.kitEnq}
         //       </Grid>
         //       <Grid className="padding-6-corners" item xs={6} md={6} >
         //         <span className="description-text">Vehicle Type:</span>
-        //         {details.vehicleType || "NA"}
+        //         {details.vehicleType}
         //       </Grid>
         //     </Grid>{" "}
         //     <Grid container>
         //       <Grid className="padding-6-corners" item xs={6} md={6} >
         //         <span className="description-text">Dealer Generated Lead:</span> 
-        //         {details.dealer || "NA"}
+        //         {details.dealer}
         //       </Grid>
         //       <Grid className="padding-6-corners" item xs={6} md={6}>
         //         <span className="description-text">Lead Rating :</span>

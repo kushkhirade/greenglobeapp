@@ -50,7 +50,8 @@ body,
 
 .description-text {
   font-size: 14px;
-  color:#4A4847;
+  color:black;
+  font-weight: 600;
   margin-right: 10px;
 }
 
@@ -67,6 +68,7 @@ body,
 .drawer-link {
   text-decoration: none;
   color: black;
+  font-weight: 600;
 }
 
 .MuiAppBar-colorPrimary {

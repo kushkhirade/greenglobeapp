@@ -105,8 +105,8 @@ const DealerCard = (props: any) => {
           {" "}
           <div className="padding-6"> {data.name}</div>
           <div className="margin-10 dealer-card">
-            <img src={"https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"} 
-                 alt="bike" className="dealer-image" />
+            {/* <img src={"https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"} 
+                 alt="bike" className="dealer-image" /> */}
             <div>
               <div className="padding-6"> {data.billingcity}, {data.billingstate}</div>
               <div className="padding-6">
@@ -121,10 +121,6 @@ const DealerCard = (props: any) => {
               <div className="padding-6">
                 {" "}
                 <span className="description-text">Area</span> {data.area__c}
-              </div>
-              <div className="padding-6">
-                {" "}
-                <span className="description-text">Area</span> {props.area}
               </div>
             </div>
           </div>

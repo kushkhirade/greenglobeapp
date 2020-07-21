@@ -14,15 +14,61 @@ import { withRouter } from "react-router-dom";
 import filter from "./filter.svg";
 import Search from "@material-ui/icons/Search";
 import { IHistory } from "src/state/Utility";
+import getData from "src/utils/getData";
+import { getToken, isDealer } from "./../../state/Utility";
+import { saveDealerData } from "src/actions/App.Actions";
 
 export interface ICustomersProps {
   history: IHistory
 }
 
-export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
+export class CustomersImpl extends React.PureComponent<ICustomersProps, {customers: any}> {
   constructor(props: ICustomersProps) {
     super(props);
+    this.state = {
+      customers : []
+    }
   }
+
+  async componentDidMount(){
+    const { data } = getToken();
+    const customerData = await this.getAllCustomers(data);
+    this.setState({ customers : customerData });
+  }
+
+  getAllCustomers = async (data) => {
+    try{
+      let customerData;
+      if(isDealer()){
+        customerData = await getData({
+          query: `SELECT *
+          FROM salesforce.Contact 
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%'`,
+          token: data.token
+        })
+      }
+      else{
+        customerData = await getData({
+          query: `SELECT *
+          FROM salesforce.Contact 
+          WHERE contact.accountid LIKE '%${data.sfid}%'`,
+          token: data.token
+        });
+    }
+
+      console.log("customerData =>", customerData.result)
+      return customerData.result;
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  handleCustomerDetails = async (customer) => {
+    console.log("customer Data ", customer)
+    saveDealerData(customer);
+    this.props.history.push("/customer/customer-lead-details");
+  };
 
   public render() {
     return (
@@ -40,14 +86,19 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {}> {
           <img height="26px" src={filter} />
         </div>
         {/* <div className="cards-main customer-card"> */}
-          <Grid container={true}>
-            <CustomerList
-              onClick={() =>
-                this.props.history.push("/customer/add-new-customer")
-              }
-              customerData={data.customers.data}
-            />
-          </Grid>
+        <Grid container>
+          {this.state.customers && this.state.customers.map(cust => {
+          return (
+            <Grid item xs={12} md={6}>
+              <CustomerList
+                onClickDetails={this.handleCustomerDetails}
+                customerData={cust}
+              />
+            </Grid>
+          )}
+          )}
+        </Grid>
+
         {/* </div> */}
       </AppBar>
     );
@@ -61,11 +112,12 @@ export const Customers = withRouter(
 );
 
 const CustomerList = (props: any) => {
+  const { customerData } = props;
   return (
-    <div className="cards-main">
-    {props.customerData.map((customerData: any, index: any) => {
-    return (
-      <div onClick={props.onClick} key={index} className="card-container ">
+    // <div className="cards-main">
+    // {props.customerData.map((customerData: any, index: any) => {
+    // return (
+      <div className="card-container" >
         <Grid container >
           <Grid
             item
@@ -74,7 +126,7 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <PersonPin /> <span style={{ padding: "5px" }} />
-            {customerData.firstName}
+            {customerData.name}
           </Grid>
           <Grid
             className="padding-6-corners"
@@ -83,39 +135,38 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <Phone /> <span style={{ padding: "5px" }} />
-            {customerData.mobileNumber}
+            {customerData.phone}
           </Grid>
         </Grid>
         <Grid container >
-          <Grid className="padding-6-corners" item xs={6} md={6}>
+          {/* <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Email:</span>
             {customerData.email || 'NA'}
-          </Grid>
+          </Grid> */}
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Purchased Product:</span>
-            {customerData.productPurchased}
+            {customerData.purchased_product__c}
           </Grid>
-         
+          <Grid className="padding-6-corners" item xs={6} md={6}>
+            <span className="description-text"> Dealer Rating:</span>
+            {customerData.dealer_rating__c}
+          </Grid>
         </Grid>
         <Grid container >
           <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text"> Dealer Code:</span>
-            {customerData.dealerCode || "NA"}
-          </Grid>
-          <Grid
-            className="padding-6-corners align-center"
-            style={{ justifyContent: "flex-start" }}
-            item
-            xs={6}
-            md={6}
-          >
-            <span className="description-text">Dealer Rating:</span>
-            <Rating
+            <span className="description-text">Dealer Code:</span>
+            {customerData.dealer_code__c}
+            {/* <Rating
               readOnly
               precision={0.5}
               value={customerData.dealerRating}
-            />
+            /> */}
           </Grid>
+          <Grid className="padding-6-corners" item xs={4} md={4}> 
+          <span onClick={() => props.onClickDetails(customerData)} className="view">
+            View Details
+          </span>
+        </Grid>
         </Grid>
         <Grid className="padding-15 align-left">
           <div className="icon-container">
@@ -129,8 +180,8 @@ const CustomerList = (props: any) => {
           </div>
         </Grid>
       </div>
-    );
-  })}
-  </div>
+  //    );
+  // })} 
+  // </div>
   )
 };

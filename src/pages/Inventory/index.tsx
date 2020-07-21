@@ -75,7 +75,7 @@ export class InventoryImpl extends React.PureComponent<
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
           Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
-          Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c
+          Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
           FROM salesforce.product2 WHERE sold_to_dealer__c = '${sfid}'`,
           token: token
         })
@@ -83,7 +83,7 @@ export class InventoryImpl extends React.PureComponent<
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
             Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
-            Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c
+            Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
             FROM salesforce.product2 WHERE sold_to_distributor__c ='${sfid}'`,
           token: token
         })
@@ -391,17 +391,17 @@ const InventoryCards = (props: any) => {
                 {inData.date_purchased__c}
               </div>
               {isDealer() ?
-                inData.sold_to_customer__c ? 
+                inData.customer_name__c ? 
                   <div className="padding-6">
                     <span className="description-text">Sold to Customer -</span>
-                    {inData.sold_to_customer__c}
+                    {inData.customer_name__c}
                   </div>
                 : null
               :
-                inData.sold_to_dealer__c ?
+                inData.dealer_name__c ?
                   <div className="padding-6">
                     <span className="description-text">Sold to Dealer -</span>
-                    {inData.sold_to_dealer__c}
+                    {inData.dealer_name__c}
                   </div>
                 : null
               }
