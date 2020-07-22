@@ -72,8 +72,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     let orders;
     try {
         orders = await getData({
-          query: `SELECT * FROM salesforce.product2
-          where sfid = '${product2ID}'`,
+          query: `SELECT prd_name__c, quantity, totalprice, unitprice FROM salesforce.orderitem
+          where product2id = '${product2ID}'`,
           token: data.token
         })
     
@@ -87,7 +87,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
 
   handleClickDetails = async (orderData) => {
     console.log(orderData)
-    const products = this.getAllOrderedProducts(loggedInUserDetails, orderData.product2id);
+    const products = await this.getAllOrderedProducts(loggedInUserDetails, orderData.product2id);
     console.log("products: ", products);
     this.props.history.push({pathname: "/buy-order/add-new-order", 
         orderType: this.state.topActiveTab, orderdetails: orderData, products: products});

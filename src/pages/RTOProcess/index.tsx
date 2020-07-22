@@ -19,6 +19,10 @@ import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./rtoProcess.scss";
 import { FormComponent } from "src/components/FormComponent";
+import { getToken } from "src/state/Utility";
+import getData from "src/utils/getData";
+
+var loggedInUserDetails;
 
 export interface IRTOProcessProps {
   history: IHistory;
@@ -44,6 +48,48 @@ export class RTOProcessImpl extends React.PureComponent<
       rtoDataMain: data.rto.data,
     };
   }
+  
+  async componentDidMount(){
+    loggedInUserDetails = getToken().data;
+    console.log("loggedInUserDetails: ", loggedInUserDetails);
+    const res = await this.getAllRTOProcesses(loggedInUserDetails);
+    this.setState({rtoDataMain: res})
+  }
+
+  getAllRTOProcesses = async (data) => {
+    console.log("data: ", data);
+    try{
+      const getRTOs = await getData({
+        query: `SELECT *
+        FROM  salesforce.RTO_and_Insurance_Process__c 
+        WHERE Distributor__c like '%${data.sfid}%' `,
+        token: data.token
+      });
+      console.log("getRTOs => ", getRTOs);
+      return getRTOs.result;
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  UpdateRTOStage = async (data, stage, sfid) => {
+    console.log("data: ", data);
+    try {
+      const updatertostage = await getData({
+        query: `UPDATE salesforce.RTO_and_Insurance_Process__c
+        SET stage__c = '${stage}'
+        WHERE sfid LIKE '%${sfid}%'`,
+        token: data.token
+      })
+
+      console.log("updatertostage =>", updatertostage);
+      // return updatertostage.result;
+      
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
+  }
 
   showEditPopup = (source) => {
     this.setState({
@@ -58,21 +104,16 @@ export class RTOProcessImpl extends React.PureComponent<
     });
   };
 
-  handleStatusUpdate = () => {
-    const updatedData = this.state.rtoDataMain.map((rto) => {
-      if (rto.rtos.id === this.state.currentData.id) {
-        rto.rtos.status = this.state.stage;
-        rto.rtos.isCleared = true;
-      }
-      return rto;
-    });
+  handleStatusUpdate = async() => {
+    this.UpdateRTOStage(loggedInUserDetails, this.state.stage, this.state.currentData.sfid);
+    const res = await this.getAllRTOProcesses(loggedInUserDetails);
+    this.setState({rtoDataMain: res});
     this.setState({
-      openEditModal: false,
-      rtoDataMain: updatedData,
+      openEditModal: false
     });
   };
 
-  renderModal = () => {
+  renderEditModal = () => {
     return (
       <BaseModal
         className="support-modal"
@@ -100,12 +141,28 @@ export class RTOProcessImpl extends React.PureComponent<
                 <MenuItem value="docCollected">Document Collected</MenuItem>
                 <MenuItem value="inProgress">In Progress</MenuItem>
                 <MenuItem value="Submitted">Submitted</MenuItem>
-                <MenuItem value="closed">Closed</MenuItem>
+                <MenuItem value="Closed">Closed</MenuItem>
               </Select>
             </FormControl>
           </Grid>
         </Grid>
-        <div className="modal-buttons">
+        <div className="button-container">
+            <Button
+              onClick={(e) => this.setState({ openEditModal: false })}
+              variant="contained"
+              color="default"
+            >
+              Cancel
+            </Button>{" "}
+            <Button 
+              onClick={(this.handleStatusUpdate)}
+              variant="contained" 
+              color="primary"
+            >
+              Submit
+            </Button>
+          </div>
+        {/* <div className="modal-buttons">
           <FormComponent
             hasSubmit={true}
             formModel="userForm"
@@ -113,7 +170,7 @@ export class RTOProcessImpl extends React.PureComponent<
             onSubmit={this.handleStatusUpdate}
             onCancel={(e) => this.setState({ openEditModal: false })}
           />
-        </div>
+        </div> */}
       </BaseModal>
     );
   };
@@ -125,8 +182,8 @@ export class RTOProcessImpl extends React.PureComponent<
         <Grid container={true}>
           <RTOList
             onClickEdit={this.showEditPopup}
-            rtoDataMain={this.state.rtoDataMain.filter(
-              (rto) => !rto.rtos.isCleared
+            rtoDataMain={this.state.rtoDataMain && this.state.rtoDataMain.filter(
+              (rto) => rto.stage__c !== "Closed"
             )}
           />
         </Grid>
@@ -138,8 +195,8 @@ export class RTOProcessImpl extends React.PureComponent<
         <Grid container={true}>
           <RTOList
             onClickEdit={this.showEditPopup}
-            rtoDataMain={this.state.rtoDataMain.filter(
-              (rto) => rto.rtos.isCleared
+            rtoDataMain={this.state.rtoDataMain && this.state.rtoDataMain.filter(
+              (rto) => rto.stage__c === "Closed"
             )}
           />
         </Grid>
@@ -222,7 +279,7 @@ export class RTOProcessImpl extends React.PureComponent<
     return (
       <AppBar>
         {this.renderAddNewRTODocModal()}
-        {this.renderModal()}
+        {this.renderEditModal()}
         <Tabs tabsData={this.tabs()} />
         <span
           style={{ position: "absolute", right: 20, bottom: 20 }}
@@ -245,7 +302,7 @@ export const RTOProcess = withRouter(
 
 const RTOList = (props: any) => {
   return props.rtoDataMain.map((rto: any, index: any) => {
-    const rtoData = rto.rtos;
+    const rtoData = rto;
     return (
       <React.Fragment>
         <Grid key={index} item xs={12} md={6}>
@@ -253,42 +310,42 @@ const RTOList = (props: any) => {
             <div className="rto-card-title">{rtoData.title}</div>
             <Grid key={index} container className="padding-6">
               <Grid item className="bold-font center" xs={6} md={6}>
-                <PersonPin /> {rtoData.fullname}
+                <PersonPin /> {rtoData.contname__c}
               </Grid>
               <Grid className="bold-fon center" item xs={6} md={6}>
-                <Phone /> {rtoData.phone}
+                <Phone /> {rtoData.mobile_no__c}
               </Grid>
             </Grid>
             <Grid container className="padding-6">
               <Grid item xs={6} md={6}>
-                {rtoData.address}
+                {rtoData.address__c}
               </Grid>
               <Grid item xs={6} md={6}>
-                {rtoData.type}
-              </Grid>
-            </Grid>
-            <Grid container className="padding-6">
-              <Grid item xs={6} md={6}>
-                {rtoData.make}
-              </Grid>
-              <Grid item xs={6} md={6}>
-                {rtoData.model}
+                {rtoData.x3_or_4_wheeler__c}
               </Grid>
             </Grid>
             <Grid container className="padding-6">
               <Grid item xs={6} md={6}>
-                Chassis No.
+                {rtoData.vehicle_make__c}
+              </Grid>
+              <Grid item xs={6} md={6}>
+                {rtoData.vehicle_model__c}
+              </Grid>
+            </Grid>
+            <Grid container className="padding-6">
+              <Grid item xs={6} md={6}>
+                {rtoData.chassis_no__c}
               </Grid>
               {!isDealer() ?
                 <Grid item xs={6} md={6}>
-                  Dealer Name
+                  {rtoData.dealname__c}
                 </Grid>
               :
                 <Grid item xs={6} md={6}></Grid>
               }
             </Grid>
             <Grid className="rto-status" item xs={6} md={6}>
-                {rtoData.status || "Pending"}
+                {rtoData.stage__c || "Pending"}
             </Grid>
             {!rtoData.isCleared && (
               <div className="edit-button-container">

@@ -22,7 +22,7 @@ export interface IAddNewOrderProps {
 }
 const options = [
   { value: "loan", label: "Loan" },
-  { value: "Upfront", label: "Upfront" },
+  { value: "Upfront", label: "Up Front" },
 ];
 const options1 = [
   { value: "cc/dc", label: "CC/DC" },
@@ -31,9 +31,9 @@ const options1 = [
 ];
 
 const products = [
-  { value: 1000, label: "Product 1" },
-  { value: 1000, label: "Product 2" },
-  { value: 1000, label: "Product 3" },
+  { value: "3 Wheeler - SKU1234", label: "3 Wheeler - SKU1234" },
+  { value: "3 Wheeler - SKU1234", label: "3 Wheeler - SKU1234" },
+  { value: "3 Wheeler - SKU1234", label: "3 Wheeler - SKU1234" },
 ];
 
 const invoiceData = {
@@ -112,6 +112,7 @@ export class AddNewOrderImpl extends React.PureComponent<
 
   public renderValueManipulator = (key) => (
     <div className="increaser">
+      
       <div
         onClick={() => this.setState({ [key]: this.state[key] + 1 })}
         className="plus hover"
@@ -222,7 +223,7 @@ export class AddNewOrderImpl extends React.PureComponent<
     );
   };
 
-  public renderStepper = (orderdetails) => {
+  public renderStepper = (orderdetails, products) => {
     return (
       <Stepper
         identifier="buy"
@@ -231,7 +232,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           {
             label: "Draft",
             component: 
-            <RenderForm label="Submit" type="buy" history={this.props.history} orderdetails={orderdetails}
+            <RenderForm label="Submit" type="buy" history={this.props.history} orderdetails={orderdetails} products={products}
             onClick={this.activeStepBuyChange} 
             />
             // this.renderForm("Submit", "buy"),
@@ -287,27 +288,27 @@ export class AddNewOrderImpl extends React.PureComponent<
                         ))}
                       </div>
                       <div className="table-data">
-                        {invoiceData.billData.map((b, index) => (
+                        {products.map((p, index) => (
                           <div key={index} className="data-inner">
-                            <div className="data">{b.itemName}</div>
-                            <div className="data">{b.unitCost}</div>
-                            <div className="data">{b.qty}</div>
-                            <div className="data">{b.amount}</div>
+                            <div className="data">{p.prd_name__c}</div>
+                            <div className="data">{p.unitprice}</div>
+                            <div className="data">{p.quantity}</div>
+                            <div className="data">{p.totalprice}</div>
                           </div>
                         ))}
                       </div>
                       <div className="bill-total">
                         <div>
                           <span className="description-text">Sub Total:</span>
-                          {invoiceData.billData.reduce(
-                            (s, a) => Number(a.amount) + s,
+                          {products.reduce(
+                            (s, a) => Number(a.totalprice)+ s,
                             0
                           )}
                         </div>
                         <div>
                           <span className="description-text">Tax - 18% -</span>
-                          {(invoiceData.billData.reduce(
-                            (s, a) => Number(a.amount) + s,
+                          {(products.reduce(
+                            (s, a) => Number(a.totalprice) + s,
                             0
                           ) /
                             100) *
@@ -318,12 +319,12 @@ export class AddNewOrderImpl extends React.PureComponent<
                           <span className="description-text">
                             Invoice Total -
                           </span>
-                          {invoiceData.billData.reduce(
-                            (s, a) => Number(a.amount) + s,
+                          {products.reduce(
+                            (s, a) => Number(a.totalprice) + s,
                             0
                           ) +
-                            (invoiceData.billData.reduce(
-                              (s, a) => Number(a.amount) + s,
+                            (products.reduce(
+                              (s, a) => Number(a.totalprice) + s,
                               0
                             ) /
                               100) *
@@ -379,7 +380,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           { label: "GRN", 
             component: 
-            <RenderForm label="Confirm" type="buy" orderdetails={orderdetails}
+            <RenderForm label="Confirm" type="buy" orderdetails={orderdetails} products={products}
               onClick={() => {
                 this.setState({activeStepBuy: this.state.activeStepBuy + 1});
                 this.props.history.goBack();
@@ -393,7 +394,7 @@ export class AddNewOrderImpl extends React.PureComponent<
     );
   };
 
-  public renderSellStepper = (orderdetails) => {
+  public renderSellStepper = (orderdetails, products) => {
     return (
       <Stepper
         identifier="sell"
@@ -402,7 +403,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           {
             label: "Draft",
             component: 
-            <RenderForm label="Submit" type="sell" orderdetails={orderdetails}
+            <RenderForm label="Submit" type="sell" orderdetails={orderdetails} products={products}
               onClick={() => {
                 this.setState({
                   activeStepSell: this.state.activeStepSell + 1,
@@ -458,17 +459,18 @@ export class AddNewOrderImpl extends React.PureComponent<
   };
 
   render() {
-    const orderdetails = this.props.location.orderdetails;
-    console.log("orderdetails: ", orderdetails);
+    console.log("this.props: ",this.props);
+
+    const { orderdetails, products} = this.props.location;
 
     return (
       <AppBar>
         {isDealer() ? (
-          this.renderStepper(orderdetails)
+          this.renderStepper(orderdetails, products)
           ) : (
           this.props.location.orderType === "Buy" ?
-            this.renderStepper(orderdetails)
-          : this.renderSellStepper(orderdetails) 
+            this.renderStepper(orderdetails, products)
+          : this.renderSellStepper(orderdetails, products) 
           )
         }
       </AppBar>
@@ -487,11 +489,13 @@ class RenderForm extends React.Component <any> {
     super(props);
   }
   state = {
-    list: [{label: 1, value: ""}, {label: 2, value: ""}, {label: 3, value: ""}, {label: 4, value: ""}],
+    list: this.props.products 
+    ? this.props.products.map((p ,i)=> {return({label: i, product: p.prd_name__c, quantity: p.quantity})} )
+    : [{label: 1, product: "", quantity: "10"}, {label: 2, product: "", quantity: "10"}, {label: 3, product: "", quantity: "10"}, {label: 4, product: "", quantity: "10"}],
     product1: null,
     product2: null,
     product3: null,
-    product4: {label: "Product 1" },
+    product4: null,
     qty1: 10,
     qty2: 10,
     qty3: 10,
@@ -499,9 +503,9 @@ class RenderForm extends React.Component <any> {
   };
 
   handleChange = (value: any, key: number) => {
-    const arr = this.state.list.filter((item) => item.label === key ? item.value = value : null)
+    const arr = this.state.list.filter((item) => item.label === key ? item.product = value : null)
         if(arr.length === 0 ){
-          this.state.list.push({ label: key, value: value })
+          this.state.list.push({ label: key, product: value })
         }
     // this.setState({
     //   [key]: value as any,
@@ -509,17 +513,32 @@ class RenderForm extends React.Component <any> {
     console.log(this.state.list);
   };
 
-  renderValueManipulator = (key) => (
+  renderValueManipulator = (key, i) => (
     <div className="increaser">
       <div
-        onClick={() => this.setState({ [key]: this.state[key] + 1 })}
+        onClick={() => {
+          var val = this.state.list;
+          console.log(val[i].quantity)
+          val[i].quantity = Number(val[i].quantity) + 1;
+          this.setState({ list: val});
+          console.log(this.state.list);
+          // this.setState({ [key]: this.state[key] + 1 })
+        }}
         className="plus hover"
       >
         +
       </div>
-      <div className="value">{this.state[key]}</div>
+      <div className="value">
+        {this.state.list[i].quantity}
+        {/* {this.state[key]} */}
+      </div>
       <div
-        onClick={() => this.setState({ [key]: this.state[key] - 1 })}
+        onClick={() => {
+          var val = this.state.list;
+          val[i].quantity = Number(val[i].quantity) - 1;
+          this.setState({ list: val})
+          // this.setState({ [key]: this.state[key] + 1 })
+        }}
         className="minus hover"
       >
         -
@@ -527,20 +546,22 @@ class RenderForm extends React.Component <any> {
     </div>
   );
 
-  renderAddProduct = (item) => {
-    console.log("item: ", item);
+  renderAddProduct = (item, i) => {
+    const prod = item.product !== "" && {label: item.product};
     return(
       <div className="product-selection">
         <Grid item xs={4} md={6} sm={6}>
           <Select
             className="r-select"
-            // value={this.state.product4}
+            classNamePrefix="r-select-pre"
+            value={prod}
             options={products}
             onChange={(v: any) => this.handleChange(v.label, item.label)}
+            isSearchable={false}
           />{" "}
         </Grid>
         <Grid item xs={4} md={4} sm={4}>
-          {this.renderValueManipulator("qty4")}
+          {this.renderValueManipulator(item, i)}
         </Grid>
       </div>
     )
@@ -548,12 +569,14 @@ class RenderForm extends React.Component <any> {
 
   onClickChng =() => {
     var val = this.state.list;
-    val.push({label: this.state.list.length + 1, value: ""});
+    val.push({label: this.state.list.length + 1, product: "", quantity: "10"});
     this.setState({ list: val})
-    console.log(this.state.list);
   }
   
   render(){
+    console.log(this.props)
+    const products = this.props.products;
+
     return(
       <div className="card-container no-hover">
         {!isDealer() && this.props.label === "Sell"?
@@ -572,9 +595,9 @@ class RenderForm extends React.Component <any> {
           </Grid>
         </Grid>
         : null}
-        {this.state.list.map(item => (
+        {this.state.list.map((item, i) => (
             <Grid container spacing={4}>
-                {this.renderAddProduct(item)}
+                {this.renderAddProduct(item, i)}
             </Grid>
           ))}
         {this.props.label !== "Confirm" ?
@@ -614,7 +637,7 @@ class RenderForm extends React.Component <any> {
 }
 
 const DispatchedScreen = (props) => {
-  const details = props.orderdetails;
+  const details = props.orderdetails || [];
 
   return (
     <div style={{ width: "100%" }} className="card-container dispatch-card">
@@ -665,8 +688,8 @@ const DispatchedScreen = (props) => {
 
 const PaymentDetailsScreen = (props) => {
   const details = props.orderdetails;
-  const paymentMode = details && { label: details && details.payment_mode__c} || null;
-  const paymentType = details && { label: details && details.payment_type__c} || null;
+  const paymentMode = details && { label: details && details.payment_mode__c};
+  const paymentType = details && { label: details && details.payment_type__c};
   return (
     <Grid container className="align-center">
       <Grid item xs={12} md={6} lg={6}>
@@ -721,26 +744,26 @@ const PaymentDetailsScreen = (props) => {
 };
 
 const SubmittedScreen = (props) => {
-  const details = props.orderdetails;
-
+  const details = props.orderdetails || [];
+  console.log(details)
   return (
     <div className="card-container">
       <Grid container={true}>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Order ID -</span>
-          {details.orderid}
+          {details.orderid || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Order Date - </span>
-          {moment(details.effectivedate).format("DD/MM/YYYY")}
+          {moment(details.effectivedate).format("DD/MM/YYYY") || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Total Items -</span>
-          {details.quantity}
+          {details.quantity || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text">Total -</span>
-          {details.totalamount}
+          {details.totalamount || ""}
         </Grid>
       </Grid>
       <div className="align-center padding-6">
