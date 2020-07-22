@@ -5,8 +5,10 @@ import clsx from 'clsx';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import Check from '@material-ui/icons/Check';
+import PaymentIcon from '@material-ui/icons/Payment';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
+import LocalShippingIcon from '@material-ui/icons/LocalShipping';
+import ReceiptIcon from '@material-ui/icons/Receipt';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
 import VideoLabelIcon from '@material-ui/icons/VideoLabel';
 import StepConnector from '@material-ui/core/StepConnector';
@@ -67,9 +69,9 @@ function ColorlibStepIcon(props) {
 
   const icons = {
     1: <DoneAllIcon />,
-    2: <DoneAllIcon />,
-    3: <Check />,
-    4: <Check />
+    2: <PaymentIcon />,
+    3: <LocalShippingIcon />,
+    4: <ReceiptIcon />
   };
 
   return (
@@ -91,12 +93,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function getSteps() {
-  return ['orderd', 'Payment Done', 'Dispatched', 'Goods Received'];
+  return ['Ordered', 'Payment Done', 'Dispatched', 'Goods Received'];
 }
 
-export default function TrackingInfoBar() {
+export default function TrackingInfoBar(props) {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(1);
+  const status = props.status === "Ordered" ? 0 
+                  : props.status === "Payment Done" ? 1
+                  : props.status === "Dispatched Order" ? 2
+                  : props.status === "GRN" ? 3 
+                  : props.status === "Activated" ? 3: null 
+
+  const [activeStep, setActiveStep] = React.useState(status);
+  if(status !== activeStep){
+    setActiveStep(status);
+  }
   const steps = getSteps();
 
   const handleNext = () => {

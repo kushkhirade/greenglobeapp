@@ -93,6 +93,10 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {this.props.dealerDetails.phone}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Kit Enquiry:</span>
+                  {this.props.dealerDetails.kit_enquiry__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Company:</span>
                   {this.props.dealerDetails.company__c || this.props.dealerDetails.company}
                 </Grid>

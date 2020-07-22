@@ -10,6 +10,7 @@ import "./buyOrders.scss";
 import { Add } from "@material-ui/icons";
 import { Fab } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete"
+import moment from 'moment';
 import { GSelect } from "src/components/GSelect";
 import { BaseModal } from "src/components/BaseModal";
 
@@ -21,7 +22,7 @@ export interface IAddNewOrderProps {
 }
 const options = [
   { value: "loan", label: "Loan" },
-  { value: "upfront", label: "Up Front" },
+  { value: "Upfront", label: "Upfront" },
 ];
 const options1 = [
   { value: "cc/dc", label: "CC/DC" },
@@ -221,7 +222,7 @@ export class AddNewOrderImpl extends React.PureComponent<
     );
   };
 
-  public renderStepper = () => {
+  public renderStepper = (orderdetails) => {
     return (
       <Stepper
         identifier="buy"
@@ -230,7 +231,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           {
             label: "Draft",
             component: 
-            <RenderForm label="Submit" type="buy" history={this.props.history}
+            <RenderForm label="Submit" type="buy" history={this.props.history} orderdetails={orderdetails}
             onClick={this.activeStepBuyChange} 
             />
             // this.renderForm("Submit", "buy"),
@@ -239,6 +240,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Submitted",
             component: (
               <SubmittedScreen
+                orderdetails={orderdetails}
                 onClick={() =>
                   this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
                 }
@@ -251,29 +253,30 @@ export class AddNewOrderImpl extends React.PureComponent<
               <Grid container className="align-center">
                 <Grid item xs={12} md={4} lg={4}>
                   <div className="card-container no-hover">
-                    <div className="head-title padding-6 ">
-                      Proforma Invoice
-                    </div>
+                    {/* <div className="head-title padding-6 ">Proforma Invoice</div> */}
+                    <Typography variant="h5">Proforma Invoice</Typography>
                     <div className="invoice-date padding-6">
                       <div>
                         {" "}
                         <span className="description-text">
                           Invoice No -{" "}
                         </span>{" "}
-                        IN915426
+                        {orderdetails && orderdetails.ordernumber}
                       </div>
                       <div>
                         {" "}
-                        <span className="description-text">
-                          {" "}
+                        <span className="description-text">{" "}
                           Date of Issue -
                         </span>{" "}
                         10/02/2020
                       </div>
                     </div>
                     <div className="padding-6 invoice-add">
-                      Billed to- GGFS Indiabulls, Lower Parel, Mumbai, MH
-                      411093, India
+                      {" "}
+                      <span className = "description-text">
+                        Billed to -
+                      </span>{" "}
+                      {orderdetails && orderdetails.billingstreet} {orderdetails && orderdetails.billingcity} {orderdetails && orderdetails.billingpostalcode} {orderdetails && orderdetails.billingstate} {orderdetails && orderdetails.billingcountry}
                     </div>
                     <div className="invoice-table">
                       <div className="table-heads">
@@ -350,11 +353,13 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Payment Details",
             component: (
               <PaymentDetailsScreen
+                orderdetails={orderdetails}
                 onClick={() =>
                   this.setState({
                     activeStepBuy: this.state.activeStepBuy + 1,
                   })
                 }
+                handleChange={this.handleChange}
                 history= {this.props.history}
               />
             ),
@@ -363,6 +368,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Dispatched",
             component: (
               <DispatchedScreen
+                orderdetails={orderdetails}
                 onClick={() =>
                   this.setState({
                     activeStepBuy: this.state.activeStepBuy + 1,
@@ -373,11 +379,12 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           { label: "GRN", 
             component: 
-            <RenderForm label="Confirm" type="buy" history={this.props.history}
-            onClick={() => {
-              this.setState({activeStepBuy: this.state.activeStepBuy + 1});
-              this.props.history.goBack();
-            }} 
+            <RenderForm label="Confirm" type="buy" orderdetails={orderdetails}
+              onClick={() => {
+                this.setState({activeStepBuy: this.state.activeStepBuy + 1});
+                this.props.history.goBack();
+              }} 
+              history={this.props.history}
             />
             // this.renderForm("Add", "buy") ,
         }
@@ -386,7 +393,7 @@ export class AddNewOrderImpl extends React.PureComponent<
     );
   };
 
-  public renderSellStepper = () => {
+  public renderSellStepper = (orderdetails) => {
     return (
       <Stepper
         identifier="sell"
@@ -395,12 +402,12 @@ export class AddNewOrderImpl extends React.PureComponent<
           {
             label: "Draft",
             component: 
-            <RenderForm label="Submit" type="sell" 
-            onClick={() => {
-              this.setState({
-                activeStepSell: this.state.activeStepSell + 1,
-              });
-            }}
+            <RenderForm label="Submit" type="sell" orderdetails={orderdetails}
+              onClick={() => {
+                this.setState({
+                  activeStepSell: this.state.activeStepSell + 1,
+                });
+              }}
             history={this.props.history}
             />
             // this.renderForm("Submit", "sell"),
@@ -409,6 +416,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Submitted",
             component: (
               <SubmittedScreen
+                orderdetails={orderdetails}
                 onClick={() => {
                   this.setState({
                     activeStepSell: this.state.activeStepSell + 1,
@@ -421,11 +429,13 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Payment Details",
             component: (
               <PaymentDetailsScreen
+                orderdetails={orderdetails}
                 onClick={() => {
                   this.setState({
                     activeStepSell: this.state.activeStepSell + 1,
                   });
                 }}
+                handleChange={this.handleChange}
               />
             ),
           },
@@ -433,6 +443,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Dispatched",
             component: (
               <DispatchedScreen
+                orderdetails={orderdetails}
                 onClick={() => {
                   this.setState({
                     activeStepSell: this.state.activeStepSell,
@@ -447,14 +458,17 @@ export class AddNewOrderImpl extends React.PureComponent<
   };
 
   render() {
+    const orderdetails = this.props.location.orderdetails;
+    console.log("orderdetails: ", orderdetails);
+
     return (
       <AppBar>
         {isDealer() ? (
-          this.renderStepper()
+          this.renderStepper(orderdetails)
           ) : (
           this.props.location.orderType === "Buy" ?
-            this.renderStepper()
-          : this.renderSellStepper() 
+            this.renderStepper(orderdetails)
+          : this.renderSellStepper(orderdetails) 
           )
         }
       </AppBar>
@@ -473,21 +487,26 @@ class RenderForm extends React.Component <any> {
     super(props);
   }
   state = {
-    list: [1,2,3,4],
+    list: [{label: 1, value: ""}, {label: 2, value: ""}, {label: 3, value: ""}, {label: 4, value: ""}],
     product1: null,
     product2: null,
     product3: null,
-    product4: null,
+    product4: {label: "Product 1" },
     qty1: 10,
     qty2: 10,
     qty3: 10,
     qty4: 10,
   };
 
-  handleChange = (value: any, key: string) => {
-    this.setState({
-      [key]: value as any,
-    });
+  handleChange = (value: any, key: number) => {
+    const arr = this.state.list.filter((item) => item.label === key ? item.value = value : null)
+        if(arr.length === 0 ){
+          this.state.list.push({ label: key, value: value })
+        }
+    // this.setState({
+    //   [key]: value as any,
+    // });
+    console.log(this.state.list);
   };
 
   renderValueManipulator = (key) => (
@@ -508,15 +527,16 @@ class RenderForm extends React.Component <any> {
     </div>
   );
 
-  renderAddProduct = () => {
+  renderAddProduct = (item) => {
+    console.log("item: ", item);
     return(
       <div className="product-selection">
         <Grid item xs={4} md={6} sm={6}>
-          <GSelect
+          <Select
             className="r-select"
             // value={this.state.product4}
             options={products}
-            onChange={(v: any) => this.handleChange(v, "product4")}
+            onChange={(v: any) => this.handleChange(v.label, item.label)}
           />{" "}
         </Grid>
         <Grid item xs={4} md={4} sm={4}>
@@ -528,8 +548,8 @@ class RenderForm extends React.Component <any> {
 
   onClickChng =() => {
     var val = this.state.list;
-    val.push(this.state.list.length + 1);
-    this.setState({list : val });
+    val.push({label: this.state.list.length + 1, value: ""});
+    this.setState({ list: val})
     console.log(this.state.list);
   }
   
@@ -554,7 +574,7 @@ class RenderForm extends React.Component <any> {
         : null}
         {this.state.list.map(item => (
             <Grid container spacing={4}>
-                {this.renderAddProduct()}
+                {this.renderAddProduct(item)}
             </Grid>
           ))}
         {this.props.label !== "Confirm" ?
@@ -594,41 +614,43 @@ class RenderForm extends React.Component <any> {
 }
 
 const DispatchedScreen = (props) => {
+  const details = props.orderdetails;
+
   return (
     <div style={{ width: "100%" }} className="card-container dispatch-card">
-      <Typography variant="h4">Dispatched</Typography>
+      <Typography variant="h5">Dispatched</Typography>
       <Grid container className="">
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Order ID -</span>
-          <span className="disp-details"> {invoiceData.orderID}</span>
+          <span className="disp-details"> {details.orderid}</span>
         </Grid>
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Order Date:</span>
-          <span className="disp-details"> {invoiceData.dateOfIssue}</span>
+          <span className="disp-details"> {moment(details.effectivedate).format("DD/MM/YYYY")}</span>
         </Grid>
       </Grid>
       <Grid container className="">
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Total Items -</span>
-          <span className="disp-details"> {invoiceData.totalItems}</span>
+          <span className="disp-details"> {details.quantity}</span>
         </Grid>
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Order Total:</span>
-          <span className="disp-details"> {invoiceData.orderTotal}</span>
+          <span className="disp-details"> {details.totalamount}</span>
         </Grid>
       </Grid>
       <Grid container className="">
         <Grid item className="padding-6" md={12} xs={12} lg={12}>
-          <span className="description-text">Courier Name -</span> Blue Dart
-          Express Ltd.
+          <span className="description-text">Courier Name -</span>
+          <span className="disp-details"> {details.courier_name__c}</span>
           <div className="disp-details">
             {" "}
             <span className="description-text">Consignment No. -</span>{" "}
-            89712345676
+            <span className="disp-details"> {details.Consignment_No__c}</span>
           </div>
           <div className="disp-details">
             <span className="description-text"> Shipping Date - </span>
-            10/05/2020
+            <span className="disp-details"> {moment(details.Shipping_date__c).format("DD/MM/YYYY")}</span>
           </div>
         </Grid>
       </Grid>{" "}
@@ -642,25 +664,31 @@ const DispatchedScreen = (props) => {
 };
 
 const PaymentDetailsScreen = (props) => {
+  const details = props.orderdetails;
+  const paymentMode = details && { label: details && details.payment_mode__c} || null;
+  const paymentType = details && { label: details && details.payment_type__c} || null;
   return (
     <Grid container className="align-center">
       <Grid item xs={12} md={6} lg={6}>
         <div className="card-container no-hover payment-mode">
-          <div className="head-title">Payment Mode and Details</div>
+          {/* <div className="head-title">Payment Mode and Details</div> */}
+          <Typography variant="h5">Payment Mode and Details</Typography>
           <div className="product-selection">
-            <GSelect
+            <Select
               className="r-select"
               classNamePrefix="r-select-pre"
-              placeholder="Select Payment Type"
+              placeholder="Select Payment Type" 
+              value={paymentMode}
               onChange={props.handleChange}
               options={options}
               isSearchable={false}
             />
           </div>
           <div className="product-selection">
-            <GSelect
+            <Select
               className="r-select"
               isSearchable={false}
+              value={paymentType}
               onChange={props.handleChange}
               placeholder="Select Payment Method"
               options={options1}
@@ -669,7 +697,8 @@ const PaymentDetailsScreen = (props) => {
           <div className="product-selection">
             <TextField
               id="filled-textarea"
-              label="Remarks"
+              // label="Remarks"
+              placeholder="Remarks"
               rows={4}
               variant="outlined"
               multiline={true}
@@ -692,24 +721,26 @@ const PaymentDetailsScreen = (props) => {
 };
 
 const SubmittedScreen = (props) => {
+  const details = props.orderdetails;
+
   return (
     <div className="card-container">
       <Grid container={true}>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Order ID -</span>
-          ON-26541
+          {details.orderid}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Order Date - </span>
-          10/05/2020
+          {moment(details.effectivedate).format("DD/MM/YYYY")}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Total Items -</span>
-          25 Order
+          {details.quantity}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text">Total -</span>
-          1742000
+          {details.totalamount}
         </Grid>
       </Grid>
       <div className="align-center padding-6">

@@ -1,6 +1,7 @@
 import { Grid, Button } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
+import moment from 'moment';
 import { BaseModal } from "src/components/BaseModal";
 import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
@@ -388,7 +389,7 @@ const InventoryCards = (props: any) => {
                   {" "}
                   Added to Inventory on -{" "}
                 </span>
-                {inData.date_purchased__c}
+                {moment(inData.date_purchased__c).format("DD/MM?/")}
               </div>
               {isDealer() ?
                 inData.customer_name__c ? 

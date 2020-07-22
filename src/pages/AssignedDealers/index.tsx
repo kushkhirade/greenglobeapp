@@ -9,6 +9,7 @@ import { withRouter } from "react-router-dom";
 import { IHistory } from "src/state/Utility";
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
+import moment from 'moment';
 
 export interface IAssignedDealersProps {
   history: IHistory;
@@ -125,7 +126,7 @@ const DealerCard = (props: any) => {
             </div>
           </div>
           <div className="padding-6">
-            <span className="description-text">Dealer Since</span> {data.createddate}
+            <span className="description-text">Dealer Since</span> {moment(data.createddate).format("DD/MM/YYYY")}
           </div>
         </div>
       </div>

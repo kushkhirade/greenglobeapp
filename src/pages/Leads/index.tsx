@@ -380,13 +380,13 @@ export class LeadsImpl extends React.Component<
       >
         <div className="head-title">Assign Dealer</div>
         <form className="form-content" autoComplete="off">
-          <TextField
+          {/* <TextField
             id="outlined-basic"
             label="Search Dealer"
             className="form-input"
             onChange={this.filterDealers}
             variant="outlined"
-          />
+          /> */}
           <div className="dealer-name-container">
             {this.props.dealersData
               ? this.props.dealersData.map((dealerData) => (
@@ -414,7 +414,7 @@ export class LeadsImpl extends React.Component<
             <Button 
               onClick={() => {
                 this.assignCustomerLeadToDealer(loggedInUserDetails, this.state.selectedCustomerToAssign, this.state.selectedDealerAssignTo), 
-                this.setState({ selectedFilter: "Assigned"}),
+                this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type);
                 this.setState({ isModalOpen: false }) }}
               variant="contained" 
               color="primary"
@@ -699,9 +699,9 @@ export class LeadsImpl extends React.Component<
               {/* {this.state.topActiveTab === "Customer" && (
                 <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
               )} */}
-              {(this.state.selectedFilter === "Assigned" || this.state.topActiveTab === "Customer") && (
+              {this.state.topActiveTab === "Customer" && 
                 <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
-              )}
+              }
             </React.Fragment>
           )}
         </div>
