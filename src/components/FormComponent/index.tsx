@@ -86,7 +86,7 @@ export const FormComponent = (props: any) => {
           }
         })}
       </Grid>
-      {/* {props.hasSubmit && ( */}
+      {props.hasSubmit && (
         <div className="button-container">
           <Button variant="contained" onClick={props.onCancel}>
             {props.cancelTitle || "Cancel"}
@@ -100,7 +100,7 @@ export const FormComponent = (props: any) => {
             {props.submitTitle || "Submit"}
           </Button>
         </div>
-      {/* )} */}
+      )} 
     </Form>
   );
 };

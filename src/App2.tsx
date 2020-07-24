@@ -6,11 +6,20 @@ class MyForm extends React.Component {
 
   render() {
     return (
+      <div>
       <Form model="user" onSubmit={(val) => console.log(val)}>
         <label>Your name?</label>
         <Control.text model=".name" />
         <button>Submit!</button>
       </Form>
+
+      <Form model="userForm" onSubmit={(val) => console.log(val)}>
+      <label>Your name?</label>
+      <Control.text model=".Fname" />
+      <Control.text model=".lname" />
+      <button>Submit!</button>
+      </Form>
+      </div>
     );
   }
 }

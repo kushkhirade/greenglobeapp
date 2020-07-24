@@ -43,7 +43,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
         customerData = await getData({
           query: `SELECT *
           FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%'`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0120l000000ot16AAA'`,
           token: data.token
         })
       }
@@ -51,7 +51,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
         customerData = await getData({
           query: `SELECT *
           FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%'`,
+          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0120l000000ot16AAA'`,
           token: data.token
         });
     }

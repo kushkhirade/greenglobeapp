@@ -23,6 +23,7 @@ import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
 
 var loggedInUserDetails;
+var allCustomers;
 
 export interface IRTOProcessProps {
   history: IHistory;
@@ -33,6 +34,7 @@ export class RTOProcessImpl extends React.PureComponent<
   {
     openEditModal: boolean;
     stage: string;
+    customer: string;
     rtoDataMain: any;
     currentData: any;
     addNew: boolean;
@@ -44,6 +46,7 @@ export class RTOProcessImpl extends React.PureComponent<
       openEditModal: false,
       addNew: false,
       stage: "",
+      customer: "",
       currentData: null,
       rtoDataMain: data.rto.data,
     };
@@ -52,8 +55,10 @@ export class RTOProcessImpl extends React.PureComponent<
   async componentDidMount(){
     loggedInUserDetails = getToken().data;
     console.log("loggedInUserDetails: ", loggedInUserDetails);
-    const res = await this.getAllRTOProcesses(loggedInUserDetails);
-    this.setState({rtoDataMain: res})
+    const rto = await this.getAllRTOProcesses(loggedInUserDetails);
+    this.setState({ rtoDataMain: rto });
+    const cust = await this.getAllCustomers(loggedInUserDetails);
+    allCustomers = cust;
   }
 
   getAllRTOProcesses = async (data) => {
@@ -67,6 +72,49 @@ export class RTOProcessImpl extends React.PureComponent<
       });
       console.log("getRTOs => ", getRTOs);
       return getRTOs.result;
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  getAllCustomers = async (data) => {
+    try{
+      let customerData;
+      if(isDealer()){
+        customerData = await getData({
+          query: `SELECT sfid, name
+          FROM salesforce.Contact 
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0120l000000ot16AAA'`,
+          token: data.token
+        })
+      }
+      else{
+        customerData = await getData({
+          query: `SELECT sfid, name
+          FROM salesforce.Contact 
+          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0120l000000ot16AAA'`,
+          token: data.token
+        })
+    }
+      console.log("customerData =>", customerData.result)
+      return customerData.result;
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  InsertRTOProcess = async (data, stage, customer) => {
+    console.log("data: ", data);
+    try{
+      const insertRTO = await getData({
+        query: `INSERT INTO salesforce.rto_and_insurance_process__c
+        (Customer__c,Stage__c) Values('${customer}','${stage}')`,
+        token: data.token
+      });
+      console.log("insertRTO => ", insertRTO);
+      return insertRTO.result;
     }
     catch(e){
       console.log(e);
@@ -98,9 +146,15 @@ export class RTOProcessImpl extends React.PureComponent<
     });
   };
 
-  handleOptionSelect = (event) => {
+  handleStageSelect = (event) => {
     this.setState({
       stage: event.target.value,
+    });
+  };
+
+  handleCustomerSelect = (event) => {
+    this.setState({
+      customer: event.target.value,
     });
   };
 
@@ -108,9 +162,16 @@ export class RTOProcessImpl extends React.PureComponent<
     this.UpdateRTOStage(loggedInUserDetails, this.state.stage, this.state.currentData.sfid);
     const res = await this.getAllRTOProcesses(loggedInUserDetails);
     this.setState({rtoDataMain: res});
-    this.setState({
-      openEditModal: false
-    });
+    this.setState({openEditModal: false});
+  };
+
+  handleRTOInsert = async() => {
+    console.log(this.state.customer)
+    console.log(this.state.stage)
+    this.InsertRTOProcess(loggedInUserDetails, this.state.stage, this.state.customer);
+    const res = await this.getAllRTOProcesses(loggedInUserDetails);
+    this.setState({rtoDataMain: res});
+    this.setState({addNew: false});
   };
 
   renderEditModal = () => {
@@ -135,11 +196,11 @@ export class RTOProcessImpl extends React.PureComponent<
                 id="demo-simple-select-helper"
                 value={this.state.stage}
                 label="Select Stage"
-                onChange={this.handleOptionSelect}
+                onChange={this.handleStageSelect}
                 className="form-input"
               >
-                <MenuItem value="docCollected">Document Collected</MenuItem>
-                <MenuItem value="inProgress">In Progress</MenuItem>
+                <MenuItem value="Document Collected">Document Collected</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
                 <MenuItem value="Submitted">Submitted</MenuItem>
                 <MenuItem value="Closed">Closed</MenuItem>
               </Select>
@@ -147,21 +208,21 @@ export class RTOProcessImpl extends React.PureComponent<
           </Grid>
         </Grid>
         <div className="button-container">
-            <Button
-              onClick={(e) => this.setState({ openEditModal: false })}
-              variant="contained"
-              color="default"
-            >
-              Cancel
-            </Button>{" "}
-            <Button 
-              onClick={(this.handleStatusUpdate)}
-              variant="contained" 
-              color="primary"
-            >
-              Submit
-            </Button>
-          </div>
+          <Button
+            onClick={(e) => this.setState({ openEditModal: false })}
+            variant="contained"
+            color="default"
+          >
+            Cancel
+          </Button>{" "}
+          <Button 
+            onClick={(this.handleStatusUpdate)}
+            variant="contained" 
+            color="primary"
+          >
+            Submit
+          </Button>
+        </div>
         {/* <div className="modal-buttons">
           <FormComponent
             hasSubmit={true}
@@ -226,17 +287,15 @@ export class RTOProcessImpl extends React.PureComponent<
                 id="demo-simple-select-helper"
                 // value={this.state.stage}
                 label="Select Customer"
-                // onChange={this.handleOptionSelect}
+                onChange={this.handleCustomerSelect}
                 variant="outlined"
                 className="form-input"
               >
-                <MenuItem value="cust1">Customer 1</MenuItem>
-                <MenuItem value="cust2">Customer 2</MenuItem>
-                <MenuItem value="cust3">Customer 3</MenuItem>
-                <MenuItem value="cust4">Customer 4</MenuItem>
-                <MenuItem value="cust5">Customer 5</MenuItem>
-                <MenuItem value="cust6">Customer 6</MenuItem>
-                <MenuItem value="cust7">Customer 7</MenuItem>
+                {allCustomers && allCustomers.map(cust => {
+                  return(
+                    <MenuItem value={cust.sfid}>{cust.name}</MenuItem>
+                  )
+                })}
               </Select>
             </FormControl>
           </Grid>
@@ -251,24 +310,31 @@ export class RTOProcessImpl extends React.PureComponent<
                 // value={this.state.stage}
                 label="Select Stage"
                 variant="outlined"
-                // onChange={this.handleOptionSelect}
+                onChange={this.handleStageSelect}
                 className="form-input"
               >
-                <MenuItem value="docCollected">Document Collected</MenuItem>
-                <MenuItem value="inProgress">In Progress</MenuItem>
+                <MenuItem value="Document Collected">Document Collected</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
                 <MenuItem value="Submitted">Submitted</MenuItem>
                 <MenuItem value="closed">Closed</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          <div className="modal-buttons">
-            <FormComponent
-              hasSubmit={true}
-              formModel="userForm"
-              options={[]}
-              onCancel={() => this.setState({ addNew: false })}
-              onSubmit={(e) => this.setState({ addNew: false })}
-            />
+          <div className="button-container">
+            <Button
+              onClick={(e) => this.setState({ addNew : false })}
+              variant="contained"
+              color="default"
+            >
+              Cancel
+            </Button>{" "}
+            <Button 
+              onClick={this.handleRTOInsert}
+              variant="contained" 
+              color="primary"
+            >
+              Submit
+            </Button>
           </div>
         </div>
       </BaseModal>

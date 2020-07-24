@@ -67,30 +67,27 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   }
 
   getAllOrderedProducts = async (data, product2ID) => {
-    console.log(product2ID)
-    console.log("data: ", data)
-    let orders;
+    console.log(product2ID);
+    console.log("data: ", data);
     try {
-        orders = await getData({
-          query: `SELECT prd_name__c, quantity, totalprice, unitprice FROM salesforce.orderitem
-          where product2id = '${product2ID}'`,
+        const orderedproducts = await getData({
+          query: `select * from salesforce.orderitem where orderid  LIKE '${product2ID}'`,
           token: data.token
         })
-    
-        console.log("orders =>", orders);
-        return orders.result;
-        
+        console.log("orderedproducts =>", orderedproducts);
+        return orderedproducts.result;
+
     } catch (e) {
-        console.log('fetch Inventory Error', e)
+      console.log('fetch Inventory Error', e)
     }
   }
 
   handleClickDetails = async (orderData) => {
     console.log(orderData)
-    const products = await this.getAllOrderedProducts(loggedInUserDetails, orderData.product2id);
+    const products = await this.getAllOrderedProducts(loggedInUserDetails, orderData.orderid);
     console.log("products: ", products);
     this.props.history.push({pathname: "/buy-order/add-new-order", 
-        orderType: this.state.topActiveTab, orderdetails: orderData, products: products});
+        orderType: this.state.topActiveTab, orderdetails: orderData, orderedproducts: products});
   }
 
   public renderCard = (orderData) => {
@@ -103,7 +100,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 <div className="row-data">
                   <div className="data-content">
                     <span className="description-text"> Order ID: </span>
-                    {dataValue.orderid}{" "}
+                    {dataValue.ordernumber}{" "}
                   </div>
                   <div className="data-content">
                     <span className="description-text"> Order Date: </span>

@@ -13,5 +13,5 @@ const rxFormReducer = combineForms({
 export const reducers = combineReducers({
   utility: UtilityReducer,
   users: userReducer,
-  forms: rxFormReducer,
+  rxFormReducer,
 });

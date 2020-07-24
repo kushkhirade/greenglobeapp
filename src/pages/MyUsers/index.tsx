@@ -7,6 +7,10 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { BaseModal } from "src/components/BaseModal";
 import { SubFormHeading } from "src/components/SubFormHeading";
 import { FormComponent } from "src/components/FormComponent";
+import getData from "src/utils/getData";
+import data from "src/data";
+import { getToken } from "src/state/Utility";
+
 const users = [
   {
     name: "Dinesh KK",
@@ -62,11 +66,33 @@ export interface IMyUsersProps {}
 
 export class MyUsersImpl extends React.PureComponent<
   IMyUsersProps,
-  { openEditModal: boolean; data: any }
+  { openEditModal: boolean; data: any, myUsers: any; }
 > {
   constructor(props: IMyUsersProps) {
     super(props);
-    this.state = { openEditModal: false, data: null };
+    this.state = { openEditModal: false, data: null, myUsers: [] };
+  }
+
+  async componentDidMount(){
+    const { data } = getToken();
+    const res = await this.getAllUsers(data);
+    console.log(res);
+    this.setState({ myUsers: res });
+  }
+  getAllUsers = async (data) => {
+    try{
+      const getUsers = await getData({
+        query: `SELECT Name ,Phone, Whatsapp_number__c,Email ,Role__c ,username__c,Password__c 
+        FROM salesforce.Contact 
+        WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0120l000000ot11AAA'  `,
+        token: data.token
+      })
+      console.log("getUsers => ", getUsers);
+      return getUsers.result;
+    }
+    catch(e){
+      console.log(e);
+    }
   }
 
   renderModal = () => {
@@ -85,6 +111,7 @@ export class MyUsersImpl extends React.PureComponent<
             <FormComponent
               onCancel={() => this.setState({ openEditModal: false })}
               options={userFormOptions}
+              onSubmit={(v)=> {this.setState({ openEditModal: false }), console.log(v)}}
               hasSubmit={true}
               formModel="editUserForm"
             />
@@ -99,12 +126,12 @@ export class MyUsersImpl extends React.PureComponent<
       <AppBar>
         <Grid container>
           {this.renderModal()}
-          {users.map((us) => (
+          {this.state.myUsers.map((us) => (
             <UserCard
               handleEditModelOprn={(data) =>
                 this.setState({ data, openEditModal: true })
               }
-              {...us}
+              details={us}
             />
           ))}
           <span
@@ -128,25 +155,27 @@ export const MyUsers = connect<{}, {}, IMyUsersProps>(mapStateToProps)(
 );
 
 const UserCard = (props) => {
+  const details = props.details;
+
   return (
     <Grid item xs={12} md={6} sm={6}>
       <div className="card-container">
         <Grid container className="">
           <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Name:</span>
-            {props.name}
+            {details.name}
           </Grid>
           <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Email:</span>
-            {props.email}
+            {details.email}
           </Grid>
           <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Mobile Number:</span>
-            {props.mobileNumber}
+            {details.phone}
           </Grid>
           <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
             <span className="description-text">Role:</span>
-            {props.role}
+            {details.role__c}
           </Grid>
           <Grid
             xs={12}
