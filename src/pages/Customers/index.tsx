@@ -111,6 +111,14 @@ export const Customers = withRouter(
   connect<{}, {}, ICustomersProps>(mapStateToProps)(CustomersImpl as any) as any
 );
 
+const changePhoneFormat = (phone) =>{
+  const p = phone.split(")");
+  const p1 = p[0].substr(p.length - 1);
+  const p2 = p[1];
+  
+  return `+91 ${p1}${p2}` ;
+}
+
 const CustomerList = (props: any) => {
   const { customerData } = props;
   return (
@@ -135,7 +143,7 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <Phone /> <span style={{ padding: "5px" }} />
-            {customerData.phone}
+            {customerData.phone && changePhoneFormat(customerData.phone)}
           </Grid>
         </Grid>
         <Grid container >

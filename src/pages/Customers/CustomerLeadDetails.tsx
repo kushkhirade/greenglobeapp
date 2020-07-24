@@ -63,6 +63,14 @@ export class DealerDetailsImpl extends React.PureComponent<
     this.state = { users: [], isLoading: false };
   }
 
+  changePhoneFormat = (phone) =>{
+    const p = phone.split(")");
+    const p1 = p[0].substr(p.length - 1);
+    const p2 = p[1];
+    
+    return `+91 ${p1}${p2}` ;
+  }
+
   componentWillMount() {
     if (isEmpty(this.props.dealerDetails)) {
       this.props.history.push("/assign-dealers");
@@ -90,7 +98,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.phone}
+                  {this.props.dealerDetails.phone && this.changePhoneFormat(this.props.dealerDetails.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Kit Enquiry:</span>

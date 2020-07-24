@@ -32,7 +32,7 @@ export class Support extends React.PureComponent<{}, any> {
   getAllSuppotCases = async (data) => {
     try{
       const getsupportcases = await getData({
-        query: `SELECT caseNumber, Description, subject 
+        query: `SELECT *
         FROM salesforce.case 
         WHERE accountid like '%${data.sfid}%'`,
         token: data.token
@@ -81,12 +81,17 @@ export class Support extends React.PureComponent<{}, any> {
   };
 
   public render() {
+    const cases = this.state.data.sort((a,b) => 
+      // Number(a.casenumber.substr(a.casenumber.length - 3)) - Number(b.casenumber.substr(b.casenumber - 3))
+      new Date(a.createddate) - new Date(b.createddate)
+      )
+    console.log("cases: ", cases);
     return (
       <AppBar>
         <div style={{ padding: "10px" }}>
           <h3>Support Requests</h3>
           <Grid container>
-            {this.state.data.map((sup) => (
+            {cases.map((sup) => (
               <Grid item xs={12} sm={6} lg={6}>
                 <div className="card-container no-hover">
                   <div className="case"> {sup.casenumber}</div>

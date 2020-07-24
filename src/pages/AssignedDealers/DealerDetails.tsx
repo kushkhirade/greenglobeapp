@@ -68,6 +68,14 @@ export class DealerDetailsImpl extends React.PureComponent<
     }
   }
 
+  changePhoneFormat = (phone) =>{
+    const p = phone.split(")");
+    const p1 = p[0].substr(p.length - 1);
+    const p2 = p[1];
+    
+    return `+91 ${p1}${p2}` ;
+  }
+
   tabData = () => [
     {
       tabName: "Details",
@@ -105,7 +113,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.dealer.phone}
+                  {this.changePhoneFormat(this.props.dealerDetails.dealer.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Dealer Avg Rating:</span>
@@ -193,7 +201,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                         sm={6}
                       >
                         <span className="description-text">Mob No. -</span>
-                        {x.phone}
+                        {this.changePhoneFormat(x.phone)}
                       </Grid>
                     </React.Fragment>
                   );

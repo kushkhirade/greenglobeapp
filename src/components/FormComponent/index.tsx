@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Form, Control } from "react-redux-form";
+import { Form, Control, actions } from "react-redux-form";
 import {
   TextField,
   Select,
@@ -15,14 +15,18 @@ import { changeValuesInStore } from "src/state/Utility";
 
 export const FormComponent = (props: any) => {
   const classes = useStyles();
-
+  
+  function mapDispatchToProps() {
+    return {
+    setDefaultUser: (values) => actions.merge('editUserForm', values)
+    }
+  }
   return (
     <Form
       model={props.formModel}
       className="form-content"
       onSubmit={() => {
         const values = store.getState().rxFormReducer[props.formModel];
-        console.log("Values: ", values)
         props.onSubmit(values);
       }}
     >
@@ -36,7 +40,8 @@ export const FormComponent = (props: any) => {
                   component={MUITextField}
                   type="text"
                   name={opt.name}
-                  onChange={e => changeValuesInStore(e.target.name, e.target.value)}
+                  // value={props.values.opt.model}
+                  onChange={e => changeValuesInStore(`${props.formModel}${opt.model}`, e.target.value)}
                   model={`${props.formModel}${opt.model}`}
                   label={opt.label}
                   errors={{ hasError: true }}
@@ -92,7 +97,10 @@ export const FormComponent = (props: any) => {
             {props.cancelTitle || "Cancel"}
           </Button>
           <Button
-            onClick={props.onSubmit}
+            // onClick={() => {
+            //   const values = store.getState().rxFormReducer[props.formModel];
+            //   props.onSubmit(values);
+            // }}
             variant="contained"
             color="primary"
             type="submit"

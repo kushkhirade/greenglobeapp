@@ -729,6 +729,14 @@ export const Leads = withRouter(
   connect<{}, {}, ILeadsProps>(mapStateToProps)(LeadsImpl) as any
 );
 
+const changePhoneFormat = (phone) =>{
+  const p = phone.split(")");
+  const p1 = p[0].substr(p.length - 1);
+  const p2 = p[1];
+  
+  return `+91 ${p1}${p2}` ;
+}
+
 const CardDetails = (props: any) => {
   const { details, AssignedDealers } = props;
 
@@ -756,7 +764,7 @@ const CardDetails = (props: any) => {
               <Grid className="padding-6-corners" item xs={6} md={6}>
                 {/* <span className="description-text">Contact:</span> */}
                 <Phone /> <span />
-                {details.phone}
+                {details.phone && changePhoneFormat(details.phone)}
               </Grid>
             </Grid>           
             <Grid container >
@@ -853,7 +861,7 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <Phone /> <span />
-          {details.phone}
+          {details.phone && changePhoneFormat(details.phone)}
         </Grid>
       </Grid>
       <Grid container >

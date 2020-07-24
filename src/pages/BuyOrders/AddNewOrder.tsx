@@ -494,7 +494,8 @@ class RenderForm extends React.Component <any> {
     console.log("data: ", data)
     try {
         const products = await getData({
-          query: `SELECT prd_name__c, quantity FROM salesforce.orderitem`,
+          query: `SELECT StockKeepingUnit FROM salesforce.product2 
+          WHERE StockKeepingUnit is NOT NULL `,
           token: data.token
         })
         console.log("products =>", products);
@@ -571,8 +572,8 @@ class RenderForm extends React.Component <any> {
             placeholder="Select"
             value={this.state.orderedproducts[i].label !== "" && this.state.orderedproducts[i]}
             options={this.state.allProducts.map(p => ({
-              label: p.prd_name__c,
-              value: p.prd_name__c
+              label: p.stockkeepingunit,
+              value: p.stockkeepingunit
             }))}
             onChange={(v: any) => this.handleChange(v.value, item.sr)}
             isSearchable={false}
@@ -673,7 +674,7 @@ const DispatchedScreen = (props) => {
       <Grid container className="">
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Total Items -</span>
-          <span className="disp-details"> {details.quantity}</span>
+          <span className="disp-details"> {details.item_quantity__c}</span>
         </Grid>
         <Grid item className="padding-6" md={6} xs={12} lg={6}>
           <span className="description-text">Order Total:</span>

@@ -51,9 +51,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
         })
       }else if(data.record_type === "0122w000000cwfNAAQ"){
         orders = await getData({
-          query: ` SELECT * FROM salesforce.order  Full OUTER JOIN 
-          salesforce.orderitem ON  salesforce.order.sfid = salesforce.orderitem.orderid 
-          WHERE salesforce.order.accountid LIKE '%${data.sfid}%' `,
+          query: ` SELECT * FROM salesforce.order 
+          WHERE salesforce.order.accountid = '${data.sfid}' `,
           token: data.token
         })
       }
@@ -71,7 +70,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     console.log("data: ", data);
     try {
         const orderedproducts = await getData({
-          query: `select * from salesforce.orderitem where orderid  LIKE '${product2ID}'`,
+          query: `select * from salesforce.orderitem where orderid = '${product2ID}'`,
           token: data.token
         })
         console.log("orderedproducts =>", orderedproducts);
@@ -84,7 +83,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
 
   handleClickDetails = async (orderData) => {
     console.log(orderData)
-    const products = await this.getAllOrderedProducts(loggedInUserDetails, orderData.orderid);
+    const products = await this.getAllOrderedProducts(loggedInUserDetails, orderData.sfid);
     console.log("products: ", products);
     this.props.history.push({pathname: "/buy-order/add-new-order", 
         orderType: this.state.topActiveTab, orderdetails: orderData, orderedproducts: products});
@@ -110,7 +109,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 <div className="row-data">
                   <div className="data-content">
                     <span className="description-text">Item Quantity:</span>
-                    {dataValue.quantity}{" "}
+                    {dataValue.product_quantity__c}{" "}
                   </div>
                   <div className="data-content">
                     <span className="description-text">Total Price:</span> 
@@ -151,7 +150,10 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   };
 
   public render() {
-    const orderData = this.state.orders;
+    const orderData = this.state.orders.sort((a,b) => 
+      // Number(a.casenumber.substr(a.casenumber.length - 3)) - Number(b.casenumber.substr(b.casenumber - 3))
+      new Date(a.createddate) - new Date(b.createddate)
+      )
     const buyOrders = orderData && orderData.filter(data => data.recordtypeid === "0122w000000UJdmAAG")
     const sellOrders = orderData && orderData.filter(data => data.recordtypeid === "0122w000000UJe1AAG")
     return (
