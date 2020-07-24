@@ -7,21 +7,6 @@ import {
   Redirect,
 } from "react-router-dom";
 import "./App.css";
-
-import MyForm from './App2';
-import { createStore } from 'redux';
-import { combineForms } from 'react-redux-form';
-  
-  const initialUser = { name: '' };
-  
-  const store = createStore(combineForms({
-    user: initialUser,
-    userForm: { name: "", email: "" },
-    leadForm: { name: "", email: "" },
-    customerForm: {},
-    editUserForm: {},
-  }));
-
 const LoginScreen = React.lazy(() =>
   import("./pages/account/Login").then(({ LoginScreen }) => ({
     default: LoginScreen,
@@ -83,7 +68,7 @@ const AddNewJobCard = React.lazy(() =>
 // import { Profile } from "./pages/Profile";
 // import { RTOProcess } from "./pages/RTOProcess";
 // import { Support } from "./pages/support";
-// import { store } from "./store/Store";
+import { store } from "./store/Store";
 import { MyUsers } from "./pages/MyUsers";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
