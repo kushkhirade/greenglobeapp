@@ -113,7 +113,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.changePhoneFormat(this.props.dealerDetails.dealer.phone)}
+                  {this.props.dealerDetails.dealer.phone && this.changePhoneFormat(this.props.dealerDetails.dealer.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Dealer Avg Rating:</span>
@@ -201,7 +201,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                         sm={6}
                       >
                         <span className="description-text">Mob No. -</span>
-                        {this.changePhoneFormat(x.phone)}
+                        {x.phone && this.changePhoneFormat(x.phone)}
                       </Grid>
                     </React.Fragment>
                   );

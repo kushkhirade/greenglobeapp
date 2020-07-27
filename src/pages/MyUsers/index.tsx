@@ -128,11 +128,11 @@ export class MyUsersImpl extends React.PureComponent<
             />
           </Grid> */}
           <TextField
+            className="form-input"
             id="outlined-basic"
             label="First Name"
-            className="form-input"
-            onChange={(e) => handleChange(e, "firstName")}
             variant="outlined"
+            onChange={(e) => handleChange(e, "firstName")}
           />
           <TextField
             className="form-input"

@@ -389,7 +389,7 @@ const InventoryCards = (props: any) => {
                   {" "}
                   Added to Inventory on -{" "}
                 </span>
-                {moment(inData.date_purchased__c).format("DD/MM?/")}
+                {moment(inData.date_purchased__c).format("DD/MM/YYYY")}
               </div>
               {isDealer() ?
                 inData.customer_name__c ? 
