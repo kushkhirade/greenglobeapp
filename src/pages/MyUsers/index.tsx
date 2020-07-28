@@ -7,13 +7,15 @@ import { BaseModal } from "src/components/BaseModal";
 import { SubFormHeading } from "src/components/SubFormHeading";
 import { FormComponent } from "src/components/FormComponent";
 import getData from "src/utils/getData";
+import { saveMyUsersData } from "src/actions/App.Actions";
 import data from "src/data";
 import { getToken, changeValuesInStore } from "src/state/Utility";
-import { store } from "src/store/Store"
-import { actions } from "react-redux-form";
 import { Button, Fab, TextField, Grid } from "@material-ui/core";
+import Select from "react-select";
+import { values } from "lodash";
+import {ChangePhoneFormat} from "src/components/Format";
 
-
+var loggedInUserDetails;
 const users = [
   {
     name: "Dinesh KK",
@@ -55,7 +57,7 @@ const userFormOptions = [
   {
     label: "WhatsApp Number",
     type: "text",
-    model: ".whatsappNumber",
+    model: ".phone",
   },
   {
     label: "Role",
@@ -65,55 +67,108 @@ const userFormOptions = [
   },
 ];
 
-export interface IMyUsersProps {}
+export interface IMyUsersProps { values?: any, MyUsers?: any}
 
 export class MyUsersImpl extends React.PureComponent<
   IMyUsersProps,
-  { openEditModal: boolean; data: any, myUsers: any; }
+  { openEditModal: boolean; data: any; }
 > {
   constructor(props: IMyUsersProps) {
     super(props);
-    this.state = { openEditModal: false, data: null, myUsers: [] };
+    this.state = { openEditModal: false, data: null };
   }
 
-  async componentDidMount(){
-    const { data } = getToken();
-    const res = await this.getAllUsers(data);
-    console.log(res);
-    this.setState({ myUsers: res });
+  componentDidMount(){
+    loggedInUserDetails = getToken().data;
+    this.getAllUsers(loggedInUserDetails);
   }
+
   getAllUsers = async (data) => {
     try{
       const getUsers = await getData({
-        query: `SELECT Name ,Phone, Whatsapp_number__c,Email ,Role__c ,username__c,Password__c 
+        query: `SELECT Firstname, Lastname, Name, Phone, Whatsapp_number__c, Email, Role__c, username__c, Password__c, sfid, id
         FROM salesforce.Contact 
         WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0120l000000ot11AAA'  `,
         token: data.token
       })
       console.log("getUsers => ", getUsers);
-      return getUsers.result;
+      saveMyUsersData(getUsers.result);
+      // return getUsers.result;
     }
     catch(e){
       console.log(e);
     }
   }
 
+  InsertUpdateMyUser = async (data, values) => {
+    console.log("Values ", values);
+    let insertuser;
+    try{
+      if(values.sfid){
+      insertuser = await getData({
+        query: `UPDATE salesforce.contact SET 
+          FirstName = '${values.firstName}', 
+          LastName = '${values.lastName}', 
+          Email = '${values.email}', 
+          Phone = '${values.phone}' , 
+          Role__c = '${values.role}' 
+          where Id = '${values.id}'`,
+        token: data.token
+      })
+    }else{
+      insertuser = await getData({
+        query: `INSERT into salesforce.contact 
+          (FirstName, LastName, Name, Email, Phone, Role__c, RecordTypeid, accountid) 
+          values (
+            '${values.firstName}', '${values.lastName}', '${values.firstName} ${values.lastName}',
+            '${values.email}', '${values.phone}', '${values.role}', 
+            '0120l000000ot11AAA', '${data.sfid}'
+          ) RETURNING id`,
+        token: data.token
+      })
+    }
+      console.log("insertuser => ", insertuser);
+
+    }catch(e){
+      console.log(e);
+    }
+  }
+
+  deleteMyUser = async(data, values) => {
+    console.log("values ", values);
+
+    try{
+      const deleteuser = await getData({
+        query: `DELETE FROM Salesforce.contact where Id = '${values.id}'`,
+        token: data.token
+      })
+      console.log("deleteuser => ", deleteuser);
+      return deleteuser;
+
+    }catch(e){
+      console.log(e);
+    }
+  }
+
+  handleChange = (value, key) => {
+    console.log(value)
+    changeValuesInStore(`editUserForm.${key}`, value);
+  };
+
   renderModal = () => {
     console.log("this.props: ", this.props);
-    const handleChange = (event, key) => {
-      changeValuesInStore(`editUserForm.${key}`, event.target.value);
-    };
+    const { values } = this.props;
 
     return (
       <BaseModal
         className="leads-modal"
         contentClassName="leads-content"
-        onClose={() => this.setState({ openEditModal: false })}
+        onClose={() => {this.setState({ openEditModal: false }); changeValuesInStore(`editUserForm`, {})}}
         open={this.state.openEditModal}
       >
         <Grid container spacing={1} className="">
           <SubFormHeading>
-            Add User/Edit User {this.state.data && this.state.data.name}
+            {values.sfid ? `Edit User ${values.firstName} ${values.lastName}` : "Add New User" }
           </SubFormHeading>
           {/* <Grid item className="modal-margin" xs={12} md={12}>
             <FormComponent
@@ -132,14 +187,24 @@ export class MyUsersImpl extends React.PureComponent<
             id="outlined-basic"
             label="First Name"
             variant="outlined"
-            onChange={(e) => handleChange(e, "firstName")}
+            value={values.firstName}
+            onChange={(e) => this.handleChange(e, "firstName")}
+          />
+          <TextField
+            className="form-input"
+            id="outlined-basic"
+            label="last Name"
+            variant="outlined"
+            value={values.lastName}
+            onChange={(e) => this.handleChange(e.target.value, "lastName")}
           />
           <TextField
             className="form-input"
             id="outlined-basic"
             label="E-Mail"
             variant="outlined"
-            onChange={(e) => handleChange(e, "email")}
+            value={values.email}
+            onChange={(e) => this.handleChange(e.target.value, "email")}
 
           />
           <TextField
@@ -147,23 +212,31 @@ export class MyUsersImpl extends React.PureComponent<
             id="outlined-basic"
             label="WhatsApp Number"
             variant="outlined"
-            onChange={(e) => handleChange(e, "whatsappnumber")}
+            value={values.phone}
+            onChange={(e) => this.handleChange(e.target.value, "phone")}
 
           />
-          <TextField
+          <Select
             className="form-input"
             id="outlined-basic"
             label="Role"
+            placeholder="Select Role"
             variant="outlined"
-            onChange={(e) => handleChange(e, "role")}
-
+            value={ values.role && {label: values.role}}
+            onChange={(e) => this.handleChange(e.value, "role")}
+            options={[
+              {label: "User", value: "User"}, 
+              {label: "Manager", value: "Manager"}
+            ]}
           />
             <FormComponent
-              onCancel={() => this.setState({ openEditModal: false })}
+              onCancel={() => {this.setState({ openEditModal: false }); changeValuesInStore(`editUserForm`, {})}}
               options={[]}
               onSubmit={(v)=> {
-                this.setState({ openEditModal: false }),
-                console.log("Values: ", store.getState().rxFormReducer["editUserForm"])
+                this.InsertUpdateMyUser(loggedInUserDetails, values);
+                this.getAllUsers(loggedInUserDetails);
+                changeValuesInStore(`editUserForm`, {})
+                this.setState({ openEditModal: false });
               }}
               hasSubmit={true}
               formModel="editUserForm"
@@ -178,11 +251,21 @@ export class MyUsersImpl extends React.PureComponent<
       <AppBar>
         <Grid container>
           {this.renderModal()}
-          {this.state.myUsers.map((us) => (
+          {this.props.MyUsers && this.props.MyUsers.map((us) => (
             <UserCard
-              handleEditModelOprn={(data) =>
-                this.setState({ data, openEditModal: true })
-              }
+              handleEditModelOprn={(data) =>{
+                this.setState({ openEditModal: true})
+                changeValuesInStore(`editUserForm.firstName`, data.firstname)            
+                changeValuesInStore(`editUserForm.lastName`, data.lastname)            
+                changeValuesInStore(`editUserForm.email`, data.email)            
+                changeValuesInStore(`editUserForm.phone`, data.phone)            
+                changeValuesInStore(`editUserForm.role`, data.role__c)            
+                changeValuesInStore(`editUserForm.id`, data.id)            
+              }}
+              handleClickDelete={(data) => {
+                this.deleteMyUser(loggedInUserDetails, data);
+                this.getAllUsers(loggedInUserDetails);
+              }}
               details={us}
             />
           ))}
@@ -200,64 +283,49 @@ export class MyUsersImpl extends React.PureComponent<
   }
 }
 
-export function mapStateToProps() {
+export function mapStateToProps(state) {
   return {
-    values: store.getState().rxFormReducer["editUserForm"]
+    // values: store.getState().rxFormReducer["editUserForm"],
+    MyUsers: state.users.get("myusers") ,
+    values: state.rxFormReducer["editUserForm"],
   };
 }
-export function mapDispatchToprops(){
-  return{
-    setDispatch : (values) => actions.merge("editUserForm", values)
-  }
-}
+
 export const MyUsers = connect<{}, {}, IMyUsersProps>(mapStateToProps)(
   MyUsersImpl
 );
-
-const changePhoneFormat = (phone) =>{
-  const p = phone.split(")");
-  const p1 = p[0].substr(p.length - 1);
-  const p2 = p[1];
-  
-  return `+91 ${p1}${p2}` ;
-}
 
 const UserCard = (props) => {
   const details = props.details;
 
   return (
-    <Grid item xs={12} md={6} sm={6}>
       <div className="card-container">
         <Grid container className="">
-          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
+          <Grid className="padding-6-corners" item xs={12}  md={6} sm={6}>
             <span className="description-text">Name:</span>
             {details.name}
           </Grid>
-          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
+          <Grid className="padding-6-corners" item xs={12}  md={6} sm={6}>
             <span className="description-text">Email:</span>
             {details.email}
           </Grid>
-          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
+          <Grid className="padding-6-corners" item xs={12}  md={6} sm={6}>
             <span className="description-text">Mobile Number:</span>
-            {details.phone && changePhoneFormat(details.phone)}
+            { details.phone && ChangePhoneFormat(details.phone) }
           </Grid>
-          <Grid xs={12} className="padding-6-corners" md={6} sm={6}>
+          <Grid className="padding-6-corners" item xs={12}  md={6} sm={6}>
             <span className="description-text">Role:</span>
             {details.role__c}
           </Grid>
-          <Grid
-            xs={12}
-            className="padding-6-corners"
-            md={12}
-            sm={12}
+          <Grid className="padding-6-corners" item  xs={12} md={12} sm={12}
             style={{ textAlign: "right" }}
           >
-            <Edit onClick={() => props.handleEditModelOprn(props)} />{" "}
+            <Edit onClick={() => props.handleEditModelOprn(details)} />{" "}
             <span style={{ padding: "10px" }} />
-            <DeleteIcon /> <span style={{ padding: "10px" }} />
+            <DeleteIcon  onClick={() => props.handleClickDelete(details)}/> 
+            <span style={{ padding: "10px" }} />
           </Grid>
         </Grid>
       </div>
-    </Grid>
   );
 };

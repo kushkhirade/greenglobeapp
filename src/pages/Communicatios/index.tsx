@@ -69,9 +69,9 @@ export class CommunicationsImpl extends React.Component<
     try{
       const getUsers = await getData({
         query: `SELECT name FROM salesforce.contact
-        where (Lead_Rating__c = 'Hot' or Lead_Rating__c is null)
-        AND (X3_or_4_Wheeler__c ='3 Wheeler' OR X3_or_4_Wheeler__c is NULL)
-        AND (Lead_Sub_Type__c = 'Customer' OR Lead_Sub_Type__c is NULL) 
+        where (Lead_Rating__c = '${rating}' or Lead_Rating__c is null)
+        AND (X3_or_4_Wheeler__c ='${lead}' OR X3_or_4_Wheeler__c is NULL)
+        AND (Lead_Sub_Type__c = '${sublead}' OR Lead_Sub_Type__c is NULL) 
         AND recordtypeid = '0120l000000ot16AAA'`,
         token: data.token
       })

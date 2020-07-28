@@ -17,6 +17,7 @@ import { IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { getToken, isDealer } from "./../../state/Utility";
 import { saveDealerData } from "src/actions/App.Actions";
+import { ChangePhoneFormat } from "src/components/Format";
 
 export interface ICustomersProps {
   history: IHistory
@@ -111,14 +112,6 @@ export const Customers = withRouter(
   connect<{}, {}, ICustomersProps>(mapStateToProps)(CustomersImpl as any) as any
 );
 
-const changePhoneFormat = (phone) =>{
-  const p = phone.split(")");
-  const p1 = p[0].substr(p.length - 1);
-  const p2 = p[1];
-  
-  return `+91 ${p1}${p2}` ;
-}
-
 const CustomerList = (props: any) => {
   const { customerData } = props;
   return (
@@ -143,7 +136,7 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <Phone /> <span style={{ padding: "5px" }} />
-            {customerData.phone && changePhoneFormat(customerData.phone)}
+            {customerData.phone && ChangePhoneFormat(customerData.phone)}
           </Grid>
         </Grid>
         <Grid container >
