@@ -97,10 +97,10 @@ export const FormComponent = (props: any) => {
             {props.cancelTitle || "Cancel"}
           </Button>
           <Button
-            // onClick={() => {
-            //   const values = store.getState().rxFormReducer[props.formModel];
-            //   props.onSubmit(values);
-            // }}
+            onClick={() => {
+              const values = store.getState().rxFormReducer[props.formModel];
+              props.onSubmit(values);
+            }}
             variant="contained"
             color="primary"
             type="submit"

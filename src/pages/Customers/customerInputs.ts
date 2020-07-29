@@ -37,7 +37,7 @@ export const vehicleInputs = [
   {
     label: "Daily Running KMS",
     model: ".dailyRunning",
-    type: "text",
+    type: "number",
   },
   {
     label: "Registration Year.",
@@ -47,7 +47,7 @@ export const vehicleInputs = [
   {
     label: "Year Of Manufacturing",
     model: ".mfg",
-    type: "text",
+    type: "number",
   },
   {
     label: "Chassis Number",
@@ -84,7 +84,7 @@ export const options = [
   {
     label: "WhatsApp Number",
     model: ".whatsAppNumber",
-    type: "text",
+    type: "number",
   },
 ];
 

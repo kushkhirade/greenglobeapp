@@ -26,7 +26,10 @@ import "./leads.scss";
 import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
 import { GSelect } from "src/components/GSelect";
+import { getToken } from "src/state/Utility";
+import getData from "src/utils/getData";
 
+var loggedInUserDetails;
 const detailsObj = [
   {
     sNumber: 1,
@@ -60,7 +63,7 @@ const detailsObj = [
   },
 ];
 
-export interface IAddNewLeadProps {}
+export interface IAddNewLeadProps { }
 
 const closedColumns = [
   {
@@ -90,12 +93,99 @@ const products = [
 
 export class AddNewLeadImpl extends React.Component<
   IAddNewLeadProps,
-  { openEditModal: boolean; activeTab: number; activeStep: number }
-> {
+  { openEditModal: boolean; activeTab: number; activeStep: number,dealerCheckboxes:any }
+  > {
   constructor(props: IAddNewLeadProps) {
     super(props);
-    this.state = { openEditModal: false, activeTab: 0, activeStep: 0 };
+    this.state = { 
+      openEditModal: false, 
+      activeTab: 0, 
+      activeStep: 0,
+      dealerCheckboxes: {
+        "CNG TUNE UP": false,
+        "KIT SERVICE": false,
+        "KIT REFITTING": false,
+        "CYLINDER REMOVE": false,
+        "CYLINDER REFITTING": false,
+        "GRECO ACE KIT FITTING": false,
+        "GRECO PRO KIT FITTING": false,
+      }
+     };
   }
+
+  InsertLeadDistributor = async (data, userForm) => {
+    const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource, rating, street, city, state, zip, country } = userForm;
+    try {
+      const insertLead = await getData({
+        query: `INSERT INTO salesforce.Lead
+        (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
+          Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
+          Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
+         Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}','${whatsAppNumber ?? 0}','${leadType ?? ""}',
+         '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}','${data.record_type}','${data.sfid}')`,
+        token: data.token
+      });
+      console.log("insertLead => ", insertLead);
+      return insertLead.result;
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  handleLeadDistributorInsert = async () => {
+    loggedInUserDetails = getToken().data;
+    this.InsertLeadDistributor(loggedInUserDetails, this.props.userForm);
+    //  this.props.history.push("/leads")
+  };
+
+  InsertLeadDealer = async (data, leadForm) => {
+    const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource,
+      rating, street, city, state, zip, country, vehicleNumber, fuelType, wheeles, vehicleMek, vehicleModel, usage, vehicleType, dailyRunning,
+      registration, mfg, chassis, gstNumber } = leadForm;
+      const{dealerCheckboxes} = this.state;
+    try {
+      const insertLead = await getData({
+        query: `INSERT INTO salesforce.Lead
+        (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
+          Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
+          Rating,Street,City,State,PostalCode,Country,
+          Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,
+          Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
+          GST_Number__c,Assigned_Dealer__c,RecordTypeId,CNG_TUNE_UP__c,KIT_SERVICE__c,KIT_REFITTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,
+          GRECO_ACE_KIT_FITTING__c,GRECO_PRO_KIT_FITTING__c)
+         Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
+         '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}',
+         '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
+         ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','${data.record_type}',
+         ${dealerCheckboxes['CNG TUNE UP']},${dealerCheckboxes['KIT SERVICE']},${dealerCheckboxes['KIT REFITTING']},
+         ${dealerCheckboxes['CYLINDER REFITTING']},
+         ${dealerCheckboxes['CYLINDER REMOVE']},${dealerCheckboxes['GRECO ACE KIT FITTING']},${dealerCheckboxes['GRECO PRO KIT FITTING']})`,
+        token: data.token
+      });
+``
+      console.log("insertLead => ", insertLead);
+      return insertLead.result;
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  handleLeadDealerInsert = async () => {
+    loggedInUserDetails = getToken().data;
+    this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
+    //  this.props.history.push("/leads")
+  };
+  handleToggle = (event) => {
+    let fieldName = event.target.name;
+    let dealerCheckboxes = this.state.dealerCheckboxes;
+    dealerCheckboxes[fieldName] = !event.target.value;
+    this.setState({
+      dealerCheckboxes : dealerCheckboxes
+    })
+    console.log(this.state.dealerCheckboxes)
+  };
   // Basic Details Form
   public renderForm = () => {
     return (
@@ -329,7 +419,7 @@ export class AddNewLeadImpl extends React.Component<
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
-            {this.checkboxInputs.map((checkbox) => (
+          {Object.entries(this.state.dealerCheckboxes).map((value, key) => (
               <React.Fragment>
                 <Grid
                   className="checkbox-container"
@@ -347,11 +437,15 @@ export class AddNewLeadImpl extends React.Component<
                       width: "100%",
                     }}
                   >
-                    <div className="label-text">{checkbox}</div>
+                    <div className="label-text">{value}</div>
                     <div>
                       <Checkbox
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
+                        onChange={this.handleToggle}
+                        key={key}
+                        name={value}
+                        value={this.state.dealerCheckboxes[key]}
                       />
                     </div>
                   </div>
@@ -376,6 +470,7 @@ export class AddNewLeadImpl extends React.Component<
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
+            this.handleLeadDealerInsert();
           }}
           formModel="leadForm"
           hasSubmit={true}
@@ -626,7 +721,7 @@ export class AddNewLeadImpl extends React.Component<
                           }}
                           formModel="userForm"
                           hasSubmit={false}
-                          options={addressDetails}
+                          options={streetInputs}
                         />
                         <SubFormHeading >
                           KYC Documents
@@ -666,6 +761,7 @@ export class AddNewLeadImpl extends React.Component<
                               activeStep: this.state.activeStep + 1,
                             });
                             console.log(">> v", v);
+                            this.handleLeadDistributorInsert();
                           }}
                           formModel="userForm"
                           hasSubmit={true}
@@ -681,16 +777,17 @@ export class AddNewLeadImpl extends React.Component<
                 ]}
               />
             ) : (
-              <Tabs tabsData={this.tabData()} />
-            )}
+                <Tabs tabsData={this.tabData()} />
+              )}
           </div>
         </div>
       </AppBar>
     );
   }
 }
-export function mapStateToProps() {
-  return {};
+export function mapStateToProps(state) {
+  const { userForm,leadForm } = state.rxFormReducer;
+  return { userForm,leadForm };
 }
 export const AddNewLead = connect<{}, {}, IAddNewLeadProps>(mapStateToProps)(
   AddNewLeadImpl
@@ -729,7 +826,7 @@ const UploadContainer = (props: any) => {
           file.file.name.length > 10
             ? `${file.file.name.substr(0, 10)}...${ext}`
             : ""
-        }`}</span>
+          }`}</span>
         <div>
           <VisibilityIcon />
           <DeleteIcon
