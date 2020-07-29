@@ -23,7 +23,7 @@ export const FormComponent = (props: any) => {
   }
   return (
     <Form
-      model={props.formModel}
+      model={`rxFormReducer.${props.formModel}`}
       className="form-content"
       onSubmit={() => {
         const values = store.getState().rxFormReducer[props.formModel];
@@ -31,7 +31,6 @@ export const FormComponent = (props: any) => {
       }}
     >
       <Grid container>
-      {console.log(props.options)}
         {props.options.map((opt: any) => {
           switch (opt.type) {
             case "text":
@@ -42,7 +41,7 @@ export const FormComponent = (props: any) => {
                   name={opt.name}
                   // value={props.values.opt.model}
                   onChange={e => changeValuesInStore(`${props.formModel}${opt.model}`, e.target.value)}
-                  model={`${props.formModel}${opt.model}`}
+                  model={opt.model}
                   label={opt.label}
                   errors={{ hasError: true }}
                 />
@@ -53,7 +52,7 @@ export const FormComponent = (props: any) => {
                   component={MUITextArea}
                   type="text"
                   name={opt.name}
-                  model={`${props.formModel}${opt.model}`}
+                  model={opt.model}
                   label={opt.label}
                   errors={{ hasError: true }}
                   rows={4}
@@ -62,14 +61,14 @@ export const FormComponent = (props: any) => {
             case "select":
               return (
                 <Control
-                  placeholder={opt.placeholder}
                   component={MUISelectField}
                   type="select"
                   // name="Email"
                   options={opt.options}
                   name={opt.name}
-                  model={`${props.formModel}${opt.model}`}
+                  model={opt.model}
                   label={opt.label}
+                  onChange={e => changeValuesInStore(`${props.formModel}${opt.model}`, e.target.value)}
                 />
               );
             case "number":
@@ -78,7 +77,7 @@ export const FormComponent = (props: any) => {
                   component={MUITextField}
                   type="number"
                   name={opt.name}
-                  model={`${props.formModel}${opt.model}`}
+                  model={opt.model}
                   label={opt.label}
                 />
               );

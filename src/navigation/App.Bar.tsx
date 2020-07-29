@@ -32,7 +32,7 @@ interface IAppProps extends IApplicationProps {
 interface IState {
   anchorEl: any;
   notificationEl: any;
-  routeName: string;
+  routeName: any;
 }
 
 class MiniDrawer extends React.Component<IAppProps, IState> {
@@ -40,8 +40,8 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     anchorEl: null,
     notificationEl: null,
     routeName: routes(this.props.isDealer).find((routeData) =>
-      window.location.hash.includes(routeData.path)
-    ).title as string,
+    window.location.hash.includes(routeData.path)
+    ).title as any,
   };
 
   private handleMenuClose = (path?: string) => {

@@ -143,6 +143,10 @@ class App extends React.Component {
                 path="/lead/add-new-lead"
                 component={AddNewLead}
               />
+               <ProtectedRoute
+                path="/lead/edit-lead/:id"
+                component={AddNewLead}
+              />
               <ProtectedRoute
                 path="/customer/customer-lead-details"
                 component={CustomerLeadDetails}

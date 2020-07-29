@@ -28,6 +28,7 @@ import { Tabs } from "src/components/Tabs";
 import { GSelect } from "src/components/GSelect";
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
+import { changeValuesInStore } from "src/state/Utility";
 
 var loggedInUserDetails;
 const detailsObj = [
@@ -93,14 +94,15 @@ const products = [
 
 export class AddNewLeadImpl extends React.Component<
   IAddNewLeadProps,
-  { openEditModal: boolean; activeTab: number; activeStep: number,dealerCheckboxes:any }
+  { openEditModal: boolean; activeTab: number; activeStep: number, dealerCheckboxes: any, id: number }
   > {
   constructor(props: IAddNewLeadProps) {
     super(props);
-    this.state = { 
-      openEditModal: false, 
-      activeTab: 0, 
+    this.state = {
+      openEditModal: false,
+      activeTab: 0,
       activeStep: 0,
+      id: 0,
       dealerCheckboxes: {
         "CNG TUNE UP": false,
         "KIT SERVICE": false,
@@ -110,8 +112,55 @@ export class AddNewLeadImpl extends React.Component<
         "GRECO ACE KIT FITTING": false,
         "GRECO PRO KIT FITTING": false,
       }
-     };
+    };
   }
+
+  async componentDidMount() {
+    loggedInUserDetails = getToken().data;
+    const { match: { params } } = this.props;
+    if (params && params.id) {
+      this.setState({ id: params.id });
+      let leadData = await this.getleadDataById(loggedInUserDetails.token, params.id);
+      this.handelStateForEdit(leadData['0']);
+    }
+  }
+
+  async getleadDataById(token, id) {
+    let leadsData;
+    try {
+      leadsData = await getData({
+        query: `SELECT *
+      FROM salesforce.Lead 
+      WHERE id= '${id}'`,
+        token: token
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    console.log("leadsData =>", leadsData);
+    return leadsData.result;
+  }
+
+  handelStateForEdit = (leadData) => {
+    let formType = 'userForm';
+    console.log(leadData.lead_type__c);
+    changeValuesInStore(`${formType}.email`, leadData.email)
+    changeValuesInStore(`${formType}.firstName`, leadData.firstname)
+    changeValuesInStore(`${formType}.lastName`, leadData.lastname)
+    changeValuesInStore(`${formType}.middleName`, leadData.middlename)
+    changeValuesInStore(`${formType}.company`, leadData.company)
+    changeValuesInStore(`${formType}.whatsAppNumber`, leadData.whatsapp_number__c)
+    changeValuesInStore(`${formType}.leadType`, leadData.lead_type__c)
+    changeValuesInStore(`${formType}.leadSource`, leadData.leadsource)
+    changeValuesInStore(`${formType}.leadStatus`, leadData.status)
+    changeValuesInStore(`${formType}.subLeadSource`, leadData.sub_lead_source__c)
+    changeValuesInStore(`${formType}.rating`, leadData.rating)
+    changeValuesInStore(`${formType}.street`, leadData.street)
+    changeValuesInStore(`${formType}.city`, leadData.city)
+    changeValuesInStore(`${formType}.state`, leadData.state)
+    changeValuesInStore(`${formType}.zip`, leadData.postalcode)
+    changeValuesInStore(`${formType}.country`, leadData.country)
+  };
 
   InsertLeadDistributor = async (data, userForm) => {
     const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource, rating, street, city, state, zip, country } = userForm;
@@ -122,7 +171,7 @@ export class AddNewLeadImpl extends React.Component<
           Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
           Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
          Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}','${whatsAppNumber ?? 0}','${leadType ?? ""}',
-         '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}','${data.record_type}','${data.sfid}')`,
+         '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}','0122w000000chRuAAI','${data.sfid}')`,
         token: data.token
       });
       console.log("insertLead => ", insertLead);
@@ -133,9 +182,40 @@ export class AddNewLeadImpl extends React.Component<
     }
   }
 
+  UpdateLeadDistributer = async (data, userForm) => {
+    console.log(userForm);
+    const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource, rating, street, city, state, zip, country } = userForm;
+    try {
+      const insertLead = await getData({
+        query: `update  salesforce.Lead set FirstName = '${firstName ?? ""}',MiddleName = '${middleName ?? ""}',LastName = '${lastName ?? ""}',
+        Email = '${email ?? ""}',Company = '${company ?? ""}',Whatsapp_number__c='${whatsAppNumber ?? 0}',Lead_Type__c = '${leadType ?? ""}',
+        LeadSource = '${leadSource ?? ""}',Status = '${leadStatus ?? ""}',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${rating ?? ""}',  
+        Street = '${street ?? ""}',City = '${city ?? ""}',State = '${state ?? ""}',PostalCode =${zip ?? ""},Country ='${country ?? ""}'
+         where id='${this.state.id}'`,
+        token: data.token
+      });
+      console.log("insertLead => ", insertLead);
+      return insertLead.result;
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+  handleLeadDistributorSubmit = async () => {
+    if (this.state.id) {
+      this.handleLeadDistributorUpdate(); 
+    } else {
+      this.handleLeadDistributorInsert();
+    }
+  }
   handleLeadDistributorInsert = async () => {
     loggedInUserDetails = getToken().data;
     this.InsertLeadDistributor(loggedInUserDetails, this.props.userForm);
+    //  this.props.history.push("/leads")
+  };
+  handleLeadDistributorUpdate = async () => {
+    loggedInUserDetails = getToken().data;
+    this.UpdateLeadDistributer(loggedInUserDetails, this.props.userForm);
     //  this.props.history.push("/leads")
   };
 
@@ -143,7 +223,7 @@ export class AddNewLeadImpl extends React.Component<
     const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource,
       rating, street, city, state, zip, country, vehicleNumber, fuelType, wheeles, vehicleMek, vehicleModel, usage, vehicleType, dailyRunning,
       registration, mfg, chassis, gstNumber } = leadForm;
-      const{dealerCheckboxes} = this.state;
+    const { dealerCheckboxes } = this.state;
     try {
       const insertLead = await getData({
         query: `INSERT INTO salesforce.Lead
@@ -163,7 +243,7 @@ export class AddNewLeadImpl extends React.Component<
          ${dealerCheckboxes['CYLINDER REMOVE']},${dealerCheckboxes['GRECO ACE KIT FITTING']},${dealerCheckboxes['GRECO PRO KIT FITTING']})`,
         token: data.token
       });
-``
+      ``
       console.log("insertLead => ", insertLead);
       return insertLead.result;
     }
@@ -182,7 +262,7 @@ export class AddNewLeadImpl extends React.Component<
     let dealerCheckboxes = this.state.dealerCheckboxes;
     dealerCheckboxes[fieldName] = !event.target.value;
     this.setState({
-      dealerCheckboxes : dealerCheckboxes
+      dealerCheckboxes: dealerCheckboxes
     })
     console.log(this.state.dealerCheckboxes)
   };
@@ -419,7 +499,7 @@ export class AddNewLeadImpl extends React.Component<
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
-          {Object.entries(this.state.dealerCheckboxes).map((value, key) => (
+            {Object.entries(this.state.dealerCheckboxes).map((value, key) => (
               <React.Fragment>
                 <Grid
                   className="checkbox-container"
@@ -761,7 +841,7 @@ export class AddNewLeadImpl extends React.Component<
                               activeStep: this.state.activeStep + 1,
                             });
                             console.log(">> v", v);
-                            this.handleLeadDistributorInsert();
+                            this.handleLeadDistributorSubmit();
                           }}
                           formModel="userForm"
                           hasSubmit={true}
@@ -786,8 +866,8 @@ export class AddNewLeadImpl extends React.Component<
   }
 }
 export function mapStateToProps(state) {
-  const { userForm,leadForm } = state.rxFormReducer;
-  return { userForm,leadForm };
+  const { userForm, leadForm } = state.rxFormReducer;
+  return { userForm, leadForm };
 }
 export const AddNewLead = connect<{}, {}, IAddNewLeadProps>(mapStateToProps)(
   AddNewLeadImpl

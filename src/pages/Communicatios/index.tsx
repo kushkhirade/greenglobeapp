@@ -16,11 +16,6 @@ import AppBar from "src/navigation/App.Bar";
 import { changeValuesInStore } from "src/state/Utility";
 import "./communications.scss";
 import { StyledRadioButton } from "./StyledRadioButton";
-import getData from "src/utils/getData";
-import { getToken } from "src/state/Utility";
-
-var loggedInUserDetails;
-var allCustomers = [];
 export interface ICommunicationsProps {}
 export const colourOptions = [
   { value: "ocean", label: "Ocean", color: "#00B8D9" },
@@ -45,42 +40,12 @@ export class CommunicationsImpl extends React.Component<
     this.state = {
       leadType: "",
       subLeadType: "",
-      rating: "",
+      rating: "female",
       commType: "",
       customers: [],
       openDeliveryModal: false,
       formSubmitted: false,
     };
-  }
-
-  componentDidMount(){
-    loggedInUserDetails = getToken().data;
-  }
-  async componentDidUpdate(nextprop, nextState, snapShot){
-    console.log("next Props: ", nextprop)
-    console.log("next state: ", nextState)
-    console.log("snapShot: ", snapShot)
-    console.log("COmponent Did update", this.state)
-    allCustomers = await this.getAllcustomers(loggedInUserDetails, this.state.leadType, this.state.subLeadType, this.state.rating)
-    console.log("allCustomers", allCustomers)
-  }
-
-  getAllcustomers = async (data, lead, sublead, rating) => {
-    try{
-      const getUsers = await getData({
-        query: `SELECT name FROM salesforce.contact
-        where (Lead_Rating__c = '${rating}' or Lead_Rating__c is null)
-        AND (X3_or_4_Wheeler__c ='${lead}' OR X3_or_4_Wheeler__c is NULL)
-        AND (Lead_Sub_Type__c = '${sublead}' OR Lead_Sub_Type__c is NULL) 
-        AND recordtypeid = '0120l000000ot16AAA'`,
-        token: data.token
-      })
-      console.log("getUsers => ", getUsers);
-      return getUsers.result;
-    }
-    catch(e){
-      console.log(e);
-    }
   }
 
   handleCustomerSelection = (value) => {
@@ -90,12 +55,11 @@ export class CommunicationsImpl extends React.Component<
     });
   };
 
-  handleChange = async(event, key) => {
+  handleChange = (event, key) => {
     changeValuesInStore(`customerForm.${key}`, event.target.value);
     this.setState({
       [key]: event.target.value,
     });
-    console.log(this.state[key])
   };
 
   renderDeliveryModal = () => {
@@ -137,16 +101,6 @@ export class CommunicationsImpl extends React.Component<
     return (
       <div className="message-screen">
         <SubFormHeading>Add Meesage To Send</SubFormHeading>
-        {this.state.commType === "Email" ?
-        <TextField
-          // multiline
-          // rows={4}
-          id="standard-basic"
-          variant="outlined"
-          label="Enter Subject"
-          className="form-input"
-        />
-        : null}
         <TextField
           multiline
           rows={4}
@@ -185,8 +139,6 @@ export class CommunicationsImpl extends React.Component<
   };
 
   renderForm = () => {
-    console.log("allCustomers", allCustomers)
-
     return (
       <React.Fragment>
         <SubFormHeading>Select Lead Type</SubFormHeading>
@@ -199,8 +151,8 @@ export class CommunicationsImpl extends React.Component<
           >
             <CustomRaidio value="leads" label="Leads" />
             <CustomRaidio value="loastLeads" label="Lost Leads" />
-            <CustomRaidio value="3 Wheeler" label="3 Wheeler" />
-            <CustomRaidio value="4 Wheeler" label="4 Wheeler" />
+            <CustomRaidio value="3Wheeler" label="3 Wheeler" />
+            <CustomRaidio value="4Wheeler" label="4 Wheeler" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select Lead Sub Type</SubFormHeading>
@@ -211,11 +163,11 @@ export class CommunicationsImpl extends React.Component<
             value={this.state.subLeadType}
             onChange={(e) => this.handleChange(e, "subLeadType")}
           >
-            <CustomRaidio value="Customer" label="Customer" />
-            <CustomRaidio value="Lead" label="Lead" />
-            <CustomRaidio value="Influencer" label="Influencer" />
-            <CustomRaidio value="Fitment" label="Fitment" />
-            <CustomRaidio value="Servicing" label="Servicing" />
+            <CustomRaidio value="customer" label="Customer" />
+            <CustomRaidio value="lead" label="Lead" />
+            <CustomRaidio value="influencer" label="Influencer" />
+            <CustomRaidio value="fitment" label="Fitment" />
+            <CustomRaidio value="servicing" label="Servicing" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select Rating</SubFormHeading>
@@ -226,9 +178,9 @@ export class CommunicationsImpl extends React.Component<
             value={this.state.rating}
             onChange={(e) => this.handleChange(e, "rating")}
           >
-            <CustomRaidio value="Hot" label="Hot" />
-            <CustomRaidio value="Cold" label="Cold" />
-            <CustomRaidio value="Warm" label="Warm" />
+            <CustomRaidio value="hot" label="Hot" />
+            <CustomRaidio value="cold" label="Cold" />
+            <CustomRaidio value="warm" label="Warm" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select communication type SMS/Email</SubFormHeading>
@@ -240,7 +192,7 @@ export class CommunicationsImpl extends React.Component<
             onChange={(e) => this.handleChange(e, "commType")}
           >
             <CustomRaidio value="SMS" label="SMS" />
-            <CustomRaidio value="Email" label="Email" />
+            <CustomRaidio value="email" label="Email" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select Customer to Send Message</SubFormHeading>
@@ -249,10 +201,7 @@ export class CommunicationsImpl extends React.Component<
             isMulti
             placeholder="Search Recipient"
             name="customers"
-            options={allCustomers && allCustomers.map(cust => ({
-              label: cust.name,
-              value: cust.name
-            }))}
+            options={colourOptions}
             className="basic-multi-select"
             classNamePrefix="select"
             value={this.state.customers}

@@ -21,8 +21,6 @@ import {
 import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
 import { isDealer } from "./../../state/Utility";
-import { ChangePhoneFormat } from "src/components/Format";
-
 export interface IAssignedDealersProps {}
 
 const columns = [
@@ -65,6 +63,14 @@ export class DealerDetailsImpl extends React.PureComponent<
     this.state = { users: [], isLoading: false };
   }
 
+  changePhoneFormat = (phone) =>{
+    const p = phone.split(")");
+    const p1 = p[0].substr(p.length - 1);
+    const p2 = p[1];
+    
+    return `+91 ${p1}${p2}` ;
+  }
+
   componentWillMount() {
     if (isEmpty(this.props.dealerDetails)) {
       this.props.history.push("/assign-dealers");
@@ -92,7 +98,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.phone && ChangePhoneFormat(this.props.dealerDetails.phone)}
+                  {this.props.dealerDetails.phone && this.changePhoneFormat(this.props.dealerDetails.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Kit Enquiry:</span>
@@ -214,7 +220,7 @@ export class DealerDetailsImpl extends React.PureComponent<
     //           title={"Sale Target 4 wheeler"}
     //           data={data.sales.data}
     //           columns={columns}
-    //           options={ as any}
+    //           options={options as any}
     //         />
     //       </div>
     //       <div className="card-container">
