@@ -37,7 +37,7 @@ export const vehicleInputs = [
   {
     label: "Daily Running KMS",
     model: ".dailyRunning",
-    type: "text",
+    type: "number",
   },
   {
     label: "Registration Year.",
@@ -47,7 +47,7 @@ export const vehicleInputs = [
   {
     label: "Year Of Manufacturing",
     model: ".mfg",
-    type: "text",
+    type: "number",
   },
   {
     label: "Chassis Number",
@@ -84,7 +84,7 @@ export const options = [
   {
     label: "WhatsApp Number",
     model: ".whatsAppNumber",
-    type: "text",
+    type: "number",
   },
 ];
 
@@ -214,9 +214,9 @@ export const leadDealer = [
     model: ".rating",
     type: "select",
     options: [
-      {label: "Rating - Hot", value: "Rating - Hot"},
-      {label: "Rating - Cold", value: "Rating - Cold"},
-      {label: "rating - Warm", value: "Rating - Warm"}
+      {label: "Rating - Hot", value: "Hot"},
+      {label: "Rating - Cold", value: "Cold"},
+      {label: "rating - Warm", value: "Warm"}
     ]
   },
 ];
@@ -289,9 +289,9 @@ export const leadSource = [
     model: ".rating",
     type: "select",
     options: [
-      {label: "Rating - Hot", value: "Rating - Hot"},
-      {label: "Rating - Cold", value: "Rating - Cold"},
-      {label: "rating - Warm", value: "Rating - Warm"}
+      {label: "Rating - Hot", value: "Hot"},
+      {label: "Rating - Cold", value: "Cold"},
+      {label: "rating - Warm", value: "Warm"}
     ]
   },
 ];

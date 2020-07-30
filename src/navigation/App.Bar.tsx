@@ -17,6 +17,7 @@ import { Alert } from "../state/Alert";
 import { AppState, isAuthenticated } from "../state/AppState";
 import AppDrawer, { routes } from "./App.Drawer";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import EditIcon from '@material-ui/icons/Edit';
 import { getUserDetails } from "./../state/Utility"
 //#endregion
 import ButterToast from "butter-toast";
@@ -27,31 +28,47 @@ const classNames = require("classnames");
 interface IAppProps extends IApplicationProps {
   classes: any;
   theme?: any;
+  dealerDetails?:any;
 }
 
 interface IState {
   anchorEl: any;
   notificationEl: any;
-  routeName: string;
+  routeName: any;
+  path: string
 }
 
 class MiniDrawer extends React.Component<IAppProps, IState> {
   public state: IState = {
     anchorEl: null,
     notificationEl: null,
+    path: null,
     routeName: routes(this.props.isDealer).find((routeData) =>
       window.location.hash.includes(routeData.path)
-    ).title as string,
+    ).title as any,
   };
 
+  
+  
+  
   private handleMenuClose = (path?: string) => {
     this.setState({ anchorEl: null });
     this.navigate(path);
   };
 
-  public handleLogout = () => {
-    this.props.history.push("/");
-    localStorage.clear();
+  // public handleLogout = () => {
+  //   this.props.history.push(this.state.path);
+  //   if (this.state.path == '/') {
+  //     localStorage.clear();
+  //   }
+  // };
+
+  public topRightIconUrl = () => {
+    let path = (this.props.dealerDetails && this.props.dealerDetails.id && this.props.location.pathname == '/customer/customer-lead-details') ? `/leads/edit-lead/${this.props.dealerDetails.id}` :'/';
+    this.props.history.push(path);
+    if (path == '/') {
+      localStorage.clear();
+    }
   };
 
   private navigate = (path?: string) => {
@@ -127,11 +144,14 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
             {this.state.routeName}
           </Typography>
           {this.props.sideButton}
-          <div className="align-center" onClick={this.handleLogout}>
+          <div className="align-center" onClick={this.topRightIconUrl}>
             {/* <div>
               Logout <span style={{ paddingRight: "3px" }} />{" "}
             </div> */}
-            <ExitToAppIcon />
+            {
+              (this.props.dealerDetails && this.props.dealerDetails.id && this.props.location.pathname == '/customer/customer-lead-details') ? <EditIcon /> : <ExitToAppIcon />
+            }
+            
             &nbsp; &nbsp;
           </div>
         </Toolbar>
@@ -156,6 +176,17 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     );
   }
 
+  private renderToast() {
+    const { match, dealerDetails } = this.props;
+
+    if(dealerDetails === undefined && match.path === '/customer/customer-lead-details'){
+      return <React.Fragment></React.Fragment>;
+    } else {
+      return  <ButterToast />;
+        
+    }
+  }
+
   public render() {
     const { classes } = this.props;
     const isLoggedIn = isAuthenticated();
@@ -164,7 +195,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     }
     return (
       <div className={classes.root}>
-        <ButterToast />
+        {this.renderToast()}
         {this.renderAppBar()}
         {this.renderDrawer()}
         <div className="page-base"> {this.props.children}</div>
@@ -181,7 +212,9 @@ const mapStateToProps = (state: AppState) => ({
   users: state.users,
   materials: state.materials,
   isDealer: state.users.get("currentUser").isDealer,
+  dealerDetails: state.users.get("data")
 });
+
 
 export default withRouter(
   connect(

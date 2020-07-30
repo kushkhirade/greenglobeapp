@@ -21,7 +21,6 @@ import "./rtoProcess.scss";
 import { FormComponent } from "src/components/FormComponent";
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
-import { ChangePhoneFormat } from "src/components/Format";
 
 var loggedInUserDetails;
 var allCustomers;
@@ -378,6 +377,14 @@ export const RTOProcess = withRouter(
   connect<{}, {}, IRTOProcessProps>(mapStateToProps)(RTOProcessImpl) as any
 );
 
+const changePhoneFormat = (phone) =>{
+  const p = phone.split(")");
+  const p1 = p[0].substr(p.length - 1);
+  const p2 = p[1];
+  
+  return `+91 ${p1}${p2}` ;
+}
+
 const RTOList = (props: any) => {
   return props.rtoDataMain.map((rto: any, index: any) => {
     const rtoData = rto;
@@ -391,7 +398,7 @@ const RTOList = (props: any) => {
                 <PersonPin /> {rtoData.contname__c}
               </Grid>
               <Grid className="bold-fon center" item xs={6} md={6}>
-                <Phone /> {rtoData.mobile_no__c && ChangePhoneFormat(rtoData.mobile_no__c)}
+                <Phone /> {rtoData.mobile_no__c && changePhoneFormat(rtoData.mobile_no__c)}
               </Grid>
             </Grid>
             <Grid container className="padding-6">

@@ -630,6 +630,7 @@ class DispatchedScreen extends React.Component <any> {
     super(props);
   }
 
+<<<<<<< HEAD
   state={
     details: [],
   }
@@ -681,6 +682,44 @@ class DispatchedScreen extends React.Component <any> {
             <span className="description-text">Order Total:</span>
             <span className="disp-details"> {details && details.totalamount}</span>
           </Grid>
+=======
+  return (
+    <div style={{ width: "100%" }} className="card-container dispatch-card">
+      <Typography variant="h5">Dispatched</Typography>
+      <Grid container className="">
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order ID -</span>
+          <span className="disp-details"> {details.ordernumber}</span>
+        </Grid>
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order Date:</span>
+          <span className="disp-details"> {moment(details.effectivedate).format("DD/MM/YYYY")}</span>
+        </Grid>
+      </Grid>
+      <Grid container className="">
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Total Items -</span>
+          <span className="disp-details"> {details.item_quantity__c}</span>
+        </Grid>
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order Total:</span>
+          <span className="disp-details"> {details.totalamount}</span>
+        </Grid>
+      </Grid>
+      <Grid container className="">
+        <Grid item className="padding-6" md={12} xs={12} lg={12}>
+          <span className="description-text">Courier Name -</span>
+          <span className="disp-details"> {details.courier_name__c}</span>
+          <div className="disp-details">
+            {" "}
+            <span className="description-text">Consignment No. -</span>{" "}
+            <span className="disp-details"> {details.Consignment_No__c}</span>
+          </div>
+          <div className="disp-details">
+            <span className="description-text"> Shipping Date - </span>
+            <span className="disp-details"> {moment(details.Shipping_date__c).format("DD/MM/YYYY")}</span>
+          </div>
+>>>>>>> 70dbb948297b24e576cc12be83ec5489f8760a19
         </Grid>
         <Grid container className="">
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
@@ -787,7 +826,7 @@ const SubmittedScreen = (props) => {
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Order Date - </span>
-          {details.effectivedate && moment(details.effectivedate).format("DD/MM/YYYY") || ""}
+          {moment(details.effectivedate).format("DD/MM/YYYY") || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Total Items -</span>

@@ -20,8 +20,6 @@ import {
 } from "recharts";
 import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
-import { ChangePhoneFormat } from "src/components/Format";
-
 export interface IAssignedDealersProps {}
 
 const columns = [
@@ -66,8 +64,16 @@ export class DealerDetailsImpl extends React.PureComponent<
 
   componentWillMount() {
     if (isEmpty(this.props.dealerDetails)) {
-      this.props.history.goBack();
+      this.props.history.push("/assign-dealers");
     }
+  }
+
+  changePhoneFormat = (phone) =>{
+    const p = phone.split(")");
+    const p1 = p[0].substr(p.length - 1);
+    const p2 = p[1];
+    
+    return `+91 ${p1}${p2}` ;
   }
 
   tabData = () => [
@@ -107,7 +113,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.dealer.phone && ChangePhoneFormat(this.props.dealerDetails.dealer.phone)}
+                  {this.changePhoneFormat(this.props.dealerDetails.dealer.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Dealer Avg Rating:</span>
@@ -195,7 +201,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                         sm={6}
                       >
                         <span className="description-text">Mob No. -</span>
-                        {x.phone && ChangePhoneFormat(x.phone)}
+                        {this.changePhoneFormat(x.phone)}
                       </Grid>
                     </React.Fragment>
                   );

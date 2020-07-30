@@ -3,11 +3,64 @@ import { UtilityReducer } from "./UtilityReducer";
 import { userReducer } from "../data/users";
 import { combineForms } from "react-redux-form";
 
+export const leadForm = {
+  name: "",
+  email: "",
+  firstName: "",
+  lastName: "",
+  middleName: "",
+  company: "",
+  whatsAppNumber: "",
+  leadType: "",
+  leadSource: "",
+  leadStatus: "",
+  subLeadSource: "",
+  rating: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  street: "",
+  vehicleNumber: "",
+  fuelType: "",
+  wheeles: "",
+  vehicleMek: "",
+  vehicleModel: "",
+  usage: "",
+  vehicleType: "",
+  dailyRunning: "",
+  registration: "",
+  mfg: "",
+  chassis: "",
+  gstNumber: ""
+}
+
+export const userForm= {
+  name: "",
+  email: "",
+  firstName: "",
+  lastName: "",
+  middleName: "",
+  company: "",
+  whatsAppNumber: "",
+  leadType: "",
+  leadSource: "",
+  leadStatus: "",
+  subLeadSource: "",
+  rating: "",
+  city: "",
+  state: "",
+  zip: "",
+  country: "",
+  street: ""
+}
+
 const rxFormReducer = combineForms({
-  userForm: { name: "", email: "" },
-  leadForm: { name: "", email: "" },
+  userForm,
+  leadForm,
   customerForm: {},
   editUserForm: {},
+
 });
 
 export const reducers = combineReducers({

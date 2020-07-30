@@ -2,6 +2,7 @@ import { Button, Fab, Grid, TextField } from "@material-ui/core";
 import PersonIcon from "@material-ui/icons/Person";
 import { Add, PersonPin, Phone } from "@material-ui/icons";
 import Rating from "@material-ui/lab/Rating";
+import EditIcon from '@material-ui/icons/Edit';
 import ChatIcon from "@material-ui/icons/Chat";
 import MailIcon from "@material-ui/icons/Mail";
 import PhoneIcon from "@material-ui/icons/Phone";
@@ -16,7 +17,6 @@ import getData from "src/utils/getData";
 import data from "../../data";
 import { getToken, isDealer, IHistory } from "src/state/Utility";
 import { saveLeadsData, saveAssignedDealersData, saveDealerData } from "src/actions/App.Actions";
-import { ChangePhoneFormat } from "src/components/Format";
 import "./leads.scss";
 
 var loggedInUserDetails;
@@ -110,7 +110,7 @@ export class LeadsImpl extends React.Component<
     filterType: string;
     sortType: string;
   }
-> {
+  > {
   public state = {
     topActiveTab: "Customer",
     activeTabType: "Assigned",
@@ -125,26 +125,27 @@ export class LeadsImpl extends React.Component<
     sortType: "",
   };
 
-  async componentDidMount(){
+  async componentDidMount() {
     loggedInUserDetails = getToken().data;
     this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type);
     this.getAllAssignedDealers(loggedInUserDetails);
   }
 
   getAllLeadsData = async (token, sfid, recordtypeid) => {
-    console.log("token: ",token);
-    console.log("sfid: ",sfid);
-    console.log("recordtypeid: ",recordtypeid);
+    console.log("token: ", token);
+    console.log("sfid: ", sfid);
+    console.log("recordtypeid: ", recordtypeid);
     let leadsData;
     try {
-      if(recordtypeid === "0122w000000cwfSAAQ"){
+      if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
           query: `SELECT *
           FROM salesforce.Lead 
           WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%')`,
           token: token
         })
-      }else if(recordtypeid === "0122w000000cwfNAAQ"){
+      } else if (recordtypeid === "0122w000000cwfNAAQ") {
+        console.log("here");
         leadsData = await getData({
           query: `SELECT *
           FROM salesforce.Lead 
@@ -152,70 +153,70 @@ export class LeadsImpl extends React.Component<
           token: token
         })
       }
-        console.log("leadsData =>", leadsData);
-        // return leadsData.result;
-        saveLeadsData(leadsData.result)
-        
+      console.log("leadsData =>", leadsData);
+      // return leadsData.result;
+      saveLeadsData(leadsData.result)
+
     } catch (e) {
-        console.log('fetch Inventory Error', e)
+      console.log('fetch Inventory Error', e)
     }
   }
 
   getAllAssignedDealers = async (data) => {
-    console.log("data: ",data);
+    console.log("data: ", data);
     try {
-        const assignedDealerData = await getData({
-          query: `SELECT * FROM 
+      const assignedDealerData = await getData({
+        query: `SELECT * FROM 
           salesforce.Account WHERE Assigned_Distributor__c = '${data.sfid}'`,
-          token: data.token
-        })
+        token: data.token
+      })
 
-        console.log("assignedDealerData =>", assignedDealerData);
-        saveAssignedDealersData(assignedDealerData.result);
-        
+      console.log("assignedDealerData =>", assignedDealerData);
+      saveAssignedDealersData(assignedDealerData.result);
+
     } catch (e) {
-        console.log('fetch Inventory Error', e)
+      console.log('fetch Inventory Error', e)
     }
   }
 
   getAllCustomersAssignedToDelaer = async (token, sfid) => {
-    console.log("token: ",token);
-    console.log("sfid: ",sfid)
+    console.log("token: ", token);
+    console.log("sfid: ", sfid)
     try {
-        const customerData = await getData({
-          query: `SELECT Name, Phone
+      const customerData = await getData({
+        query: `SELECT Name, Phone
           FROM salesforce.Contact 
           WHERE Assigned_Dealer__c LIKE '${sfid}%'`,
-          token: token
-        })
+        token: token
+      })
 
-        console.log("customerData =>", customerData);
-        return customerData.result;
-        
+      console.log("customerData =>", customerData);
+      return customerData.result;
+
     } catch (e) {
-        console.log('fetch Inventory Error', e)
+      console.log('fetch Inventory Error', e)
     }
   }
-  
+
   assignCustomerLeadToDealer = async (data, custSFID, dealerSFID) => {
-    console.log("custSFID: ",custSFID);
-    console.log("dealerSFID: ",dealerSFID);
+    console.log("custSFID: ", custSFID);
+    console.log("dealerSFID: ", dealerSFID);
     try {
-        const updateCustLeadAssigned = await getData({
-          query: `UPDATE salesforce.Lead
+      const updateCustLeadAssigned = await getData({
+        query: `UPDATE salesforce.Lead
           SET Assigned_dealer__c = '${dealerSFID}'
           WHERE sfid LIKE '%${custSFID}%'`,
-          token: data.token
-        })
+        token: data.token
+      })
 
-        console.log("updateCustLeadAssigned =>", updateCustLeadAssigned);
-        return updateCustLeadAssigned.result;
-        
+      console.log("updateCustLeadAssigned =>", updateCustLeadAssigned);
+      return updateCustLeadAssigned.result;
+
     } catch (e) {
-        console.log('fetch Inventory Error', e)
+      console.log('fetch Inventory Error', e)
     }
   }
-  
+
   public openAssignDealerModal = (custSFID) => {
     console.log(custSFID)
     this.setState({ isModalOpen: true });
@@ -229,10 +230,10 @@ export class LeadsImpl extends React.Component<
         {leadsData && leadsData.map((d) => {
           // console.log("DEtails: ", d)
           // if (!d.isDealer && d.assigned) {
-            if (d.assigned_dealer__c) {
+          if (d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} AssignedDealers={this.props.dealersData} history={this.props.history}/>
+                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} AssignedDealers={this.props.dealersData} history={this.props.history} />
               </Grid>
             );
           }
@@ -259,7 +260,7 @@ export class LeadsImpl extends React.Component<
           if (!d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} onClickAssign={this.openAssignDealerModal} history={this.props.history}/>
+                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} onClickAssign={this.openAssignDealerModal} history={this.props.history} />
               </Grid>
             );
           }
@@ -282,11 +283,11 @@ export class LeadsImpl extends React.Component<
     return (
       <Grid container>
         {this.props.dealersData && this.props.dealersData.map((d) => {
-            return (
-              <Grid item xs={12} md={6}>
-                <CardDetails details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history}/>
-              </Grid>
-            );
+          return (
+            <Grid item xs={12} md={6}>
+              <CardDetails details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history} />
+            </Grid>
+          );
         })}
       </Grid>
     );
@@ -309,7 +310,7 @@ export class LeadsImpl extends React.Component<
           if (d.isDealer && !d.assigned) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} history={this.props.history}/>
+                <CardDetails details={d} history={this.props.history} />
               </Grid>
             );
           }
@@ -333,12 +334,12 @@ export class LeadsImpl extends React.Component<
     {
       tabName: "Customer",
       component: "",
-      onTabSelect: (tabName: any) => { this.setState({ topActiveTab: tabName })},
+      onTabSelect: (tabName: any) => { this.setState({ topActiveTab: tabName }) },
     },
     {
       tabName: "Dealer",
       component: this.renderDealersAssigned(),
-      onTabSelect: (tabName: any) => { this.getAllAssignedDealers(loggedInUserDetails), this.setState({ topActiveTab: tabName })},
+      onTabSelect: (tabName: any) => { this.getAllAssignedDealers(loggedInUserDetails), this.setState({ topActiveTab: tabName }) },
     },
   ];
 
@@ -349,7 +350,7 @@ export class LeadsImpl extends React.Component<
         this.state.topActiveTab === "Customer"
           ? this.renderCustomersAssigned(leadsData)
           : this.renderDealersAssigned(),
-      onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName })},
+      onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName }) },
     },
     {
       tabName: "Unassigned",
@@ -357,7 +358,7 @@ export class LeadsImpl extends React.Component<
         this.state.topActiveTab === "Customer"
           ? this.renderCustomersUnAssigned(leadsData)
           : this.renderDealersUnAssigned(),
-      onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName })},
+      onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName }) },
     },
   ];
 
@@ -391,33 +392,34 @@ export class LeadsImpl extends React.Component<
           <div className="dealer-name-container">
             {this.props.dealersData
               ? this.props.dealersData.map((dealerData) => (
-                  <div  
-                    onClick={() =>
-                      this.setState({
-                        selectedDealerAssignTo: dealerData.sfid
-                      })
-                    }
-                    className={`dealer-name ${
-                      this.state.selectedDealerAssignTo === dealerData.sfid && "active"
+                <div
+                  onClick={() =>
+                    this.setState({
+                      selectedDealerAssignTo: dealerData.sfid
+                    })
+                  }
+                  className={`dealer-name ${
+                    this.state.selectedDealerAssignTo === dealerData.sfid && "active"
                     }`}
-                  >{dealerData.name}</div>
-                ))
+                >{dealerData.name}</div>
+              ))
               : "No Dealer Found"}
           </div>
           <div className="button-container">
             <Button
-              onClick={() => this.setState({ isModalOpen: false }) }
+              onClick={() => this.setState({ isModalOpen: false })}
               variant="contained"
               color="default"
             >
               Cancel
             </Button>{" "}
-            <Button 
+            <Button
               onClick={() => {
-                this.assignCustomerLeadToDealer(loggedInUserDetails, this.state.selectedCustomerToAssign, this.state.selectedDealerAssignTo), 
-                this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type);
-                this.setState({ isModalOpen: false }) }}
-              variant="contained" 
+                this.assignCustomerLeadToDealer(loggedInUserDetails, this.state.selectedCustomerToAssign, this.state.selectedDealerAssignTo),
+                  this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type);
+                this.setState({ isModalOpen: false })
+              }}
+              variant="contained"
               color="primary"
             >
               Submit
@@ -450,12 +452,12 @@ export class LeadsImpl extends React.Component<
                   }
                   className={`dealer-name ${
                     this.state.selectedFilter === fData.label && "active"
-                  }`}
+                    }`}
                 >
                   {fData.label}
                 </div>
               ))
-            : null }
+              : null}
             {this.state.filterType === "Lead Type" ?
               leadfilterOptions.map((fData, index) => (
                 <div
@@ -467,30 +469,30 @@ export class LeadsImpl extends React.Component<
                   }
                   className={`dealer-name ${
                     this.state.selectedFilter === fData.label && "active"
-                  }`}
+                    }`}
                 >
                   {fData.label}
                 </div>
               ))
-            : null }
+              : null}
             {this.state.filterType === "Sub Lead Type" ?
-            subfilterOptions.map((fData, index) => (
-              <div
-                key={index}
-                onClick={() =>
-                  this.setState({
-                    selectedFilter: fData.label,
-                  })
-                }
-                className={`dealer-name ${
-                  this.state.selectedFilter === fData.label && "active"
-                }`}
-              >
-                {fData.label}
-              </div>
-            ))
-          : null }
-          {this.state.filterType === "Rating" ?
+              subfilterOptions.map((fData, index) => (
+                <div
+                  key={index}
+                  onClick={() =>
+                    this.setState({
+                      selectedFilter: fData.label,
+                    })
+                  }
+                  className={`dealer-name ${
+                    this.state.selectedFilter === fData.label && "active"
+                    }`}
+                >
+                  {fData.label}
+                </div>
+              ))
+              : null}
+            {this.state.filterType === "Rating" ?
               ratingfilterOptions.map((fData, index) => (
                 <div
                   key={index}
@@ -501,12 +503,12 @@ export class LeadsImpl extends React.Component<
                   }
                   className={`dealer-name ${
                     this.state.selectedFilter === fData.label && "active"
-                  }`}
+                    }`}
                 >
                   {fData.label}
                 </div>
               ))
-            : null }
+              : null}
           </div>
           <div className="button-container">
             <Button
@@ -538,18 +540,18 @@ export class LeadsImpl extends React.Component<
           {leadsData && leadsData.map((d) => {
             return (
               <Grid item xs={12} md={6} >
-                <CardDetailsForDealer 
+                <CardDetailsForDealer
                   onClickDetails={this.handleCustomerDetails}
-                  details={d} history={this.props.history}/>
+                  details={d} history={this.props.history} />
               </Grid>
             );
           })}
         </Grid>
       ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "All" }),
-      onChangeTabValue : (tabValue) => {
+      onChangeTabValue: (tabValue) => {
         const arr = this.state.selectedFilterValues.filter((item) => item.label === "all" ? item.value = tabValue : null)
-        if(arr.length === 0 ){
+        if (arr.length === 0) {
           this.state.selectedFilterValues.push({ label: "all", value: tabValue })
         }
       }
@@ -561,12 +563,12 @@ export class LeadsImpl extends React.Component<
         <Grid container>
           {leadsData && leadsData.map((d) => {
             const filter = this.state.selectedFilterValues.filter(item => item.label === "leadType")
-            if( filter && filter[0] && d.x3_or_4_wheeler__c === filter[0].value){
+            if (filter && filter[0] && d.x3_or_4_wheeler__c === filter[0].value) {
               return (
                 <Grid item xs={12} md={6} >
-                  <CardDetailsForDealer 
+                  <CardDetailsForDealer
                     onClickDetails={this.handleCustomerDetails}
-                    details={d} history={this.props.history}/>
+                    details={d} history={this.props.history} />
                 </Grid>
               );
             }
@@ -574,9 +576,9 @@ export class LeadsImpl extends React.Component<
         </Grid>
       ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Lead Type" }),
-      onChangeTabValue : (tabValue) => {
+      onChangeTabValue: (tabValue) => {
         const arr = this.state.selectedFilterValues.filter((item) => item.label === "leadType" ? item.value = tabValue : null)
-        if(arr.length === 0 ){
+        if (arr.length === 0) {
           this.state.selectedFilterValues.push({ label: "leadType", value: tabValue })
         }
       }
@@ -587,15 +589,15 @@ export class LeadsImpl extends React.Component<
       component: (
         <Grid container>
           {leadsData && leadsData.map((d) => {
-            
+
             const leadfilter = this.state.selectedFilterValues.filter(item => item.label === "subLeadType")
 
-            if(leadfilter && leadfilter[0] && d.sub_lead_type__c === leadfilter[0].value){
+            if (leadfilter && leadfilter[0] && d.sub_lead_type__c === leadfilter[0].value) {
               return (
                 <Grid item xs={12} md={6} >
-                  <CardDetailsForDealer 
+                  <CardDetailsForDealer
                     onClickDetails={this.handleCustomerDetails}
-                    details={d} history={this.props.history}/>
+                    details={d} history={this.props.history} />
                 </Grid>
               );
             }
@@ -603,9 +605,9 @@ export class LeadsImpl extends React.Component<
         </Grid>
       ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Sub Lead Type" }),
-      onChangeTabValue : (tabValue) => {
+      onChangeTabValue: (tabValue) => {
         const arr = this.state.selectedFilterValues.filter((item) => item.label === "subLeadType" ? item.value = tabValue : null)
-        if(arr.length === 0 ){
+        if (arr.length === 0) {
           this.state.selectedFilterValues.push({ label: "subLeadType", value: tabValue })
         }
       }
@@ -617,12 +619,12 @@ export class LeadsImpl extends React.Component<
         <Grid container>
           {leadsData && leadsData.map((d) => {
             const leadfilter = this.state.selectedFilterValues.filter(item => item.label === "rating")
-            if(leadfilter && leadfilter[0] && d.rating === leadfilter[0].value){
+            if (leadfilter && leadfilter[0] && d.rating === leadfilter[0].value) {
               return (
                 <Grid item xs={12} md={6} >
-                  <CardDetailsForDealer 
+                  <CardDetailsForDealer
                     onClickDetails={this.handleCustomerDetails}
-                    details={d} history={this.props.history}/>
+                    details={d} history={this.props.history} />
                 </Grid>
               );
             }
@@ -630,9 +632,9 @@ export class LeadsImpl extends React.Component<
         </Grid>
       ),
       onTabSelect: (tabName) => this.setState({ showFilerOptions: true, filterType: "Rating" }),
-      onChangeTabValue : (tabValue) => {
+      onChangeTabValue: (tabValue) => {
         const arr = this.state.selectedFilterValues.filter((item) => item.label === "rating" ? item.value = tabValue : null)
-        if(arr.length === 0 ){
+        if (arr.length === 0) {
           this.state.selectedFilterValues.push({ label: "rating", value: tabValue })
         }
       }
@@ -643,14 +645,14 @@ export class LeadsImpl extends React.Component<
       component: (
         <Grid container>
           {leadsData && leadsData.map((d) => {
-            if(d.leadsource === "Store Visits"){
-            return (
-              <Grid item xs={12} md={6} >
-                <CardDetailsForDealer 
-                  onClickDetails={this.handleCustomerDetails}
-                  details={d} history={this.props.history}/>
-              </Grid>
-            );
+            if (d.leadsource === "Store Visits") {
+              return (
+                <Grid item xs={12} md={6} >
+                  <CardDetailsForDealer
+                    onClickDetails={this.handleCustomerDetails}
+                    details={d} history={this.props.history} />
+                </Grid>
+              );
             }
           })}
         </Grid>
@@ -662,7 +664,7 @@ export class LeadsImpl extends React.Component<
     console.log("dealer Data ", dealer)
     const customers = await this.getAllCustomersAssignedToDelaer(loggedInUserDetails.token, dealer.sfid);
     console.log("customer Data ", customers)
-    saveDealerData({dealer, customers});
+    saveDealerData({ dealer, customers });
     this.props.history.push("/dealers/dealer-details");
   };
 
@@ -673,14 +675,15 @@ export class LeadsImpl extends React.Component<
   };
 
   public render() {
-    var leadsData ;
-    console.log("this.state.activeTabType:", this.state.activeTabType) ;
-    if(this.state.sortType === "asc"){ 
-      leadsData = this.props.leadsData.sort((a,b) => new Date(a.createddate) - new Date(b.createddate))}
-    else if(this.props.leadsData === "dsc"){
-      leadsData = this.props.leadsData.sort((a,b) => new Date(b.createddate) - new Date(a.createddate) )
+    var leadsData;
+    console.log("this.state.activeTabType:", this.state.activeTabType);
+    if (this.state.sortType === "asc") {
+      leadsData = this.props.leadsData.sort((a, b) => new Date(a.createddate) - new Date(b.createddate))
     }
-    else{
+    else if (this.props.leadsData === "dsc") {
+      leadsData = this.props.leadsData.sort((a, b) => new Date(b.createddate) - new Date(a.createddate))
+    }
+    else {
       leadsData = this.props.leadsData
     }
     console.log("this.state.selectedFilterValues ", this.state.selectedFilterValues)
@@ -690,24 +693,24 @@ export class LeadsImpl extends React.Component<
         {/* {this.renderFilterModal()} */}
         <div className="leads">
           {isDealer() ? (
-            <Tabs tabsData={this.tabDataForDealer(leadsData)} 
+            <Tabs tabsData={this.tabDataForDealer(leadsData)}
               hasSort={true}
-              sortValue={(sortVal) => this.setState({sortType: sortVal})}
-             />
+              sortValue={(sortVal) => this.setState({ sortType: sortVal })}
+            />
           ) : (
-            <React.Fragment>
-              <Tabs tabsData={this.tabData(leadsData)} />
-              {/* {this.state.topActiveTab === "Customer" && (
+              <React.Fragment>
+                <Tabs tabsData={this.tabData(leadsData)} />
+                {/* {this.state.topActiveTab === "Customer" && (
                 <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
               )} */}
-              {this.state.topActiveTab === "Customer" && 
-                <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
-              }
-            </React.Fragment>
-          )}
+                {this.state.topActiveTab === "Customer" &&
+                  <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
+                }
+              </React.Fragment>
+            )}
         </div>
         <span
-          onClick={() => this.props.history.push("/lead/add-new-lead")}
+          onClick={() => this.props.history.push("/leads/add-new-lead")}
           style={{ position: "absolute", right: 20, bottom: 20 }}
         >
           <Fab color="secondary" aria-labelledby="add-ticket">
@@ -719,7 +722,7 @@ export class LeadsImpl extends React.Component<
   }
 }
 export function mapStateToProps(state) {
-  console.log("state.user.leads: ",state.users.get("assigndealers"))
+  console.log("state.user.leads: ", state.users.get("assigndealers"))
   return {
     isDealer: false,
     leadsData: state.users.get("leads"),
@@ -730,107 +733,116 @@ export const Leads = withRouter(
   connect<{}, {}, ILeadsProps>(mapStateToProps)(LeadsImpl) as any
 );
 
+const changePhoneFormat = (phone) => {
+  const p = phone.split(")");
+  const p1 = p[0].substr(p.length - 1);
+  const p2 = p[1];
+
+  return `+91 ${p1}${p2}`;
+}
+
 const CardDetails = (props: any) => {
   const { details, AssignedDealers } = props;
-
-  const assignedDealer = AssignedDealers && AssignedDealers.filter((item) => 
-                    item.sfid === details.assigned_dealer__c )
+  console.log(details);
+  const assignedDealer = AssignedDealers && AssignedDealers.filter((item) =>
+    item.sfid === details.assigned_dealer__c)
   // console.log("details", assignedDealer[0]);
 
   const CalRating = () => {
-    switch(details.rating){
+    switch (details.rating) {
       case ("Cold"): return 1;
       case ("Warm"): return 3;
       case ("Hot"): return 5;
-  }}
+    }
+  }
   // return (
   //   <div className="cards-main">
   //     {details.map((datavalue: any, index: number) => {
-        return (
-          <div className="card-container" >
-            <Grid container >
-              <Grid className="padding-6-corners" item xs={6} md={6} >
-                {/* <span className="description-text">Name:</span> */}
-                <PersonPin /> <span />
-                {details.name}
-              </Grid>
-              <Grid className="padding-6-corners" item xs={6} md={6}>
-                {/* <span className="description-text">Contact:</span> */}
-                <Phone /> <span />
-                {details.phone && ChangePhoneFormat(details.phone)}
-              </Grid>
-            </Grid>           
-            <Grid container >
-              <Grid className="padding-6-corners" item xs={6} md={6} >
-                <span className="description-text">Kit Enquiry:</span>
-                {details.kit_enquiry__c}
-              </Grid>
-              <Grid className="padding-6-corners" item xs={6} md={6}>
-                <span className="description-text">Vehicle Type:</span>
-                {details.x3_or_4_wheeler__c}
-              </Grid>
-            </Grid>
-            {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ"? (
-              // <React.Fragment>
-                <Grid container>
-                  <Grid className="padding-6-corners" item xs={6} md={6}>
-                    <span className="description-text">Assigned Dealer :</span>
-                    {assignedDealer && assignedDealer[0] && assignedDealer[0].name}
-                    {/* {details.assigned_dealer__c} */}
-                  </Grid>
-                  <Grid className="padding-6-corners" item xs={6} md={6}>
-                    <span className="description-text">Lead Rating :</span>
-                    {details.rating}
-                    {/* <Rating
+  return (
+    <div className="card-container" >
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6} >
+          {/* <span className="description-text">Name:</span> */}
+          <PersonPin /> <span />
+          {details.firstname + ' ' + details.lastname}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          {/* <span className="description-text">Contact:</span> */}
+          <Phone /> <span />
+          {details.phone && changePhoneFormat(details.phone)}
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6} >
+          <span className="description-text">Kit Enquiry:</span>
+          {details.kit_enquiry__c}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text">Vehicle Type:</span>
+          {details.x3_or_4_wheeler__c}
+        </Grid>
+      </Grid>
+      {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ" ? (
+        // <React.Fragment>
+        <Grid container>
+          <Grid className="padding-6-corners" item xs={6} md={6}>
+            <span className="description-text">Assigned Dealer :</span>
+            {assignedDealer && assignedDealer[0] && assignedDealer[0].name}
+            {/* {details.assigned_dealer__c} */}
+          </Grid>
+          <Grid className="padding-6-corners" item xs={6} md={6}>
+            <span className="description-text">Lead Rating :</span>
+            {details.rating}
+            {/* <Rating
                       readOnly
                       precision={0.5}
                       value={CalRating()}
                     /> */}
-                  </Grid>
-                </Grid>
-              // </React.Fragment>
-            ) : (
-              ""
-            )}
-            <Grid container >
-              <Grid className="padding-6-corners" item xs={6} md={6}>
-                <span className="description-text">Dealer Generated Lead:</span>
-                {details.dealer_generated_lead__c}
-              </Grid>
-              <Grid className="padding-6-corners" item xs={6} md={6}>
-                <span className="view" 
-                  onClick={() => {
-                    
-                    props.onClickDetails(details) 
+          </Grid>
+        </Grid>
+        // </React.Fragment>
+      ) : (
+          ""
+        )}
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text">Dealer Generated Lead:</span>
+          {details.dealer_generated_lead__c}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="view"
+            onClick={() => {
 
-                  }}>
-                  View Details
+              props.onClickDetails(details)
+
+            }}>
+            View Details
                 </span>
-              </Grid>
-            </Grid>
-            <Grid container >
-              <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
-              {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
-              </span>
-            </Grid>
-            <Grid container className="padding-15 align-left">
-              <Grid className="padding-6-corners" item xs={12} md={12}>
-                <div className="icon-container">
-                  <PhoneIcon className="phone-icon" />
+        </Grid>
+      </Grid>
+      <Grid container >
+        <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
+          {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
+        </span>
+      </Grid>
+      <Grid container className="padding-15 align-left">
+        <Grid className="padding-6-corners" item xs={12} md={12}>
+          <div className="icon-container">
+            <PhoneIcon className="phone-icon" />
                   &nbsp;
                   <ChatIcon className="chat-icon" />
                   &nbsp;
                   <MailIcon className="mail-icon" />
                   &nbsp;
                   <img
-                    height="42px"
-                    src={WhatsappIcon}
-                    // src="https://img.icons8.com/color/48/000000/whatsapp.png"
-                  />{" "}
-                </div>
-              </Grid>
-            </Grid>{" "}
+              height="42px"
+              src={WhatsappIcon}
+            // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+            />{" "}
           </div>
+        </Grid>
+      </Grid>{" "}
+    </div>
     //     )}
     //   )}
     // </div>
@@ -840,21 +852,22 @@ const CardDetails = (props: any) => {
 const CardDetailsForDealer = (props: any) => {
   const { details } = props;
   const CalRating = () => {
-    switch(details.rating){
+    switch (details.rating) {
       case ("Cold"): return 1;
       case ("Warm"): return 3;
       case ("Hot"): return 5;
-  }}
+    }
+  }
   return (
     <div className="card-container">
       <Grid container >
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <PersonPin /> <span />
-          {details.name}
+          {details.firstname +' '+ details.lastname}
         </Grid>
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <Phone /> <span />
-          {details.phone && ChangePhoneFormat(details.phone)}
+          {details.phone && changePhoneFormat(details.phone)}
         </Grid>
       </Grid>
       <Grid container >
@@ -885,7 +898,7 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
       </Grid>
       <Grid container >
-        <Grid className="padding-6-corners" item xs={4} md={4}> 
+        <Grid className="padding-6-corners" item xs={4} md={4}>
           <span
             onClick={() => props.onClickDetails(details)}
             className="view"
@@ -904,78 +917,78 @@ const CardDetailsForDealer = (props: any) => {
             <img
               height="42px"
               src={WhatsappIcon}
-              // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+            // src="https://img.icons8.com/color/48/000000/whatsapp.png"
             />{" "}
           </div>
         </Grid>
       </Grid>{" "}
     </div>
   );
-        // return (
-        //   <div className="card-container">
-        //     <Grid container >
-        //       <Grid className="padding-6-corners" item xs={6} md={6}>
-        //         {/* <span className="description-text">Name:</span> */}
-        //         <PersonPin /> <span style={{ padding: "5px" }} />
-        //         {details.name}
-        //       </Grid>
-        //       <Grid className="padding-6-corners" item xs={6} md={6}>
-        //         {/* <span className="description-text">Contact:</span> */}
-        //         <Phone /> <span style={{ padding: "5px" }} />
-        //         {details.phoneNumber}
-        //       </Grid>
-        //     </Grid>{" "}
-        //     <Grid container>
-        //       <Grid className="padding-6-corners" item xs={6} md={6} >
-        //         <span className="description-text">Kit Enquiry:</span>
-        //         {details.kitEnq}
-        //       </Grid>
-        //       <Grid className="padding-6-corners" item xs={6} md={6} >
-        //         <span className="description-text">Vehicle Type:</span>
-        //         {details.vehicleType}
-        //       </Grid>
-        //     </Grid>{" "}
-        //     <Grid container>
-        //       <Grid className="padding-6-corners" item xs={6} md={6} >
-        //         <span className="description-text">Dealer Generated Lead:</span> 
-        //         {details.dealer}
-        //       </Grid>
-        //       <Grid className="padding-6-corners" item xs={6} md={6}>
-        //         <span className="description-text">Lead Rating :</span>
-        //         <Rating
-        //           readOnly
-        //           precision={0.5}
-        //           value={details.dealerRating}
-        //         />
-        //       </Grid>
-        //     </Grid>
-        //     <Grid container >
-        //     <Grid className="padding-6-corners" item xs={4} md={4}> 
-        //         <span
-        //           onClick={() =>
-        //             props.history.push("/lead/add-new-lead")
-        //           }
-        //           className="view"
-        //         >
-        //           View Details
-        //         </span>
-        //       </Grid>
-        //       <Grid className="padding-6-corners" item xs={8} md={8} >
-        //         <div className="icon-container">
-        //           <PhoneIcon className="phone-icon" />
-        //           &nbsp;
-        //           <ChatIcon className="chat-icon" />
-        //           &nbsp;
-        //           <MailIcon className="mail-icon" />
-        //           &nbsp;
-        //           <img
-        //             height="42px"
-        //             src={WhatsappIcon}
-        //             // src="https://img.icons8.com/color/48/000000/whatsapp.png"
-        //           />{" "}
-        //         </div>
-        //       </Grid>
-        //     </Grid>{" "}
-        //   </div>
-        // );
+  // return (
+  //   <div className="card-container">
+  //     <Grid container >
+  //       <Grid className="padding-6-corners" item xs={6} md={6}>
+  //         {/* <span className="description-text">Name:</span> */}
+  //         <PersonPin /> <span style={{ padding: "5px" }} />
+  //         {details.name}
+  //       </Grid>
+  //       <Grid className="padding-6-corners" item xs={6} md={6}>
+  //         {/* <span className="description-text">Contact:</span> */}
+  //         <Phone /> <span style={{ padding: "5px" }} />
+  //         {details.phoneNumber}
+  //       </Grid>
+  //     </Grid>{" "}
+  //     <Grid container>
+  //       <Grid className="padding-6-corners" item xs={6} md={6} >
+  //         <span className="description-text">Kit Enquiry:</span>
+  //         {details.kitEnq}
+  //       </Grid>
+  //       <Grid className="padding-6-corners" item xs={6} md={6} >
+  //         <span className="description-text">Vehicle Type:</span>
+  //         {details.vehicleType}
+  //       </Grid>
+  //     </Grid>{" "}
+  //     <Grid container>
+  //       <Grid className="padding-6-corners" item xs={6} md={6} >
+  //         <span className="description-text">Dealer Generated Lead:</span> 
+  //         {details.dealer}
+  //       </Grid>
+  //       <Grid className="padding-6-corners" item xs={6} md={6}>
+  //         <span className="description-text">Lead Rating :</span>
+  //         <Rating
+  //           readOnly
+  //           precision={0.5}
+  //           value={details.dealerRating}
+  //         />
+  //       </Grid>
+  //     </Grid>
+  //     <Grid container >
+  //     <Grid className="padding-6-corners" item xs={4} md={4}> 
+  //         <span
+  //           onClick={() =>
+  //             props.history.push("/lead/add-new-lead")
+  //           }
+  //           className="view"
+  //         >
+  //           View Details
+  //         </span>
+  //       </Grid>
+  //       <Grid className="padding-6-corners" item xs={8} md={8} >
+  //         <div className="icon-container">
+  //           <PhoneIcon className="phone-icon" />
+  //           &nbsp;
+  //           <ChatIcon className="chat-icon" />
+  //           &nbsp;
+  //           <MailIcon className="mail-icon" />
+  //           &nbsp;
+  //           <img
+  //             height="42px"
+  //             src={WhatsappIcon}
+  //             // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+  //           />{" "}
+  //         </div>
+  //       </Grid>
+  //     </Grid>{" "}
+  //   </div>
+  // );
 };
