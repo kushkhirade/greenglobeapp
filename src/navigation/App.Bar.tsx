@@ -33,25 +33,40 @@ interface IState {
   anchorEl: any;
   notificationEl: any;
   routeName: any;
+  path: string
 }
 
 class MiniDrawer extends React.Component<IAppProps, IState> {
   public state: IState = {
     anchorEl: null,
     notificationEl: null,
+    path: null,
     routeName: routes(this.props.isDealer).find((routeData) =>
-    window.location.hash.includes(routeData.path)
+      window.location.hash.includes(routeData.path)
     ).title as any,
   };
 
+  
+  
+  
   private handleMenuClose = (path?: string) => {
     this.setState({ anchorEl: null });
     this.navigate(path);
   };
 
-  public handleLogout = () => {
-    this.props.history.push("/");
-    localStorage.clear();
+  // public handleLogout = () => {
+  //   this.props.history.push(this.state.path);
+  //   if (this.state.path == '/') {
+  //     localStorage.clear();
+  //   }
+  // };
+
+  public topRightIconUrl = () => {
+    let path = (this.props.dealerDetails && this.props.dealerDetails.id && this.props.location.pathname == '/customer/customer-lead-details') ? `/leads/edit-lead/${this.props.dealerDetails.id}` :'/';
+    this.props.history.push(path);
+    if (path == '/') {
+      localStorage.clear();
+    }
   };
 
   private navigate = (path?: string) => {
@@ -127,7 +142,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
             {this.state.routeName}
           </Typography>
           {this.props.sideButton}
-          <div className="align-center" onClick={this.handleLogout}>
+          <div className="align-center" onClick={this.topRightIconUrl}>
             {/* <div>
               Logout <span style={{ paddingRight: "3px" }} />{" "}
             </div> */}
@@ -181,7 +196,9 @@ const mapStateToProps = (state: AppState) => ({
   users: state.users,
   materials: state.materials,
   isDealer: state.users.get("currentUser").isDealer,
+  dealerDetails: state.users.get("data")
 });
+
 
 export default withRouter(
   connect(

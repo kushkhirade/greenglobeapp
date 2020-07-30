@@ -819,14 +819,6 @@ const CardDetails = (props: any) => {
             View Details
                 </span>
         </Grid>
-        <Grid className="padding-6-corners" item xs={4} md={4}>
-          <span
-            onClick={() => props.history.push(`/leads/edit-lead/${details.id}`)}
-            className="view"
-          >
-            Edit
-          </span>
-        </Grid>
       </Grid>
       <Grid container >
         <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
@@ -912,14 +904,6 @@ const CardDetailsForDealer = (props: any) => {
             className="view"
           >
             View Details
-          </span>
-        </Grid>
-        <Grid className="padding-6-corners" item xs={4} md={4}>
-          <span
-            onClick={() => props.history.push(`/leads/edit-lead/${details.id}`)}
-            className="view"
-          >
-            Edit
           </span>
         </Grid>
         <Grid className="padding-6-corners" item xs={8} md={8} >
