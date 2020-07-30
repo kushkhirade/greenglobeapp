@@ -4,8 +4,8 @@ import { Edit } from "@material-ui/icons";
 import DeleteIcon from "@material-ui/icons/Delete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import * as React from "react";
-import { connect } from "react-redux";
-import { Control, Form } from 'react-redux-form';
+import { connect } from 'react-redux';
+import { Control, Form } from "react-redux-form";
 import Select from "react-select";
 import Image, { Shimmer } from "react-shimmer";
 import { BaseModal } from "src/components/BaseModal";
@@ -94,8 +94,15 @@ const products = [
 
 export class AddNewLeadImpl extends React.Component<
   IAddNewLeadProps,
-  { openEditModal: boolean; activeTab: number; activeStep: number, dealerCheckboxes: any, id: number }
-  > {
+  {
+    openEditModal: boolean;
+    activeTab: number;
+    activeStep: number;
+    dealerCheckboxes: any;
+    id: number;
+    dealerCheckboxesChanged: boolean;
+  }
+> {
   constructor(props: IAddNewLeadProps) {
     super(props);
     this.state = {
@@ -103,6 +110,7 @@ export class AddNewLeadImpl extends React.Component<
       activeTab: 0,
       activeStep: 0,
       id: 0,
+      dealerCheckboxesChanged: false,
       dealerCheckboxes: {
         "CNG TUNE UP": false,
         "KIT SERVICE": false,
@@ -142,24 +150,51 @@ export class AddNewLeadImpl extends React.Component<
   }
 
   handelStateForEdit = (leadData) => {
-    let formType = 'userForm';
-    console.log(leadData.lead_type__c);
-    changeValuesInStore(`${formType}.email`, leadData.email)
-    changeValuesInStore(`${formType}.firstName`, leadData.firstname)
-    changeValuesInStore(`${formType}.lastName`, leadData.lastname)
-    changeValuesInStore(`${formType}.middleName`, leadData.middlename)
-    changeValuesInStore(`${formType}.company`, leadData.company)
-    changeValuesInStore(`${formType}.whatsAppNumber`, leadData.whatsapp_number__c)
-    changeValuesInStore(`${formType}.leadType`, leadData.lead_type__c)
-    changeValuesInStore(`${formType}.leadSource`, leadData.leadsource)
-    changeValuesInStore(`${formType}.leadStatus`, leadData.status)
-    changeValuesInStore(`${formType}.subLeadSource`, leadData.sub_lead_source__c)
-    changeValuesInStore(`${formType}.rating`, leadData.rating)
-    changeValuesInStore(`${formType}.street`, leadData.street)
-    changeValuesInStore(`${formType}.city`, leadData.city)
-    changeValuesInStore(`${formType}.state`, leadData.state)
-    changeValuesInStore(`${formType}.zip`, leadData.postalcode)
-    changeValuesInStore(`${formType}.country`, leadData.country)
+    let formType = "leadForm";
+    const editData = {
+      email: leadData.email,
+      firstName: leadData.firstname,
+      lastName: leadData.lastname,
+      middleName: leadData.middlename,
+      company: leadData.company,
+      whatsAppNumber: leadData.whatsapp_number__c,
+      leadType: leadData.lead_type__c,
+      leadSource: leadData.leadsource,
+      leadStatus: leadData.status,
+      subLeadSource: leadData.sub_lead_source__c,
+      rating: leadData.rating,
+      street: leadData.street,
+      city: leadData.city,
+      state: leadData.state,
+      zip: leadData.postalcode,
+      country: leadData.country,
+      vehicleNumber: leadData.vehicle_no__c,
+      fuelType: leadData.fuel_type__c,
+      wheeles: leadData.x3_or_4_wheeler__c,
+      vehicleMek: leadData.vehicle_make__c,
+      vehicleModel: leadData.vehicle_model__c,
+      usage: leadData.usage_of_vehicle__c,
+      vehicleType: leadData.engine__c,
+      dailyRunning: leadData.daily_running_kms__c,
+      registration: leadData.registration_year__c,
+      mfg: leadData.year_of_manufacturing__c,
+      chassis: leadData.chassis_no__c,
+      gstNumber: leadData.gst_number__c,
+    };
+    const dealerCheckboxesData = {
+      "CNG TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
+      "KIT SERVICE": leadData.kit_service__c === "f" ? false : true,
+      "KIT REFITTING": leadData.kit_refitting__c === "f" ? false : true,
+      "CYLINDER REMOVE": leadData.cylinder_remove__c === "f" ? false : true,
+      "CYLINDER REFITTING":
+        leadData.cylinder_refitting__c === "f" ? false : true,
+      "GRECO ACE KIT FITTING":
+        leadData.greco_ace_kit_fitting__c === "f" ? false : true,
+      "GRECO PRO KIT FITTING":
+        leadData.greco_pro_kit_fitting__c === "f" ? false : true,
+    };
+    this.setState({ dealerCheckboxes: dealerCheckboxesData });
+    changeValuesInStore(formType, editData);
   };
 
   InsertLeadDistributor = async (data, userForm) => {
@@ -246,23 +281,62 @@ export class AddNewLeadImpl extends React.Component<
       ``
       console.log("insertLead => ", insertLead);
       return insertLead.result;
+    } catch (e) {
+      console.log(e);
     }
-    catch (e) {
+  };
+
+  UpdateLeadDealer = async (data, leadForm) => {
+    const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource,
+      rating, street, city, state, zip, country, vehicleNumber, fuelType, wheeles, vehicleMek, vehicleModel, usage, vehicleType, dailyRunning,
+      registration, mfg, chassis, gstNumber } = leadForm;
+    const { dealerCheckboxes } = this.state;
+    try {
+      const updateLead = await getData({
+        query: `UPDATE salesforce.Lead set  FirstName = '${firstName ?? ""}', MiddleName = '${middleName ?? ""}', LastName = '${ lastName ?? "" }', Email = '${email ?? ""}', Company = '${company ?? ""}', Whatsapp_number__c = '${
+          whatsAppNumber ?? 0 }',
+        Lead_Type__c = '${leadType ?? ""}', LeadSource = '${ leadSource ?? "" }', Status = '${leadStatus ?? ""}',
+        Sub_Lead_Source__c = '${subLeadSource ?? ""}', Rating = '${ rating ?? "" }', Street = '${street ?? ""}',
+        City = '${city ?? ""}' , State = '${state ?? ""}' , PostalCode = '${ zip ?? "" }' , Country = '${country ?? ""}',
+        Vehicle_no__c = '${vehicleNumber ?? ""}', Fuel_Type__c = '${ fuelType ?? "" }',
+        X3_or_4_Wheeler__c = '${wheeles ?? ""}', Vehicle_Make__c = '${ vehicleMek ?? "" }',
+        Usage_of_Vehicle__c = '${usage ?? ""}', Engine__c = '${ vehicleType ?? "" }',
+        Daily_Running_Kms__c = ${dailyRunning ?? 0}, Registration_Year__c = '${ registration ?? "4/5/2019" }',
+        Year_of_Manufacturing__c = ${mfg ?? 0}, Chassis_No__c = '${ chassis ?? "" }',
+        GST_Number__c = '${gstNumber ?? ""}', Assigned_Dealer__c = '${ data.sfid }',
+        RecordTypeId = '${data.record_type}', CNG_TUNE_UP__c = ${ dealerCheckboxes["CNG TUNE UP"] },
+        KIT_SERVICE__c = ${ dealerCheckboxes["KIT SERVICE"] }, KIT_REFITTING__c = ${dealerCheckboxes["KIT REFITTING"]},
+        CYLINDER_REFITTING__c = ${dealerCheckboxes["CYLINDER REFITTING"]},
+        CYLINDER_REMOVE__c = ${dealerCheckboxes["CYLINDER REMOVE"]},
+        GRECO_ACE_KIT_FITTING__c = ${dealerCheckboxes["GRECO ACE KIT FITTING"]},
+        GRECO_PRO_KIT_FITTING__c = ${ dealerCheckboxes["GRECO PRO KIT FITTING"] } where id='${this.state.id}'`,
+        token: data.token,
+      });
+      ``;
+      console.log("updateLead => ", updateLead);
+      return updateLead.result;
+    } catch (e) {
       console.log(e);
     }
   }
 
   handleLeadDealerInsert = async () => {
     loggedInUserDetails = getToken().data;
-    this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
+    if (this.state.id) {
+      this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
+    } else {
+      this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
+    }
     //  this.props.history.push("/leads")
   };
-  handleToggle = (event) => {
+  handleToggle = (event, isInputChecked) => {
     let fieldName = event.target.name;
     let dealerCheckboxes = this.state.dealerCheckboxes;
-    dealerCheckboxes[fieldName] = !event.target.value;
+    dealerCheckboxes[fieldName] = isInputChecked;
+    const dealerCheckboxesChanged = !this.state.dealerCheckboxesChanged;
     this.setState({
-      dealerCheckboxes: dealerCheckboxes
+      dealerCheckboxesChanged,
+      dealerCheckboxes,
     })
     console.log(this.state.dealerCheckboxes)
   };
@@ -499,39 +573,43 @@ export class AddNewLeadImpl extends React.Component<
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
-            {Object.entries(this.state.dealerCheckboxes).map((value, key) => (
-              <React.Fragment>
-                <Grid
-                  className="checkbox-container"
-                  item
-                  xs={6}
-                  md={6}
-                  lg={6}
-                  sm={6}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
+            {Object.keys(this.state.dealerCheckboxes).map((key, value) => {
+              const isChecked = this.state.dealerCheckboxes[key];
+              return (
+                <React.Fragment>
+                  <Grid
+                    className="checkbox-container"
+                    item
+                    xs={6}
+                    md={6}
+                    lg={6}
+                    sm={6}
                   >
-                    <div className="label-text">{value}</div>
-                    <div>
-                      <Checkbox
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                        onChange={this.handleToggle}
-                        key={key}
-                        name={value}
-                        value={this.state.dealerCheckboxes[key]}
-                      />
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <div className="label-text">{key}</div>
+                      <div>
+                        <Checkbox
+                          color="primary"
+                          inputProps={{ "aria-label": "secondary checkbox" }}
+                          onChange={this.handleToggle}
+                          key={key}
+                          name={key}
+                          value={isChecked}
+                          {...this.state.id && { checked:isChecked}}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </Grid>
-              </React.Fragment>
-            ))}
+                  </Grid>
+                </React.Fragment>
+              );
+            })}
           </Grid>
           <div className="right-button">
             <Button color="default" variant="contained">

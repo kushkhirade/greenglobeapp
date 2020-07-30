@@ -709,7 +709,7 @@ export class LeadsImpl extends React.Component<
             )}
         </div>
         <span
-          onClick={() => this.props.history.push("/lead/add-new-lead")}
+          onClick={() => this.props.history.push("/leads/add-new-lead")}
           style={{ position: "absolute", right: 20, bottom: 20 }}
         >
           <Fab color="secondary" aria-labelledby="add-ticket">
@@ -820,7 +820,7 @@ const CardDetails = (props: any) => {
         </Grid>
         <Grid className="padding-6-corners" item xs={4} md={4}>
           <span
-            onClick={() => props.history.push(`/lead/edit-lead/${details.id}`)}
+            onClick={() => props.history.push(`/leads/edit-lead/${details.id}`)}
             className="view"
           >
             Edit
@@ -915,7 +915,7 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
         <Grid className="padding-6-corners" item xs={4} md={4}>
           <span
-            onClick={() => this.props.history.push(`/leads/edit-lead/${details.id}`)}
+            onClick={() => props.history.push(`/leads/edit-lead/${details.id}`)}
             className="view"
           >
             Edit
