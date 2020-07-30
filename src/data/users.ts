@@ -12,6 +12,10 @@ export const userReducer = (state = fromJS({}), action) => {
       return state.set("leads", action.data);
     case "SAVE_ASSIGNED_DEALERS_DETAILS" : 
       return state.set("assigndealers", action.data);
+    case "SAVE_DETAILS" :
+      return state.set("selectdata", action.data);
+    case "SAVE_ORDER_DETAILS" :
+      return state.set("order", action.data);
     default:
       return state;
   }
