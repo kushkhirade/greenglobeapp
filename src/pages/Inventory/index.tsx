@@ -15,6 +15,7 @@ const productsFilterOptions = [
   {label: "3W Pro", value: "3 Wheeler Pro"},
   {label: "4W Ace", value: "4 Wheeler Ace"},
   {label: "4W Pro", value: "4 Wheeler Pro"},
+  {label: "Spare", value: "Spare"},
 ];
 
 const tankFilterOptions = [
