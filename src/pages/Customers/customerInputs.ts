@@ -214,9 +214,9 @@ export const leadDealer = [
     model: ".rating",
     type: "select",
     options: [
-      {label: "Rating - Hot", value: "Rating - Hot"},
-      {label: "Rating - Cold", value: "Rating - Cold"},
-      {label: "rating - Warm", value: "Rating - Warm"}
+      {label: "Rating - Hot", value: "Hot"},
+      {label: "Rating - Cold", value: "Cold"},
+      {label: "rating - Warm", value: "Warm"}
     ]
   },
 ];
@@ -289,9 +289,9 @@ export const leadSource = [
     model: ".rating",
     type: "select",
     options: [
-      {label: "Rating - Hot", value: "Rating - Hot"},
-      {label: "Rating - Cold", value: "Rating - Cold"},
-      {label: "rating - Warm", value: "Rating - Warm"}
+      {label: "Rating - Hot", value: "Hot"},
+      {label: "Rating - Cold", value: "Cold"},
+      {label: "rating - Warm", value: "Warm"}
     ]
   },
 ];

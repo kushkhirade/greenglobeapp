@@ -79,6 +79,7 @@ export const FormComponent = (props: any) => {
                   name={opt.name}
                   model={opt.model}
                   label={opt.label}
+                  onChange={e => changeValuesInStore(`${props.formModel}${opt.model}`, e.target.value)}
                 />
               );
             case "custom":

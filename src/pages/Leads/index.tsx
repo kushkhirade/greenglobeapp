@@ -145,6 +145,7 @@ export class LeadsImpl extends React.Component<
           token: token
         })
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
+        console.log("here");
         leadsData = await getData({
           query: `SELECT *
           FROM salesforce.Lead 
@@ -742,7 +743,7 @@ const changePhoneFormat = (phone) => {
 
 const CardDetails = (props: any) => {
   const { details, AssignedDealers } = props;
-
+  console.log(details);
   const assignedDealer = AssignedDealers && AssignedDealers.filter((item) =>
     item.sfid === details.assigned_dealer__c)
   // console.log("details", assignedDealer[0]);
@@ -915,7 +916,7 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
         <Grid className="padding-6-corners" item xs={4} md={4}>
           <span
-            onClick={() => props.history.push(`/leads/edit-lead/${details.id}`)}
+            onClick={() => props.history.push(`/lead/edit-lead/${details.id}`)}
             className="view"
           >
             Edit
