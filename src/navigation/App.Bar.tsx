@@ -17,6 +17,7 @@ import { Alert } from "../state/Alert";
 import { AppState, isAuthenticated } from "../state/AppState";
 import AppDrawer, { routes } from "./App.Drawer";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import EditIcon from '@material-ui/icons/Edit';
 import { getUserDetails } from "./../state/Utility"
 //#endregion
 import ButterToast from "butter-toast";
@@ -146,7 +147,10 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
             {/* <div>
               Logout <span style={{ paddingRight: "3px" }} />{" "}
             </div> */}
-            <ExitToAppIcon />
+            {
+              (this.props.dealerDetails && this.props.dealerDetails.id && this.props.location.pathname == '/customer/customer-lead-details') ? <EditIcon /> : <ExitToAppIcon />
+            }
+            
             &nbsp; &nbsp;
           </div>
         </Toolbar>
