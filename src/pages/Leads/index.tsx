@@ -764,7 +764,7 @@ const CardDetails = (props: any) => {
         <Grid className="padding-6-corners" item xs={6} md={6} >
           {/* <span className="description-text">Name:</span> */}
           <PersonPin /> <span />
-          {details.name}
+          {details.firstname + ' ' + details.lastname}
         </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
           {/* <span className="description-text">Contact:</span> */}
@@ -871,7 +871,7 @@ const CardDetailsForDealer = (props: any) => {
       <Grid container >
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <PersonPin /> <span />
-          {details.name}
+          {details.firstname +' '+ details.lastname}
         </Grid>
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <Phone /> <span />
@@ -916,7 +916,7 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
         <Grid className="padding-6-corners" item xs={4} md={4}>
           <span
-            onClick={() => props.history.push(`/lead/edit-lead/${details.id}`)}
+            onClick={() => props.history.push(`/leads/edit-lead/${details.id}`)}
             className="view"
           >
             Edit

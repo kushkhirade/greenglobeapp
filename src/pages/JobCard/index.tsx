@@ -94,7 +94,7 @@ const products = [
 
 export class AddNewJobCardImpl extends React.Component<
   IAddNewJobCardProps,
-  { openEditModal: boolean; activeTab: number; activeStep: number, OpenAddJobCard: boolean, jobCardCheckboxes: any }
+  { openEditModal: boolean; activeTab: number; activeStep: number,jobCardCheckboxesChanged:boolean, OpenAddJobCard: boolean, jobCardCheckboxes: any }
   > {
   constructor(props: IAddNewJobCardProps) {
     super(props);
@@ -103,6 +103,7 @@ export class AddNewJobCardImpl extends React.Component<
       activeTab: 0,
       activeStep: 0,
       OpenAddJobCard: false,
+      jobCardCheckboxesChanged:false,
       jobCardCheckboxes: {
         "CNG TUNE UP": false,
         "KIT SERVICE": false,
@@ -133,7 +134,7 @@ export class AddNewJobCardImpl extends React.Component<
          Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${company ?? ""}','${email ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
          '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${country ?? ""}','${zip ?? ""}',
          '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
-         ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','${data.record_type}'
+         ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','${data.record_type}',
          ${jobCardCheckboxes['CNG TUNE UP']},${jobCardCheckboxes['KIT SERVICE']},${jobCardCheckboxes['KIT REFITTING']},
          ${jobCardCheckboxes['CYLINDER REFITTING']},
          ${jobCardCheckboxes['CYLINDER REMOVE']},${jobCardCheckboxes['GRECO ACE KIT FITTING']},${jobCardCheckboxes['GRECO PRO KIT FITTING']})`,
@@ -153,12 +154,14 @@ export class AddNewJobCardImpl extends React.Component<
     this.InsertJobCardDealer(loggedInUserDetails, this.props.leadForm);
     //  this.props.history.push("/leads")
   };
-  handleToggle = (event) => {
+  handleToggle = (event, isInputChecked) => {
     let fieldName = event.target.name;
     let jobCardCheckboxes = this.state.jobCardCheckboxes;
-    jobCardCheckboxes[fieldName] = !event.target.value;
+    jobCardCheckboxes[fieldName] = isInputChecked;
+    const jobCardCheckboxesChanged = !this.state.jobCardCheckboxesChanged;
     this.setState({
-      jobCardCheckboxes : jobCardCheckboxes
+      jobCardCheckboxesChanged,
+      jobCardCheckboxes,
     })
     console.log(this.state.jobCardCheckboxes)
   };
@@ -398,39 +401,43 @@ export class AddNewJobCardImpl extends React.Component<
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
-            {Object.entries(this.state.jobCardCheckboxes).map((value, key) => (
-              <React.Fragment>
-                <Grid
-                  className="checkbox-container"
-                  item
-                  xs={6}
-                  md={6}
-                  lg={6}
-                  sm={6}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
+          {Object.keys(this.state.jobCardCheckboxes).map((key, value) => {
+              const isChecked = this.state.jobCardCheckboxesChanged[key];
+              return (
+                <React.Fragment>
+                  <Grid
+                    className="checkbox-container"
+                    item
+                    xs={6}
+                    md={6}
+                    lg={6}
+                    sm={6}
                   >
-                    <div className="label-text">{value}</div>
-                    <div>
-                      <Checkbox
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                        onChange={this.handleToggle}
-                        key={key}
-                        name={value}
-                        value={this.state.jobCardCheckboxes[key]}
-                      />
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <div className="label-text">{key}</div>
+                      <div>
+                        <Checkbox
+                          color="primary"
+                          inputProps={{ "aria-label": "secondary checkbox" }}
+                          onChange={this.handleToggle}
+                          key={key}
+                          name={key}
+                          value={isChecked}
+                          {...this.state.id && { checked: isChecked }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </Grid>
-              </React.Fragment>
-            ))}
+                  </Grid>
+                </React.Fragment>
+              );
+            })}
           </Grid>
           <div className="right-button">
             <Button color="default" variant="contained">

@@ -259,13 +259,13 @@ export class AddNewLeadImpl extends React.Component<
   }
   handleLeadDistributorInsert = async () => {
     loggedInUserDetails = getToken().data;
-    this.InsertLeadDistributor(loggedInUserDetails, this.props.userForm);
-    //  this.props.history.push("/leads")
+    await this.InsertLeadDistributor(loggedInUserDetails, this.props.userForm);
+    this.props.history.push("/leads")
   };
   handleLeadDistributorUpdate = async () => {
     loggedInUserDetails = getToken().data;
-    this.UpdateLeadDistributer(loggedInUserDetails, this.props.userForm);
-    //  this.props.history.push("/leads")
+    await this.UpdateLeadDistributer(loggedInUserDetails, this.props.userForm);
+    this.props.history.push("/leads")
   };
 
   InsertLeadDealer = async (data, leadForm) => {
@@ -318,7 +318,7 @@ export class AddNewLeadImpl extends React.Component<
         Daily_Running_Kms__c = ${dailyRunning ?? 0}, Registration_Year__c = '${registration ?? "4/5/2019"}',
         Year_of_Manufacturing__c = ${mfg ?? 0}, Chassis_No__c = '${chassis ?? ""}',
         GST_Number__c = '${gstNumber ?? ""}', Assigned_Dealer__c = '${data.sfid}',
-        RecordTypeId = '${data.record_type}', CNG_TUNE_UP__c = ${dealerCheckboxes["CNG TUNE UP"]},
+        RecordTypeId = '0122w000000chRpAAI', CNG_TUNE_UP__c = ${dealerCheckboxes["CNG TUNE UP"]},
         KIT_SERVICE__c = ${ dealerCheckboxes["KIT SERVICE"]}, KIT_REFITTING__c = ${dealerCheckboxes["KIT REFITTING"]},
         CYLINDER_REFITTING__c = ${dealerCheckboxes["CYLINDER REFITTING"]},
         CYLINDER_REMOVE__c = ${dealerCheckboxes["CYLINDER REMOVE"]},
@@ -334,31 +334,6 @@ export class AddNewLeadImpl extends React.Component<
     }
   }
 
-  UpdateLeadDealer = async (data, leadForm) => {
-    const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource,
-      rating, street, city, state, zip, country, vehicleNumber, fuelType, wheeles, vehicleMek, vehicleModel, usage, vehicleType, dailyRunning,
-      registration, mfg, chassis, gstNumber } = leadForm;
-    const { dealerCheckboxes } = this.state;
-    try {
-      const updateLead = await getData({
-        query: `update  salesforce.Lead set FirstName = '${firstName ?? ""}',MiddleName = '${middleName ?? ""}',LastName = '${lastName ?? ""}',
-        Email = '${email ?? ""}',Company = '${company ?? ""}',Whatsapp_number__c='${whatsAppNumber ?? 0}',Lead_Type__c = '${leadType ?? ""}',
-        LeadSource = '${leadSource ?? ""}',Status = '${leadStatus ?? ""}',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${rating ?? ""}',  
-        Street = '${street ?? ""}',City = '${city ?? ""}',State = '${state ?? ""}',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}',
-        Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}',
-        Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine__c='${vehicleType ?? ""}',
-        Daily_Running_Kms__c=${dailyRunning ?? 0},Registration_Year__c='${registration ?? "4/5/2019"}',Year_of_Manufacturing__c=${mfg ?? 0},Chassis_No__c=${chassis ?? ""},  GST_Number__c ='${gstNumber ?? ""}',
-         where id='${this.state.id}'`,
-        token: data.token
-      });
-      console.log("updateLead => ", updateLead);
-      return updateLead.result;
-    }
-    catch (e) {
-      console.log(e);
-    }
-  }
-
   handleLeadDealerSubmit = async () => {
     if (this.state.id) {
       this.handleLeadDealerUpdate();
@@ -370,16 +345,16 @@ export class AddNewLeadImpl extends React.Component<
   handleLeadDealerInsert = async () => {
     loggedInUserDetails = getToken().data;
     if (this.state.id) {
-      this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
+      await this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
     } else {
-      this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
+      await this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
     }
-    //  this.props.history.push("/leads")
+    this.props.history.push("/leads")
   };
   handleLeadDealerUpdate = async () => {
     loggedInUserDetails = getToken().data;
-    this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
-    //  this.props.history.push("/leads")
+    await this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
+    this.props.history.push("/leads")
   };
   handleToggle = (event, isInputChecked) => {
     let fieldName = event.target.name;
