@@ -87,7 +87,16 @@ export const saveAssignedDealersData = (data) =>
     type: "SAVE_ASSIGNED_DEALERS_DETAILS",
     data,
   });
-
+export const saveSelectData = (data) =>
+  store.dispatch({
+    type: "SAVE_DETAILS",
+    data,
+  });
+export const saveOrderData = (data) =>
+  store.dispatch({
+    type: "SAVE_ORDER_DETAILS",
+    data,
+  });
 export function saveLoggedInUserDetails(data) {
   return dispatch({
     type: "SAVE_LOGGED_IN_USER_DATA",
