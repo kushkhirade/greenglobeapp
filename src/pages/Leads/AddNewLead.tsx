@@ -33,6 +33,7 @@ import {
   modelReducer,
   actions
 } from 'react-redux-form';
+import { leadForm as leadFormInitObj, userForm as userFormInitObj } from '../../reducers/CombinedReducers';
 
 var loggedInUserDetails;
 const detailsObj = [
@@ -139,7 +140,18 @@ export class AddNewLeadImpl extends React.Component<
       this.setState({ id: params.id });
       let leadData = await this.getleadDataById(loggedInUserDetails.token, params.id);
       this.handelStateForEdit(leadData['0'], loggedInUserDetails.record_type);
-    }
+    } else {
+      let formType;
+      let editData;
+      if (loggedInUserDetails.record_type == "0122w000000cwfSAAQ") {
+        formType = "leadForm";
+        editData = leadFormInitObj;
+      } else if (loggedInUserDetails.record_type == "0122w000000cwfNAAQ") {
+        formType = "userForm";
+        editData = userFormInitObj;
+      }
+        changeValuesInStore(formType, editData);
+      }
   }
 
   async getleadDataById(token, id) {

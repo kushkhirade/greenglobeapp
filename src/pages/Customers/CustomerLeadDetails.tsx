@@ -72,8 +72,8 @@ export class DealerDetailsImpl extends React.PureComponent<
   }
 
   componentWillMount() {
-    if (isEmpty(this.props.dealerDetails)) {
-      this.props.history.push("/assign-dealers");
+    if (!this.props.dealerDetails || isEmpty(this.props.dealerDetails)) {
+      return this.props.history.push("/leads");
     }
   }
 
@@ -94,31 +94,31 @@ export class DealerDetailsImpl extends React.PureComponent<
                 {" "}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Name:</span>
-                  {this.props.dealerDetails.name}
+                  {this.props.dealerDetails && this.props.dealerDetails.name}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.phone && this.changePhoneFormat(this.props.dealerDetails.phone)}
+                  {this.props.dealerDetails && this.props.dealerDetails.phone && this.changePhoneFormat(this.props.dealerDetails.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Kit Enquiry:</span>
-                  {this.props.dealerDetails.kit_enquiry__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.kit_enquiry__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Company:</span>
-                  {this.props.dealerDetails.company__c || this.props.dealerDetails.company}
+                  {this.props.dealerDetails && (this.props.dealerDetails.company__c || this.props.dealerDetails.company)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Email:</span>
-                  {this.props.dealerDetails.email}
+                  {this.props.dealerDetails && this.props.dealerDetails.email}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">WhatsApp No.:</span>
-                  {this.props.dealerDetails.whatsapp_number__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.whatsapp_number__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Dealer Avg Rating:</span>
-                  {this.props.dealerDetails.dealer_rating__c || this.props.dealerDetails.rating}
+                  {this.props.dealerDetails && (this.props.dealerDetails.dealer_rating__c || this.props.dealerDetails.rating)}
                 </Grid>
               </Grid>
               <SubFormHeading>Address Details</SubFormHeading>
@@ -126,7 +126,10 @@ export class DealerDetailsImpl extends React.PureComponent<
                 {" "}
                 <Grid item className="padding-6" xs={12} md={12} lg={12} sm={12}>
                   <span className="description-text">Address:</span>
-                   {this.props.dealerDetails.mailingstreet || this.props.dealerDetails.street} {this.props.dealerDetails.mailingcity || this.props.dealerDetails.city} {this.props.dealerDetails.mailingpostalcode || this.props.dealerDetails.postalcode} {this.props.dealerDetails.mailingstate || this.props.dealerDetails.state}
+                   {this.props.dealerDetails && (this.props.dealerDetails.mailingstreet || this.props.dealerDetails.street)}
+                    {this.props.dealerDetails && (this.props.dealerDetails.mailingcity || this.props.dealerDetails.city)} 
+                    {this.props.dealerDetails && (this.props.dealerDetails.mailingpostalcode || this.props.dealerDetails.postalcode)} 
+                    {this.props.dealerDetails && (this.props.dealerDetails.mailingstate || this.props.dealerDetails.state)}
 
                 </Grid>
                 {/* <Grid
@@ -149,47 +152,47 @@ export class DealerDetailsImpl extends React.PureComponent<
                 {" "}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Vehicle Number:</span>
-                  {this.props.dealerDetails.vehicle_no__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.vehicle_no__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Fuel Type:</span>
-                  {this.props.dealerDetails.fuel_type__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.fuel_type__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">3 or 4 Wheeler.:</span>
-                  {this.props.dealerDetails.x3_or_4_wheeler__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.x3_or_4_wheeler__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Vehicle Make:</span>
-                  {this.props.dealerDetails.vehicle_make__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.vehicle_make__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Vehicle Model:</span>
-                  {this.props.dealerDetails.vehicle_model__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.vehicle_model__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Usage of Vehicle:</span>
-                  {this.props.dealerDetails.usage_of_vehicle__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.usage_of_vehicle__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Engine Type:</span>
-                  {this.props.dealerDetails.engine_type__c || this.props.dealerDetails.engine__c}
+                  {this.props.dealerDetails && (this.props.dealerDetails.engine_type__c || this.props.dealerDetails.engine__c)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Daily Running KMs:</span>
-                  {this.props.dealerDetails.daily_running_kms__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.daily_running_kms__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Registration Year:</span>
-                  {this.props.dealerDetails.registration_year__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.registration_year__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Year of Manufacturing:</span>
-                  {this.props.dealerDetails.year_of_manufacturing__c}
+                  {this.props.dealerDetails && this.props.dealerDetails.year_of_manufacturing__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Chassis Number:</span>
-                  {this.props.dealerDetails.chassis_no__c}
+                  {this.props.dealerDetails &&  this.props.dealerDetails.chassis_no__c}
                 </Grid>
               </Grid>
               <SubFormHeading>Documents Required for RTO</SubFormHeading>

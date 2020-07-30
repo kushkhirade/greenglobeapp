@@ -28,6 +28,7 @@ const classNames = require("classnames");
 interface IAppProps extends IApplicationProps {
   classes: any;
   theme?: any;
+  dealerDetails?:any;
 }
 
 interface IState {
@@ -175,6 +176,17 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     );
   }
 
+  private renderToast() {
+    const { match, dealerDetails } = this.props;
+
+    if(dealerDetails === undefined && match.path === '/customer/customer-lead-details'){
+      return <React.Fragment></React.Fragment>;
+    } else {
+      return  <ButterToast />;
+        
+    }
+  }
+
   public render() {
     const { classes } = this.props;
     const isLoggedIn = isAuthenticated();
@@ -183,7 +195,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     }
     return (
       <div className={classes.root}>
-        <ButterToast />
+        {this.renderToast()}
         {this.renderAppBar()}
         {this.renderDrawer()}
         <div className="page-base"> {this.props.children}</div>
