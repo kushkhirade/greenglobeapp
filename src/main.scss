@@ -116,7 +116,7 @@
 
     .tab-button {
         padding: 5px 5px;
-        min-width: 170px;
+        min-width: 80px;
         text-align: center;
         font-size: 12px;
         font-weight: 600;
@@ -141,11 +141,10 @@
 
     .tab-input {
         font-size: 13px;
-        color: black;
-        // color: #837a7a;
+        color: #837a7a;
         text-align: center;
         border: 1px solid #d4cdcd;
-        width: 163px; height: 34px;
+        width: 70px; height: 34px;
         background-color:white;
         border-radius: 4px;
     }

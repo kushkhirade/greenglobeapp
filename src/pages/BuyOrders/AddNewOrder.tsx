@@ -14,26 +14,22 @@ import moment from 'moment';
 import { GSelect } from "src/components/GSelect";
 import getData from "src/utils/getData";
 import { getToken } from "src/state/Utility";
-import { saveOrderData } from "src/actions/App.Actions";
 import { BaseModal } from "src/components/BaseModal";
 import { values } from "lodash";
-
-var loggedInUserDetails;
 
 export interface IAddNewOrderProps {
   history: IHistory;
   isDealer: boolean;
   orderType: string;
   location: any;
-  orderdetails: any;
 }
 const options = [
   { value: "loan", label: "Loan" },
-  { value: "Upfront", label: "Upfront" },
+  { value: "Upfront", label: "Up Front" },
 ];
 const options1 = [
-  { value: "CC/DC", label: "CC/DC" },
-  { value: "Net Banking", label: "Net Banking" },
+  { value: "cc/dc", label: "CC/DC" },
+  { value: "netbanking", label: "Net Banking" },
   { value: "UPI", label: "UPI" },
 ];
 const products = [
@@ -87,91 +83,7 @@ export class AddNewOrderImpl extends React.PureComponent<
       value: "",
       activeStepBuy: 0,
       activeStepSell: 0,
-      orderedproducts: this.props.location.orderedproducts,
-      orderdetails: this.props.location.orderdetails,
     };
-  }
-
-  componentDidMount(){
-    loggedInUserDetails = getToken().data;
-    console.log("loggedInUserDetails: ", loggedInUserDetails);
-  }
-
-  getAllOrderedProducts = async (data, orderdetails) => {
-    console.log(orderdetails);
-    console.log("data: ", data);
-    try {
-        const orderedproducts = await getData({
-          query: `select * from salesforce.orderitem where orderid = '${orderdetails.sfid}'`,
-          token: data.token
-        })
-        console.log("orderedproducts =>", orderedproducts);
-        return orderedproducts.result;
-
-    } catch (e) {
-      console.log('fetch Inventory Error', e)
-    }
-  }
-
-  UpdateAnOrder = async (data, orderdetails, pMode, pType, desc) => {
-    console.log("data: ", data);
-
-    try{
-      const updateorder = await getData({
-        query: `UPDATE salesforce.order SET 
-        Payment_Type__c = '${pType}', Payment_Mode__c = '${pMode}', Description = '${desc}' 
-        WHERE id='${orderdetails.id}'`,
-        token: data.token
-      });
-      console.log("updateorder => ", updateorder);
-    }
-    catch(e){
-      console.log(e);
-    }
-  }
-
-  InsertUpdateItems = async (data, orderdetails, selectedProducts) => {
-    console.log("orderdetails ", orderdetails);
-    console.log("selectedProducts ", selectedProducts);
-    let insertuser;
-
-    const SFID = await getData({
-      query: `SELECT Id, SFID, ordernumber from salesforce.order where Id = '${orderdetails.id}' `,
-      token: data.token
-    })
-    console.log("SFID ", SFID.result);
-    this.setState({ orderdetails: SFID.result[0] });
-
-    try{
-
-      selectedProducts.map(async (x) => 
-        { x.itemNumber ? 
-          insertuser = await getData({
-            query: `update salesforce.orderitem set quantity = ${x.quantity} 
-            where OrderItemNumber = '${x.itemNumber}' RETURNING id`,
-            token: data.token
-          }) 
-        :
-          x.label !== "" &&
-            (insertuser = await getData({
-              query: `INSERT INTO salesforce.orderitem 
-              (pricebookentryid, product2id, quantity, orderid, unitprice) 
-              VALUES (
-                (select sfid from salesforce.pricebookentry where product2id like '%${x.sfid}%'),
-                '${x.sfid}',
-                  ${x.quantity},
-                '${SFID.result[0].sfid}',
-                (select unitprice from salesforce.pricebookentry where product2id like '%${x.sfid}%')
-              )
-              RETURNING id`,
-              token: data.token
-            }))
-        }
-      )
-
-    }catch(e){
-      console.log(e);
-    }
   }
 
   public onStepChange = (tabName: string) => {
@@ -180,25 +92,142 @@ export class AddNewOrderImpl extends React.PureComponent<
     });
   };
 
-  public renderStepper = ( ) => {
-    const { orderedproducts, orderdetails } = this.state;
-    console.log("this.state: ", this.state)
+  public handleChange = (value: any, key: string) => {
+    this.setState({
+      [key]: value as any,
+    });
+  };
+
+  public activeStepBuyChange =() =>{
+    this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
+  };
+
+  public renderValueManipulator = (key) => (
+    <div className="increaser">
+      
+      <div
+        onClick={() => this.setState({ [key]: this.state[key] + 1 })}
+        className="plus hover"
+      >
+        +
+      </div>
+      <div className="value">{this.state[key]}</div>
+      <div
+        onClick={() => this.setState({ [key]: this.state[key] - 1 })}
+        className="minus hover"
+      >
+        -
+      </div>
+    </div>
+  );
+
+  public renderForm = (label, type) => {
+    return (
+      <div className="card-container no-hover">
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid item xs={4} md={6} sm={6}>
+              <GSelect
+                className="r-select"
+                value={this.state.product1}
+                onChange={(v: any) => this.handleChange(v, "product1")}
+                options={products}
+              />
+            </Grid>
+            <Grid item xs={4} md={4} sm={4}>
+              {this.renderValueManipulator("qty1")}
+            </Grid>
+          </div>
+        </Grid>
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid item xs={4} md={6} sm={6}>
+              <GSelect
+                className="r-select"
+                value={this.state.product2}
+                options={products}
+                onChange={(v: any) => this.handleChange(v, "product2")}
+              />{" "}
+            </Grid>
+            <Grid item xs={4} md={4} sm={4}>
+              {this.renderValueManipulator("qty2")}
+            </Grid>
+          </div>
+        </Grid>
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid item xs={4} md={6} sm={6}>
+              <GSelect
+                className="r-select"
+                value={this.state.product3}
+                options={products}
+                onChange={(v: any) => this.handleChange(v, "product3")}
+              />{" "}
+            </Grid>
+            <Grid item xs={4} md={4} sm={4}>
+              {this.renderValueManipulator("qty3")}
+            </Grid>
+          </div>
+        </Grid>
+        <Grid container spacing={4}>
+          <div className="product-selection">
+            <Grid item xs={4} md={6} sm={6}>
+              <GSelect
+                className="r-select"
+                value={this.state.product4}
+                options={products}
+                onChange={(v: any) => this.handleChange(v, "product4")}
+              />{" "}
+            </Grid>
+            <Grid item xs={4} md={4} sm={4}>
+              {this.renderValueManipulator("qty4")}
+            </Grid>
+          </div>
+        </Grid>
+        
+       
+        <div className="button-container">
+          <Button variant="contained" color="default"
+          onClick={() => this.props.history.goBack()}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (label === "Add") {
+                this.props.history.goBack()
+                // return;
+              }
+              if (type === "sell") {
+                this.setState({
+                  activeStepSell: this.state.activeStepSell + 1,
+                });
+              } else {
+                this.setState({ activeStepBuy: this.state.activeStepBuy + 1 });
+              }
+            }}
+            variant="contained"
+            color="primary"
+          >
+            {label}
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  public renderStepper = (orderdetails, orderedproducts) => {
     return (
       <Stepper
         identifier="buy"
         activeStep={this.state.activeStepBuy}
-        onChangeStep={ (index) =>  this.setState({ activeStepBuy: index })}
         stepData={[
           {
             label: "Draft",
             component: 
             <RenderForm label="Submit" type="buy" history={this.props.history} 
-              orderedproducts={orderedproducts} 
-              onClick={( selectedProducts ) => {
-                this.InsertUpdateItems(loggedInUserDetails, orderdetails, selectedProducts );
-                this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
-              }} 
-            />,
+            orderedproducts={orderedproducts} 
+            onClick={this.activeStepBuyChange} 
+            />
             // this.renderForm("Submit", "buy"),
           },
           {
@@ -206,11 +235,9 @@ export class AddNewOrderImpl extends React.PureComponent<
             component: (
               <SubmittedScreen
                 orderdetails={orderdetails}
-                onClick={async() =>{
-                  const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
-                  this.setState({ orderedproducts: res });
+                onClick={() =>
                   this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
-                }}
+                }
               />
             ),
           },
@@ -254,7 +281,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                         ))}
                       </div>
                       <div className="table-data">
-                        {orderedproducts && orderedproducts.map((p, index) => ( 
+                        {orderedproducts && orderedproducts.map((p, index) => (
                           <div key={index} className="data-inner">
                             <div className="data">{p.prd_name__c}</div>
                             <div className="data">{p.unitprice}</div>
@@ -321,10 +348,12 @@ export class AddNewOrderImpl extends React.PureComponent<
             component: (
               <PaymentDetailsScreen
                 orderdetails={orderdetails}
-                onClick={(pMode, pType, desc) =>{
-                  this.UpdateAnOrder(loggedInUserDetails, orderdetails, pMode, pType, desc)
-                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
-                }}
+                onClick={() =>
+                  this.setState({
+                    activeStepBuy: this.state.activeStepBuy + 1,
+                  })
+                }
+                handleChange={this.handleChange}
                 history= {this.props.history}
               />
             ),
@@ -335,7 +364,9 @@ export class AddNewOrderImpl extends React.PureComponent<
               <DispatchedScreen
                 orderdetails={orderdetails}
                 onClick={() =>
-                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1,})
+                  this.setState({
+                    activeStepBuy: this.state.activeStepBuy + 1,
+                  })
                 }
               />
             ),
@@ -343,12 +374,12 @@ export class AddNewOrderImpl extends React.PureComponent<
           { label: "GRN", 
             component: 
             <RenderForm label="Confirm" type="buy" 
-              orderdetails={orderdetails}
               orderedproducts={orderedproducts}
               onClick={() => {
                 this.setState({activeStepBuy: this.state.activeStepBuy + 1});
                 this.props.history.goBack();
               }} 
+              history={this.props.history}
             />
             // this.renderForm("Add", "buy") ,
         }
@@ -357,23 +388,21 @@ export class AddNewOrderImpl extends React.PureComponent<
     );
   };
 
-  public renderSellStepper = ( ) => {
-    const { orderedproducts, orderdetails } = this.state;
-    console.log("this.state: ", this.state)
+  public renderSellStepper = (orderdetails, orderedproducts) => {
     return (
       <Stepper
         identifier="sell"
         activeStep={this.state.activeStepSell}
-        onChangeStep={ (index) =>  this.setState({ activeStepSell: index })}
         stepData={[
           {
             label: "Draft",
             component: 
             <RenderForm label="Submit" type="sell" 
               orderedproducts={orderedproducts}
-              onClick={( selectedProducts ) => {
-                this.InsertUpdateItems(loggedInUserDetails, orderdetails, selectedProducts );
-                this.setState({ activeStepSell: this.state.activeStepSell + 1 });
+              onClick={() => {
+                this.setState({
+                  activeStepSell: this.state.activeStepSell + 1,
+                });
               }}
             history={this.props.history}
             />
@@ -384,10 +413,10 @@ export class AddNewOrderImpl extends React.PureComponent<
             component: (
               <SubmittedScreen
                 orderdetails={orderdetails}
-                onClick={async() =>{
-                  const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
-                  this.setState({ orderedproducts: res });
-                  this.setState({ activeStepSell: this.state.activeStepSell + 1 })
+                onClick={() => {
+                  this.setState({
+                    activeStepSell: this.state.activeStepSell + 1,
+                  });
                 }}
               />
             ),
@@ -397,10 +426,12 @@ export class AddNewOrderImpl extends React.PureComponent<
             component: (
               <PaymentDetailsScreen
                 orderdetails={orderdetails}
-                onClick={(pMode, pType, desc) =>{
-                  this.UpdateAnOrder(loggedInUserDetails, orderdetails, pMode, pType, desc)
-                  this.setState({ activeStepSell: this.state.activeStepSell + 1 })
+                onClick={() => {
+                  this.setState({
+                    activeStepSell: this.state.activeStepSell + 1,
+                  });
                 }}
+                handleChange={this.handleChange}
               />
             ),
           },
@@ -410,8 +441,9 @@ export class AddNewOrderImpl extends React.PureComponent<
               <DispatchedScreen
                 orderdetails={orderdetails}
                 onClick={() => {
-                  this.props.history.goBack();
-                  this.setState({ activeStepSell: this.state.activeStepSell, });
+                  this.setState({
+                    activeStepSell: this.state.activeStepSell,
+                  });
                 }}
               />
             ),
@@ -423,23 +455,23 @@ export class AddNewOrderImpl extends React.PureComponent<
 
   render() {
     console.log("this.props: ",this.props);
-    const { orderedproducts, orderdetails } = this.state;
+    const { orderdetails, orderedproducts} = this.props.location;
 
     return (
       <AppBar>
         {isDealer() ? (
-          this.renderStepper()
+          this.renderStepper(orderdetails, orderedproducts)
           ) : (
           this.props.location.orderType === "Buy" ?
-            this.renderStepper()
-          : this.renderSellStepper() 
+            this.renderStepper(orderdetails, orderedproducts)
+          : this.renderSellStepper(orderdetails, orderedproducts) 
           )
         }
       </AppBar>
     );
   }
 }
-export function mapStateToProps(state) {
+export function mapStateToProps() {
   return {};
 }
 export const AddNewOrder = connect<{}, {}, IAddNewOrderProps>(mapStateToProps)(
@@ -451,16 +483,9 @@ class RenderForm extends React.Component <any> {
     super(props);
   }
 
-  state = {
-    orderedproducts: this.props.orderedproducts && this.props.orderedproducts.length > 0 
-      ? this.props.orderedproducts.map((p ,i)=> {return({sfid: "", label: p.prd_name__c, quantity: p.quantity, itemNumber: p.orderitemnumber})} )
-      : [{sfid: "", label: "", quantity: "1"}, {sfid: "", label: "", quantity: "1"}, {sfid: "", label: "", quantity: "1"}, {sfid: "", label: "", quantity: "1"}],
-    allProducts: [],
-  };
-
-  async componentDidMount(){
-    loggedInUserDetails = getToken().data;
-    const res = await this.getAllProducts(loggedInUserDetails); 
+  async componentWillMount(){
+    const { data } = getToken();
+    const res = await this.getAllProducts(data); 
     this.setState({ allProducts: res });
     console.log("Allproducts =>", this.state.allProducts)
   }
@@ -469,7 +494,7 @@ class RenderForm extends React.Component <any> {
     console.log("data: ", data)
     try {
         const products = await getData({
-          query: `SELECT StockKeepingUnit, sfid FROM salesforce.product2 
+          query: `SELECT StockKeepingUnit FROM salesforce.product2 
           WHERE StockKeepingUnit is NOT NULL `,
           token: data.token
         })
@@ -481,20 +506,25 @@ class RenderForm extends React.Component <any> {
     }
   }
 
-  handleChange = (event: any, index: number) => {
-    console.log("event: ", event, "index: ", index);
-    const arr = this.state.orderedproducts.filter((item, i) => i === index )
-      if(arr.length !== 0 ){
-        const val = this.state.orderedproducts;
-        val[index].label = event.label;
-        val[index].sfid = event.value;
-        this.setState({ orderedproducts: val})
-      }
+  state = {
+    orderedproducts: this.props.orderedproducts 
+      ? this.props.orderedproducts.map((p ,i)=> {return({sr: i, label: p.prd_name__c, quantity: p.quantity})} )
+      : [{sr: 1, label: "", quantity: "10"}, {sr: 2, label: "", quantity: "10"}, {sr: 3, label: "", quantity: "10"}, {sr: 4, label: "", quantity: "10"}],
+    allProducts: [],
+    selectedProd: "",
+  };
+
+  handleChange = (value: any, sr: number) => {
+    console.log("v: ", value, "item.sr: ", sr);
+    const arr = this.state.orderedproducts.filter((item, i) => item.sr === sr ? item.label = value : null)
+        if(arr.length === 0 ){
+          this.state.orderedproducts.push({ sr: sr, label: value })
+        }
     
     // this.setState({
     //   [key]: value as any,
     // });
-    console.log(this.state.orderedproducts);
+    console.log(this.state.selectedProd);
   };
 
   renderValueManipulator = (key, i) => (
@@ -503,14 +533,14 @@ class RenderForm extends React.Component <any> {
         onClick={() => {
           var val = this.state.orderedproducts;
           console.log(val[i].quantity)
-          val[i].quantity = Number(val[i].quantity) - 1;
+          val[i].quantity = Number(val[i].quantity) + 1;
           this.setState({ orderedproducts: val});
           console.log(this.state.orderedproducts);
           // this.setState({ [key]: this.state[key] + 1 })
         }}
         className="plus hover"
       >
-        -
+        +
       </div>
       <div className="value">
         {this.state.orderedproducts[i].quantity}
@@ -519,18 +549,20 @@ class RenderForm extends React.Component <any> {
       <div
         onClick={() => {
           var val = this.state.orderedproducts;
-          val[i].quantity = Number(val[i].quantity) + 1;
+          val[i].quantity = Number(val[i].quantity) - 1;
           this.setState({ orderedproducts: val})
           // this.setState({ [key]: this.state[key] + 1 })
         }}
         className="minus hover"
       >
-        +
+        -
       </div>
     </div>
   );
 
   renderAddProduct = (item, i) => {
+    var prod = item.product !== "" && {label: item.product};
+    console.log("i: ", i, "prod: ", this.state.orderedproducts[i].label)
     return(
       <div className="product-selection">
         <Grid item xs={4} md={6} sm={6}>
@@ -541,9 +573,9 @@ class RenderForm extends React.Component <any> {
             value={this.state.orderedproducts[i].label !== "" && this.state.orderedproducts[i]}
             options={this.state.allProducts.map(p => ({
               label: p.stockkeepingunit,
-              value: p.sfid
+              value: p.stockkeepingunit
             }))}
-            onChange={(event: any) => this.handleChange(event, i)}
+            onChange={(v: any) => this.handleChange(v.value, item.sr)}
             isSearchable={false}
           />{" "}
         </Grid>
@@ -556,12 +588,13 @@ class RenderForm extends React.Component <any> {
 
   onClickChng =() => {
     var val = this.state.orderedproducts;
-    val.push({sfid: "", label: "", quantity: "1"});
+    val.push({label: this.state.orderedproducts.length + 1, product: "", quantity: "10"});
     this.setState({ orderedproducts: val})
   }
   
   render(){
-    console.log(this.props);
+    console.log(this.props)
+    const orderedproducts = this.props.orderedproducts;
 
     return(
       <div className="card-container no-hover">
@@ -603,8 +636,7 @@ class RenderForm extends React.Component <any> {
             onClick={() => this.props.history.goBack() }>
               Cancel
             </Button>
-            <Button 
-              onClick={() => this.props.onClick( this.state.orderedproducts)}
+            <Button onClick={this.props.onClick}
               variant="contained"
               color="primary"
             >
@@ -613,9 +645,7 @@ class RenderForm extends React.Component <any> {
           </div>
         :
           <div className="align-center padding-6" style={{marginTop: 25}}>
-            <Button variant="contained" color="primary"
-              onClick={() => this.props.onClick( this.state.orderedproducts)}
-            >
+            <Button onClick={this.props.onClick} variant="contained" color="primary">
               {this.props.label}
             </Button>
           </div>
@@ -625,100 +655,60 @@ class RenderForm extends React.Component <any> {
   }
 }
 
-class DispatchedScreen extends React.Component <any> {
-  constructor(props){
-    super(props);
-  }
+const DispatchedScreen = (props) => {
+  const details = props.orderdetails || [];
 
-  state={
-    details: [],
-  }
-
-  async componentDidMount(){
-    console.log("this.props: ", this.props.orderdetails)
-    const res = await this.getOrderDetails(loggedInUserDetails, this.props.orderdetails);
-    this.setState({ details: res })
-  }
-
-  getOrderDetails = async (data, details) => {
-    console.log("details: ",details.id)
-    console.log("data: ", data);
-    try {
-        const orderedproducts = await getData({
-          query: `select * from salesforce.order where id = '${details.id}'`,
-          token: data.token
-        })
-        console.log("orderedproducts =>", orderedproducts);
-        return orderedproducts.result;
-
-    } catch (e) {
-      console.log('fetch Inventory Error', e)
-    }
-  }
-
-  render(){
-    console.log("props: ", this.props)
-    const details = this.state.details && this.state.details[0];
-    return (
-      <div style={{ width: "100%" }} className="card-container dispatch-card">
-        <Typography variant="h5">Dispatched</Typography>
-        <Grid container className="">
-          <Grid item className="padding-6" md={6} xs={12} lg={6}>
-            <span className="description-text">Order ID -</span>
-            <span className="disp-details"> {details && details.ordernumber}</span>
-          </Grid>
-          <Grid item className="padding-6" md={6} xs={12} lg={6}>
-            <span className="description-text">Order Date:</span>
-            <span className="disp-details"> {details && details.effectivedate && moment(details.effectivedate).format("DD/MM/YYYY")}</span>
-          </Grid>
+  return (
+    <div style={{ width: "100%" }} className="card-container dispatch-card">
+      <Typography variant="h5">Dispatched</Typography>
+      <Grid container className="">
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order ID -</span>
+          <span className="disp-details"> {details.ordernumber}</span>
         </Grid>
-        <Grid container className="">
-          <Grid item className="padding-6" md={6} xs={12} lg={6}>
-            <span className="description-text">Total Items -</span>
-            <span className="disp-details"> {details && details.item_quantity__c}</span>
-          </Grid>
-          <Grid item className="padding-6" md={6} xs={12} lg={6}>
-            <span className="description-text">Order Total:</span>
-            <span className="disp-details"> {details && details.totalamount}</span>
-          </Grid>
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order Date:</span>
+          <span className="disp-details"> {moment(details.effectivedate).format("DD/MM/YYYY")}</span>
         </Grid>
-        <Grid container className="">
-          <Grid item className="padding-6" md={6} xs={12} lg={6}>
-            <span className="description-text">Courier Name -</span>
-            <span className="disp-details"> {details && details.courier_name__c}</span>
-            {/* <div className="disp-details"> */}
-          </Grid>
-          <Grid item className="padding-6" md={6} xs={12} lg={6}>
-              <span className="description-text">Consignment No. -</span>
-              <span className="disp-details"> {details && details.Consignment_No__c}</span>
-          </Grid>
-            {/* </div>
-            <div className="disp-details"> */}
-          <Grid item className="padding-6" md={6} xs={12} lg={6}>
-              <span className="description-text"> Shipping Date - </span>
-              <span className="disp-details"> {details && details.Shipping_date__c && moment(details.Shipping_date__c).format("DD/MM/YYYY")}</span>
-            {/* </div> */}
-          </Grid>
-        </Grid>{" "}
-        <div className="align-center padding-6">
-          <Button onClick={this.props.onClick} variant="contained" color="primary">
-            Next
-          </Button>
-        </div>
+      </Grid>
+      <Grid container className="">
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Total Items -</span>
+          <span className="disp-details"> {details.item_quantity__c}</span>
+        </Grid>
+        <Grid item className="padding-6" md={6} xs={12} lg={6}>
+          <span className="description-text">Order Total:</span>
+          <span className="disp-details"> {details.totalamount}</span>
+        </Grid>
+      </Grid>
+      <Grid container className="">
+        <Grid item className="padding-6" md={12} xs={12} lg={12}>
+          <span className="description-text">Courier Name -</span>
+          <span className="disp-details"> {details.courier_name__c}</span>
+          <div className="disp-details">
+            {" "}
+            <span className="description-text">Consignment No. -</span>{" "}
+            <span className="disp-details"> {details.Consignment_No__c}</span>
+          </div>
+          <div className="disp-details">
+            <span className="description-text"> Shipping Date - </span>
+            <span className="disp-details"> {moment(details.Shipping_date__c).format("DD/MM/YYYY")}</span>
+          </div>
+        </Grid>
+      </Grid>{" "}
+      <div className="align-center padding-6">
+        <Button onClick={props.onClick} variant="contained" color="primary">
+          Next
+        </Button>
       </div>
-    );
-  }
+    </div>
+  );
 };
 
 const PaymentDetailsScreen = (props) => {
   const details = props.orderdetails;
-  const [paymentMode, setPaymentMode] = React.useState(details && details.payment_mode__c );
-  const [paymentType, setPaymentType] = React.useState(details && details.payment_type__c );
-  const [description, setDescription] = React.useState(details && details.description || "");
-  
-  // const paymentMode = details && { label: details && details.payment_mode__c};
-  // const paymentType = details && { label: details && details.payment_type__c};
-
+  const paymentMode = details && { label: details && details.payment_mode__c};
+  const paymentType = details && { label: details && details.payment_type__c};
   return (
     <Grid container className="align-center">
       <Grid item xs={12} md={6} lg={6}>
@@ -730,8 +720,8 @@ const PaymentDetailsScreen = (props) => {
               className="r-select"
               classNamePrefix="r-select-pre"
               placeholder="Select Payment Type" 
-              value={paymentMode && {label: paymentMode}}
-              onChange={(e) => setPaymentMode(e.label)}
+              value={paymentMode}
+              onChange={props.handleChange}
               options={options}
               isSearchable={false}
             />
@@ -740,8 +730,8 @@ const PaymentDetailsScreen = (props) => {
             <Select
               className="r-select"
               isSearchable={false}
-              value={paymentType && {label: paymentType}}
-              onChange={(e) => setPaymentType(e.label)}
+              value={paymentType}
+              onChange={props.handleChange}
               placeholder="Select Payment Method"
               options={options1}
             />
@@ -754,8 +744,6 @@ const PaymentDetailsScreen = (props) => {
               rows={4}
               variant="outlined"
               multiline={true}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
               className="r-select"
             />
           </div>{" "}
@@ -764,7 +752,7 @@ const PaymentDetailsScreen = (props) => {
             onClick={() => props.history.goBack()}>
               Cancel
             </Button>
-            <Button onClick={() => props.onClick(paymentMode, paymentType, description)} variant="contained" color="primary">
+            <Button onClick={props.onClick} variant="contained" color="primary">
               Submit
             </Button>
           </div>
@@ -777,7 +765,6 @@ const PaymentDetailsScreen = (props) => {
 const SubmittedScreen = (props) => {
   const details = props.orderdetails || [];
   console.log(details)
-  
   return (
     <div className="card-container">
       <Grid container={true}>
@@ -787,11 +774,11 @@ const SubmittedScreen = (props) => {
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Order Date - </span>
-          {details.effectivedate && moment(details.effectivedate).format("DD/MM/YYYY") || ""}
+          {moment(details.effectivedate).format("DD/MM/YYYY") || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Total Items -</span>
-          {details.product_quantity__c || ""}
+          {details.quantity || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text">Total -</span>

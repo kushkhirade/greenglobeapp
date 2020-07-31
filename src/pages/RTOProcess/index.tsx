@@ -63,24 +63,13 @@ export class RTOProcessImpl extends React.PureComponent<
 
   getAllRTOProcesses = async (data) => {
     console.log("data: ", data);
-    let getRTOs;
     try{
-      if(isDealer()){
-        getRTOs = await getData({
-          query: `SELECT *
-          FROM  salesforce.RTO_and_Insurance_Process__c 
-          WHERE Dealer__c like '%${data.sfid}%' `,
-          token: data.token
-        });
-      }
-      else{
-        getRTOs = await getData({
-          query: `SELECT *
-          FROM  salesforce.RTO_and_Insurance_Process__c 
-          WHERE Distributor__c like '%${data.sfid}%' `,
-          token: data.token
-       });
-      }
+      const getRTOs = await getData({
+        query: `SELECT *
+        FROM  salesforce.RTO_and_Insurance_Process__c 
+        WHERE Distributor__c like '%${data.sfid}%' `,
+        token: data.token
+      });
       console.log("getRTOs => ", getRTOs);
       return getRTOs.result;
     }
