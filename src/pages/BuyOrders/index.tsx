@@ -11,9 +11,11 @@ import { Tabs } from "src/components/Tabs";
 import TrakingInfoBar from "src/components/TrakingInfoBar";
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
+import { saveOrderData } from "src/actions/App.Actions";
 import { dark } from "@material-ui/core/styles/createPalette";
+import { getDefaultSettings } from "http2";
 
-var loggedInUserDetails ;
+var loggedInUserDetails;
 export interface IBuyOrdersProps {
   data?: string;
   history: IHistory;
@@ -45,13 +47,12 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
       if(data.record_type === "0122w000000cwfSAAQ"){
         orders = await getData({
           query: `SELECT * FROM salesforce.order NATURAL FULL JOIN salesforce.orderItem 
-          WHERE salesforce.Order.RecordTypeId = '0122w000000UJdmAAG' 
-          AND salesforce.Order.AccountId LIKE '%${data.sfid}%'`,
+          WHERE salesforce.Order.Sold_To_Dealer__c LIKE '%${data.sfid}%'`,
           token: data.token
         })
       }else if(data.record_type === "0122w000000cwfNAAQ"){
         orders = await getData({
-          query: ` SELECT * FROM salesforce.order 
+          query: `SELECT * FROM salesforce.order 
           WHERE salesforce.order.accountid = '${data.sfid}' `,
           token: data.token
         })
@@ -78,6 +79,59 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
 
     } catch (e) {
       console.log('fetch Inventory Error', e)
+    }
+  }
+
+  InsertNewOrder = async (data, orderType) => {
+    console.log("data: ", data);
+    console.log(new Date())
+    const order = orderType === "Buy" ? '0122w000000UJdmAAG' : '0122w000000UJe1AAG';
+    let insertRTO;
+    try{
+      if(data.record_type === "0122w000000cwfSAAQ"){
+        
+        const SFID = await getData({
+          query: `select Assigned_distributor__c from salesforce.account where sfid = '${data.sfid}'`,
+          token : data.token
+        })
+        console.log("SFID: ", SFID)
+        insertRTO = await getData({
+          query: `INSERT INTO salesforce.order
+          (status, EffectiveDate, Pricebook2Id, recordtypeid, Sold_To_Dealer__c, AccountId)
+          values
+          ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0','0122w000000UJe1AAG','${data.sfid}', '${SFID.result[0].assigned_distributor__c}' )
+          RETURNING Id`,
+          token: data.token
+        });
+      }
+      else if(data.record_type === "0122w000000cwfNAAQ"){
+        if(orderType === "Buy"){
+          insertRTO = await getData({
+            query: `INSERT INTO salesforce.order
+            (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid)
+            values
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJdmAAG')
+            RETURNING Id`,
+            token: data.token
+          });
+        }
+        else{
+          insertRTO = await getData({
+            query: `INSERT INTO salesforce.order
+            (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid)
+            values
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJe1AAG' )
+            RETURNING Id`,
+            token: data.token
+          });
+        }
+      }
+
+      console.log("insertRTO => ", insertRTO);
+      return insertRTO.result[0];
+    }
+    catch(e){
+      console.log(e);
     }
   }
 
@@ -113,7 +167,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                   </div>
                   <div className="data-content">
                     <span className="description-text">Total Price:</span> 
-                    {dataValue.totalprice}{" "}
+                    {dataValue.totalamount}{" "}
                   </div>
                 </div>
                 <div className="row-data">
@@ -177,7 +231,12 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
         )}
         <span
           style={{ position: "absolute", right: 20, bottom: 20 }}
-          onClick={() => this.props.history.push({pathname: "/buy-order/add-new-order", orderType: this.state.topActiveTab})}
+          onClick={async () => {
+            const res = await this.InsertNewOrder(loggedInUserDetails, this.state.topActiveTab);
+            console.log("res: ", res)
+            this.props.history.push({ pathname: "/buy-order/add-new-order", 
+              orderdetails: res, orderType: this.state.topActiveTab })
+          }}
         >
           <Fab color="secondary" aria-labelledby="add-ticket">
             <Add />

@@ -10,21 +10,23 @@ import data from "../../data";
 import { getToken, isDealer } from "src/state/Utility";
 import "./inventory.scss";
 
-const productsFilterOptions = [
-  {label: "3W ACE", value: "3 Wheeler Ace"},
-  {label: "3W Pro", value: "3 Wheeler Pro"},
-  {label: "4W Ace", value: "4 Wheeler Ace"},
-  {label: "4W Pro", value: "4 Wheeler Pro"},
+const productsFilterOptions = (invdata)=>  [
+  {label: "3W ACE ( "+ invdata.filter( inv =>  inv.family === "3 Wheeler Ace" ).length +" )", value: "3 Wheeler Ace"},
+  {label: "3W Pro ( "+ invdata.filter( inv =>  inv.family === "3 Wheeler Pro" ).length +" )", value: "3 Wheeler Pro"},
+  {label: "4W Ace ( "+ invdata.filter( inv =>  inv.family === "4 Wheeler Ace" ).length +" )", value: "4 Wheeler Ace"},
+  {label: "4W Pro ( "+ invdata.filter( inv =>  inv.family === "4 Wheeler Pro" ).length +" )", value: "4 Wheeler Pro"},
+  {label: "Tank ( "+ invdata.filter( inv =>  inv.family === "Tank" ).length +" )", value: "Tank"},
+  {label: "Spare ( "+ invdata.filter( inv =>  inv.family === "Spare" ).length +" )", value: "Spare"},
 ];
 
-const tankFilterOptions = [
-  {label: "30", value: "30"},
-  {label: "35", value: "35"},
-  {label: "60", value: "60"},
-  {label: "65", value: "65"},
-  {label: "70", value: "70"},
-  {label: "75", value: "75"},
-  {label: "90", value: "90"},
+const tankFilterOptions = (invdata)=>[
+  {label: "30 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "30" ).length +" )", value: "30"},
+  {label: "35 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "35" ).length +" )", value: "35"},
+  {label: "60 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "60" ).length +" )", value: "60"},
+  {label: "65 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "65" ).length +" )", value: "65"},
+  {label: "70 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "70" ).length +" )", value: "70"},
+  {label: "75 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "75" ).length +" )", value: "75"},
+  {label: "90 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "90" ).length +" )", value: "90"},
 ]
 
 export interface IInventoryProps {location?: any;}
@@ -230,6 +232,7 @@ export class InventoryImpl extends React.PureComponent<
     else{
       invdata = this.state.data
     }
+
     console.log("this.state.selectedTankFilter: ", this.state.selectedTankFilter)
     console.log("this.state.selectedProductFilter: ", this.state.selectedProductFilter)
     return (
@@ -240,7 +243,7 @@ export class InventoryImpl extends React.PureComponent<
           hasSort={true} 
           sortValue={(sortVal) => this.setState({sortType: sortVal})}
           tabsData={ [
-            { tabName: "All("+ invdata.length +")",
+            { tabName: "All ( "+ invdata.length +" )",
               // options: [],
               component: (
                 <div className="inventory-container">
@@ -261,7 +264,7 @@ export class InventoryImpl extends React.PureComponent<
               onTabSelect: (tabname) => this.setState({ selectedProductFilter: "", selectedTankFilter: ""}),
             },
             { tabName: "Product",
-              options: productsFilterOptions,
+              options: productsFilterOptions(invdata),
               component: (
                 <div className="inventory-container">
                   
@@ -293,8 +296,8 @@ export class InventoryImpl extends React.PureComponent<
               onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
               onChangeTabValue : (tabValue) => this.setState({ selectedProductFilter: tabValue }),
             },
-            { tabName: "Tank",
-              options: tankFilterOptions,
+            { tabName: "Tank Capacity",
+              options: tankFilterOptions(invdata),
               component: (
                 <div className="inventory-container">
                   { invdata.map((inData) => {

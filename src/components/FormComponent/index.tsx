@@ -103,7 +103,7 @@ export const FormComponent = (props: any) => {
             }}
             variant="contained"
             color="primary"
-            type="submit"
+            // type="submit"
           >
             {props.submitTitle || "Submit"}
           </Button>
