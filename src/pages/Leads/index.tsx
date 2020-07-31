@@ -90,6 +90,7 @@ const ratingfilterOptions = [
 ];
 
 export interface ILeadsProps {
+  location:any;
   history: IHistory;
   isDealer: boolean;
   leadsData: any;
@@ -132,7 +133,15 @@ export class LeadsImpl extends React.Component<
     this.getAllAssignedDealers(loggedInUserDetails);
   }
 
-  getAllLeadsData = async (token, sfid, recordtypeid) => {
+  getAllLeadsData = async (token, oldSfid, oldRecordtypeid) => {
+    const {location} = this.props;
+    let sfid = oldSfid
+    let recordtypeid = oldRecordtypeid
+    if(location && location.data && Object.keys(location.data).length){
+      sfid = location.data.sfid;
+      recordtypeid = location.data.recordtypeid;
+    }
+    
     console.log("token: ", token);
     console.log("sfid: ", sfid);
     console.log("recordtypeid: ", recordtypeid);
@@ -739,7 +748,6 @@ export const Leads = withRouter(
 
 const CardDetails = (props: any) => {
   const { details, AssignedDealers } = props;
-  console.log(details);
   const assignedDealer = AssignedDealers && AssignedDealers.filter((item) =>
     item.sfid === details.assigned_dealer__c)
   // console.log("details", assignedDealer[0]);

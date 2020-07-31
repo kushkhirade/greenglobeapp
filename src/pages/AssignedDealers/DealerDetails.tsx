@@ -169,7 +169,6 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {this.props.dealerDetails.dealer.bank_account_type__c}
                 </Grid>
               </Grid>
-              <SubFormHeading>Inventory Purchased</SubFormHeading>
               <SubFormHeading>Related Customers</SubFormHeading>{" "}
               <Grid container>
                 {this.props.dealerDetails.customers.map((x) => {
@@ -241,7 +240,7 @@ export class DealerDetailsImpl extends React.PureComponent<
           </div>
           <div className="button-container">
             <Button
-              onClick={() => this.props.history.push("/leads")}
+              onClick={() => this.props.history.push({pathname:"/leads", data: this.props.dealerDetails.dealer})}
               variant="contained"
               color="primary"
               type="submit"
@@ -259,7 +258,7 @@ export class DealerDetailsImpl extends React.PureComponent<
             </Button>{" "}
             <span style={{ padding: "4px" }} />
             <Button
-              onClick={() => this.props.history.push("/customers")}
+              onClick={() => this.props.history.push({pathname:"/customers", data: this.props.dealerDetails.dealer})}
               variant="contained"
               color="primary"
               type="submit"
