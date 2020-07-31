@@ -30,6 +30,7 @@ import data from "./../../data";
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { AnyCnameRecord } from "dns";
+import { LabelList } from "recharts";
 var loggedInUserDetails;
 const detailsObj = [
   {
@@ -94,7 +95,7 @@ const products = [
 
 export class AddNewJobCardImpl extends React.Component<
   IAddNewJobCardProps,
-  { openEditModal: boolean; activeTab: number; activeStep: number,jobCardCheckboxesChanged:boolean, OpenAddJobCard: boolean, jobCardCheckboxes: any }
+  { openEditModal: boolean; activeTab: number; activeStep: number,jobCardCheckboxesChanged:boolean, OpenAddJobCard: boolean, jobCardCheckboxes: any, allCustAndLeads: any, }
   > {
   constructor(props: IAddNewJobCardProps) {
     super(props);
@@ -112,8 +113,40 @@ export class AddNewJobCardImpl extends React.Component<
         "CYLINDER REFITTING": false,
         "GRECO ACE KIT FITTING": false,
         "GRECO PRO KIT FITTING": false,
-      }
+      },
+      allCustAndLeads: [],
     };
+  }
+
+  componentDidMount(){
+    loggedInUserDetails = getToken().data;
+    this.getCustAndLeads(loggedInUserDetails)
+  }
+
+  getCustAndLeads = async(data) => {
+    console.log("data: ", data)
+    let custLeadsDataArr;
+    try {
+      const custData = await getData({
+        query: `SELECT Name, sfid FROM salesforce.Contact 
+        WHERE contact.accountid LIKE '%${data.sfid}%' AND RecordtypeId ='0120l000000ot16AAA' AND Name is not null`,
+        token: data.token
+      });
+      custLeadsDataArr = custData.result;
+
+      const leadsData = await getData({
+        query: `SELECT name,sfid FROM salesforce.Lead 
+        WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' AND Name is not null`,
+        token: data.token
+      });
+      leadsData.result.map(l => custLeadsDataArr.push(l) );
+
+      this.setState({ allCustAndLeads: custLeadsDataArr});
+      console.log("this.state.allcustleads: ", this.state.allCustAndLeads);
+
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   InsertJobCardDealer = async (data, leadForm) => {
@@ -129,15 +162,15 @@ export class AddNewJobCardImpl extends React.Component<
           MailingStreet,  MailingCity ,MailingState ,MailingCountry,MailingPostalCode,
           Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,
           Usage_of_Vehicle__c,Engine_Type__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
-          GST_Number__c,Accountid,RecordTypeId,CNG_TUNE_UP__c,KIT_SERVICE__c,KIT_REFITTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,
+          GST_Number__c,Assigned_Dealer__c,RecordTypeId,CNG_TUNE_UP__c,KIT_SERVICE__c,KIT_REFITTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,
           GRECO_ACE_KIT_FITTING__c,GRECO_PRO_KIT_FITTING__c)
          Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${company ?? ""}','${email ?? ""}','${whatsAppNumber ?? 0}','${leadType ?? ""}',
          '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${country ?? ""}','${zip ?? ""}',
          '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
-         ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','${data.record_type}',
+         ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 2010},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','0120l000000ot16AAA',
          ${jobCardCheckboxes['CNG TUNE UP']},${jobCardCheckboxes['KIT SERVICE']},${jobCardCheckboxes['KIT REFITTING']},
          ${jobCardCheckboxes['CYLINDER REFITTING']},
-         ${jobCardCheckboxes['CYLINDER REMOVE']},${jobCardCheckboxes['GRECO ACE KIT FITTING']},${jobCardCheckboxes['GRECO PRO KIT FITTING']})`,
+         ${jobCardCheckboxes['CYLINDER REMOVE']},${jobCardCheckboxes['GRECO ACE KIT FITTING']},${jobCardCheckboxes['GRECO PRO KIT FITTING']}) RETURNING Id`,
         token: data.token
       });
 ``
@@ -150,7 +183,6 @@ export class AddNewJobCardImpl extends React.Component<
   }
 
   handleJobCardDealerInsert = async () => {
-    loggedInUserDetails = getToken().data;
     this.InsertJobCardDealer(loggedInUserDetails, this.props.leadForm);
     //  this.props.history.push("/leads")
   };
@@ -672,14 +704,14 @@ export class AddNewJobCardImpl extends React.Component<
         <div className="card-container no-hover add-leads-page" style={{ paddingBottom: 500 }}>
           {this.renderModal()}
           {!this.state.OpenAddJobCard &&
-            <Autocomplete
-              id="combo-box-demo"
-              options={data.leads.data}
-              getOptionLabel={option => option.name}
-              style={{ width: 300 }}
-              renderInput={params => (
-                <TextField {...params} label="Search Customer or Lead" variant="outlined" />
-              )}
+            <Select 
+            className="r-select"
+            classNamePrefix="r-select-pre"
+            placeholder="Select Dealer"
+            options={this.state.allCustAndLeads.map(p => ({
+              label: p.name,
+              value: p.sfid
+            }))}
             />
           }
           {this.state.OpenAddJobCard &&
