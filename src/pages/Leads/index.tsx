@@ -764,7 +764,7 @@ const CardDetails = (props: any) => {
         <Grid className="padding-6-corners" item xs={6} md={6} >
           {/* <span className="description-text">Name:</span> */}
           <PersonPin /> <span />
-          {details.firstname + ' ' + details.lastname}
+          {details.name}
         </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
           {/* <span className="description-text">Contact:</span> */}
@@ -863,7 +863,7 @@ const CardDetailsForDealer = (props: any) => {
       <Grid container >
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <PersonPin /> <span />
-          {details.firstname +' '+ details.lastname}
+          {details.name}
         </Grid>
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <Phone /> <span />

@@ -154,6 +154,12 @@ export class AddNewLeadImpl extends React.Component<
       }
   }
 
+  componentWillUnmount() {
+    changeValuesInStore('leadForm', leadFormInitObj);
+    changeValuesInStore('userForm', userFormInitObj);
+      
+  }
+
   async getleadDataById(token, id) {
     let leadsData;
     try {
@@ -226,13 +232,14 @@ export class AddNewLeadImpl extends React.Component<
 
   InsertLeadDistributor = async (data, userForm) => {
     const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource, rating, street, city, state, zip, country } = userForm;
+    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
     try {
       const insertLead = await getData({
         query: `INSERT INTO salesforce.Lead
-        (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
+        (name, FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
           Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
           Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
-         Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
+         Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
          '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}','0122w000000chRuAAI','${data.sfid}')`,
         token: data.token
       });
@@ -246,9 +253,10 @@ export class AddNewLeadImpl extends React.Component<
 
   UpdateLeadDistributer = async (data, userForm) => {
     const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource, rating, street, city, state, zip, country } = userForm;
+    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
     try {
       const updateLead = await getData({
-        query: `update  salesforce.Lead set FirstName = '${firstName ?? ""}',MiddleName = '${middleName ?? ""}',LastName = '${lastName ?? ""}',
+        query: `update  salesforce.Lead set name = '${name ?? ""}', FirstName = '${firstName ?? ""}',MiddleName = '${middleName ?? ""}',LastName = '${lastName ?? ""}',
         Email = '${email ?? ""}',Company = '${company ?? ""}',Whatsapp_number__c='${whatsAppNumber ?? 0}',Lead_Type__c = '${leadType ?? ""}',
         LeadSource = '${leadSource ?? ""}',Status = '${leadStatus ?? ""}',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${rating ?? ""}',  
         Street = '${street ?? ""}',City = '${city ?? ""}',State = '${state ?? ""}',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}'
@@ -284,18 +292,19 @@ export class AddNewLeadImpl extends React.Component<
     const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource,
       rating, street, city, state, zip, country, vehicleNumber, fuelType, wheeles, vehicleMek, vehicleModel, usage, vehicleType, dailyRunning,
       registration, mfg, chassis, gstNumber } = leadForm;
+    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
     const { dealerCheckboxes } = this.state;
     try {
       const insertLead = await getData({
         query: `INSERT INTO salesforce.Lead
-        (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
+        (name,FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
           Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
           Rating,Street,City,State,PostalCode,Country,
           Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,
           Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
           GST_Number__c,Assigned_Dealer__c,RecordTypeId,CNG_TUNE_UP__c,KIT_SERVICE__c,KIT_REFITTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,
           GRECO_ACE_KIT_FITTING__c,GRECO_PRO_KIT_FITTING__c)
-         Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
+         Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
          '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}',
          '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
          ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','0122w000000chRpAAI',
@@ -316,10 +325,11 @@ export class AddNewLeadImpl extends React.Component<
     const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource,
       rating, street, city, state, zip, country, vehicleNumber, fuelType, wheeles, vehicleMek, vehicleModel, usage, vehicleType, dailyRunning,
       registration, mfg, chassis, gstNumber } = leadForm;
+    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
     const { dealerCheckboxes } = this.state;
     try {
       const updateLead = await getData({
-        query: `UPDATE salesforce.Lead set  FirstName = '${firstName ?? ""}', MiddleName = '${middleName ?? ""}', LastName = '${lastName ?? ""}', Email = '${email ?? ""}', Company = '${company ?? ""}', Whatsapp_number__c = '${
+        query: `UPDATE salesforce.Lead set name = '${name ?? ""}', FirstName = '${firstName ?? ""}', MiddleName = '${middleName ?? ""}', LastName = '${lastName ?? ""}', Email = '${email ?? ""}', Company = '${company ?? ""}', Whatsapp_number__c = '${
           whatsAppNumber ?? 0}',
         Lead_Type__c = '${leadType ?? ""}', LeadSource = '${leadSource ?? ""}', Status = '${leadStatus ?? ""}',
         Sub_Lead_Source__c = '${subLeadSource ?? ""}', Rating = '${rating ?? ""}', Street = '${street ?? ""}',
