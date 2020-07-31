@@ -28,9 +28,9 @@ export const leadForm = {
   vehicleModel: "",
   usage: "",
   vehicleType: "",
-  dailyRunning: "",
-  registration: "",
-  mfg: "",
+  dailyRunning: 0,
+  registration: "4/5/2019",
+  mfg: 10,
   chassis: "",
   gstNumber: ""
 }

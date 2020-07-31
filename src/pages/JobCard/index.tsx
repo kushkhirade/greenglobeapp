@@ -131,7 +131,7 @@ export class AddNewJobCardImpl extends React.Component<
           Usage_of_Vehicle__c,Engine_Type__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
           GST_Number__c,Accountid,RecordTypeId,CNG_TUNE_UP__c,KIT_SERVICE__c,KIT_REFITTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,
           GRECO_ACE_KIT_FITTING__c,GRECO_PRO_KIT_FITTING__c)
-         Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${company ?? ""}','${email ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
+         Values('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${company ?? ""}','${email ?? ""}','${whatsAppNumber ?? 0}','${leadType ?? ""}',
          '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${country ?? ""}','${zip ?? ""}',
          '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
          ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','${data.record_type}',
