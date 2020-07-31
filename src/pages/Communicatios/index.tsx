@@ -16,6 +16,11 @@ import AppBar from "src/navigation/App.Bar";
 import { changeValuesInStore } from "src/state/Utility";
 import "./communications.scss";
 import { StyledRadioButton } from "./StyledRadioButton";
+import getData from "src/utils/getData";
+import { getToken } from "src/state/Utility";
+import { saveSelectData } from "src/actions/App.Actions";
+
+var loggedInUserDetails;
 export interface ICommunicationsProps {}
 export const colourOptions = [
   { value: "ocean", label: "Ocean", color: "#00B8D9" },
@@ -40,12 +45,35 @@ export class CommunicationsImpl extends React.Component<
     this.state = {
       leadType: "",
       subLeadType: "",
-      rating: "female",
+      rating: "",
       commType: "",
       customers: [],
       openDeliveryModal: false,
       formSubmitted: false,
     };
+  }
+
+  componentDidMount(){
+    loggedInUserDetails = getToken().data;
+  }
+
+  getAllcustomers = async (data, lead, sublead, rating) => {
+    try{
+      const getUsers = await getData({
+        query: `SELECT name FROM salesforce.contact
+        where (Lead_Rating__c = '${rating}' or Lead_Rating__c is null)
+        AND (X3_or_4_Wheeler__c ='${lead}' OR X3_or_4_Wheeler__c is NULL)
+        AND (Lead_Sub_Type__c = '${sublead}' OR Lead_Sub_Type__c is NULL) 
+        AND recordtypeid = '0120l000000ot16AAA'`,
+        token: data.token
+      })
+      console.log("getUsers => ", getUsers);
+      // return getUsers.result;
+      saveSelectData(getUsers.result);
+    }
+    catch(e){
+      console.log(e);
+    }
   }
 
   handleCustomerSelection = (value) => {
@@ -55,11 +83,39 @@ export class CommunicationsImpl extends React.Component<
     });
   };
 
-  handleChange = (event, key) => {
+  handleChange = async(event, key) => {
     changeValuesInStore(`customerForm.${key}`, event.target.value);
     this.setState({
       [key]: event.target.value,
     });
+    console.log(this.state[key])
+  };  
+
+  handleChangeLead = async(event) => {
+    changeValuesInStore(`customerForm.leadType`, event.target.value);
+    this.setState({
+      leadType: event.target.value,
+    });
+    console.log(this.state.leadType)
+    this.getAllcustomers(loggedInUserDetails, event.target.value, this.state.subLeadType, this.state.rating)
+  };  
+
+  handleChangeSub = async(event) => {
+    changeValuesInStore(`customerForm.subLeadType`, event.target.value);
+    this.setState({
+      subLeadType: event.target.value,
+    });
+    console.log(this.state.subLeadType)
+    this.getAllcustomers(loggedInUserDetails, this.state.leadType, event.target.value, this.state.rating)
+  };
+
+  handleChangeRating = async(event) => {
+    changeValuesInStore(`customerForm.rating`, event.target.value);
+    this.setState({
+      rating: event.target.value,
+    });
+    console.log(this.state.rating)
+    this.getAllcustomers(loggedInUserDetails, this.state.leadType, this.state.subLeadType, event.target.value)
   };
 
   renderDeliveryModal = () => {
@@ -101,6 +157,14 @@ export class CommunicationsImpl extends React.Component<
     return (
       <div className="message-screen">
         <SubFormHeading>Add Meesage To Send</SubFormHeading>
+        {this.state.commType === "Email" ?
+        <TextField
+          id="standard-basic"
+          variant="outlined"
+          label="Enter Subject"
+          className="form-input"
+        />
+        : null}
         <TextField
           multiline
           rows={4}
@@ -147,12 +211,13 @@ export class CommunicationsImpl extends React.Component<
             className="radio-input-container"
             name="leadType"
             value={this.state.leadType}
-            onChange={(e) => this.handleChange(e, "leadType")}
+            onChange={(e) => this.handleChangeLead(e)}
           >
             <CustomRaidio value="leads" label="Leads" />
             <CustomRaidio value="loastLeads" label="Lost Leads" />
-            <CustomRaidio value="3Wheeler" label="3 Wheeler" />
-            <CustomRaidio value="4Wheeler" label="4 Wheeler" />
+            <CustomRaidio value="3 Wheeler" label="3 Wheeler" />
+            <CustomRaidio value="4 Wheeler" label="4 Wheeler" />
+            <CustomRaidio value="spare" label="spare" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select Lead Sub Type</SubFormHeading>
@@ -161,13 +226,12 @@ export class CommunicationsImpl extends React.Component<
             className="radio-input-container"
             name="subLeadType"
             value={this.state.subLeadType}
-            onChange={(e) => this.handleChange(e, "subLeadType")}
+            onChange={(e) => this.handleChangeSub(e)}
           >
-            <CustomRaidio value="customer" label="Customer" />
-            <CustomRaidio value="lead" label="Lead" />
-            <CustomRaidio value="influencer" label="Influencer" />
-            <CustomRaidio value="fitment" label="Fitment" />
-            <CustomRaidio value="servicing" label="Servicing" />
+            <CustomRaidio value="Customer" label="Customer" />
+            <CustomRaidio value="Influencer" label="Influencer" />
+            <CustomRaidio value="Fitment" label="Fitment" />
+            <CustomRaidio value="Servicing" label="Servicing" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select Rating</SubFormHeading>
@@ -176,11 +240,11 @@ export class CommunicationsImpl extends React.Component<
             className="radio-input-container"
             name="rating"
             value={this.state.rating}
-            onChange={(e) => this.handleChange(e, "rating")}
+            onChange={(e) => this.handleChangeRating(e)}
           >
-            <CustomRaidio value="hot" label="Hot" />
-            <CustomRaidio value="cold" label="Cold" />
-            <CustomRaidio value="warm" label="Warm" />
+            <CustomRaidio value="Hot" label="Hot" />
+            <CustomRaidio value="Cold" label="Cold" />
+            <CustomRaidio value="Warm" label="Warm" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select communication type SMS/Email</SubFormHeading>
@@ -192,7 +256,7 @@ export class CommunicationsImpl extends React.Component<
             onChange={(e) => this.handleChange(e, "commType")}
           >
             <CustomRaidio value="SMS" label="SMS" />
-            <CustomRaidio value="email" label="Email" />
+            <CustomRaidio value="Email" label="Email" />
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select Customer to Send Message</SubFormHeading>
@@ -201,7 +265,10 @@ export class CommunicationsImpl extends React.Component<
             isMulti
             placeholder="Search Recipient"
             name="customers"
-            options={colourOptions}
+            options={this.props.allCustomers && this.props.allCustomers.map(cust => ({
+              label: cust.name,
+              value: cust.name
+            }))}
             className="basic-multi-select"
             classNamePrefix="select"
             value={this.state.customers}
@@ -237,8 +304,11 @@ export class CommunicationsImpl extends React.Component<
     );
   }
 }
-export function mapStateToProps() {
-  return {};
+export function mapStateToProps(state) {
+  return {
+    // values: state.rxFormReducer["customerForm"]
+    allCustomers: state.users.get("selectdata") ,
+  };
 }
 export const Communications = connect<{}, {}, ICommunicationsProps>(
   mapStateToProps

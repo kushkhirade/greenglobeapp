@@ -48,6 +48,7 @@ export class Stepper extends React.Component<any, any> {
                     return;
                   }
                   this.setState({ activeStep: index });
+                  this.props.onChangeStep && this.props.onChangeStep(index);
                 }}
                 className={`step ${
                   index === activeStep || index === props.activeStep

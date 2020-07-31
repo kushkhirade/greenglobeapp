@@ -17,6 +17,7 @@ import getData from "src/utils/getData";
 import data from "../../data";
 import { getToken, isDealer, IHistory } from "src/state/Utility";
 import { saveLeadsData, saveAssignedDealersData, saveDealerData } from "src/actions/App.Actions";
+import { ChangePhoneFormat } from "src/components/Format";
 import "./leads.scss";
 
 var loggedInUserDetails;
@@ -676,7 +677,6 @@ export class LeadsImpl extends React.Component<
 
   public render() {
     var leadsData;
-    console.log("this.state.activeTabType:", this.state.activeTabType);
     if (this.state.sortType === "asc") {
       leadsData = this.props.leadsData.sort((a, b) => new Date(a.createddate) - new Date(b.createddate))
     }
@@ -686,7 +686,11 @@ export class LeadsImpl extends React.Component<
     else {
       leadsData = this.props.leadsData
     }
+
+    console.log("leadsData: ", leadsData);
+    console.log("this.state.activeTabType:", this.state.activeTabType)
     console.log("this.state.selectedFilterValues ", this.state.selectedFilterValues)
+
     return (
       <AppBar>
         {this.renderAssignDealerModal()}
@@ -733,14 +737,6 @@ export const Leads = withRouter(
   connect<{}, {}, ILeadsProps>(mapStateToProps)(LeadsImpl) as any
 );
 
-const changePhoneFormat = (phone) => {
-  const p = phone.split(")");
-  const p1 = p[0].substr(p.length - 1);
-  const p2 = p[1];
-
-  return `+91 ${p1}${p2}`;
-}
-
 const CardDetails = (props: any) => {
   const { details, AssignedDealers } = props;
   console.log(details);
@@ -769,7 +765,7 @@ const CardDetails = (props: any) => {
         <Grid className="padding-6-corners" item xs={6} md={6}>
           {/* <span className="description-text">Contact:</span> */}
           <Phone /> <span />
-          {details.phone && changePhoneFormat(details.phone)}
+          {details.phone && ChangePhoneFormat(details.phone)}
         </Grid>
       </Grid>
       <Grid container >
@@ -863,11 +859,11 @@ const CardDetailsForDealer = (props: any) => {
       <Grid container >
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <PersonPin /> <span />
-          {details.name}
+          {details.firstname +' '+ details.lastname}
         </Grid>
         <Grid item className="padding-6-corners" xs={6} md={6}>
           <Phone /> <span />
-          {details.phone && changePhoneFormat(details.phone)}
+          {details.phone && ChangePhoneFormat(details.phone)}
         </Grid>
       </Grid>
       <Grid container >

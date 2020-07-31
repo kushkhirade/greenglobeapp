@@ -62,9 +62,10 @@ export class Tabs extends React.Component<
                     // })}}
                     // id= 'demo-simple-select-filled'
                     isSearchable={true}
+                    // isMulti
                     // value={this.state.activeTab.tabName == tab.tabName ? this.state.selectValue : null}
                     onChange={(e) => {tab.onChangeTabValue(e.value), this.setState({selectValue: e})}}
-                    placeholder={tab.tabName}
+                    placeholder={<div style={{color: 'black'}}>{tab.tabName}</div>}
                     options= {tab.options}
                   />
                 :
@@ -81,7 +82,7 @@ export class Tabs extends React.Component<
             <div className="tab-button">
             <Select
               onChange={(e)=> this.props.sortValue(e.value)}
-              placeholder="Sort"
+              placeholder={<div style={{color: 'black'}}>Sort</div>}
               isSearchable={false}
               options={[
                 { label: "Assending", value: "asc" },

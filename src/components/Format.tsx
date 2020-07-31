@@ -9,7 +9,6 @@ export const ChangePhoneFormat = (phoneNumber) =>{
   else{
     const p1 = p[0] && p[0].substr(p.length - 7);
     const p2 = p[0] && p[0].substr(0, 3);
-    console.log(p2)
     return `+91 ${p2} ${p1}`
   }
 };

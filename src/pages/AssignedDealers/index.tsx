@@ -10,6 +10,7 @@ import { IHistory } from "src/state/Utility";
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
 import moment from 'moment';
+import { ChangePhoneFormat } from "src/components/Format";
 
 export interface IAssignedDealersProps {
   history: IHistory;
@@ -100,14 +101,6 @@ export const AssignedDealers = withRouter(
 const DealerCard = (props: any) => {
   const { data } = props;
 
-  const changePhoneFormat = (phone) =>{
-    const p = phone.split(")");
-    const p1 = p[0].substr(p.length - 1);
-    const p2 = p[1];
-    
-    return `+91 ${p1}${p2}` ;
-  }
-
   return (
     <Grid item xs={12} md={6} lg={6}>
       <div onClick={() => props.onClickItem(data)} className="card-container">
@@ -126,7 +119,7 @@ const DealerCard = (props: any) => {
               </div>
               <div className="padding-6">
                 {" "}
-                <span className="description-text">Phone</span> {data.phone && changePhoneFormat(data.phone)}
+                <span className="description-text">Phone</span> {data.phone && ChangePhoneFormat(data.phone)}
               </div>
               <div className="padding-6">
                 {" "}
