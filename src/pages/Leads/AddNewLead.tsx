@@ -37,36 +37,36 @@ import { leadForm as leadFormInitObj, userForm as userFormInitObj } from '../../
 
 var loggedInUserDetails;
 const detailsObj = [
-  {
-    sNumber: 1,
-    subject: "Call",
-    dueDate: "4/30/2020",
-    rating: "Hot",
-    priotiy: "Normal",
-    status: "Open",
-    callResult: "Spoke with Customer ",
-    comments: "Customer Intrested",
-  },
-  {
-    sNumber: 2,
-    subject: "Call",
-    dueDate: "4/30/2020",
-    rating: "Hot",
-    priotiy: "Normal",
-    status: "Open",
-    callResult: "Spoke with Customer ",
-    comments: "Customer Intrested",
-  },
-  {
-    sNumber: 3,
-    subject: "Call",
-    dueDate: "4/30/2020",
-    rating: "Hot",
-    priotiy: "Normal",
-    status: "Open",
-    callResult: "Spoke with Customer ",
-    comments: "Customer Intrested",
-  },
+  // {
+  //   sNumber: 1,
+  //   subject: "Call",
+  //   dueDate: "4/30/2020",
+  //   rating: "Hot",
+  //   priotiy: "Normal",
+  //   status: "Open",
+  //   callResult: "Spoke with Customer ",
+  //   comments: "Customer Intrested",
+  // },
+  // {
+  //   sNumber: 2,
+  //   subject: "Call",
+  //   dueDate: "4/30/2020",
+  //   rating: "Hot",
+  //   priotiy: "Normal",
+  //   status: "Open",
+  //   callResult: "Spoke with Customer ",
+  //   comments: "Customer Intrested",
+  // },
+  // {
+  //   sNumber: 3,
+  //   subject: "Call",
+  //   dueDate: "4/30/2020",
+  //   rating: "Hot",
+  //   priotiy: "Normal",
+  //   status: "Open",
+  //   callResult: "Spoke with Customer ",
+  //   comments: "Customer Intrested",
+  // },
 ];
 
 export interface IAddNewLeadProps { }

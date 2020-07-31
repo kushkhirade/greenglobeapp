@@ -169,7 +169,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {this.props.dealerDetails.dealer.bank_account_type__c}
                 </Grid>
               </Grid>
-              <SubFormHeading>Inventory Purchased</SubFormHeading>
+              {/* <SubFormHeading>Inventory Purchased</SubFormHeading> */}
               <SubFormHeading>Related Customers</SubFormHeading>{" "}
               <Grid container>
                 {this.props.dealerDetails.customers.map((x) => {
