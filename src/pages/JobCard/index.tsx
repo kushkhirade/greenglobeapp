@@ -33,36 +33,36 @@ import { AnyCnameRecord } from "dns";
 import { LabelList } from "recharts";
 var loggedInUserDetails;
 const detailsObj = [
-  {
-    sNumber: 1,
-    subject: "Call",
-    dueDate: "4/30/2020",
-    rating: "Hot",
-    priotiy: "Normal",
-    status: "Open",
-    callResult: "Spoke with Customer ",
-    comments: "Customer Intrested",
-  },
-  {
-    sNumber: 2,
-    subject: "Call",
-    dueDate: "4/30/2020",
-    rating: "Hot",
-    priotiy: "Normal",
-    status: "Open",
-    callResult: "Spoke with Customer ",
-    comments: "Customer Intrested",
-  },
-  {
-    sNumber: 3,
-    subject: "Call",
-    dueDate: "4/30/2020",
-    rating: "Hot",
-    priotiy: "Normal",
-    status: "Open",
-    callResult: "Spoke with Customer ",
-    comments: "Customer Intrested",
-  },
+  // {
+  //   sNumber: 1,
+  //   subject: "Call",
+  //   dueDate: "4/30/2020",
+  //   rating: "Hot",
+  //   priotiy: "Normal",
+  //   status: "Open",
+  //   callResult: "Spoke with Customer ",
+  //   comments: "Customer Intrested",
+  // },
+  // {
+  //   sNumber: 2,
+  //   subject: "Call",
+  //   dueDate: "4/30/2020",
+  //   rating: "Hot",
+  //   priotiy: "Normal",
+  //   status: "Open",
+  //   callResult: "Spoke with Customer ",
+  //   comments: "Customer Intrested",
+  // },
+  // {
+  //   sNumber: 3,
+  //   subject: "Call",
+  //   dueDate: "4/30/2020",
+  //   rating: "Hot",
+  //   priotiy: "Normal",
+  //   status: "Open",
+  //   callResult: "Spoke with Customer ",
+  //   comments: "Customer Intrested",
+  // },
 ];
 
 export interface IAddNewJobCardProps { }
@@ -127,22 +127,38 @@ export class AddNewJobCardImpl extends React.Component<
     console.log("data: ", data)
     let custLeadsDataArr;
     try {
-      const custData = await getData({
-        query: `SELECT Name, sfid FROM salesforce.Contact 
-        WHERE contact.accountid LIKE '%${data.sfid}%' AND RecordtypeId ='0120l000000ot16AAA' AND Name is not null`,
-        token: data.token
-      });
-      custLeadsDataArr = custData.result;
+      if(isDealer){
+        const custData = await getData({
+          query: `SELECT Name, sfid FROM salesforce.Contact 
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0120l000000ot16AAA' AND Name is not null`,
+          token: data.token
+        });
+        custLeadsDataArr = custData.result;
 
-      const leadsData = await getData({
-        query: `SELECT name,sfid FROM salesforce.Lead 
-        WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' AND Name is not null`,
-        token: data.token
-      });
-      leadsData.result.map(l => custLeadsDataArr.push(l) );
-
+        const leadsData = await getData({
+          query: `SELECT name FROM salesforce.Lead 
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' AND Name is not null`,
+          token: data.token
+        });
+        leadsData.result.map(l => custLeadsDataArr.push(l) );
+      }
+      else{
+        const custData = await getData({
+          query: `SELECT Name ,sfid  FROM salesforce.Contact 
+          WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0120l000000ot16AAA'  AND Name is not null`,
+          token: data.token
+        });
+        custLeadsDataArr = custData.result;
+  
+        const leadsData = await getData({
+          query: `SELECT name,sfid FROM salesforce.Lead 
+          WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' AND Name is not null`,
+          token: data.token
+        });
+        leadsData.result.map(l => custLeadsDataArr.push(l) );
+      }
+      console.log("custLeadsDataArr: ", custLeadsDataArr);
       this.setState({ allCustAndLeads: custLeadsDataArr});
-      console.log("this.state.allcustleads: ", this.state.allCustAndLeads);
 
     } catch (e) {
       console.log(e);

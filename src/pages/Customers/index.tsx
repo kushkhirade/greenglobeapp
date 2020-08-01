@@ -79,7 +79,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
   public render() {
     return (
       <AppBar>
-        {" "}
+        {/* {" "}
         <div
           style={{
             display: "flex",
@@ -90,7 +90,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
           {" "}
           <Search fontSize="large" color="primary" />
           <img height="26px" src={filter} />
-        </div>
+        </div> */}
         {/* <div className="cards-main customer-card"> */}
         <Grid container>
           {this.state.customers && this.state.customers.map(cust => {
