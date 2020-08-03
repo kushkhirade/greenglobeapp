@@ -75,13 +75,14 @@ export class DealerDetailsImpl extends React.PureComponent<
       tabName: "Details",
       component: (
         <Grid container>
+          {this.props.dealerDetails.dealer.name && 
           <Grid item xs={12} md={12} lg={12}>
             <div
               onClick={() =>
                 this.props.dealerDetails.onClickItem(this.props.dealerDetails)
               }
               className="card-container"
-            >
+            > 
               <SubFormHeading>Dealer Details</SubFormHeading>
               <Grid container>
                 {" "}
@@ -202,6 +203,7 @@ export class DealerDetailsImpl extends React.PureComponent<
               </Grid>
             </div>
           </Grid>
+          }
         </Grid>
       ),
     },
@@ -264,6 +266,15 @@ export class DealerDetailsImpl extends React.PureComponent<
               type="submit"
             >
               View Customers
+            </Button>
+            <span style={{ padding: "4px" }} />
+            <Button
+              onClick={() => this.props.history.push({pathname:"/job-cards", data: this.props.dealerDetails.dealer})}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              View JobCards
             </Button>
           </div>
         </div>

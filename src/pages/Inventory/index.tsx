@@ -58,11 +58,11 @@ export class InventoryImpl extends React.PureComponent<
   };
 
   async componentDidMount(){
-    console.log("this.props ", this.props.location.data)
 
     const {data} = getToken();
-    const sfid = this.props.location.data && this.props.location.data.sfid ? this.props.location.data.sfid : data.sfid;
-    const recordtypeid = this.props.location.data && this.props.location.data.recordtypeid ? this.props.location.data.recordtypeid : data.record_type;
+    const {location} = this.props;
+    const sfid = location.data && location.data.sfid ? location.data.sfid : data.sfid;
+    const recordtypeid = location.data && location.data.recordtypeid ? location.data.recordtypeid : data.record_type;
     const res = await this.getAllInventoryData(data.token,  sfid, recordtypeid );
     console.log("result ", res)
     this.setState({data : res});
@@ -244,7 +244,7 @@ export class InventoryImpl extends React.PureComponent<
           sortValue={(sortVal) => this.setState({sortType: sortVal})}
           tabsData={ [
             { tabName: "All ( "+ invdata.length +" )",
-              // options: [],
+              options: [],
               component: (
                 <div className="inventory-container">
                   { invdata.map((inData) => {
@@ -269,18 +269,19 @@ export class InventoryImpl extends React.PureComponent<
                 <div className="inventory-container">
                   
                   { invdata.map((inData) => {
-                    if(this.state.selectedTankFilter!==""){
-                      if(inData.family === this.state.selectedProductFilter && inData.tank_capacity__c === this.state.selectedTankFilter){
-                        // {console.log("product + tank")}
-                        return(              
-                          <InventoryCards
-                            onClickItem={this.handleItemClick}
-                            data={inData}
-                          />
-                        )
-                      }
-                    }
-                    else {if(inData.family === this.state.selectedProductFilter){
+                    // if(this.state.selectedTankFilter!==""){
+                    //   if(inData.family === this.state.selectedProductFilter && inData.tank_capacity__c === this.state.selectedTankFilter){
+                    //     // {console.log("product + tank")}
+                    //     return(              
+                    //       <InventoryCards
+                    //         onClickItem={this.handleItemClick}
+                    //         data={inData}
+                    //       />
+                    //     )
+                    //   }
+                    // }
+                    // else {
+                      if(inData.family === this.state.selectedProductFilter){
                       // {console.log("product")}
                       return(              
                         <InventoryCards
@@ -288,7 +289,8 @@ export class InventoryImpl extends React.PureComponent<
                           data={inData}
                         />
                       )
-                    }}
+                    }
+                  // }
                   })
                 }
                 </div>

@@ -44,14 +44,15 @@ export class Stepper extends React.Component<any, any> {
               <div
                 key={index}
                 onClick={() => {
-                  if (this.props.activeStep) {
-                    return;
-                  }
+                  // if (this.props.activeStep) {
+                  //   return;
+                  // }
                   this.setState({ activeStep: index });
                   this.props.onChangeStep && this.props.onChangeStep(index);
+                  console.log("index: ", index)
                 }}
                 className={`step ${
-                  index === activeStep || index === props.activeStep
+                  index === this.state.activeStep || index === props.activeStep
                     ? "active"
                     : ""
                 }`}
@@ -90,7 +91,7 @@ const StpperBG = (props: any) => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="150"
-      height="50"
+      height="60"
       viewBox="0 0 979 382"
       fill="none"
     >

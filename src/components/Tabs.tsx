@@ -7,15 +7,15 @@ export interface TabsProps {
   tabsData: any;
   onSortChange?: (value) => void;
   onChangeTabValue?: (value) => void;
-  hasSort?: boolean;  
+  hasSort?: boolean;  isIndex?: number;
   sortValue?: (value) => void;
 }
 
 export class Tabs extends React.Component<
   TabsProps,
-  { activeTabIndex: number; activeTab: any; selectValue: string;}
+  { activeTabIndex: number; activeTab: any; selectValue: any;}
 > {
-  public state = { activeTabIndex: 0, activeTab: "", selectValue: "" };
+  public state = { activeTabIndex: 0, activeTab: this.props.tabsData[0], selectValue: [{name: "", label: ""}] };
 
   public handleTabChange = (tabData: any, index: number) => {
     this.setState({
@@ -27,7 +27,7 @@ export class Tabs extends React.Component<
       this.props.tabsData.map(tab=> {
         tabData.tabName !== tab.tabName 
         ? tab.onChangeTabValue && tab.onChangeTabValue(null)
-        : console.log("else: ", tab)
+        : this.setState({selectValue: [{name: null, label: null}] })
       })
     }
   };
@@ -35,8 +35,11 @@ export class Tabs extends React.Component<
   handleSortChange = (value) => {
     this.props.onSortChange && this.props.onSortChange(value);
   };
-
   public render() {
+    console.log("this.State=> ", this.state);
+    console.log("this.props=> ", this.props);
+    const activeIndex = this.props.isIndex ? this.props.isIndex : this.state.activeTab.tabName
+
     return (
       <React.Fragment>
         <div className="tabs-container">
@@ -44,7 +47,7 @@ export class Tabs extends React.Component<
             return (
               <div
                 className={`tab-button ${
-                  index === this.state.activeTabIndex ? "active" : ""
+                  tab.tabName === this.state.activeTabIndex ? "active" : ""
                 }`}
                 key={index}
                 onClick={() => {
@@ -52,27 +55,42 @@ export class Tabs extends React.Component<
                   this.handleTabChange(tab, index);
                 }}
               > 
-                {tab.options ? 
-                  <Select
-                    // autoFocus={true}
-                    // styles = {{option: (provided, state) => ({
-                    //   ...provided,
-                    //   color: state.isSelected ? 'white' : 'black',
-                    //   backgroundColor: state.isSelected ? '#48a89c' : 'white',
-                    // })}}
-                    // id= 'demo-simple-select-filled'
-                    isSearchable={true}
-                    // isMulti
-                    // value={this.state.activeTab.tabName == tab.tabName ? this.state.selectValue : null}
-                    onChange={(e) => {tab.onChangeTabValue(e.value), this.setState({selectValue: e})}}
-                    placeholder={<div style={{color: 'black'}}>{tab.tabName}</div>}
-                    options= {tab.options}
-                  />
-                :
-                    <input className="tab-input"
-                      disabled={true}
-                      value= {tab.tabName}
+                {tab.options ?
+                  tab.options.length > 0 ? 
+                    <Select
+                      // autoFocus={true}
+                      // styles = {{option: (provided, state) => ({
+                      //   ...provided,
+                      //   color: state.isSelected ? 'white' : 'black',
+                      //   backgroundColor: state.isSelected ? '#48a89c' : 'white',
+                      // })}}
+                      // id= 'demo-simple-select-filled'
+                      // isMulti
+                      isSearchable={true}
+                      // value={this.state.activeTab.tabName == tab.tabName ? this.state.selectValue : null}
+                      value= {this.state.selectValue.filter(item => item.name === tab.tabName)}
+                      onChange={(e) => {
+                        tab.onChangeTabValue(e.value); 
+                        const arr = this.state.selectValue.filter((item) => item.name === tab.tabName ? item.label = e.value : null)
+                        if (arr.length === 0) {
+                          this.state.selectValue.push({ name: tab.tabName, label: e.value })
+                        }
+                        // this.setState({selectValue: e})
+                      }}
+                      placeholder={<div style={{color: 'black'}}>{tab.tabName}</div>}
+                      options= {tab.options}
                     />
+                  :
+                      <input className="tab-input"
+                        disabled={true}
+                        value= {tab.tabName}
+                      />
+                : 
+                  <input className="tab-input" 
+                    style={{width: '170px', height: '34px'}}
+                    disabled={true}
+                    value= {tab.tabName}
+                  /> 
                 }
               </div>
             );

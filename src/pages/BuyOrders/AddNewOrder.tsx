@@ -688,7 +688,6 @@ class DispatchedScreen extends React.Component <any> {
   }
 
   getOrderDetails = async (data, details) => {
-    console.log("details: ",details.id)
     console.log("data: ", data);
     try {
         const orderedproducts = await getData({

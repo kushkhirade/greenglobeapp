@@ -97,7 +97,7 @@ export class RTOProcessImpl extends React.PureComponent<
         customerData = await getData({
           query: `SELECT sfid, name
           FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0120l000000ot16AAA'`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
           token: data.token
         })
       }
@@ -105,7 +105,7 @@ export class RTOProcessImpl extends React.PureComponent<
         customerData = await getData({
           query: `SELECT sfid, name
           FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0120l000000ot16AAA'`,
+          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
           token: data.token
         })
     }
@@ -122,7 +122,7 @@ export class RTOProcessImpl extends React.PureComponent<
     try{
       const insertRTO = await getData({
         query: `INSERT INTO salesforce.rto_and_insurance_process__c
-        (Customer__c,Stage__c) Values('${customer}','${stage}')`,
+        (Customer__c,Stage__c) Values('${customer}','${stage}') RETURNING Id`,
         token: data.token
       });
       console.log("insertRTO => ", insertRTO);

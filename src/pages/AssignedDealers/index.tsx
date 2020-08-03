@@ -37,8 +37,8 @@ export class AssignedDealersImpl extends React.Component<
     console.log("data: ",data);
     try {
         const assignedDealerData = await getData({
-          query: `SELECT * FROM 
-          salesforce.Account WHERE Assigned_Distributor__c = '${data.sfid}'`,
+          query: `SELECT * FROM salesforce.Account 
+          WHERE Assigned_Distributor__c = '${data.sfid}' AND RecordTypeId = '0122w000000cwfSAAQ'`,
           token: data.token
         })
 

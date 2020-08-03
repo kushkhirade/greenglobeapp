@@ -149,17 +149,15 @@ export class LeadsImpl extends React.Component<
     try {
       if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
-          query: `SELECT *
-          FROM salesforce.Lead 
-          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%')`,
+          query: `SELECT * FROM salesforce.Lead 
+          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%') AND sfid is NOT NULL`,
           token: token
         })
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
         console.log("here");
         leadsData = await getData({
-          query: `SELECT *
-          FROM salesforce.Lead 
-          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Distributor__c LIKE '%${sfid}%')`,
+          query: `SELECT * FROM salesforce.Lead 
+          WHERE (Assigned_Distributor__c LIKE '%${sfid}%') AND sfid is NOT NULL`,
           token: token
         })
       }
@@ -176,8 +174,8 @@ export class LeadsImpl extends React.Component<
     console.log("data: ", data);
     try {
       const assignedDealerData = await getData({
-        query: `SELECT * FROM 
-          salesforce.Account WHERE Assigned_Distributor__c = '${data.sfid}'`,
+        query: `SELECT * FROM salesforce.Account 
+        WHERE Assigned_Distributor__c = '${data.sfid}' AND RecordTypeId = '0122w000000cwfSAAQ'`,
         token: data.token
       })
 
@@ -240,7 +238,7 @@ export class LeadsImpl extends React.Component<
         {leadsData && leadsData.map((d) => {
           // console.log("DEtails: ", d)
           // if (!d.isDealer && d.assigned) {
-          if (d.assigned_dealer__c) {
+          if (d.recordtypeid === '0122w000000chRpAAI' && d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
                 <CardDetails details={d} onClickDetails={this.handleCustomerDetails} AssignedDealers={this.props.dealersData} history={this.props.history} />
@@ -250,16 +248,6 @@ export class LeadsImpl extends React.Component<
         })}
       </Grid>
     );
-    // const AssignedCust = data.leads.data.map((d) => {
-    //   if (!d.isDealer && d.assigned)
-    //     return d;
-    // });
-    // return (
-    //   <Grid container >
-    //   {console.log("card details: ", AssignedCust)}
-    //     <CardDetails details={AssignedCust} history={this.props.history} />
-    //   </Grid>
-    // );
   };
 
   public renderCustomersUnAssigned = (leadsData) => {
@@ -267,7 +255,7 @@ export class LeadsImpl extends React.Component<
       <Grid container>
         {leadsData && leadsData.map((d) => {
           // if (!d.isDealer && !d.assigned) {
-          if (!d.assigned_dealer__c) {
+          if (d.recordtypeid === '0122w000000chRpAAI' && !d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
                 <CardDetails details={d} onClickDetails={this.handleCustomerDetails} onClickAssign={this.openAssignDealerModal} history={this.props.history} />
@@ -278,26 +266,19 @@ export class LeadsImpl extends React.Component<
         })}
       </Grid>
     );
-    // const UnassignedCust = data.leads.data.map((d) => {
-    //   if (!d.isDealer && !d.assigned)
-    //     return d;
-    // });
-    // return (
-    //   <Grid container >
-    //     <CardDetails details={UnassignedCust} history={this.props.history} />
-    //   </Grid>
-    // );
   };
 
-  public renderDealersAssigned = () => {
+  public renderDealersAssigned = (leadsData) => {
     return (
       <Grid container>
-        {this.props.dealersData && this.props.dealersData.map((d) => {
-          return (
-            <Grid item xs={12} md={6}>
-              <CardDetails details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history} />
-            </Grid>
-          );
+        {leadsData && leadsData.map((d) => {
+          if (d.recordtypeid === '0122w000000chRuAAI') {
+            return (
+              <Grid item xs={12} md={6}>
+                <CardDetails details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history} />
+              </Grid>
+            );
+          }
         })}
       </Grid>
     );
@@ -348,7 +329,7 @@ export class LeadsImpl extends React.Component<
     },
     {
       tabName: "Dealer",
-      component: this.renderDealersAssigned(),
+      component: this.renderDealersAssigned(leadsData),
       onTabSelect: (tabName: any) => { this.getAllAssignedDealers(loggedInUserDetails), this.setState({ topActiveTab: tabName }) },
     },
   ];
@@ -359,7 +340,7 @@ export class LeadsImpl extends React.Component<
       component:
         this.state.topActiveTab === "Customer"
           ? this.renderCustomersAssigned(leadsData)
-          : this.renderDealersAssigned(),
+          : this.renderDealersAssigned(leadsData),
       onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName }) },
     },
     {
@@ -651,7 +632,7 @@ export class LeadsImpl extends React.Component<
     },
     {
       tabName: "Walk Ins",
-      // options: [],
+      options: [],
       component: (
         <Grid container>
           {leadsData && leadsData.map((d) => {

@@ -47,13 +47,13 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
       if(data.record_type === "0122w000000cwfSAAQ"){
         orders = await getData({
           query: `SELECT * FROM salesforce.order NATURAL FULL JOIN salesforce.orderItem 
-          WHERE salesforce.Order.Sold_To_Dealer__c LIKE '%${data.sfid}%'`,
+          WHERE salesforce.Order.Sold_To_Dealer__c LIKE '%${data.sfid}%' AND sfid is NOT NULL`,
           token: data.token
         })
       }else if(data.record_type === "0122w000000cwfNAAQ"){
         orders = await getData({
           query: `SELECT * FROM salesforce.order 
-          WHERE salesforce.order.accountid = '${data.sfid}' `,
+          WHERE salesforce.order.accountid = '${data.sfid}' AND sfid is NOT NULL `,
           token: data.token
         })
       }

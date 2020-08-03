@@ -64,7 +64,7 @@ export class CommunicationsImpl extends React.Component<
         where (Lead_Rating__c = '${rating}' or Lead_Rating__c is null)
         AND (X3_or_4_Wheeler__c ='${lead}' OR X3_or_4_Wheeler__c is NULL)
         AND (Lead_Sub_Type__c = '${sublead}' OR Lead_Sub_Type__c is NULL) 
-        AND recordtypeid = '0120l000000ot16AAA'`,
+        AND recordtypeid = '0121s0000000WE4AAM'`,
         token: data.token
       })
       console.log("getUsers => ", getUsers);

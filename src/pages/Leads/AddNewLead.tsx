@@ -13,6 +13,7 @@ import { FormComponent } from "src/components/FormComponent";
 import { TableWithGrid } from "src/components/TableWithGrid";
 import AppBar from "src/navigation/App.Bar";
 import { Stepper } from "../BuyOrders/Stepper";
+import moment from 'moment';
 import {
   addressDetails,
   leadDealer,
@@ -25,7 +26,7 @@ import {
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
-import { GSelect } from "src/components/GSelect";
+// import { GSelect } from "src/components/GSelect";
 import { getToken } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { changeValuesInStore } from "src/state/Utility";
@@ -36,7 +37,7 @@ import {
 import { leadForm as leadFormInitObj, userForm as userFormInitObj } from '../../reducers/CombinedReducers';
 
 var loggedInUserDetails;
-const detailsObj = [
+var detailsObj = [
   // {
   //   sNumber: 1,
   //   subject: "Call",
@@ -101,10 +102,12 @@ export class AddNewLeadImpl extends React.Component<
   IAddNewLeadProps,
   {
     openEditModal: boolean;
-    activeTab: number;
+    activeTab: String;
     activeStep: number;
     dealerCheckboxes: any;
+    allTasks: any;
     id: number;
+    complainCheckList: any;
     dealerCheckboxesChanged: boolean;
   }
   > {
@@ -112,18 +115,97 @@ export class AddNewLeadImpl extends React.Component<
     super(props);
     this.state = {
       openEditModal: false,
-      activeTab: 0,
+      activeTab: "Details",
       activeStep: 0,
+      allTasks: [],
       id: 0,
       dealerCheckboxesChanged: false,
+      complainCheckList: {
+        "Low Average / Mileage": false,
+        "Late Starting Problem": false,
+        "Jerking / Missing / Low Pick": false,
+        "Changeover - Switch / Pressure Gauge Indication Problem": false,
+        "Vehicle Not Changing over to CNG": false,
+        "GVehicle Not starting in Petrol": false,
+        "Engine Shutdown in Idleing mode / Return to idle from high RPM": false,
+        "Less/Slow Gas Filling in Tank": false,
+        "Check Engine Light on Cluster": false,
+        "Petrol Consumption even when car running on CNG": false,
+        "Noise after/due to CNG Kit Fittment": false,
+        "Gas Leakage / Sound / Smell": false,
+        "Switch Not Working(No lights on switch)": false,   
+        "Buzzer Noise on Switch": false,   
+      },
       dealerCheckboxes: {
         "CNG TUNE UP": false,
         "KIT SERVICE": false,
+        "KIT REMOVE": false,
         "KIT REFITTING": false,
         "CYLINDER REMOVE": false,
         "CYLINDER REFITTING": false,
         "GRECO ACE KIT FITTING": false,
         "GRECO PRO KIT FITTING": false,
+        "DICKY FLOOR REPAIR": false,
+        "WIRING REPAIR": false,
+        "WIRING REMOVE & REFITTING": false,
+        "REDUCER R/R": false,
+        "REDUCER SERVICE": false,
+        "CARBURETTOR SERVICE": false,
+        "THROTTLE BODY CLEANING": false,
+        "AIR FILTER R/R": false,
+        "SPARK PLUG R/R": false,
+        "INGNITION COILS R/R": false,
+        "INGNITION COIL CODE R/R": false,
+        "PICK UP COIL R/R": false,
+        "CNG SEQ. KIT TUNE UP": false,
+        "ECM R/R": false,
+        "MAP SENSOR R/R": false,
+        "MAF/MAP SENSOR CLEAN": false,
+        "GRECO INJECTOR R/R": false,
+        "PETROL INJECTOR R/R": false,
+        "TEMPRESURE SENSOR R/R": false,
+        "TIMING ADVANCE PROCESS R/R": false,
+        "FILLER VALVE R/R": false,
+        "FILLER VALVE REPAIR": false,
+        "LOW PRESSURE HOSE R/R": false,
+        "PRESSURE GAUGE R/R": false,
+        "HIGH PRESSURE PIPE R/R": false,
+        "CYLINDER VALVE R/R": false,
+        "SWITCH R/R": false,
+        "COOLANT REPLACE": false,
+        "TAPPET SETTING": false,
+        "OIL & OIL FILTER REPLACE": false,
+        "HEIGHT PAD FITMENT": false,
+        "O2 SENSOR R/R	": false,
+        "O2 SENSOR CLEAN": false,
+        "ENGINE TUNE UP": false,
+        "ENGINE COMPRESSION CHECK": false,
+        "FUEL PUMP R/R": false,
+        "FUEL FILTER R/R": false,
+        "FUEL PUMP RELAY R/R": false,
+        "ANNUAL MAINTAINANACE CONTRACT": false,
+        "CNG LEAKAGE CHECK": false,
+        "EMULATOR R/R": false,
+        "MIXER R/R": false,
+        "1ST STAGE REGULATOR R/R": false,
+        "2ND STAGE REGULATOR R/R": false,
+        "CYLINDER HYDROTESTING": false,
+        "1ST STAGE REGULATOR ORING R/R": false,
+        "INJECTOR NOZZLE R/R": false,
+        "GENERAL LABOUR CHARGES": false,
+        "CAR SCANNING": false,
+        "GAS FILLTER R/R": false,
+        "CYLINDER BRACKET R/R": false,
+        "1ST FREE SERVICE": false,
+        "2ND FREE SERVICE": false,
+        "3RD FREE SERVICE": false,
+        "TAPPET COVER PACKING REPLACE": false,
+        "VACCUM HOSE PIPE R/R	": false,
+        "FUEL GAUGE CORRECTOR FITMENT": false,
+        "RAIL BRACKET R/R": false,
+        "ECM BRACKET R/R": false,
+        "REDUCER BRACKET R/R": false,
+        "BLOCK PISTON R/R": false,
       }
     };
   }
@@ -133,7 +215,7 @@ export class AddNewLeadImpl extends React.Component<
     // this.props.dispatch(actions.reset('rxFormReducer'));
     // this.props.dispatch(actions.setInitial('rxFormReducer'));
     // this.props.dispatch(actions.setInitial('rxFormReducer.userForm'));
-
+    console.log("this.props: ", this.props)
     loggedInUserDetails = getToken().data;
     const { match: { params } } = this.props;
     if (params && params.id) {
@@ -160,6 +242,22 @@ export class AddNewLeadImpl extends React.Component<
       
   }
 
+  async getAllTasks(data, sfid) {
+    let taskData;
+    try {
+      taskData = await getData({
+        query: `SELECT subject, Lead_Rating__c, Priority, Call_Results__c, WhoId, status, ActivityDate 
+        FROM salesforce.task WHERE WhoId like '%${sfid}%' `,
+        token: data.token
+      });
+      console.log("taskData =>", taskData);
+      this.setState({ allTasks: taskData.result})
+
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getleadDataById(token, id) {
     let leadsData;
     try {
@@ -173,7 +271,9 @@ export class AddNewLeadImpl extends React.Component<
       console.log(e);
     }
     console.log("leadsData =>", leadsData);
+    this.getAllTasks(loggedInUserDetails, leadsData.result[0].sfid);
     return leadsData.result;
+
   }
 
   handelStateForEdit = (leadData, record_type) => {
@@ -217,6 +317,7 @@ export class AddNewLeadImpl extends React.Component<
     const dealerCheckboxesData = {
       "CNG TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
       "KIT SERVICE": leadData.kit_service__c === "f" ? false : true,
+      "KIT REMOVE": leadData.cng_tune_up__c === "f" ? false : true,
       "KIT REFITTING": leadData.kit_refitting__c === "f" ? false : true,
       "CYLINDER REMOVE": leadData.cylinder_remove__c === "f" ? false : true,
       "CYLINDER REFITTING":
@@ -225,10 +326,104 @@ export class AddNewLeadImpl extends React.Component<
         leadData.greco_ace_kit_fitting__c === "f" ? false : true,
       "GRECO PRO KIT FITTING":
         leadData.greco_pro_kit_fitting__c === "f" ? false : true,
+      "DICKY FLOOR REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
+      "WIRING REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
+      "WIRING REMOVE & REFITTING": leadData.cng_tune_up__c === "f" ? false : true,
+      "REDUCER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "REDUCER SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "CARBURETTOR SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "THROTTLE BODY CLEANING": leadData.cng_tune_up__c === "f" ? false : true,
+      "AIR FILTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "SPARK PLUG R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "INGNITION COILS R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "INGNITION COIL CODE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "PICK UP COIL R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CNG SEQ. KIT TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
+      "ECM R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "MAP SENSOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "MAF/MAP SENSOR CLEAN": leadData.cng_tune_up__c === "f" ? false : true,
+      "GRECO INJECTOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "PETROL INJECTOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "TEMPRESURE SENSOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "TIMING ADVANCE PROCESS R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FILLER VALVE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FILLER VALVE REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
+      "LOW PRESSURE HOSE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "PRESSURE GAUGE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "HIGH PRESSURE PIPE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CYLINDER VALVE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "SWITCH R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "COOLANT REPLACE": leadData.cng_tune_up__c === "f" ? false : true,
+      "TAPPET SETTING": leadData.cng_tune_up__c === "f" ? false : true,
+      "OIL & OIL FILTER REPLACE": leadData.cng_tune_up__c === "f" ? false : true,
+      "HEIGHT PAD FITMENT": leadData.cng_tune_up__c === "f" ? false : true,
+      "O2 SENSOR R/R	": leadData.cng_tune_up__c === "f" ? false : true,
+      "O2 SENSOR CLEAN": leadData.cng_tune_up__c === "f" ? false : true,
+      "ENGINE TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
+      "ENGINE COMPRESSION CHECK": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL PUMP R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL FILTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL PUMP RELAY R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "ANNUAL MAINTAINANACE CONTRACT": leadData.cng_tune_up__c === "f" ? false : true,
+      "CNG LEAKAGE CHECK": leadData.cng_tune_up__c === "f" ? false : true,
+      "EMULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "MIXER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "1ST STAGE REGULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "2ND STAGE REGULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CYLINDER HYDROTESTING": leadData.cng_tune_up__c === "f" ? false : true,
+      "1ST STAGE REGULATOR ORING R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "INJECTOR NOZZLE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "GENERAL LABOUR CHARGES": leadData.cng_tune_up__c === "f" ? false : true,
+      "CAR SCANNING": leadData.cng_tune_up__c === "f" ? false : true,
+      "GAS FILLTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CYLINDER BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "1ST FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "2ND FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "3RD FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "TAPPET COVER PACKING REPLACE": leadData.cng_tune_up__c === "f" ? false : true,
+      "VACCUM HOSE PIPE R/R	": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL GAUGE CORRECTOR FITMENT": leadData.cng_tune_up__c === "f" ? false : true,
+      "RAIL BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "ECM BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "REDUCER BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "BLOCK PISTON R/R": leadData.cng_tune_up__c === "f" ? false : true,
     };
     this.setState({ dealerCheckboxes: dealerCheckboxesData });
     changeValuesInStore(formType, editData);
   };
+
+  InsertNewTask = async (data, leadTaskForm, id) => {
+    const { subject, priority, date, rating, status, callResult, comment} = leadTaskForm;
+    const SFID = await getData({
+      query: `SELECT * FROM Salesforce.lead WHERE id = '${id}'`,
+      token : data.token
+    })
+    console.log("SFID => ", SFID);
+
+    try {
+      const inserTask = await getData({
+        query: `insert into salesforce.task 
+        (Subject, priority, Status, Call_Results__c, Lead_Rating__c, 
+          ActivityDate, Description, IsReminderSet, whoid)values
+        ('${subject}', '${priority}', '${status}', '${callResult}', '${rating}', 
+        '${moment(date).format("MM/DD/YYYY")}', '${comment}', true, '${SFID.result[0].sfid}')
+        RETURNING Id`,
+        token: data.token
+      });
+      
+      console.log("inserTask => ", inserTask);
+      this.getAllTasks(data, SFID.result[0].sfid);
+      return inserTask.result;
+
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  handleInsertTaskSubmit = async () => {
+    this.InsertNewTask(loggedInUserDetails, this.props.leadTaskForm, this.state.id);
+    this.setState({ openEditModal: false });
+    changeValuesInStore(`leadTaskForm`, {});
+  }
 
   InsertLeadDistributor = async (data, userForm) => {
     const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource, rating, street, city, state, zip, country } = userForm;
@@ -310,11 +505,12 @@ export class AddNewLeadImpl extends React.Component<
          ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','0122w000000chRpAAI',
          ${dealerCheckboxes['CNG TUNE UP']},${dealerCheckboxes['KIT SERVICE']},${dealerCheckboxes['KIT REFITTING']},
          ${dealerCheckboxes['CYLINDER REFITTING']},
-         ${dealerCheckboxes['CYLINDER REMOVE']},${dealerCheckboxes['GRECO ACE KIT FITTING']},${dealerCheckboxes['GRECO PRO KIT FITTING']})`,
+         ${dealerCheckboxes['CYLINDER REMOVE']},${dealerCheckboxes['GRECO ACE KIT FITTING']},${dealerCheckboxes['GRECO PRO KIT FITTING']}) RETURNING Id`,
         token: data.token
       });
       ``
       console.log("insertLead => ", insertLead);
+      this.setState({ id: insertLead.result[0].id});
       return insertLead.result;
     } catch (e) {
       console.log(e);
@@ -371,11 +567,13 @@ export class AddNewLeadImpl extends React.Component<
     } else {
       await this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
     }
+    // this.setState({ activeTab: "Activity" })
     this.props.history.push("/leads")
   };
   handleLeadDealerUpdate = async () => {
     loggedInUserDetails = getToken().data;
     await this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
+    // this.setState({ activeTab: "Activity" })
     this.props.history.push("/leads")
   };
   handleToggle = (event, isInputChecked) => {
@@ -392,49 +590,51 @@ export class AddNewLeadImpl extends React.Component<
   // Basic Details Form
   public renderForm = () => {
     return (
-      <React.Fragment>
-        <SubFormHeading>Lead Basic Details</SubFormHeading>
-        <FormComponent
-          onSubmit={(v: any) => {
-            console.log(">> v", v);
-          }}
-          formModel="leadForm"
-          hasSubmit={false}
-          options={options}
-        />
-        <SubFormHeading>Lead Source and Rating Details</SubFormHeading>
-        <FormComponent
-          onSubmit={(v: any) => {
-            console.log(">> v", v);
-          }}
-          formModel="leadForm"
-          hasSubmit={false}
-          options={leadSource}
-        />
-        <SubFormHeading>Address Details</SubFormHeading>
-        <FormComponent
-          onSubmit={(v: any) => {
-            console.log(">> v", v);
-          }}
-          formModel="leadForm"
-          hasSubmit={false}
-          options={streetInputs}
-        />
-        <SubFormHeading>Vehicle Details</SubFormHeading>
-        <FormComponent
-          onSubmit={(v: any) => {
-            this.setState({
-              activeStep: this.state.activeStep + 1,
-            });
-            console.log(">> v", v);
-          }}
-          formModel="leadForm"
-          hasSubmit={true}
-          options={vehicleInputs}
-          submitTitle="Save"
-          cancelTitle="Previous"
-        />
-      </React.Fragment>
+      <div className="card-container add-leads-page">
+        <React.Fragment>
+          <SubFormHeading>Lead Basic Details</SubFormHeading>
+          <FormComponent
+            onSubmit={(v: any) => {
+              console.log(">> v", v);
+            }}
+            formModel="leadForm"
+            hasSubmit={false}
+            options={options}
+          />
+          <SubFormHeading>Lead Source and Rating Details</SubFormHeading>
+          <FormComponent
+            onSubmit={(v: any) => {
+              console.log(">> v", v);
+            }}
+            formModel="leadForm"
+            hasSubmit={false}
+            options={leadSource}
+          />
+          <SubFormHeading>Address Details</SubFormHeading>
+          <FormComponent
+            onSubmit={(v: any) => {
+              console.log(">> v", v);
+            }}
+            formModel="leadForm"
+            hasSubmit={false}
+            options={streetInputs}
+          />
+          <SubFormHeading>Vehicle Details</SubFormHeading>
+          <FormComponent
+            onSubmit={(v: any) => {
+              this.setState({
+                activeStep: this.state.activeStep + 1,
+              });
+              console.log(">> v", v);
+            }}
+            formModel="leadForm"
+            hasSubmit={true}
+            options={vehicleInputs}
+            submitTitle="Save"
+            cancelTitle="Previous"
+          />
+        </React.Fragment>
+      </div>
     );
   };
 
@@ -452,38 +652,40 @@ export class AddNewLeadImpl extends React.Component<
   // RTO Docs Form
   renderDocsForRTO = () => {
     return (
-      <React.Fragment>
-        <SubFormHeading >
-          Documents Required for RTO
-        </SubFormHeading>
-        <UploadContainer valKey={1} heading="Original R.C. Book" />
-        <UploadContainer
-          valKey={2}
-          heading="Bank NOC In case of Hypothecation"
-        />
-        <UploadContainer valKey={3} heading="Valid Insurance Photocopy" />
-        <UploadContainer valKey={4} heading="Permit" />
-        <UploadContainer valKey={5} heading="Tax" />
-        <UploadContainer valKey={6} heading="Passing" />
-        <SubFormHeading >
-          KYC Documents
-        </SubFormHeading>
-        <UploadContainer valKey={7} heading="Aadhaar Card" />
-        <UploadContainer valKey={8} heading="PAN Card" />{" "}
-        <FormComponent
-          onSubmit={(v: any) => {
-            console.log(">> v", v);
-            this.setState({
-              activeStep: this.state.activeStep + 1,
-            });
-          }}
-          formModel="leadForm"
-          hasSubmit={true}
-          options={[]}
-          submitTitle="Next"
-          cancelTitle="Previous"
-        />
-      </React.Fragment>
+      <div className="card-container add-leads-page">
+        <React.Fragment>
+          <SubFormHeading >
+            Documents Required for RTO
+          </SubFormHeading>
+          <UploadContainer valKey={1} heading="Original R.C. Book" />
+          <UploadContainer
+            valKey={2}
+            heading="Bank NOC In case of Hypothecation"
+          />
+          <UploadContainer valKey={3} heading="Valid Insurance Photocopy" />
+          <UploadContainer valKey={4} heading="Permit" />
+          <UploadContainer valKey={5} heading="Tax" />
+          <UploadContainer valKey={6} heading="Passing" />
+          <SubFormHeading >
+            KYC Documents
+          </SubFormHeading>
+          <UploadContainer valKey={7} heading="Aadhaar Card" />
+          <UploadContainer valKey={8} heading="PAN Card" />{" "}
+          <FormComponent
+            onSubmit={(v: any) => {
+              console.log(">> v", v);
+              this.setState({
+                activeStep: this.state.activeStep + 1,
+              });
+            }}
+            formModel="leadForm"
+            hasSubmit={true}
+            options={[]}
+            submitTitle="Next"
+            cancelTitle="Previous"
+          />
+        </React.Fragment>
+      </div>
     );
   };
 
@@ -603,7 +805,7 @@ export class AddNewLeadImpl extends React.Component<
 
   renderJobCard = () => {
     return (
-      <div className="job-card-container">
+      <div className="card-container add-leads-page">
         <SubFormHeading>GST Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
@@ -618,6 +820,45 @@ export class AddNewLeadImpl extends React.Component<
         />
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
+          <Grid container>
+            {Object.keys(this.state.complainCheckList).map((key, value) => {
+              // const isChecked = this.state.complainCheckList[key];
+              return (
+                <React.Fragment>
+                  <Grid
+                    className="checkbox-container"
+                    item
+                    xs={6}
+                    md={6}
+                    lg={6}
+                    sm={6}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <div className="label-text">{key}</div>
+                      <div>
+                        <Checkbox
+                          color="primary"
+                          inputProps={{ "aria-label": "secondary checkbox" }}
+                          onChange={this.handleToggle}
+                          key={key}
+                          name={key}
+                          // value={isChecked}
+                          // {...this.state.id && { checked: isChecked }}
+                        />
+                      </div>
+                    </div>
+                  </Grid>
+                </React.Fragment>
+              );
+            })}
+          </Grid>
         </div>
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
@@ -704,45 +945,46 @@ export class AddNewLeadImpl extends React.Component<
           </div>
         </SubFormHeading>
         <Grid container>
-          {detailsObj.map((dData) => {
+          {this.state.allTasks.map((dData) => {
             return (
               <Grid item xs={12} md={12} lg={12}>
                 <div className="activity-card card-container">
-                  <div className="details-text">
-                    <span className="description-text">S. No</span>{" "}
-                    {dData.sNumber}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Subject</span>{" "}
-                    {dData.subject}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Due Date</span>
-                    {dData.dueDate}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Rating</span>{" "}
-                    {dData.rating}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Priority</span>
-                    {dData.priotiy}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Status</span>{" "}
-                    {dData.status}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Call Result</span>
-                    {dData.callResult}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Comments</span>
-                    {dData.comments}
-                  </div>
-                  <div className="edit-button">
-                    <Edit />
-                  </div>
+
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">S. No.:</span>
+                    <span className="disp-details"> {dData.sNumber}</span>
+                  </Grid>
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">Subject:</span>
+                    <span className="disp-details"> {dData.subject}</span>
+                  </Grid>
+                
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">Due Date:</span>
+                    <span className="disp-details"> {dData.activitydate}</span>
+                  </Grid>
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">Rating:</span>
+                    <span className="disp-details"> {dData.lead_rating__c}</span>
+                  </Grid>
+                
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">Priority:</span>
+                    <span className="disp-details"> {dData.priority}</span>
+                  </Grid>
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">Status:</span>
+                    <span className="disp-details"> {dData.status}</span>
+                  </Grid>
+
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">Call result:</span>
+                    <span className="disp-details"> {dData.call_results__c}</span>
+                  </Grid>
+                  <Grid item className="padding-6" md={6} xs={6} lg={6}>
+                    <span className="description-text">Comment:</span>
+                    <span className="disp-details"> {dData.comments}</span>
+                  </Grid>
                 </div>
               </Grid>
             );
@@ -753,49 +995,71 @@ export class AddNewLeadImpl extends React.Component<
   };
 
   public renderFormForActivity = () => {
+    const handleChange = (value, key) => {
+      changeValuesInStore(`leadTaskForm.${key}`, value);
+    };
+
     return (
       <div className="lead-modal-form">
         <Grid container spacing={4}>
           <div className="product-selection">
             <Grid xs={12} md={5} sm={5}>
-              <GSelect
+              <Select
                 className="r-select"
                 placeholder="Subject"
-                options={products}
+                onChange={(e) => handleChange(e.value, "subject")}
+                options={[{value: "Call", label: "Call"}, 
+                  {value: "Send Letter", label: "Send Letter"}, 
+                  {value: "SL", label: "SL"}, 
+                  {value: "Send Quote", label: "Send Quote"}, 
+                  {value: "Other", label: "Other"}]}
               />
             </Grid>{" "}
             <span style={{ padding: "10px" }} />
             <Grid xs={12} md={5} sm={5}>
-              <input type="date" className="r-select" />{" "}
-            </Grid>
-          </div>
-        </Grid>
-        <Grid container spacing={4}>
-          <div className="product-selection">
-            <Grid xs={12} md={5} sm={5}>
-              <GSelect
+              <Select
                 className="r-select"
-                placeholder="Rating"
-                options={products}
+                placeholder="Priority"
+                onChange={(e) => handleChange(e.value, "priority")}
+                options={[{value: "High", label: "High"}, {value: "Normal", label: 'Normal'}]}
               />
             </Grid>{" "}
             <span style={{ padding: "10px" }} />
             <Grid xs={12} md={5} sm={5}>
-              <GSelect
-                className="r-select"
-                placeholder="Status"
-                options={products}
+              <input 
+                className="r-select" 
+                type="date" 
+                onChange={(e) => handleChange(e.target.value, "date")}
               />{" "}
             </Grid>
-          </div>
-        </Grid>
-        <Grid container spacing={4}>
-          <div className="product-selection">
+            <span style={{ padding: "10px" }} />
             <Grid xs={12} md={5} sm={5}>
-              <GSelect
+              <Select
+                className="r-select"
+                placeholder="Rating"
+                onChange={(e) => handleChange(e.value, "rating")}
+                options={[{value: "Hot", label: "Hot"}, {value: "Warm", label: "Warm"}, {value: "Cold", label: "Cold"}]}
+              />
+            </Grid>{" "}
+            <span style={{ padding: "10px" }} />
+            <Grid xs={12} md={5} sm={5}>
+              <Select
+                className="r-select"
+                placeholder="Status"
+                onChange={(e) => handleChange(e.value, "status")}
+                options={[{value: "Open", label: "Open"}, {value: "Completed", label: "Completed"}]}
+              />{" "}
+            </Grid>
+            <span style={{ padding: "10px" }} />
+            <Grid xs={12} md={5} sm={5}>
+            <Select
                 className="r-select"
                 placeholder="Call Result"
-                options={products}
+                onChange={(e) => handleChange(e.value, "callResult")}
+                options={[{value: "Phone", label: "Phone"}, 
+                  {value: "Space Unreachable", label: "Space Unreachable"},
+                  {value: "Customer didn't Pick", label: "Customer didn't Pick"},
+                  {value: "Spoke with Customer", label: "Spoke with Customer"}]}
               />
             </Grid>{" "}
             <span style={{ padding: "10px" }} />
@@ -805,13 +1069,14 @@ export class AddNewLeadImpl extends React.Component<
                 rows={3}
                 className="r-select textarea-full"
                 placeholder="Comments"
+                onChange={(e) => handleChange(e.target.value, "comment")}
                 variant="outlined"
               />{" "}
             </Grid>
           </div>
         </Grid>
         <div className="button-container">
-          <Button
+          {/* <Button
             onClick={() => this.setState({ openEditModal: false })}
             variant="contained"
             color="default"
@@ -820,7 +1085,17 @@ export class AddNewLeadImpl extends React.Component<
           </Button>
           <Button variant="contained" color="primary">
             Save
-          </Button>
+          </Button> */}
+          <FormComponent
+              onCancel={() => {this.setState({ openEditModal: false }); changeValuesInStore(`editUserForm`, {})}}
+              options={[]}
+              submitTitle="SAVE"
+              onSubmit={(v)=> {
+                this.handleInsertTaskSubmit();
+              }}
+              hasSubmit={true}
+              formModel="leadTaskForm"
+            />
         </div>
       </div>
     );
@@ -848,6 +1123,7 @@ export class AddNewLeadImpl extends React.Component<
     return (
       <Stepper
         activeStep={this.state.activeStep}
+        onChangeStep={ (index) =>  this.setState({ activeStep: index })}
         stepData={[
           {
             label: "Basic Details",
@@ -877,12 +1153,20 @@ export class AddNewLeadImpl extends React.Component<
   public tabData = () => [
     {
       tabName: "Details",
-      component: this.renderStepper(),
+      component: (
+        // <div className="card-container add-leads-page">
+          this.renderStepper()
+        // </div>
+      ),
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
     {
       tabName: "Activity",
-      component: this.renderActivitySection(),
+      component: (
+        // <div className="card-container add-leads-page">
+        this.renderActivitySection()
+        // </div>
+      ),
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
   ];
@@ -890,113 +1174,119 @@ export class AddNewLeadImpl extends React.Component<
   render() {
     return (
       <AppBar>
-        <div className="card-container no-hover add-leads-page">
+        {/* <div className="card-container add-leads-page"> */}
           {this.renderModal()}
-          <Typography variant="h5" color="inherit" noWrap={true}>
+          {/* <Typography variant="h5" color="inherit" noWrap={true}>
             {isDealer() ? "Lead Details - Customer" : "Lead - Dealer"}
-          </Typography>
+          </Typography> */}
           <div className="">
             {!isDealer() ? (
-              <Stepper
-                activeStep={this.state.activeStep}
-                stepData={[
-                  {
-                    label: "Draft",
-                    component: (
-                      <div>
-                        <SubFormHeading>Lead Basic Details</SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v.target.value);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="userForm"
-                          hasSubmit={false}
-                          submitTitle="Next"
-                          options={leadDealer}
-                        />
-                        <SubFormHeading>Address Details</SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                            console.log(">> this", this);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="userForm"
-                          hasSubmit={false}
-                          options={streetInputs}
-                        />
-                        <SubFormHeading >
-                          KYC Documents
-                        </SubFormHeading>
-                        <UploadContainer valKey={7} heading="Aadhaar Card" />
-                        <UploadContainer valKey={8} heading="PAN Card" />{" "}
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="leadForm"
-                          hasSubmit={true}
-                          options={[]}
-                          submitTitle="Next"
-                          cancelTitle="Previous"
-                        />
-                        {/* <button type = "submit"> submit </button> */}
-                      </div>
-                    ),
-                  },
-                  {
-                    label: "Documents Collection",
-                    component: (
-                      <div>
-                        <SubFormHeading>
-                          Regular Business Documentation
-                        </SubFormHeading>
-                        <SubFormHeading>
-                          Workshop Approval Process
-                        </SubFormHeading>
-                        <FormComponent
-                          onSubmit={(v: any) => {
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                            console.log(">> v", v);
-                            this.handleLeadDistributorSubmit();
-                          }}
-                          formModel="userForm"
-                          hasSubmit={true}
-                          options={[]}
-                        />
-                      </div>
-                    ),
-                  },
-                  {
-                    label: "Approval",
-                    component: <div>Approvals {`&`} Inventory Load</div>,
-                  },
-                ]}
-              />
+              <div className="card-container add-leads-page">
+                <Stepper
+                  activeStep={this.state.activeStep}
+                  onChangeStep={ (index) =>  this.setState({ activeStep: index })}
+                  stepData={[
+                    {
+                      label: "Draft",
+                      component: (
+                        <div>
+                          <SubFormHeading>Lead Basic Details</SubFormHeading>
+                          <FormComponent
+                            onSubmit={(v: any) => {
+                              console.log(">> v", v.target.value);
+                              this.setState({
+                                activeStep: this.state.activeStep + 1,
+                              });
+                            }}
+                            formModel="userForm"
+                            hasSubmit={false}
+                            submitTitle="Next"
+                            options={leadDealer}
+                          />
+                          <SubFormHeading>Address Details</SubFormHeading>
+                          <FormComponent
+                            onSubmit={(v: any) => {
+                              console.log(">> v", v);
+                              console.log(">> this", this);
+                              this.setState({
+                                activeStep: this.state.activeStep + 1,
+                              });
+                            }}
+                            formModel="userForm"
+                            hasSubmit={false}
+                            options={streetInputs}
+                          />
+                          <SubFormHeading >
+                            KYC Documents
+                          </SubFormHeading>
+                          <UploadContainer valKey={7} heading="Aadhaar Card" />
+                          <UploadContainer valKey={8} heading="PAN Card" />{" "}
+                          <FormComponent
+                            onSubmit={(v: any) => {
+                              console.log(">> v", v);
+                              this.setState({
+                                activeStep: this.state.activeStep + 1,
+                              });
+                            }}
+                            formModel="leadForm"
+                            hasSubmit={true}
+                            options={[]}
+                            submitTitle="Next"
+                            cancelTitle="Previous"
+                          />
+                          {/* <button type = "submit"> submit </button> */}
+                        </div>
+                      ),
+                    },
+                    {
+                      label: "Documents Collection",
+                      component: (
+                        <div>
+                          <SubFormHeading>
+                            Regular Business Documentation
+                          </SubFormHeading>
+                          <SubFormHeading>
+                            Workshop Approval Process
+                          </SubFormHeading>
+                          <FormComponent
+                            onSubmit={(v: any) => {
+                              this.setState({
+                                activeStep: this.state.activeStep + 1,
+                              });
+                              console.log(">> v", v);
+                              this.handleLeadDistributorSubmit();
+                            }}
+                            formModel="userForm"
+                            hasSubmit={true}
+                            options={[]}
+                          />
+                        </div>
+                      ),
+                    },
+                    {
+                      label: "Approval",
+                      component: <div>Approvals {`&`} Inventory Load</div>,
+                    },
+                  ]}
+                />
+              </div>
             ) : (
-                <Tabs tabsData={this.tabData()} />
-              )}
+                <Tabs 
+                // isIndex={this.state.activeTab} 
+                tabsData={this.tabData()} />
+            )}
           </div>
-        </div>
+        {/* </div> */}
       </AppBar>
     );
   }
 }
 export function mapStateToProps(state) {
-  const { userForm, leadForm } = state.rxFormReducer;
-  return { userForm, leadForm };
+  const { userForm, leadForm, leadTaskForm } = state.rxFormReducer;
+  return { userForm, leadForm, leadTaskForm };
 }
 export function mapDispatchToProps(dispatch) {
+  console.log("dispatch: ", dispatch);
   return { dispatch }
 }
 export const AddNewLead = connect<{}, {}, IAddNewLeadProps>(mapStateToProps)(
