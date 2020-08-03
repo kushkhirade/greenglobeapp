@@ -3,15 +3,15 @@ import { Add, PersonPin, Phone } from "@material-ui/icons";
 import ChatIcon from "@material-ui/icons/Chat";
 import MailIcon from "@material-ui/icons/Mail";
 import PhoneIcon from "@material-ui/icons/Phone";
-import WhatsappIcon from "./wtsapimg.png";
+import WhatsappIcon from "./../Customers/wtsapimg.png";
 import Rating from "@material-ui/lab/Rating";
 import * as React from "react";
 import { connect } from "react-redux";
 import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
-import "./customers.scss";
+import "./../Customers/customers.scss";
 import { withRouter } from "react-router-dom";
-import filter from "./filter.svg";
+import filter from "./../Customers/filter.svg";
 import Search from "@material-ui/icons/Search";
 import { IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
@@ -19,13 +19,13 @@ import { getToken, isDealer } from "./../../state/Utility";
 import { saveDealerData } from "src/actions/App.Actions";
 import { ChangePhoneFormat } from "src/components/Format";
 
-export interface ICustomersProps {
+export interface IJobCardsProps {
   history: IHistory;
   location: any
 }
 
-export class CustomersImpl extends React.PureComponent<ICustomersProps, {customers: any}> {
-  constructor(props: ICustomersProps) {
+export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {customers: any}> {
+  constructor(props: IJobCardsProps) {
     super(props);
     this.state = {
       customers : []
@@ -34,8 +34,8 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
 
   async componentDidMount(){
     const { data } = getToken();
-    const customerData = await this.getAllCustomers(data);
-    this.setState({ customers : customerData });
+    const jobCardData = await this.getAllCustomers(data);
+    this.setState({ customers : jobCardData });
   }
 
   getAllCustomers = async (data) => {
@@ -47,26 +47,26 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
       recordtypeid = location.data.recordtypeid;
     }
     try{
-      let customerData;
+      let jobCardData;
       if(recordtypeid === '0122w000000cwfSAAQ'){
-        customerData = await getData({
+        jobCardData = await getData({
           query: `SELECT *
           FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = ''`,
           token: data.token
         })
       }
       else if(recordtypeid === "0122w000000cwfNAAQ"){
-        customerData = await getData({
+        jobCardData = await getData({
           query: `SELECT *
           FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
+          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = ''`,
           token: data.token
         });
       }
 
-      console.log("customerData =>", customerData.result)
-      return customerData.result;
+      console.log("jobCardData =>", jobCardData.result)
+      return jobCardData.result;
     }
     catch(e){
       console.log(e);
@@ -99,9 +99,9 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
           {this.state.customers && this.state.customers.map(cust => {
           return (
             <Grid item xs={12} md={6}>
-              <CustomerList
+              <JobCardsList
                 onClickDetails={this.handleCustomerDetails}
-                customerData={cust}
+                jobCardData={cust}
               />
             </Grid>
           )}
@@ -116,15 +116,15 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
 export function mapStateToProps() {
   return {};
 }
-export const Customers = withRouter(
-  connect<{}, {}, ICustomersProps>(mapStateToProps)(CustomersImpl as any) as any
+export const JobCards = withRouter(
+  connect<{}, {}, IJobCardsProps>(mapStateToProps)(JobCardsImpl as any) as any
 );
 
-const CustomerList = (props: any) => {
-  const { customerData } = props;
+const JobCardsList = (props: any) => {
+  const { jobCardData } = props;
   return (
     // <div className="cards-main">
-    // {props.customerData.map((customerData: any, index: any) => {
+    // {props.jobCardData.map((jobCardData: any, index: any) => {
     // return (
       <div className="card-container" >
         <Grid container >
@@ -135,7 +135,7 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <PersonPin /> <span style={{ padding: "5px" }} />
-            {customerData.name}
+            {jobCardData.name}
           </Grid>
           <Grid
             className="padding-6-corners"
@@ -144,35 +144,35 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <Phone /> <span style={{ padding: "5px" }} />
-            {customerData.phone && ChangePhoneFormat(customerData.phone)}
+            {jobCardData.phone && ChangePhoneFormat(jobCardData.phone)}
           </Grid>
         </Grid>
         <Grid container >
           {/* <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Email:</span>
-            {customerData.email || 'NA'}
+            {jobCardData.email || 'NA'}
           </Grid> */}
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Purchased Product:</span>
-            {customerData.purchased_product__c}
+            {jobCardData.purchased_product__c}
           </Grid>
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Dealer Rating:</span>
-            {customerData.dealer_rating__c}
+            {jobCardData.dealer_rating__c}
           </Grid>
         </Grid>
         <Grid container >
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text">Dealer Code:</span>
-            {customerData.dealer_code__c}
+            {jobCardData.dealer_code__c}
             {/* <Rating
               readOnly
               precision={0.5}
-              value={customerData.dealerRating}
+              value={jobCardData.dealerRating}
             /> */}
           </Grid>
           <Grid className="padding-6-corners" item xs={4} md={4}> 
-          <span onClick={() => props.onClickDetails(customerData)} className="view">
+          <span onClick={() => props.onClickDetails(jobCardData)} className="view">
             View Details
           </span>
         </Grid>

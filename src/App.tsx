@@ -70,6 +70,7 @@ const AddNewJobCard = React.lazy(() =>
 // import { Support } from "./pages/support";
 import { store } from "./store/Store";
 import { MyUsers } from "./pages/MyUsers";
+import { JobCards } from "./pages/JobCard/JobCardList";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
 import { CustomerLeadDetails } from "./pages/Customers/CustomerLeadDetails";
@@ -152,8 +153,12 @@ class App extends React.Component {
                 component={CustomerLeadDetails}
               />
               <ProtectedRoute
-                path="/jobcard"
+                path="/add-new-jobcard"
                 component={AddNewJobCard}
+              />
+              <ProtectedRoute
+                path="/job-cards"
+                component={JobCards}
               />
               <ProtectedRoute path="/customers" component={Customers} />
               <ProtectedRoute

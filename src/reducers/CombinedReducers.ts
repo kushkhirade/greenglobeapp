@@ -55,9 +55,19 @@ export const userForm= {
   street: ""
 }
 
+export const leadTaskForm= {
+  subject: "",
+  priority: "",
+  date: "",
+  rating: "",
+  status: "",
+  callResult: "",
+  comment: "",
+}
 const rxFormReducer = combineForms({
   userForm,
   leadForm,
+  leadTaskForm,
   customerForm: {},
   editUserForm: {},
 

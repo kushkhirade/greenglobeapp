@@ -99,6 +99,7 @@ export const FormComponent = (props: any) => {
           <Button
             onClick={() => {
               const values = store.getState().rxFormReducer[props.formModel];
+              console.log("Values: ", values)
               props.onSubmit(values);
             }}
             variant="contained"

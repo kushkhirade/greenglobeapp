@@ -69,7 +69,7 @@ export const routes = (isDealerApp) => [
     title: "Add New Customer",
   },
   {
-    path: "/jobcard",
+    path: "/add-new-jobcard",
     title: "Add New JobCard",
     icon: () => <FiberNew/>
   },
@@ -80,7 +80,7 @@ export const routes = (isDealerApp) => [
   },
   {
     hidden: true,
-    path: "/leads/edit-lead/",
+    path: "/leads/edit-lead/:id",
     title: isDealer() ? "Lead Details - Customer" : "Lead - Dealer",
   },
   {

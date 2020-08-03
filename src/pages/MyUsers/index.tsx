@@ -50,6 +50,11 @@ const userFormOptions = [
     model: ".firstName",
   },
   {
+    label: "Last Name",
+    type: "text",
+    model: ".lastName",
+  },
+  {
     label: "Email",
     type: "text",
     model: ".email",
@@ -63,7 +68,11 @@ const userFormOptions = [
     label: "Role",
     type: "select",
     model: ".role",
-    options: [],
+    options: [
+      {label: "Sales", value: "Sales"},
+      {label: "Inventory", value: "Inventory"},
+      {label: "Account", value: "Account"},
+    ],
   },
 ];
 
@@ -88,7 +97,7 @@ export class MyUsersImpl extends React.PureComponent<
       const getUsers = await getData({
         query: `SELECT Firstname, Lastname, Name, Phone, Whatsapp_number__c, Email, Role__c, username__c, Password__c, sfid, id
         FROM salesforce.Contact 
-        WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0120l000000ot11AAA'  `,
+        WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WDzAAM'  `,
         token: data.token
       })
       console.log("getUsers => ", getUsers);
@@ -123,7 +132,7 @@ export class MyUsersImpl extends React.PureComponent<
           values (
             '${values.firstName}', '${values.lastName}', '${values.firstName} ${values.lastName}',
             '${values.email}', '${values.phone}', '${values.role}', 
-            '0120l000000ot11AAA', '${data.sfid}'
+            '0121s0000000WDzAAM', '${data.sfid}'
           ) RETURNING id`,
         token: data.token
       })
@@ -172,17 +181,19 @@ export class MyUsersImpl extends React.PureComponent<
             {values.sfid ? `Edit User ${values.firstName} ${values.lastName}` : "Add New User" }
           </SubFormHeading>
           <Grid container className="modal-margin" xs={12} md={12}>
-            {/* <FormComponent
+            <FormComponent
               onCancel={() => this.setState({ openEditModal: false })}
               options={userFormOptions}
               onSubmit={(v)=> {
-                this.setState({ openEditModal: false }),
-                console.log("Values: ", store.getState().rxFormReducer["editUserForm"])
+                this.InsertUpdateMyUser(loggedInUserDetails, values);
+                this.getAllUsers(loggedInUserDetails);
+                changeValuesInStore(`editUserForm`, {})
+                this.setState({ openEditModal: false });
               }}
               hasSubmit={true}
               formModel="editUserForm"
-            /> */}
-          <Grid item={true} xs={12} md={6} sm={6}>
+            />
+          {/* <Grid item={true} xs={12} md={6} sm={6}>
             <TextField
               className="form-input"
               id="outlined-basic"
@@ -238,7 +249,7 @@ export class MyUsersImpl extends React.PureComponent<
                 {label: "Manager", value: "Manager"}
               ]}
             /> */}
-            <TextField
+            {/* <TextField
               className="form-input"
               id="outlined-basic"
               label="Role"
@@ -265,7 +276,7 @@ export class MyUsersImpl extends React.PureComponent<
               }}
               hasSubmit={true}
               formModel="editUserForm"
-            />
+            />  */}
           </Grid>
         </Grid>
       </BaseModal>
@@ -281,12 +292,15 @@ export class MyUsersImpl extends React.PureComponent<
             <UserCard
               handleEditModelOprn={(data) =>{
                 this.setState({ openEditModal: true})
-                changeValuesInStore(`editUserForm.firstName`, data.firstname)            
-                changeValuesInStore(`editUserForm.lastName`, data.lastname)            
-                changeValuesInStore(`editUserForm.email`, data.email)            
-                changeValuesInStore(`editUserForm.phone`, data.phone)            
-                changeValuesInStore(`editUserForm.role`, data.role__c)            
-                changeValuesInStore(`editUserForm.id`, data.id)            
+                const editData = {
+                  firstName: data.firstname,
+                  lastName: data.lastname,
+                  email: data.email,
+                  phone: data.phone,
+                  role: data.role__c,
+                  id: data.id,
+                }
+                changeValuesInStore(`editUserForm`, editData);          
               }}
               handleClickDelete={(data) => {
                 this.deleteMyUser(loggedInUserDetails, data);
