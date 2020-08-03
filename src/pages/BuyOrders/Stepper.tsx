@@ -2,9 +2,9 @@ import * as React from "react";
 import { Button } from "@material-ui/core";
 
 export class Stepper extends React.Component<any, any> {
-  state = { activeStep: this.props.activeStep, stepData: this.props.stepData };
+  state = { activeStep: this.props.activeStep, stepData: this.props.stepData, isAlreadyUpdate: false };
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nP, nS) {
     const current = document.getElementsByClassName("active")[0];
     if (current) {
       current.scrollIntoView({
@@ -13,19 +13,19 @@ export class Stepper extends React.Component<any, any> {
         inline: "center",
       });
     }
-    if (nextProps.activeStep && nextState.activeStep !== nextProps.activeStep) {
+    if (nP.activeStep && nS.activeStep !== nP.activeStep) {
+        this.setState({
+          activeStep: nP.activeStep,
+        });
+      return true;
+    }
+    if (this.props.identifier !== nP.identifier) {
       this.setState({
-        activeStep: nextProps.activeStep,
+        activeStep: nP.activeStep || 0,
       });
       return true;
     }
-    if (this.props.identifier !== nextProps.identifier) {
-      this.setState({
-        activeStep: nextProps.activeStep || 0,
-      });
-      return true;
-    }
-    if (this.state.activeStep !== nextState.activeStep) {
+    if (this.state.activeStep !== nS.activeStep) {
       return true;
     }
     return false;
@@ -44,9 +44,6 @@ export class Stepper extends React.Component<any, any> {
               <div
                 key={index}
                 onClick={() => {
-                  // if (this.props.activeStep) {
-                  //   return;
-                  // }
                   this.setState({ activeStep: index });
                   this.props.onChangeStep && this.props.onChangeStep(index);
                   console.log("index: ", index)

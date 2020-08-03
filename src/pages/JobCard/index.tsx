@@ -27,7 +27,7 @@ import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
 import { GSelect } from "src/components/GSelect";
 import data from "./../../data";
-import { getToken } from "src/state/Utility";
+import { getToken, changeValuesInStore } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { AnyCnameRecord } from "dns";
 import { LabelList } from "recharts";
@@ -95,7 +95,7 @@ const products = [
 
 export class AddNewJobCardImpl extends React.Component<
   IAddNewJobCardProps,
-  { openEditModal: boolean; activeTab: number; activeStep: number,jobCardCheckboxesChanged:boolean, OpenAddJobCard: boolean, jobCardCheckboxes: any, allCustAndLeads: any, complainCheckList: any,}
+  { openEditModal: boolean; activeTab: number; activeStep: number,jobCardCheckboxesChanged:boolean, OpenAddJobCard: boolean, jobCardCheckboxes: any, complaintCheckboxes:any, allCustAndLeads: any, selectedUser: any }
   > {
   constructor(props: IAddNewJobCardProps) {
     super(props);
@@ -105,93 +105,94 @@ export class AddNewJobCardImpl extends React.Component<
       activeStep: 0,
       OpenAddJobCard: false,
       jobCardCheckboxesChanged:false,
-      complainCheckList: {
+      jobCardCheckboxes: {
+        "ANNUAL MAINTAINANACE CONTRACT": false,
+        "AIR FILTER R/R": false,
+        "BLOCK PISTON R/R": false,
+        "CNG TUNE UP": false,
+        "CYLINDER REMOVE": false,
+        "CYLINDER REFITTING": false,
+        "CARBURETTOR SERVICE": false,
+        "CAR SCANNING": false,
+        "CNG LEAKAGE CHECK":false,
+        "CNG SEQ. KIT TUNE UP": false,
+        "COOLANT REPLACE": false,
+        "CYLINDER BRACKET R/R": false,
+        "CYLINDER HYDROTESTING": false,
+        "CYLINDER VALVE R/R": false,
+        "DICKY FLOOR REPAIR": false,
+        "ECM BRACKET R/R": false,
+        "ECM R/R": false,
+        "EMULATOR R/R": false,
+        "ENGINE COMPRESSION CHECK": false,
+        "ENGINE TUNE UP": false,
+        "FILLER VALVE REPAIR": false,
+        "FILLER VALVE R/R": false,
+        "FUEL FILTER R/R": false,
+        "FUEL GAUGE CORRECTOR FITMENT": false,
+        "FUEL PUMP RELAY R/R": false,
+        "FUEL PUMP R/R": false,
+        "GRECO ACE KIT FITTING": false,
+        "GRECO PRO KIT FITTING": false,
+        "GAS FILLTER R/R": false,
+        "GENERAL LABOUR CHARGES": false,
+        "GRECO INJECTOR R/R": false,
+        "HEIGHT PAD FITMENT": false,
+        "HIGH PRESSURE PIPE R/R": false,
+        "INGNITION COILS R/R": false,
+        "INGNITION COIL CODE R/R": false,
+        "INJECTOR NOZZLE R/R": false,
+        "KIT REMOVE": false,
+        "KIT SERVICE": false,
+        "KIT REFITTING": false,
+        "LOW PRESSURE HOSE R/R": false,
+        "MAF/MAP SENSOR CLEAN": false,
+        "MAP SENSOR R/R": false,
+        "MIXER R/R": false,
+        "O2 SENSOR CLEAN": false,
+        "O2 SENSOR R/R": false,
+        "OIL & OIL FILTER REPLACE": false,
+        "PETROL INJECTOR R/R": false,
+        "PICK UP COIL R/R": false,
+        "PRESSURE GAUGE R/R": false,
+        "RAIL BRACKET R/R": false,
+        "REDUCER BRACKET R/R": false,
+        "REDUCER R/R":false,
+        "REDUCER SERVICE": false,
+        "SPARK PLUG R/R": false,
+        "SWITCH R/R": false,
+        "TAPPET COVER PACKING REPLACE": false,
+        "TAPPET SETTING": false,
+        "TEMPRESURE SENSOR R/R": false,
+        "THROTTLE BODY CLEANING": false,
+        "TIMING ADVANCE PROCESS R/R": false,
+        "VACCUM HOSE PIPE R/R": false,
+        "WIRING REMOVE & REFITTING": false,
+        "WIRING REPAIR": false,
+        "1ST FREE SERVICE": false,
+        "1ST STAGE REGULATOR ORING R/R": false,
+        "1ST STAGE REGULATOR R/R": false,
+        "2ND FREE SERVICE": false,
+        "2ND STAGE REGUALTOR R/R": false,
+        "3RD FREE SERVICE": false,
+      },
+      complaintCheckboxes: {
         "Low Average / Mileage": false,
         "Late Starting Problem": false,
         "Jerking / Missing / Low Pick": false,
         "Changeover - Switch / Pressure Gauge Indication Problem": false,
         "Vehicle Not Changing over to CNG": false,
-        "GVehicle Not starting in Petrol": false,
-        "Engine Shutdown in Idleing mode / Return to idle from high RPM": false,
+        "Vehicle Not starting in Petrol": false,
+        "Engine Shutdown in Idleing mode / Return to idle from high RPM mode": false,
         "Less/Slow Gas Filling in Tank": false,
         "Check Engine Light on Cluster": false,
         "Petrol Consumption even when car running on CNG": false,
         "Noise after/due to CNG Kit Fittment": false,
         "Gas Leakage / Sound / Smell": false,
-        "Switch Not Working(No lights on switch)": false,   
-        "Buzzer Noise on Switch": false,   
+        "Switch Not Working(No lights on switch)": false,
+        "Buzzer Noise on Switch": false,
       },
-      jobCardCheckboxes: {
-      "CNG TUNE UP": false,
-      "KIT SERVICE": false,
-      "KIT REMOVE": false,
-      "KIT REFITTING": false,
-      "CYLINDER REMOVE": false,
-      "CYLINDER REFITTING": false,
-      "GRECO ACE KIT FITTING": false,
-      "GRECO PRO KIT FITTING": false,
-      "DICKY FLOOR REPAIR": false,
-      "WIRING REPAIR": false,
-      "WIRING REMOVE & REFITTING": false,
-      "REDUCER R/R": false,
-      "REDUCER SERVICE": false,
-      "CARBURETTOR SERVICE": false,
-      "THROTTLE BODY CLEANING": false,
-      "AIR FILTER R/R": false,
-      "SPARK PLUG R/R": false,
-      "INGNITION COILS R/R": false,
-      "INGNITION COIL CODE R/R": false,
-      "PICK UP COIL R/R": false,
-      "CNG SEQ. KIT TUNE UP": false,
-      "ECM R/R": false,
-      "MAP SENSOR R/R": false,
-      "MAF/MAP SENSOR CLEAN": false,
-      "GRECO INJECTOR R/R": false,
-      "PETROL INJECTOR R/R": false,
-      "TEMPRESURE SENSOR R/R": false,
-      "TIMING ADVANCE PROCESS R/R": false,
-      "FILLER VALVE R/R": false,
-      "FILLER VALVE REPAIR": false,
-      "LOW PRESSURE HOSE R/R": false,
-      "PRESSURE GAUGE R/R": false,
-      "HIGH PRESSURE PIPE R/R": false,
-      "CYLINDER VALVE R/R": false,
-      "SWITCH R/R": false,
-      "COOLANT REPLACE": false,
-      "TAPPET SETTING": false,
-      "OIL & OIL FILTER REPLACE": false,
-      "HEIGHT PAD FITMENT": false,
-      "O2 SENSOR R/R	": false,
-      "O2 SENSOR CLEAN": false,
-      "ENGINE TUNE UP": false,
-      "ENGINE COMPRESSION CHECK": false,
-      "FUEL PUMP R/R": false,
-      "FUEL FILTER R/R": false,
-      "FUEL PUMP RELAY R/R": false,
-      "ANNUAL MAINTAINANACE CONTRACT": false,
-      "CNG LEAKAGE CHECK": false,
-      "EMULATOR R/R": false,
-      "MIXER R/R": false,
-      "1ST STAGE REGULATOR R/R": false,
-      "2ND STAGE REGULATOR R/R": false,
-      "CYLINDER HYDROTESTING": false,
-      "1ST STAGE REGULATOR ORING R/R": false,
-      "INJECTOR NOZZLE R/R": false,
-      "GENERAL LABOUR CHARGES": false,
-      "CAR SCANNING": false,
-      "GAS FILLTER R/R": false,
-      "CYLINDER BRACKET R/R": false,
-      "1ST FREE SERVICE": false,
-      "2ND FREE SERVICE": false,
-      "3RD FREE SERVICE": false,
-      "TAPPET COVER PACKING REPLACE": false,
-      "VACCUM HOSE PIPE R/R	": false,
-      "FUEL GAUGE CORRECTOR FITMENT": false,
-      "RAIL BRACKET R/R": false,
-      "ECM BRACKET R/R": false,
-      "REDUCER BRACKET R/R": false,
-      "BLOCK PISTON R/R": false,
-      },
+      selectedUser: null,
       allCustAndLeads: [],
     };
   }
@@ -206,34 +207,36 @@ export class AddNewJobCardImpl extends React.Component<
     let custLeadsDataArr;
     try {
       if(isDealer()){
+        console.log('----------------Dealer---------------------------')
         const custData = await getData({
-          query: `SELECT Name, sfid FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0121s0000000WE4AAM' AND Name is not null`,
+          query: `SELECT * FROM salesforce.Contact 
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0120l000000ot16AAA' AND Name is not null`,
           token: data.token
         });
-        custLeadsDataArr = custData.result;
+        custLeadsDataArr = custData.result.map(x => {x.type = 'customer';return x});
 
         const leadsData = await getData({
-          query: `SELECT name FROM salesforce.Lead 
+          query: `SELECT * from salesforce.Lead 
           WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' AND Name is not null`,
           token: data.token
         });
-        leadsData.result.map(l => custLeadsDataArr.push(l) );
+        leadsData.result.map(l => {l.type = "lead"; return custLeadsDataArr.push(l)} );
       }
       else{
+        console.log('----------------Distributor---------------------------')
         const custData = await getData({
-          query: `SELECT Name ,sfid  FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WE4AAM'  AND Name is not null`,
+          query: `SELECT * FROM salesforce.Contact 
+          WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0120l000000ot16AAA'  AND Name is not null`,
           token: data.token
         });
-        custLeadsDataArr = custData.result;
+        custLeadsDataArr = custData.result.map(x => {x.type = 'customer';return x});
   
         const leadsData = await getData({
-          query: `SELECT name,sfid FROM salesforce.Lead 
+          query: `SELECT * FROM salesforce.Lead 
           WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' AND Name is not null`,
           token: data.token
         });
-        leadsData.result.map(l => custLeadsDataArr.push(l) );
+        leadsData.result.map(l => {l.type = "lead"; return custLeadsDataArr.push(l)} );
       }
       console.log("custLeadsDataArr: ", custLeadsDataArr);
       this.setState({ allCustAndLeads: custLeadsDataArr});
@@ -276,20 +279,115 @@ export class AddNewJobCardImpl extends React.Component<
     }
   }
 
+  InsertLeadDealer = async (data, leadForm) => {
+    const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource,
+      rating, street, city, state, zip, country, vehicleNumber, fuelType, wheeles, vehicleMek, vehicleModel, usage, vehicleType, dailyRunning,
+      registration, mfg, chassis, gstNumber } = leadForm;
+    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
+    const { dealerCheckboxes } = this.state;
+    try {
+      const insertLead = await getData({
+        query: `INSERT INTO salesforce.Lead
+        (name,FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
+          Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
+          Rating,Street,City,State,PostalCode,Country,
+          Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,
+          Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
+          GST_Number__c,Assigned_Dealer__c,RecordTypeId,CNG_TUNE_UP__c,KIT_SERVICE__c,KIT_REFITTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,
+          GRECO_ACE_KIT_FITTING__c,GRECO_PRO_KIT_FITTING__c)
+         Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
+         '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}',
+         '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
+         ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${chassis ?? ""}','${gstNumber ?? ""}','${data.sfid}','0122w000000chRpAAI',
+         ${dealerCheckboxes['CNG TUNE UP']},${dealerCheckboxes['KIT SERVICE']},${dealerCheckboxes['KIT REFITTING']},
+         ${dealerCheckboxes['CYLINDER REFITTING']},
+         ${dealerCheckboxes['CYLINDER REMOVE']},${dealerCheckboxes['GRECO ACE KIT FITTING']},${dealerCheckboxes['GRECO PRO KIT FITTING']})`,
+        token: data.token
+      });
+      ``
+      console.log("insertLead => ", insertLead);
+      return insertLead.result;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  InsertLeadDistributor = async (data, userForm) => {
+    const { firstName, middleName, lastName, email, company, whatsAppNumber, leadType, leadSource, leadStatus, subLeadSource, rating, street, city, state, zip, country } = userForm;
+    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
+    try {
+      const insertLead = await getData({
+        query: `INSERT INTO salesforce.Lead
+        (name, FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
+          Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
+          Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
+         Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${leadType ?? ""}',
+         '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${country ?? ""}','0122w000000chRuAAI','${data.sfid}')`,
+        token: data.token
+      });
+      console.log("insertLead => ", insertLead);
+      return insertLead.result;
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  insertJobCardForm = async(data, leadForm) => {
+      const{jobCardCheckboxes: jCC, selectedUser = null} = this.state;
+    try {
+      const query = `INSERT INTO salesforce.job_card__c (customer__c,Lead__c,AIR_FILTER_R_R__c	,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,
+        FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c	,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c	,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c	,GRECO_PRO_KIT_FITTING__c,
+
+        HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,
+
+        MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,
+
+        REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,
+
+        VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c
+        ) VALUES
+        
+         ('${selectedUser && selectedUser.type === "customer" ? selectedUser.sfid: '' }','${selectedUser && selectedUser.type === "lead" ? selectedUser.sfid: '' }',${jCC['AIR FILTER R/R']},${jCC['BLOCK PISTON R/R']},${jCC['CARBURETTOR SERVICE']},${jCC['CAR SCANNING']},${jCC['CNG LEAKAGE CHECK']},${jCC['CNG SEQ. KIT TUNE UP']},${jCC['CNG TUNE UP']},${jCC['COOLANT REPLACE']},${jCC['CYLINDER BRACKET R/R']},${jCC['CYLINDER HYDROTESTING']},
+        ${jCC['CYLINDER REFITTING']},${jCC['CYLINDER REMOVE']},${jCC['CYLINDER VALVE R/R']},${jCC['DICKY FLOOR REPAIR']},${jCC['ECM BRACKET R/R']},${jCC['ECM R/R']},${jCC['EMULATOR R/R']},${jCC['ENGINE COMPRESSION CHECK']},${jCC['ENGINE TUNE UP']},${jCC['FILLER VALVE REPAIR']},
+        ${jCC['FILLER VALVE R/R']},${jCC['FUEL FILTER R/R']},${jCC['FUEL GAUGE CORRECTOR FITMENT']},${jCC['FUEL PUMP RELAY R/R']},${jCC['FUEL PUMP R/R']},${jCC['GAS FILLTER R/R']},${jCC['GENERAL LABOUR CHARGES']},${jCC['GRECO ACE KIT FITTING']},${jCC['GRECO INJECTOR R/R']},${jCC['GRECO PRO KIT FITTING']},
+        ${jCC['HEIGHT PAD FITMENT']},${jCC['HIGH PRESSURE PIPE R/R']},${jCC['INGNITION COILS R/R']},${jCC['INGNITION COIL CODE R/R']},${jCC['INJECTOR NOZZLE R/R']},${jCC['KIT REFITTING']},${jCC['KIT REMOVE']},${jCC['KIT SERVICE']},${jCC['LOW PRESSURE HOSE R/R']},${jCC['MAF/MAP SENSOR CLEAN']},
+
+        ${jCC['MAP SENSOR R/R']},${jCC['MIXER R/R']},${jCC['O2 SENSOR CLEAN']},${jCC['O2 SENSOR R/R']},${jCC['OIL & OIL FILTER REPLACE']},${jCC['PETROL INJECTOR R/R']},${jCC['PICK UP COIL R/R']},${jCC['PRESSURE GAUGE R/R']},${jCC['RAIL BRACKET R/R']},${jCC['REDUCER BRACKET R/R']},
+
+        ${jCC['REDUCER R/R']},${jCC['REDUCER SERVICE']},${jCC['SPARK PLUG R/R']},${jCC['SWITCH R/R']},${jCC['ANNUAL MAINTAINANACE CONTRACT']},${jCC['TAPPET COVER PACKING REPLACE']},${jCC['TAPPET SETTING']},${jCC['TEMPRESURE SENSOR R/R']},${jCC['THROTTLE BODY CLEANING']},${jCC['TIMING ADVANCE PROCESS R/R']},
+
+        ${jCC['VACCUM HOSE PIPE R/R']},${jCC['WIRING REMOVE & REFITTING']},${jCC['WIRING REPAIR']},${jCC['1ST FREE SERVICE']},${jCC['1ST STAGE REGULATOR ORING R/R']},${jCC['1ST STAGE REGULATOR R/R']},${jCC['2ND FREE SERVICE']},${jCC['2ND STAGE REGUALTOR R/R']},${jCC['3RD FREE SERVICE']}
+        )`;
+      const insertJobCard = await getData({ query, token: data.token });
+      console.log("insertJobCard => ", insertJobCard);
+      return insertJobCard.result;
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
   handleJobCardDealerInsert = async () => {
-    this.InsertJobCardDealer(loggedInUserDetails, this.props.leadForm);
+    //this.InsertJobCardDealer(loggedInUserDetails, this.props.leadForm);
+    if(isDealer()) {
+      console.log('dealer')
+    } else {
+      console.log('distributo')
+    }
+    this.insertJobCardForm(loggedInUserDetails, this.props.leadForm);
     //  this.props.history.push("/leads")
   };
-  handleToggle = (event, isInputChecked) => {
+  handleToggle = (type:string) => (event, isInputChecked) => {
     let fieldName = event.target.name;
-    let jobCardCheckboxes = this.state.jobCardCheckboxes;
+    let jobCardCheckboxes = this.state[type];
     jobCardCheckboxes[fieldName] = isInputChecked;
     const jobCardCheckboxesChanged = !this.state.jobCardCheckboxesChanged;
-    this.setState({
+    const obj = {
       jobCardCheckboxesChanged,
-      jobCardCheckboxes,
-    })
-    console.log(this.state.jobCardCheckboxes)
+      [type]: jobCardCheckboxes,
+    };
+    this.setState(obj);
   };
 
 
@@ -356,7 +454,7 @@ export class AddNewJobCardImpl extends React.Component<
   };
 
   // RTO Docs Form
-  renderDocsForRTO = () => {
+  /* renderDocsForRTO = () => {
     return (
       <React.Fragment>
         <SubFormHeading >
@@ -392,9 +490,9 @@ export class AddNewJobCardImpl extends React.Component<
       </React.Fragment>
     );
   };
-
+ */
   // Negotiation Form
-  renderNegotitation = () => {
+/*   renderNegotitation = () => {
     return (
       <div className="negotitation-container">
         <div style={{ textAlign: "right" }}>
@@ -443,10 +541,10 @@ export class AddNewJobCardImpl extends React.Component<
         />
       </div>
     );
-  };
+  }; */
 
   // Closed
-  renderClosedTab = () => {
+  /* renderClosedTab = () => {
     return (
       <div style={{ width: "100%" }}>
         <TableWithGrid
@@ -495,7 +593,7 @@ export class AddNewJobCardImpl extends React.Component<
         />
       </div>
     );
-  };
+  }; */
 
   checkboxInputs = [
     "CNG TUNE UP",
@@ -525,36 +623,18 @@ export class AddNewJobCardImpl extends React.Component<
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
-            {Object.keys(this.state.complainCheckList).map((key, value) => {
-              // const isChecked = this.state.dealerCheckboxes[key];
+          {Object.keys(this.state.complaintCheckboxes).map((key, value) => {
+              const isChecked = this.state.jobCardCheckboxesChanged[key];
               return (
                 <React.Fragment>
-                  <Grid
-                    className="checkbox-container"
-                    item
-                    xs={6}
-                    md={6}
-                    lg={6}
-                    sm={6}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
+                  <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6} >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", }} >
                       <div className="label-text">{key}</div>
                       <div>
                         <Checkbox
-                          color="primary"
-                          inputProps={{ "aria-label": "secondary checkbox" }}
-                          onChange={this.handleToggle}
-                          key={key}
-                          name={key}
-                          // value={isChecked}
-                          // {...this.state.id && { checked: isChecked }}
+                          color="primary" inputProps={{ "aria-label": "secondary checkbox" }}
+                          onChange={this.handleToggle('complaintCheckboxes')} key={key} name={key} value={isChecked}
+                          {...this.state.id && { checked: isChecked }}
                         />
                       </div>
                     </div>
@@ -572,6 +652,7 @@ export class AddNewJobCardImpl extends React.Component<
               return (
                 <React.Fragment>
                   <Grid
+                    key={key}
                     className="checkbox-container"
                     item
                     xs={6}
@@ -592,7 +673,7 @@ export class AddNewJobCardImpl extends React.Component<
                         <Checkbox
                           color="primary"
                           inputProps={{ "aria-label": "secondary checkbox" }}
-                          onChange={this.handleToggle}
+                          onChange={this.handleToggle('jobCardCheckboxes')}
                           key={key}
                           name={key}
                           value={isChecked}
@@ -793,7 +874,7 @@ export class AddNewJobCardImpl extends React.Component<
     return (
       <Stepper
         activeStep={this.state.activeStep}
-        onChangeStep={ (index) =>  this.setState({ activeStep: index })}
+        onChangeStep = {(x) => this.setState({activeStep: x})}
         stepData={[
           {
             label: "Basic Details",
@@ -833,6 +914,41 @@ export class AddNewJobCardImpl extends React.Component<
     },
   ];
 
+  dealerChange = ({obj}) => {
+    const newData = {
+      email: obj.email,
+      firstName: obj.firstname,
+      lastName: obj.lastname,
+      middleName: obj.middlename,
+      company: obj.company,
+      whatsAppNumber: obj.whatsapp_number__c,
+      leadType: obj.lead_type__c,
+      leadSource: obj.leadsource,
+      leadStatus: obj.status,
+      subLeadSource: obj.sub_lead_source__c,
+      rating: obj.rating,
+      street: obj.street,
+      city: obj.city,
+      state: obj.state,
+      zip: obj.postalcode,
+      country: obj.country,
+      vehicleNumber: obj.vehicle_no__c,
+      fuelType: obj.fuel_type__c,
+      wheeles: obj.x3_or_4_wheeler__c,
+      vehicleMek: obj.vehicle_make__c,
+      vehicleModel: obj.vehicle_model__c,
+      usage: obj.usage_of_vehicle__c,
+      vehicleType: obj.engine__c,
+      dailyRunning: obj.daily_running_kms__c,
+      registration: obj.registration_year__c,
+      mfg: obj.year_of_manufacturing__c,
+      chassis: obj.chassis_no__c,
+      gstNumber: obj.gst_number__c,
+    }
+    changeValuesInStore('leadForm', newData)
+    this.setState({selectedUser: obj});
+  }
+
   render() {
     return (
       <AppBar>
@@ -845,8 +961,10 @@ export class AddNewJobCardImpl extends React.Component<
             placeholder="Select Customer / Lead"
             options={this.state.allCustAndLeads.map(p => ({
               label: p.name,
-              value: p.sfid
+              value: p.sfid,
+              obj: p,
             }))}
+            onChange={this.dealerChange}
             />
           }
           {this.state.OpenAddJobCard &&
