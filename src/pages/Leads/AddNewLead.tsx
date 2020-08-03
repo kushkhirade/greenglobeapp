@@ -107,6 +107,7 @@ export class AddNewLeadImpl extends React.Component<
     dealerCheckboxes: any;
     allTasks: any;
     id: number;
+    complainCheckList: any;
     dealerCheckboxesChanged: boolean;
   }
   > {
@@ -119,14 +120,92 @@ export class AddNewLeadImpl extends React.Component<
       allTasks: [],
       id: 0,
       dealerCheckboxesChanged: false,
+      complainCheckList: {
+        "Low Average / Mileage": false,
+        "Late Starting Problem": false,
+        "Jerking / Missing / Low Pick": false,
+        "Changeover - Switch / Pressure Gauge Indication Problem": false,
+        "Vehicle Not Changing over to CNG": false,
+        "GVehicle Not starting in Petrol": false,
+        "Engine Shutdown in Idleing mode / Return to idle from high RPM": false,
+        "Less/Slow Gas Filling in Tank": false,
+        "Check Engine Light on Cluster": false,
+        "Petrol Consumption even when car running on CNG": false,
+        "Noise after/due to CNG Kit Fittment": false,
+        "Gas Leakage / Sound / Smell": false,
+        "Switch Not Working(No lights on switch)": false,   
+        "Buzzer Noise on Switch": false,   
+      },
       dealerCheckboxes: {
         "CNG TUNE UP": false,
         "KIT SERVICE": false,
+        "KIT REMOVE": false,
         "KIT REFITTING": false,
         "CYLINDER REMOVE": false,
         "CYLINDER REFITTING": false,
         "GRECO ACE KIT FITTING": false,
         "GRECO PRO KIT FITTING": false,
+        "DICKY FLOOR REPAIR": false,
+        "WIRING REPAIR": false,
+        "WIRING REMOVE & REFITTING": false,
+        "REDUCER R/R": false,
+        "REDUCER SERVICE": false,
+        "CARBURETTOR SERVICE": false,
+        "THROTTLE BODY CLEANING": false,
+        "AIR FILTER R/R": false,
+        "SPARK PLUG R/R": false,
+        "INGNITION COILS R/R": false,
+        "INGNITION COIL CODE R/R": false,
+        "PICK UP COIL R/R": false,
+        "CNG SEQ. KIT TUNE UP": false,
+        "ECM R/R": false,
+        "MAP SENSOR R/R": false,
+        "MAF/MAP SENSOR CLEAN": false,
+        "GRECO INJECTOR R/R": false,
+        "PETROL INJECTOR R/R": false,
+        "TEMPRESURE SENSOR R/R": false,
+        "TIMING ADVANCE PROCESS R/R": false,
+        "FILLER VALVE R/R": false,
+        "FILLER VALVE REPAIR": false,
+        "LOW PRESSURE HOSE R/R": false,
+        "PRESSURE GAUGE R/R": false,
+        "HIGH PRESSURE PIPE R/R": false,
+        "CYLINDER VALVE R/R": false,
+        "SWITCH R/R": false,
+        "COOLANT REPLACE": false,
+        "TAPPET SETTING": false,
+        "OIL & OIL FILTER REPLACE": false,
+        "HEIGHT PAD FITMENT": false,
+        "O2 SENSOR R/R	": false,
+        "O2 SENSOR CLEAN": false,
+        "ENGINE TUNE UP": false,
+        "ENGINE COMPRESSION CHECK": false,
+        "FUEL PUMP R/R": false,
+        "FUEL FILTER R/R": false,
+        "FUEL PUMP RELAY R/R": false,
+        "ANNUAL MAINTAINANACE CONTRACT": false,
+        "CNG LEAKAGE CHECK": false,
+        "EMULATOR R/R": false,
+        "MIXER R/R": false,
+        "1ST STAGE REGULATOR R/R": false,
+        "2ND STAGE REGULATOR R/R": false,
+        "CYLINDER HYDROTESTING": false,
+        "1ST STAGE REGULATOR ORING R/R": false,
+        "INJECTOR NOZZLE R/R": false,
+        "GENERAL LABOUR CHARGES": false,
+        "CAR SCANNING": false,
+        "GAS FILLTER R/R": false,
+        "CYLINDER BRACKET R/R": false,
+        "1ST FREE SERVICE": false,
+        "2ND FREE SERVICE": false,
+        "3RD FREE SERVICE": false,
+        "TAPPET COVER PACKING REPLACE": false,
+        "VACCUM HOSE PIPE R/R	": false,
+        "FUEL GAUGE CORRECTOR FITMENT": false,
+        "RAIL BRACKET R/R": false,
+        "ECM BRACKET R/R": false,
+        "REDUCER BRACKET R/R": false,
+        "BLOCK PISTON R/R": false,
       }
     };
   }
@@ -238,6 +317,7 @@ export class AddNewLeadImpl extends React.Component<
     const dealerCheckboxesData = {
       "CNG TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
       "KIT SERVICE": leadData.kit_service__c === "f" ? false : true,
+      "KIT REMOVE": leadData.cng_tune_up__c === "f" ? false : true,
       "KIT REFITTING": leadData.kit_refitting__c === "f" ? false : true,
       "CYLINDER REMOVE": leadData.cylinder_remove__c === "f" ? false : true,
       "CYLINDER REFITTING":
@@ -246,6 +326,67 @@ export class AddNewLeadImpl extends React.Component<
         leadData.greco_ace_kit_fitting__c === "f" ? false : true,
       "GRECO PRO KIT FITTING":
         leadData.greco_pro_kit_fitting__c === "f" ? false : true,
+      "DICKY FLOOR REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
+      "WIRING REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
+      "WIRING REMOVE & REFITTING": leadData.cng_tune_up__c === "f" ? false : true,
+      "REDUCER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "REDUCER SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "CARBURETTOR SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "THROTTLE BODY CLEANING": leadData.cng_tune_up__c === "f" ? false : true,
+      "AIR FILTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "SPARK PLUG R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "INGNITION COILS R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "INGNITION COIL CODE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "PICK UP COIL R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CNG SEQ. KIT TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
+      "ECM R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "MAP SENSOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "MAF/MAP SENSOR CLEAN": leadData.cng_tune_up__c === "f" ? false : true,
+      "GRECO INJECTOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "PETROL INJECTOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "TEMPRESURE SENSOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "TIMING ADVANCE PROCESS R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FILLER VALVE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FILLER VALVE REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
+      "LOW PRESSURE HOSE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "PRESSURE GAUGE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "HIGH PRESSURE PIPE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CYLINDER VALVE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "SWITCH R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "COOLANT REPLACE": leadData.cng_tune_up__c === "f" ? false : true,
+      "TAPPET SETTING": leadData.cng_tune_up__c === "f" ? false : true,
+      "OIL & OIL FILTER REPLACE": leadData.cng_tune_up__c === "f" ? false : true,
+      "HEIGHT PAD FITMENT": leadData.cng_tune_up__c === "f" ? false : true,
+      "O2 SENSOR R/R	": leadData.cng_tune_up__c === "f" ? false : true,
+      "O2 SENSOR CLEAN": leadData.cng_tune_up__c === "f" ? false : true,
+      "ENGINE TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
+      "ENGINE COMPRESSION CHECK": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL PUMP R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL FILTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL PUMP RELAY R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "ANNUAL MAINTAINANACE CONTRACT": leadData.cng_tune_up__c === "f" ? false : true,
+      "CNG LEAKAGE CHECK": leadData.cng_tune_up__c === "f" ? false : true,
+      "EMULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "MIXER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "1ST STAGE REGULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "2ND STAGE REGULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CYLINDER HYDROTESTING": leadData.cng_tune_up__c === "f" ? false : true,
+      "1ST STAGE REGULATOR ORING R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "INJECTOR NOZZLE R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "GENERAL LABOUR CHARGES": leadData.cng_tune_up__c === "f" ? false : true,
+      "CAR SCANNING": leadData.cng_tune_up__c === "f" ? false : true,
+      "GAS FILLTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "CYLINDER BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "1ST FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "2ND FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "3RD FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
+      "TAPPET COVER PACKING REPLACE": leadData.cng_tune_up__c === "f" ? false : true,
+      "VACCUM HOSE PIPE R/R	": leadData.cng_tune_up__c === "f" ? false : true,
+      "FUEL GAUGE CORRECTOR FITMENT": leadData.cng_tune_up__c === "f" ? false : true,
+      "RAIL BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "ECM BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "REDUCER BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
+      "BLOCK PISTON R/R": leadData.cng_tune_up__c === "f" ? false : true,
     };
     this.setState({ dealerCheckboxes: dealerCheckboxesData });
     changeValuesInStore(formType, editData);
@@ -426,14 +567,14 @@ export class AddNewLeadImpl extends React.Component<
     } else {
       await this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
     }
-    this.setState({ activeTab: "Activity" })
-    // this.props.history.push("/leads")
+    // this.setState({ activeTab: "Activity" })
+    this.props.history.push("/leads")
   };
   handleLeadDealerUpdate = async () => {
     loggedInUserDetails = getToken().data;
     await this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
-    this.setState({ activeTab: "Activity" })
-    // this.props.history.push("/leads")
+    // this.setState({ activeTab: "Activity" })
+    this.props.history.push("/leads")
   };
   handleToggle = (event, isInputChecked) => {
     let fieldName = event.target.name;
@@ -679,6 +820,45 @@ export class AddNewLeadImpl extends React.Component<
         />
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
+          <Grid container>
+            {Object.keys(this.state.complainCheckList).map((key, value) => {
+              // const isChecked = this.state.complainCheckList[key];
+              return (
+                <React.Fragment>
+                  <Grid
+                    className="checkbox-container"
+                    item
+                    xs={6}
+                    md={6}
+                    lg={6}
+                    sm={6}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <div className="label-text">{key}</div>
+                      <div>
+                        <Checkbox
+                          color="primary"
+                          inputProps={{ "aria-label": "secondary checkbox" }}
+                          onChange={this.handleToggle}
+                          key={key}
+                          name={key}
+                          // value={isChecked}
+                          // {...this.state.id && { checked: isChecked }}
+                        />
+                      </div>
+                    </div>
+                  </Grid>
+                </React.Fragment>
+              );
+            })}
+          </Grid>
         </div>
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
@@ -1091,7 +1271,9 @@ export class AddNewLeadImpl extends React.Component<
                 />
               </div>
             ) : (
-                <Tabs isIndex={this.state.activeTab} tabsData={this.tabData()} />
+                <Tabs 
+                // isIndex={this.state.activeTab} 
+                tabsData={this.tabData()} />
             )}
           </div>
         {/* </div> */}

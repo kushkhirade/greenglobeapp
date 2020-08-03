@@ -47,7 +47,7 @@ export class Tabs extends React.Component<
             return (
               <div
                 className={`tab-button ${
-                  tab.tabName === activeIndex ? "active" : ""
+                  tab.tabName === this.state.activeTabIndex ? "active" : ""
                 }`}
                 key={index}
                 onClick={() => {
@@ -113,7 +113,7 @@ export class Tabs extends React.Component<
         </div>
         {
           this.props.tabsData.find(
-            (tab: any, index: any) => tab.tabName === activeIndex
+            (tab: any, index: any) => index === this.state.activeTabIndex
           ).component
         }
       </React.Fragment>

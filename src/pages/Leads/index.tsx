@@ -150,14 +150,14 @@ export class LeadsImpl extends React.Component<
       if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
           query: `SELECT * FROM salesforce.Lead 
-          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%')`,
+          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%') AND sfid is NOT NULL`,
           token: token
         })
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
         console.log("here");
         leadsData = await getData({
           query: `SELECT * FROM salesforce.Lead 
-          WHERE (Assigned_Distributor__c LIKE '%${sfid}%')`,
+          WHERE (Assigned_Distributor__c LIKE '%${sfid}%') AND sfid is NOT NULL`,
           token: token
         })
       }

@@ -300,33 +300,33 @@ export class InventoryImpl extends React.PureComponent<
             },
             { tabName: "Tank Capacity",
               options: tankFilterOptions(invdata),
-              // component: (
-              //   <div className="inventory-container">
-              //     { invdata.map((inData) => {
-              //       if(this.state.selectedProductFilter !== "" ){
-              //         if(inData.tank_capacity__c === this.state.selectedTankFilter && inData.family === this.state.selectedProductFilter){
-              //           // {console.log("Tank + Product")}
-              //           return(              
-              //             <InventoryCards
-              //               onClickItem={this.handleItemClick}
-              //               data={inData}
-              //             />
-              //           )
-              //         }
-              //       }
-              //       else {if(inData.tank_capacity__c === this.state.selectedTankFilter){
-              //         // {console.log("tank")}
-              //         return(              
-              //           <InventoryCards
-              //             onClickItem={this.handleItemClick}
-              //             data={inData}
-              //           />
-              //         )
-              //       }}
-              //     })
-              //   }
-              //   </div>
-              // ),
+              component: (
+                <div className="inventory-container">
+                  { invdata.map((inData) => {
+                    if(this.state.selectedProductFilter !== "" ){
+                      if(inData.tank_capacity__c === this.state.selectedTankFilter && inData.family === this.state.selectedProductFilter){
+                        // {console.log("Tank + Product")}
+                        return(              
+                          <InventoryCards
+                            onClickItem={this.handleItemClick}
+                            data={inData}
+                          />
+                        )
+                      }
+                    }
+                    else {if(inData.tank_capacity__c === this.state.selectedTankFilter){
+                      // {console.log("tank")}
+                      return(              
+                        <InventoryCards
+                          onClickItem={this.handleItemClick}
+                          data={inData}
+                        />
+                      )
+                    }}
+                  })
+                }
+                </div>
+              ),
               onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
               onChangeTabValue : (tabValue) => this.setState({ selectedTankFilter: tabValue }),
             },
