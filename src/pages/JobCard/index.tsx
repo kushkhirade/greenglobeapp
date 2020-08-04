@@ -514,7 +514,7 @@ export class AddNewJobCardImpl extends React.Component<
           hasSubmit={true}
           options={vehicleInputs}
           submitTitle="Next"
-          cancelTitle="Previous"
+          cancelTitle="Close"
           onCancel={() => this.setState({OpenAddJobCard: false})}
         />
       </React.Fragment>
