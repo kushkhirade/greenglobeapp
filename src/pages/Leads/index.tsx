@@ -150,7 +150,9 @@ export class LeadsImpl extends React.Component<
       if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
           query: `SELECT * FROM salesforce.Lead 
-          WHERE RecordTypeId = '0122w000000chRpAAI' AND (Assigned_Dealer__c LIKE '%${sfid}%') AND sfid is NOT NULL`,
+          WHERE RecordTypeId = '0122w000000chRpAAI' 
+          AND (Assigned_Dealer__c LIKE '%${sfid}%') 
+          AND sfid is NOT NULL`,
           token: token
         })
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
@@ -275,7 +277,7 @@ export class LeadsImpl extends React.Component<
           if (d.recordtypeid === '0122w000000chRuAAI') {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history} />
+                <CardDetailsforDIstDealer details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history} />
               </Grid>
             );
           }
@@ -792,8 +794,89 @@ const CardDetails = (props: any) => {
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text">Dealer Generated Lead:</span>
-          {details.dealer_generated_lead__c}
+          {details.dealer_generated__c}
         </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="view"
+            onClick={() => {
+
+              props.onClickDetails(details)
+
+            }}>
+            View Details
+                </span>
+        </Grid>
+      </Grid>
+      <Grid container >
+        <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
+          {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
+        </span>
+      </Grid>
+      <Grid container className="padding-15 align-left">
+        <Grid className="padding-6-corners" item xs={12} md={12}>
+          <div className="icon-container">
+            <PhoneIcon className="phone-icon" />
+                  &nbsp;
+                  <ChatIcon className="chat-icon" />
+                  &nbsp;
+                  <MailIcon className="mail-icon" />
+                  &nbsp;
+                  <img
+              height="42px"
+              src={WhatsappIcon}
+            // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+            />{" "}
+          </div>
+        </Grid>
+      </Grid>{" "}
+    </div>
+    //     )}
+    //   )}
+    // </div>
+  );
+};
+
+const CardDetailsforDIstDealer = (props: any) => {
+  const { details, AssignedDealers } = props;
+  const assignedDealer = AssignedDealers && AssignedDealers.filter((item) =>
+    item.sfid === details.assigned_dealer__c)
+  // console.log("details", assignedDealer[0]);
+
+  const CalRating = () => {
+    switch (details.rating) {
+      case ("Cold"): return 1;
+      case ("Warm"): return 3;
+      case ("Hot"): return 5;
+    }
+  }
+  // return (
+  //   <div className="cards-main">
+  //     {details.map((datavalue: any, index: number) => {
+  return (
+    <div className="card-container" >
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6} >
+          {/* <span className="description-text">Name:</span> */}
+          <PersonPin /> <span />
+          {details.name}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          {/* <span className="description-text">Contact:</span> */}
+          <Phone /> <span />
+          {details.phone && ChangePhoneFormat(details.phone)}
+        </Grid>
+      </Grid>
+
+        <Grid container>
+          <Grid className="padding-6-corners" item xs={6} md={6}>
+            <span className="description-text">Lead Rating :</span>
+            {details.rating}
+            {/* <Rating
+                      readOnly
+                      precision={0.5}
+                      value={CalRating()}
+                    /> */}
+          </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="view"
             onClick={() => {
@@ -857,18 +940,18 @@ const CardDetailsForDealer = (props: any) => {
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6}>
-          <span className="description-text">Kit Enquiery :</span>
+          <span className="description-text">Kit Enquiery:</span>
           {details.kit_enquiry__c}
         </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
-          <span className="description-text"> Vehicle Type</span>
+          <span className="description-text"> Vehicle Type:</span>
           {details.x3_or_4_wheeler__c}
         </Grid>
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text"> Dealer Generated Lead:</span>
-          {details.dealer_generated_lead__c}
+          {details.dealer_generated__c}
         </Grid>
         <Grid item className="padding-6-corners align-center" xs={6} md={6}
           style={{ justifyContent: "flex-start" }}

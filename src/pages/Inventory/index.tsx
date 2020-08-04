@@ -394,7 +394,7 @@ const InventoryCards = (props: any) => {
                   {" "}
                   Added to Inventory on -{" "}
                 </span>
-                {moment(inData.date_purchased__c).format("DD/MM?/")}
+                {moment(inData.date_purchased__c).format("DD/MM/YYYY")}
               </div>
               {isDealer() ?
                 inData.customer_name__c ? 
@@ -402,14 +402,20 @@ const InventoryCards = (props: any) => {
                     <span className="description-text">Sold to Customer -</span>
                     {inData.customer_name__c}
                   </div>
-                : null
+                : 
+                  <div className="padding-6">
+                    <span className="description-text"></span>
+                  </div>
               :
                 inData.dealer_name__c ?
                   <div className="padding-6">
                     <span className="description-text">Sold to Dealer -</span>
                     {inData.dealer_name__c}
                   </div>
-                : null
+                : 
+                <div className="padding-6">
+                  <span className="description-text"></span>
+                </div>
               }
             </div>
           </div>

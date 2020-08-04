@@ -162,7 +162,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
                 </div>
                 <div className="row-data">
                   <div className="data-content">
-                    <span className="description-text">Item Quantity:</span>
+                    <span className="description-text">Total Items:</span>
                     {dataValue.product_quantity__c}{" "}
                   </div>
                   <div className="data-content">

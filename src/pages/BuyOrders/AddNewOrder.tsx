@@ -183,6 +183,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             }))
         }
       )
+      console.log("insertuser =>0", insertuser);
 
     }catch(e){
       console.log(e);
@@ -721,7 +722,7 @@ class DispatchedScreen extends React.Component <any> {
         <Grid container className="">
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
             <span className="description-text">Total Items -</span>
-            <span className="disp-details"> {details && details.item_quantity__c}</span>
+            <span className="disp-details"> {details && details.product_quantity__c}</span>
           </Grid>
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
             <span className="description-text">Order Total:</span>
@@ -836,8 +837,8 @@ const SubmittedScreen = (props) => {
           {details.effectivedate && moment(details.effectivedate).format("DD/MM/YYYY") || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
-          <span className="description-text"> Total Items -</span>
-          {details.product_quantity__c || ""}
+          <span className="description-text"> Items Quantity -</span>
+          {details.item_quantity__c || ""}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text">Total -</span>

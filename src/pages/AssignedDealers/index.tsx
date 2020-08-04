@@ -102,7 +102,7 @@ const DealerCard = (props: any) => {
   const { data } = props;
 
   return (
-    <Grid item xs={12} md={6} lg={6}>
+    <Grid item xs={12} md={4} lg={4}>
       <div onClick={() => props.onClickItem(data)} className="card-container">
         <div className="inventory-card">
           {" "}

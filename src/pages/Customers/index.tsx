@@ -158,7 +158,7 @@ const CustomerList = (props: any) => {
           </Grid>
           <Grid className="padding-6-corners" item xs={6} md={6}>
             <span className="description-text"> Dealer Rating:</span>
-            {customerData.dealer_rating__c}
+            {customerData.lead_rating__c}
           </Grid>
         </Grid>
         <Grid container >

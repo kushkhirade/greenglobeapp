@@ -707,11 +707,11 @@ export class AddNewJobCardImpl extends React.Component<
               const isChecked = this.state.jobCardCheckboxesChanged[key];
               return (
                 <React.Fragment>
-                  <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6} >
+                  <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6}> 
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", }} >
-                      <div className="label-text">{key}</div>
+                      <div className="label-text" >{key}</div>
                       <div>
-                        <Checkbox
+                        <Checkbox 
                           color="primary" inputProps={{ "aria-label": "secondary checkbox" }}
                           onChange={this.handleToggle('complaintCheckboxes')} key={key} name={key} value={isChecked}
                           {...this.state.id && { checked: isChecked }}
@@ -719,6 +719,7 @@ export class AddNewJobCardImpl extends React.Component<
                       </div>
                     </div>
                   </Grid>
+                  <Grid ></Grid>
                 </React.Fragment>
               );
             })}
