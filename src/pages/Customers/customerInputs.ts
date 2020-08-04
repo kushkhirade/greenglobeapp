@@ -7,32 +7,94 @@ export const vehicleInputs = [
   {
     label: "Fuel Type.",
     model: ".fuelType",
-    type: "text",
+    type: "select",
+    options: [
+      {label: "Petrol", value: "Petrol"},
+      {label: "Diesel", value: "Diesel"},
+      {label: "CNG", value: "CNG"},
+    ]
   },
   {
     label: "3 or 4 Wheeler.",
     model: ".wheeles",
-    type: "text",
+    type: "select",
+    options: [
+      {label: "3 Wheeler", value: "3 Wheeler"},
+      {label: "4 Wheeler", value: "4 Wheeler"},
+    ]
   },
   {
     label: "Vehicle Make",
     model: ".vehicleMek",
-    type: "text",
+    type: "select",
+    options: [
+      {label: "Honda", value: "Honda"},
+      {label: "Hyundai", value: "Hyundai"},
+      {label: "Maruti Suzuki", value: "Maruti Suzuki"},
+      {label: "Tata", value: "Tata"},
+      {label: "Bajaj Auto Limited", value: "Bajaj Auto Limite"},
+      {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."},
+    ]
   },
   {
     label: "Vehicle Model",
     model: ".vehicleModel",
-    type: "text",
+    type: "select",
+    options: [
+      {label: "Tata Altroz", value: "Tata Altroz"},
+      {label: "Tata EVision", value: "Tata EVision"},
+      {label: "Tata Gravitas", value: "Tata Gravitas"},
+      {label: "Tata Harrier", value: "Tata Harrier"},
+      {label: "Tata Hexa", value: "Tata Hexa"},
+      {label: "Tata Hornbill", value: "Tata Hornbill"},
+      {label: "Tata Nexon", value: "Tata Nexon"},
+      {label: "Tata Tiago", value: "Tata Tiago"},
+      {label: "Tata Tigor", value: "Tata Tigor"},
+      {label: "Accord", value: "Accord"},
+      {label: "Acty", value: "Diesel"},
+      {label: "Amaze", value: "Amaze"},
+      {label: "Avancier", value: "Avancier"},
+      {label: "Ballade", value: "Ballade"},
+      {label: "Brio", value: "Brio"},
+      {label: "BR-V", value: "BR-V"},
+      {label: "City", value: "City"},
+      {label: "City Gienia", value: "City Gienia"},
+      {label: "City Grace", value: "City Grace"},
+      {label: "City Greiz", value: "City Greiz"},
+      {label: "Hyundai Tucson", value: "Hyundai Tucson"},
+      {label: "Hyundai Grand i10 Nios", value: "Hyundai Grand i10 Nios"},
+      {label: "Hyundai Kona Electric", value: "Hyundai Kona Electric"},
+      {label: "Hyundai Elantra", value: "Hyundai Elantra"},
+      {label: "Maruti Suzuki Dzire Facelift", value: "Maruti Suzuki Dzire Facelift"},
+      {label: "Maruti Suzuki Vitara Brezza", value: "Maruti Suzuki Vitara Brezza"},
+      {label: "Maruti Suzuki Baleno", value: "Maruti Suzuki Baleno"},
+      {label: "Maruti Suzuki Swift", value: "Maruti Suzuki Swift"},
+      {label: "Maruti Suzuki Ertiga", value: "Maruti Suzuki Ertiga"},
+      {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"},
+      {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"},
+      {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"},
+      {label: "MAHINDRA ALFA DX", value: "MAHINDRA ALFA DX"},
+      {label: "MAHINDRA ALFA Champ", value: "MAHINDRA ALFA Champ"},
+      {label: "MAHINDRA ALFA Comfy", value: "MAHINDRA ALFA Comfy"}, 
+    ]
   },
   {
     label: "Usage of Vehicle",
     model: ".usage",
-    type: "text",
+    type: "select",
+    options: [
+      {label: "Commercial", value: "Commercial"},
+      {label: "Private", value: "Private"},
+    ]
   },
   {
     label: "Engine Type",
     model: ".vehicleType",
-    type: "text",
+    type: "select",
+    options: [
+      {label: "2 Stroke", value: "2 Stroke"},
+      {label: "4 Stroke", value: "4 Stroke"},
+    ]
   },
   {
     label: "Daily Running KMS",
@@ -68,6 +130,7 @@ export const vehicleInputs = [
     type: "text",
   },
 ];
+
 export const options = [
   {
     label: "First Name",
@@ -190,7 +253,7 @@ export const leadDealer = [
       // {label: "ASM", value: "ASM"},
       {label: "Online", value: "Online"},
       {label: "Offline", value: "Offline"},
-      {label: "Walk-In", value: "Walk-In"}
+      {label: "Store Visit", value: "Store Visit"}
     ]
   },
   {
@@ -203,7 +266,7 @@ export const leadDealer = [
       {label: "Document Collection", value: "Document Collection"},
       {label: "Negotiation", value: "Negotiation"},
       {label: "Closed", value: "Closed"},
-      {label: "Job card", value: "Job card"},
+      {label: "Job Card", value: "Job Card"},
       {label: "Qualified", value: "Qualified"}
     ]
   },
@@ -215,8 +278,8 @@ export const leadDealer = [
       {label: "Facebook", value: "Facebook"},
       {label: "Google", value: "Google"},
       {label: "Whatsapp", value: "Whatsapp"},
-      {label: "mass malling", value: "mass malling"},
-      {label: "mass messaging", value: "mass messaging"},
+      {label: "Mass Malling", value: "Mass Malling"},
+      {label: "Mass Messaging", value: "Mass Messaging"},
       {label: "Instagram", value: "Instagram"},
       {label: "YouTube", value: "YouTube"},
       {label: "RTO", value: "RTO"},
@@ -230,9 +293,9 @@ export const leadDealer = [
     model: ".rating",
     type: "select",
     options: [
-      {label: "Rating - Hot", value: "Hot"},
-      {label: "Rating - Cold", value: "Cold"},
-      {label: "rating - Warm", value: "Warm"}
+      {label: "Hot", value: "Hot"},
+      {label: "Cold", value: "Cold"},
+      {label: "Warm", value: "Warm"}
     ]
   },
 ];
@@ -268,7 +331,7 @@ export const leadSource = [
       // {label: "ASM", value: "ASM"},
       {label: "Online", value: "Online"},
       {label: "Offline", value: "Offline"},
-      {label: "Walk-In", value: "Walk-In"}
+      {label: "Store Visit", value: "Store Visit"}
     ]
   },
   {
@@ -281,7 +344,7 @@ export const leadSource = [
       {label: "Document Collection", value: "Document Collection"},
       {label: "Negotiation", value: "Negotiation"},
       {label: "Closed", value: "Closed"},
-      {label: "Job card", value: "Job card"},
+      {label: "Job Card", value: "Job Card"},
       {label: "Qualified", value: "Qualified"}
     ]
   },
@@ -293,8 +356,8 @@ export const leadSource = [
       {label: "Facebook", value: "Facebook"},
       {label: "Google", value: "Google"},
       {label: "Whatsapp", value: "Whatsapp"},
-      {label: "mass malling", value: "mass malling"},
-      {label: "mass messaging", value: "mass messaging"},
+      {label: "Mass Malling", value: "Mass malling"},
+      {label: "Mass Messaging", value: "Mass messaging"},
       {label: "Instagram", value: "Instagram"},
       {label: "YouTube", value: "YouTube"},
       {label: "RTO", value: "RTO"},
@@ -308,9 +371,9 @@ export const leadSource = [
     model: ".rating",
     type: "select",
     options: [
-      {label: "Rating - Hot", value: "Hot"},
-      {label: "Rating - Cold", value: "Cold"},
-      {label: "rating - Warm", value: "Warm"}
+      {label: "Hot", value: "Hot"},
+      {label: "Cold", value: "Cold"},
+      {label: "Warm", value: "Warm"}
     ]
   },
 ];

@@ -210,7 +210,7 @@ export class AddNewJobCardImpl extends React.Component<
         console.log('----------------Dealer---------------------------')
         const custData = await getData({
           query: `SELECT * FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0120l000000ot16AAA' AND Name is not null`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0121s0000000WE4AAM' AND Name is not null`,
           token: data.token
         });
         custLeadsDataArr = custData.result.map(x => {x.type = 'customer';return x});
@@ -226,7 +226,7 @@ export class AddNewJobCardImpl extends React.Component<
         console.log('----------------Distributor---------------------------')
         const custData = await getData({
           query: `SELECT * FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0120l000000ot16AAA'  AND Name is not null`,
+          WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WE4AAM'  AND Name is not null`,
           token: data.token
         });
         custLeadsDataArr = custData.result.map(x => {x.type = 'customer';return x});
@@ -627,11 +627,11 @@ export class AddNewJobCardImpl extends React.Component<
               const isChecked = this.state.jobCardCheckboxesChanged[key];
               return (
                 <React.Fragment>
-                  <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6} >
+                  <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6}> 
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", }} >
-                      <div className="label-text">{key}</div>
+                      <div className="label-text" >{key}</div>
                       <div>
-                        <Checkbox
+                        <Checkbox 
                           color="primary" inputProps={{ "aria-label": "secondary checkbox" }}
                           onChange={this.handleToggle('complaintCheckboxes')} key={key} name={key} value={isChecked}
                           {...this.state.id && { checked: isChecked }}
@@ -639,6 +639,7 @@ export class AddNewJobCardImpl extends React.Component<
                       </div>
                     </div>
                   </Grid>
+                  <Grid ></Grid>
                 </React.Fragment>
               );
             })}

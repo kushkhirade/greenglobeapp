@@ -15,7 +15,7 @@ export class Tabs extends React.Component<
   TabsProps,
   { activeTabIndex: number; activeTab: any; selectValue: any;}
 > {
-  public state = { activeTabIndex: 0, activeTab: this.props.tabsData[0], selectValue: [{name: "", label: ""}] };
+  public state = { activeTabIndex: 0, activeTab: [], selectValue: [{name: "", label: ""}] };
 
   public handleTabChange = (tabData: any, index: number) => {
     this.setState({
@@ -38,7 +38,6 @@ export class Tabs extends React.Component<
   public render() {
     console.log("this.State=> ", this.state);
     console.log("this.props=> ", this.props);
-    const activeIndex = this.props.isIndex ? this.props.isIndex : this.state.activeTab.tabName
 
     return (
       <React.Fragment>
@@ -47,7 +46,7 @@ export class Tabs extends React.Component<
             return (
               <div
                 className={`tab-button ${
-                  tab.tabName === this.state.activeTabIndex ? "active" : ""
+                  index === this.state.activeTabIndex ? "active" : ""
                 }`}
                 key={index}
                 onClick={() => {
