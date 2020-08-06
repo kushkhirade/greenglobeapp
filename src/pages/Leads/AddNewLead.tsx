@@ -826,13 +826,7 @@ export class AddNewLeadImpl extends React.Component<
               return (
                 <React.Fragment>
                   <Grid
-                    className="checkbox-container"
-                    item
-                    xs={6}
-                    md={6}
-                    lg={6}
-                    sm={6}
-                  >
+                    className="checkbox-container" item xs={6} md={6} lg={6} sm={6}>
                     <div
                       style={{
                         display: "flex",
@@ -841,7 +835,7 @@ export class AddNewLeadImpl extends React.Component<
                         width: "100%",
                       }}
                     >
-                      <div className="label-text">{key}</div>
+                      {/* <div className="label-text">{key}</div> */}
                       <div>
                         <Checkbox
                           color="primary"
@@ -852,6 +846,7 @@ export class AddNewLeadImpl extends React.Component<
                           // value={isChecked}
                           // {...this.state.id && { checked: isChecked }}
                         />
+                        {key}
                       </div>
                     </div>
                   </Grid>
@@ -867,14 +862,7 @@ export class AddNewLeadImpl extends React.Component<
               const isChecked = this.state.dealerCheckboxes[key];
               return (
                 <React.Fragment>
-                  <Grid
-                    className="checkbox-container"
-                    item
-                    xs={6}
-                    md={6}
-                    lg={6}
-                    sm={6}
-                  >
+                  <Grid className="checkbox-container" item xs={6} md={6} lg={6} sm={6}>
                     <div
                       style={{
                         display: "flex",
@@ -883,7 +871,7 @@ export class AddNewLeadImpl extends React.Component<
                         width: "100%",
                       }}
                     >
-                      <div className="label-text">{key}</div>
+                      {/* <div className="label-text">{key}</div> */}
                       <div>
                         <Checkbox
                           color="primary"
@@ -894,6 +882,7 @@ export class AddNewLeadImpl extends React.Component<
                           value={isChecked}
                           {...this.state.id && { checked: isChecked }}
                         />
+                        {key}
                       </div>
                     </div>
                   </Grid>

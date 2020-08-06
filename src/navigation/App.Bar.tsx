@@ -35,7 +35,8 @@ interface IState {
   anchorEl: any;
   notificationEl: any;
   routeName: any;
-  path: string
+  path: string;
+  icon: any;
 }
 
 class MiniDrawer extends React.Component<IAppProps, IState> {
@@ -46,6 +47,9 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     routeName: routes(this.props.isDealer).find((routeData) =>
       window.location.hash.includes(routeData.path)
     ).title as any,
+    icon: routes(this.props.isDealer).find((routeData) =>
+      window.location.hash.includes(routeData.path)
+    ).icon() as any,
   };
 
   
@@ -64,7 +68,11 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
   // };
 
   public topRightIconUrl = () => {
-    let path = (this.props.dealerDetails && this.props.dealerDetails.id && this.props.location.pathname == '/customer/customer-lead-details') ? `/leads/edit-lead/${this.props.dealerDetails.id}` :'/';
+    let path = (this.props.dealerDetails && this.props.dealerDetails.dealer
+      && this.props.location.pathname == '/dealers/dealer-details' 
+      || this.props.location.pathname == '/customer/customer-lead-details') 
+      ? `/leads/edit-lead/${this.props.dealerDetails.dealer ? this.props.dealerDetails.dealer.id : this.props.dealerDetails.id}` 
+      :'/';
     this.props.history.push(path);
     if (path == '/') {
       localStorage.clear();
@@ -111,10 +119,10 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
   }
 
   private renderAppBar() {
-    const { classes, utility } = this.props;
+    const { classes, utility, dealerDetails } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
-
+console.log("this.props: ", this.props)
     return (
       <AppBar
         position="fixed"
@@ -143,15 +151,16 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
           >
             {this.state.routeName}
           </Typography>
-          {this.props.sideButton}
           <div className="align-center" onClick={this.topRightIconUrl}>
             {/* <div>
               Logout <span style={{ paddingRight: "3px" }} />{" "}
             </div> */}
-            {
-              (this.props.dealerDetails && this.props.dealerDetails.id && this.props.location.pathname == '/customer/customer-lead-details') ? <EditIcon /> : <ExitToAppIcon />
+            { 
+              (dealerDetails 
+                && this.props.location.pathname == '/dealers/dealer-details' && dealerDetails.dealer.recordtypeid === '0122w000000chRuAAI'
+                || this.props.isDealer && this.props.location.pathname == '/customer/customer-lead-details' && dealerDetails.recordtypeid === '0122w000000chRpAAI') 
+                ? <EditIcon /> : <ExitToAppIcon />
             }
-            
             &nbsp; &nbsp;
           </div>
         </Toolbar>
@@ -179,7 +188,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
   private renderToast() {
     const { match, dealerDetails } = this.props;
 
-    if(dealerDetails === undefined && match.path === '/customer/customer-lead-details'){
+    if(dealerDetails === undefined && match.path === '/dealers/dealer-details'){
       return <React.Fragment></React.Fragment>;
     } else {
       return  <ButterToast />;

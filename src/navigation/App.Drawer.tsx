@@ -85,7 +85,7 @@ export const routes = (isDealerApp) => [
   },
   {
     path: "/customer/customer-lead-details",
-    title: "Customer Lead Details",
+    title: "Lead Details",
     hidden: true,
     icon: () => <Chat />,
   },

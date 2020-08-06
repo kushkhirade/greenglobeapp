@@ -5,7 +5,7 @@ export const vehicleInputs = [
     type: "text",
   },
   {
-    label: "Fuel Type.",
+    label: "Fuel Type",
     model: ".fuelType",
     type: "select",
     options: [
@@ -15,7 +15,7 @@ export const vehicleInputs = [
     ]
   },
   {
-    label: "3 or 4 Wheeler.",
+    label: "3 or 4 Wheeler",
     model: ".wheeles",
     type: "select",
     options: [
@@ -253,7 +253,7 @@ export const leadDealer = [
       // {label: "ASM", value: "ASM"},
       {label: "Online", value: "Online"},
       {label: "Offline", value: "Offline"},
-      {label: "Store Visit", value: "Store Visit"}
+      {label: "Store Visits", value: "Store Visits"}
     ]
   },
   {
@@ -331,7 +331,7 @@ export const leadSource = [
       // {label: "ASM", value: "ASM"},
       {label: "Online", value: "Online"},
       {label: "Offline", value: "Offline"},
-      {label: "Store Visit", value: "Store Visit"}
+      {label: "Store Visits", value: "Store Visits"}
     ]
   },
   {
