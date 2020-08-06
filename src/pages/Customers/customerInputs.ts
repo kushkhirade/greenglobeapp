@@ -242,7 +242,6 @@ export const leadDealer = [
     label: "Company",
     model: ".company",
     required: true,
-
     type: "text",
   },
   {

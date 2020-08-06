@@ -1424,7 +1424,7 @@ export class AddNewLeadImpl extends React.Component<
                               activeStep: this.state.activeStep + 1,
                             });
                           }}
-                          formModel="leadForm"
+                          formModel="userForm"
                           hasSubmit={true}
                           allFormOptions={[
                             ...vehicleInputs,

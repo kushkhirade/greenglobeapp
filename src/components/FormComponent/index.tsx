@@ -22,6 +22,12 @@ class FormComponentImpl extends React.Component {
     });
   };
 
+  componentWillUnmount() {
+    dispatch({
+      type: REMOVE_ERROR,
+    });
+  }
+
   render() {
     const { props } = this;
     return (
@@ -150,6 +156,7 @@ class FormComponentImpl extends React.Component {
             <Button
               onClick={() => {
                 const values = store.getState().rxFormReducer[props.formModel];
+                console.log('>> props', props);
                 const fieldErrors = [];
                 (props.allFormOptions || props.options).map((option) => {
                   const valueName = option.model.split(".")[1];
@@ -162,9 +169,13 @@ class FormComponentImpl extends React.Component {
                   formError: fieldErrors,
                 });
                 console.log("Values: ", fieldErrors);
+                console.log("Values: ", values);
                 if (fieldErrors.length) {
                   return;
                 }
+                dispatch({
+                  type: REMOVE_ERROR,
+                });            
                 props.onSubmit(values);
               }}
               variant="contained"
