@@ -85,7 +85,7 @@ export const routes = (isDealerApp) => [
   },
   {
     path: "/customer/customer-lead-details",
-    title: "Customer Lead Details",
+    title: "Lead Details",
     hidden: true,
     icon: () => <Chat />,
   },
@@ -112,6 +112,12 @@ export const routes = (isDealerApp) => [
   },
   {
     path: "/buy-order/add-new-order",
+    title: "Orders",
+    hidden: true,
+    icon: () => <Chat />,
+  },
+  {
+    path: "/eg-form",
     title: "Orders",
     hidden: true,
     icon: () => <Chat />,

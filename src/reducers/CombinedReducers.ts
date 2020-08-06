@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import { UtilityReducer } from "./UtilityReducer";
 import { userReducer } from "../data/users";
 import { combineForms } from "react-redux-form";
+import { formReducer } from "./formReducer";
 
 export const leadForm = {
   name: "",
@@ -28,14 +29,14 @@ export const leadForm = {
   vehicleModel: "",
   usage: "",
   vehicleType: "",
-  dailyRunning: '',
+  dailyRunning: "",
   registration: "",
-  mfg: '',
+  mfg: "",
   chassis: "",
-  gstNumber: ""
-}
+  gstNumber: "",
+};
 
-export const userForm= {
+export const userForm = {
   name: "",
   email: "",
   firstName: "",
@@ -52,10 +53,10 @@ export const userForm= {
   state: "",
   zip: "",
   country: "",
-  street: ""
-}
+  street: "",
+};
 
-export const leadTaskForm= {
+export const leadTaskForm = {
   subject: "",
   priority: "",
   date: "",
@@ -63,18 +64,24 @@ export const leadTaskForm= {
   status: "",
   callResult: "",
   comment: "",
-}
+};
 const rxFormReducer = combineForms({
   userForm,
   leadForm,
   leadTaskForm,
+  egForm: {
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+  },
   customerForm: {},
   editUserForm: {},
-
 });
 
 export const reducers = combineReducers({
   utility: UtilityReducer,
   users: userReducer,
   rxFormReducer,
+  formReducer,
 });
