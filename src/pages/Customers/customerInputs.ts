@@ -3,6 +3,7 @@ export const vehicleInputs = [
     label: "Vehicle No.",
     model: ".vehicleNumber",
     type: "text",
+    required: true,
   },
   {
     label: "Fuel Type",
@@ -21,7 +22,8 @@ export const vehicleInputs = [
     options: [
       {label: "3 Wheeler", value: "3 Wheeler"},
       {label: "4 Wheeler", value: "4 Wheeler"},
-    ]
+    ],
+    required: true,
   },
   {
     label: "Vehicle Make",
@@ -128,6 +130,7 @@ export const vehicleInputs = [
     label: "Chassis Number",
     model: ".chassis",
     type: "text",
+    required: true,
   },
 ];
 
@@ -136,6 +139,7 @@ export const options = [
     label: "First Name",
     model: ".firstName",
     type: "text",
+    required: true,
   },
   {
     label: "Middle Name",
@@ -146,21 +150,25 @@ export const options = [
     label: "Last Name",
     model: ".lastName",
     type: "text",
+    required: true,
   },
   {
     label: "Company",
     model: ".company",
     type: "text",
+    required: true,
   },
   {
     label: "Email",
     model: ".email",
     type: "text",
+    required: true,
   },
   {
     label: "WhatsApp Number",
     model: ".whatsAppNumber",
     type: "number",
+    required: true,
   },
 ];
 
@@ -197,6 +205,7 @@ export const leadDealer = [
     label: "First Name",
     model: ".firstName",
     type: "text",
+    required: true,
   },
   {
     label: "Middle Name",
@@ -207,21 +216,25 @@ export const leadDealer = [
     label: "Last Name",
     model: ".lastName",
     type: "text",
+    required: true,
   },
   {
     label: "Company",
     model: ".company",
     type: "text",
+    required: true,
   },
   {
     label: "Email",
     model: ".email",
     type: "text",
+    required: true,
   },
   {
     label: "WhatsApp Number",
     model: ".whatsAppNumber",
     type: "text",
+    required: true,
   },
   {
     label: "Lead Type",
@@ -254,7 +267,8 @@ export const leadDealer = [
       {label: "Online", value: "Online"},
       {label: "Offline", value: "Offline"},
       {label: "Store Visits", value: "Store Visits"}
-    ]
+    ],
+    required: true,
   },
   {
     label: "Lead Status",
@@ -268,7 +282,8 @@ export const leadDealer = [
       {label: "Closed", value: "Closed"},
       {label: "Job Card", value: "Job Card"},
       {label: "Qualified", value: "Qualified"}
-    ]
+    ],
+    required: true,
   },
   {
     label: "Sub Lead Source",
@@ -296,7 +311,8 @@ export const leadDealer = [
       {label: "Hot", value: "Hot"},
       {label: "Cold", value: "Cold"},
       {label: "Warm", value: "Warm"}
-    ]
+    ],
+    required: true,
   },
 ];
 
@@ -309,7 +325,7 @@ export const leadSource = [
       {label: "B2B", value: "B2B"},
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
-    ]
+    ],
   },
   {
     label: "Lead Source",
@@ -332,7 +348,8 @@ export const leadSource = [
       {label: "Online", value: "Online"},
       {label: "Offline", value: "Offline"},
       {label: "Store Visits", value: "Store Visits"}
-    ]
+    ],
+    required: true,
   },
   {
     label: "Lead Status",
@@ -346,7 +363,8 @@ export const leadSource = [
       {label: "Closed", value: "Closed"},
       {label: "Job Card", value: "Job Card"},
       {label: "Qualified", value: "Qualified"}
-    ]
+    ],
+    required: true,
   },
   {
     label: "Sub Lead Source",
@@ -374,7 +392,8 @@ export const leadSource = [
       {label: "Hot", value: "Hot"},
       {label: "Cold", value: "Cold"},
       {label: "Warm", value: "Warm"}
-    ]
+    ],
+    required: true,
   },
 ];
 

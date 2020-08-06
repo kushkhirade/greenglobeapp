@@ -839,6 +839,7 @@ export class AddNewLeadImpl extends React.Component<
                       <div>
                         <Checkbox
                           color="primary"
+                          style={{ width: '10px', height: '10px'}}
                           inputProps={{ "aria-label": "secondary checkbox" }}
                           onChange={this.handleToggle}
                           key={key}
@@ -875,6 +876,7 @@ export class AddNewLeadImpl extends React.Component<
                       <div>
                         <Checkbox
                           color="primary"
+                          style={{ width: '10px', height: '10px'}}
                           inputProps={{ "aria-label": "secondary checkbox" }}
                           onChange={this.handleToggle}
                           key={key}
@@ -1076,7 +1078,7 @@ export class AddNewLeadImpl extends React.Component<
             Save
           </Button> */}
           <FormComponent
-              onCancel={() => {this.setState({ openEditModal: false }); changeValuesInStore(`editUserForm`, {})}}
+              onCancel={() => {this.setState({ openEditModal: false }); changeValuesInStore(`leadTaskForm`, {})}}
               options={[]}
               submitTitle="SAVE"
               onSubmit={(v)=> {
@@ -1170,7 +1172,7 @@ export class AddNewLeadImpl extends React.Component<
           </Typography> */}
           <div className="">
             {!isDealer() ? (
-              <div className="card-container add-leads-page">
+              // <div className="card-container add-leads-page">
                 <Stepper
                   activeStep={this.state.activeStep}
                   onChangeStep={ (index) =>  this.setState({ activeStep: index })}
@@ -1178,7 +1180,7 @@ export class AddNewLeadImpl extends React.Component<
                     {
                       label: "Draft",
                       component: (
-                        <div>
+                        <div className="card-container add-leads-page">
                           <SubFormHeading>Lead Basic Details</SubFormHeading>
                           <FormComponent
                             onSubmit={(v: any) => {
@@ -1192,6 +1194,7 @@ export class AddNewLeadImpl extends React.Component<
                             submitTitle="Next"
                             options={leadDealer}
                           />
+                          
                           <SubFormHeading>Address Details</SubFormHeading>
                           <FormComponent
                             onSubmit={(v: any) => {
@@ -1217,7 +1220,7 @@ export class AddNewLeadImpl extends React.Component<
                                 activeStep: this.state.activeStep + 1,
                               });
                             }}
-                            formModel="leadForm"
+                            formModel="userForm"
                             hasSubmit={true}
                             options={[]}
                             submitTitle="Next"
@@ -1230,7 +1233,7 @@ export class AddNewLeadImpl extends React.Component<
                     {
                       label: "Documents Collection",
                       component: (
-                        <div>
+                        <div className="card-container add-leads-page">
                           <SubFormHeading>
                             Regular Business Documentation
                           </SubFormHeading>
@@ -1254,11 +1257,15 @@ export class AddNewLeadImpl extends React.Component<
                     },
                     {
                       label: "Approval",
-                      component: <div>Approvals {`&`} Inventory Load</div>,
+                      component: (
+                        <div className="card-container add-leads-page">
+                          Approvals {`&`} Inventory Load
+                        </div>
+                      ),
                     },
                   ]}
                 />
-              </div>
+              // </div>
             ) : (
                 <Tabs 
                 // isIndex={this.state.activeTab} 

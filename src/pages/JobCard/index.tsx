@@ -715,9 +715,10 @@ export class AddNewJobCardImpl extends React.Component<
                       <div>
                         <Checkbox 
                           color="primary" inputProps={{ "aria-label": "secondary checkbox" }}
+                          style={{ width: '10px', height: '10px'}}
                           onChange={this.handleToggle('complaintCheckboxes')} key={key} name={key} value={isChecked}
                           {...this.state.id && { checked: isChecked }}
-                        />
+                        /> 
                         {key}
                       </div>
                     </div>
@@ -748,6 +749,7 @@ export class AddNewJobCardImpl extends React.Component<
                       <div>
                         <Checkbox
                           color="primary"
+                          style={{ width: '10px', height: '10px'}}
                           inputProps={{ "aria-label": "secondary checkbox" }}
                           onChange={this.handleToggle('jobCardCheckboxes')}
                           key={key}

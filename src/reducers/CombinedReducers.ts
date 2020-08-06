@@ -69,7 +69,7 @@ const rxFormReducer = combineForms({
   leadForm,
   leadTaskForm,
   customerForm: {},
-  editUserForm: {},
+  editUserForm: {firstName: "", lastName: "", email: "", phone: "", role: ""},
 
 });
 
