@@ -6,7 +6,7 @@ import { Typography, Button, Grid } from "@material-ui/core";
 import "./customers.scss";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
-import moment from 'moment';
+import moment from "moment";
 import {
   options,
   vehicleInputs,
@@ -79,6 +79,7 @@ export class AddNewCustomerImpl extends React.PureComponent<
           }}
           formModel="userForm"
           hasSubmit={true}
+          allFormOptions={[...vehicleInputs, ...options, ...streetInputs]}
           options={[]}
         />
       </React.Fragment>

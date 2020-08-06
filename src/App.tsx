@@ -54,32 +54,29 @@ const Support = React.lazy(() =>
   import("./pages/support").then(({ Support }) => ({ default: Support }))
 );
 const AddNewJobCard = React.lazy(() =>
-  import("./pages/JobCard").then(({ AddNewJobCard }) => ({ default: AddNewJobCard }))
+  import("./pages/JobCard").then(({ AddNewJobCard }) => ({
+    default: AddNewJobCard,
+  }))
 );
-// import { LoginScreen } from "./pages/account/Login";
-// import { BuyOrders } from "./pages/BuyOrders";
-// import { Communications } from "./pages/Communicatios";
-// import { Customers } from "./pages/Customers";
-// import { AddNewCustomer } from "./pages/Customers/AddNewCustomer";
-// import { HomePage } from "./pages/Home";
-// import { Inventory } from "./pages/Inventory";
-// import { Leads } from "./pages/Leads";
-// import { AddNewLead } from "./pages/Leads/AddLead";
-// import { Profile } from "./pages/Profile";
-// import { RTOProcess } from "./pages/RTOProcess";
-// import { Support } from "./pages/support";
+
 import { store } from "./store/Store";
 import { MyUsers } from "./pages/MyUsers";
 import { JobCards } from "./pages/JobCard/JobCardList";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
 import { CustomerLeadDetails } from "./pages/Customers/CustomerLeadDetails";
-import { getToken, isLoggedIn, saveLoggedInUserData, saveLoggedInUserToken } from "./state/Utility";
+import {
+  getToken,
+  isLoggedIn,
+  saveLoggedInUserData,
+  saveLoggedInUserToken,
+} from "./state/Utility";
 import { saveLoggedInUserDetails } from "./actions/App.Actions";
 import { AddNewOrder } from "./pages/BuyOrders/AddNewOrder";
 import { ForgotPassword } from "./pages/account/ForgotPassword";
 import { SignupScreen } from "src/pages/account/Signup/Signup";
 import "./main.scss";
+import { FormEg } from "./pages/FormEg";
 
 const Loader = () => (
   <div className="loader-main">
@@ -102,7 +99,7 @@ class ProtectedRoute extends React.Component<any, any> {
     //   saveLoggedInUserDetails({ userName, isDealer: false, isDist: true });
     // }
     const { recordType } = isLoggedIn();
-    const  { data }  = getToken();
+    const { data } = getToken();
     const { token, sfid } = data;
 
     if (recordType === "0122w000000cwfSAAQ") {
@@ -137,6 +134,7 @@ class App extends React.Component {
               <Route path="/" exact component={LoginScreen} />
               <Route path="/signup" exact={true} component={SignupScreen} />
               <Route path="/forgot-password" exact component={ForgotPassword} />
+              <Route path="/eg-form" exact component={FormEg} />
               <ProtectedRoute path="/home" component={HomePage} />
               <ProtectedRoute path="/inventory" component={Inventory} />
               <ProtectedRoute
@@ -156,10 +154,7 @@ class App extends React.Component {
                 path="/add-new-jobcard"
                 component={AddNewJobCard}
               />
-              <ProtectedRoute
-                path="/job-cards"
-                component={JobCards}
-              />
+              <ProtectedRoute path="/job-cards" component={JobCards} />
               <ProtectedRoute path="/customers" component={Customers} />
               <ProtectedRoute
                 path="/customer/add-new-customer"

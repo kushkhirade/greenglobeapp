@@ -116,6 +116,12 @@ export const routes = (isDealerApp) => [
     hidden: true,
     icon: () => <Chat />,
   },
+  {
+    path: "/eg-form",
+    title: "Orders",
+    hidden: true,
+    icon: () => <Chat />,
+  },
 ];
 
 class AppDrawer extends React.Component<IAppDrawer, {}> {
