@@ -67,7 +67,7 @@ export const leadTaskForm = {
 };
 const rxFormReducer = combineForms({
   userForm,
-  leadForm,
+  leadForm: {},
   leadTaskForm,
   egForm: {
     city: "",
