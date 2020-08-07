@@ -1427,7 +1427,6 @@ export class AddNewLeadImpl extends React.Component<
                           formModel="userForm"
                           hasSubmit={true}
                           allFormOptions={[
-                            ...vehicleInputs,
                             ...streetInputs,
                             ...leadDealer,
                           ]}
