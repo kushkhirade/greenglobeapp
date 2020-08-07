@@ -49,6 +49,7 @@ const userFormOptions = [
     required: true,
     type: "text",
     model: ".firstName",
+    required: true,
   },
   {
     label: "Last Name",
@@ -61,12 +62,14 @@ const userFormOptions = [
     required: true,
     type: "text",
     model: ".email",
+    required: true,
   },
   {
     label: "WhatsApp Number",
     required: true,
     type: "text",
     model: ".phone",
+    required: true,
   },
   {
     label: "Role",
@@ -190,7 +193,8 @@ export class MyUsersImpl extends React.PureComponent<
               onCancel={() => this.setState({ openEditModal: false })}
               options={userFormOptions}
               onSubmit={(v)=> {
-                this.InsertUpdateMyUser(loggedInUserDetails, values);
+                // this.InsertUpdateMyUser(loggedInUserDetails, values);
+                console.log(">>v", v)
                 this.getAllUsers(loggedInUserDetails);
                 changeValuesInStore(`editUserForm`, {})
                 this.setState({ openEditModal: false });
@@ -240,7 +244,7 @@ export class MyUsersImpl extends React.PureComponent<
 
             />
           </Grid>
-          <Grid item={true} xs={12} md={6} sm={6}>
+          <Grid item={true} xs={12} md={6} sm={6}> */}
             {/* <Select
               className="form-input"
               id="outlined-basic"
@@ -254,7 +258,7 @@ export class MyUsersImpl extends React.PureComponent<
                 {label: "Manager", value: "Manager"}
               ]}
             /> */}
-            {/* <TextField
+              {/* <TextField
               className="form-input"
               id="outlined-basic"
               label="Role"

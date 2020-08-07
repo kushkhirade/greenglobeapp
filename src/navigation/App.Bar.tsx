@@ -122,7 +122,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     const { classes, utility, dealerDetails } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
-console.log("this.props: ", this.props)
+    
     return (
       <AppBar
         position="fixed"

@@ -35,6 +35,12 @@ export class Tabs extends React.Component<
   handleSortChange = (value) => {
     this.props.onSortChange && this.props.onSortChange(value);
   };
+
+  handleDisable =() => {
+    const arr = this.state.selectValue.filter(item => item.name === "Product")
+    return arr && arr[0] && arr[0].label === "Tank" ? false : true
+  };
+
   public render() {
     console.log("this.State=> ", this.state);
     console.log("this.props=> ", this.props);
@@ -66,6 +72,7 @@ export class Tabs extends React.Component<
                       // id= 'demo-simple-select-filled'
                       // isMulti
                       isSearchable={true}
+                      isDisabled={tab.tabName === "Tank Capacity" ?this.handleDisable(): false} 
                       // value={this.state.activeTab.tabName == tab.tabName ? this.state.selectValue : null}
                       value= {this.state.selectValue.filter(item => item.name === tab.tabName)}
                       onChange={(e) => {

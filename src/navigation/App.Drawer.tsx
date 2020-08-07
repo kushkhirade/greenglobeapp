@@ -64,7 +64,7 @@ export const routes = (isDealerApp) => [
   },
   { path: "/customers", title: "Customer", icon: () => <People /> },
   {
-    hidden: false,
+    hidden: true,
     path: "/customer/add-new-customer",
     title: "Add New Customer",
     icon: () => <FiberNew/>

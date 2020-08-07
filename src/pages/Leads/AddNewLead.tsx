@@ -109,7 +109,6 @@ export class AddNewLeadImpl extends React.Component<
     id: number;
     complainCheckList: any;
     dealerCheckboxesChanged: boolean;
-    currentInsertEmail: string;
   }
 > {
   constructor(props: IAddNewLeadProps) {
@@ -121,7 +120,6 @@ export class AddNewLeadImpl extends React.Component<
       allTasks: [],
       id: 0,
       dealerCheckboxesChanged: false,
-      currentInsertEmail: '',
       complainCheckList: {
         "Low Average / Mileage": false,
         "Late Starting Problem": false,
@@ -402,144 +400,6 @@ export class AddNewLeadImpl extends React.Component<
     };
     this.setState({ dealerCheckboxes: dealerCheckboxesData });
     changeValuesInStore(formType, editData);
-  };
-
-  insertInDistStep1 = async (userForm) => {
-    const currentUser = getToken().data;
-    const {
-      firstName,
-      middleName,
-      lastName,
-      email,
-      company,
-      whatsAppNumber,
-      leadType,
-      leadSource,
-      leadStatus,
-      subLeadSource,
-      rating,
-      street,
-      city,
-      state,
-      zip,
-      country,
-    } = userForm;
-    const query = `INSERT INTO salesforce.Lead (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
-    VALUES ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
-      email ?? ""
-    }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : ""},'${
-      leadType ?? ""
-    }', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
-      rating ?? ""
-    }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
-      country ?? ""
-    }', '0122w000000chRuAAI', '${currentUser.sfid}')`;
-
-    try {
-      const result = await getData({
-        query,
-        token: currentUser.token,
-      });
-      console.log(result);
-      if (
-        typeof result === "object" &&
-        result.name &&
-        result.name === "SyntaxError"
-      ) {
-        throw result;
-      }
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  insertDealerStep1 = async (userForm) => {
-    const currentUser = getToken().data;
-    const {
-      firstName,
-      middleName,
-      lastName,
-      email,
-      company,
-      whatsAppNumber,
-      leadType,
-      leadSource,
-      leadStatus,
-      subLeadSource,
-      rating,
-      street,
-      city,
-      state,
-      zip,
-      country,
-      vehicleNumber,
-      fuelType,
-      wheeles,
-      vehicleMek,
-      vehicleModel,
-      usage,
-      vehicleType,
-      dailyRunning,
-      registration,
-      mfg,
-      chassis,
-      gstNumber,
-    } = userForm;
-    const query = `INSERT INTO salesforce.Lead (FirstName, MiddleName, LastName, Company,Email,Whatsapp_number__c,Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c ,Rating,  Street,  City ,State ,PostalCode,Country, Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,  GST_Number__c , RecordTypeId, Assigned_Dealer__c) 
-    VALUES    
-    ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
-      email ?? ""
-    }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : 0},'${
-      leadType ?? ""
-    }', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
-      rating ?? ""
-    }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
-      country ?? ""
-    }', '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${
-      vehicleMek ?? ""
-    }','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
-       ${dailyRunning ? dailyRunning : 0},'${
-      registration ? registration : "4/5/2019"
-    }',${mfg ? mfg : 0},'${chassis ?? ""}','${
-      gstNumber ?? ""
-    }', '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING email`;
-
-    try {
-      const result = await getData({
-        query,
-        token: currentUser.token,
-      });
-      console.log(result);
-      if (
-        typeof result === "object" &&
-        result.name &&
-        result.name === "SyntaxError"
-      ) {
-        throw result;
-      }
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  insertDealerStep = async (status) => {
-    const currentUser = getToken().data;
-    const { currentInsertEmail } = this.state;
-    console.log(this.state)
-    const query = `select sfid from salesforce.lead where email = '${currentInsertEmail}' `;
-    const result = await getData({
-      query,
-      token: currentUser.token,
-    });
-    console.log(result);
-    /* const statusQuery = `UPDATE salesforce.lead set Status = '${status}' WHERE  sfid = '0010l000017kOHr'`;
-    const resultStatusQuery = await getData({
-      query: statusQuery,
-      token: currentUser.token,
-    });
-    console.log(resultStatusQuery); */
   };
 
   InsertNewTask = async (data, leadTaskForm, id) => {
@@ -941,16 +801,11 @@ export class AddNewLeadImpl extends React.Component<
           />
           <SubFormHeading>Vehicle Details</SubFormHeading>
           <FormComponent
-            onSubmit={async (v: any) => {
-              try {
-                const result = await this.insertDealerStep1(v);
-                this.setState({
-                  currentInsertEmail: 'abac@gamil.com',
-                  activeStep: this.state.activeStep + 1,
-                });
-              } catch (error) {
-                console.log(error);
-              }
+            onSubmit={(v: any) => {
+              this.setState({
+                activeStep: this.state.activeStep + 1,
+              });
+              console.log(">> v", v);
             }}
             formModel="leadForm"
             hasSubmit={true}
@@ -999,9 +854,8 @@ export class AddNewLeadImpl extends React.Component<
           <UploadContainer valKey={7} heading="Aadhaar Card" />
           <UploadContainer valKey={8} heading="PAN Card" />{" "}
           <FormComponent
-            onSubmit={async (v: any) => {
+            onSubmit={(v: any) => {
               console.log(">> v", v);
-              await this.insertDealerStep('Document Collection');
               this.setState({
                 activeStep: this.state.activeStep + 1,
               });
@@ -1053,8 +907,7 @@ export class AddNewLeadImpl extends React.Component<
           </div>
         </div>{" "}
         <FormComponent
-          onSubmit={async (v: any) => {
-            await this.insertDealerStep('Negotiation');
+          onSubmit={(v: any) => {
             this.setState({
               activeStep: this.state.activeStep + 1,
             });
@@ -1106,9 +959,8 @@ export class AddNewLeadImpl extends React.Component<
           options={{ responsive: "scrollMaxHeight" }}
         />{" "}
         <FormComponent
-          onSubmit={async(v: any) => {
+          onSubmit={(v: any) => {
             console.log(">> v", v);
-            await this.insertDealerStep('Closed');
             this.setState({
               activeStep: this.state.activeStep + 1,
             });
@@ -1156,13 +1008,7 @@ export class AddNewLeadImpl extends React.Component<
               return (
                 <React.Fragment>
                   <Grid
-                    className="checkbox-container"
-                    item
-                    xs={6}
-                    md={6}
-                    lg={6}
-                    sm={6}
-                  >
+                    className="checkbox-container" item xs={6} md={6} lg={6} sm={6}>
                     <div
                       style={{
                         display: "flex",
@@ -1198,14 +1044,7 @@ export class AddNewLeadImpl extends React.Component<
               const isChecked = this.state.dealerCheckboxes[key];
               return (
                 <React.Fragment>
-                  <Grid
-                    className="checkbox-container"
-                    item
-                    xs={6}
-                    md={6}
-                    lg={6}
-                    sm={6}
-                  >
+                  <Grid className="checkbox-container" item xs={6} md={6} lg={6} sm={6}>
                     <div
                       style={{
                         display: "flex",
@@ -1250,7 +1089,7 @@ export class AddNewLeadImpl extends React.Component<
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
-            //this.handleLeadDealerSubmit();
+            this.handleLeadDealerSubmit();
           }}
           formModel="leadForm"
           hasSubmit={true}
@@ -1515,17 +1354,13 @@ export class AddNewLeadImpl extends React.Component<
     {
       tabName: "Details",
       component:
-        // <div className="card-container add-leads-page">
         this.renderStepper(),
-      // </div>
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
     {
       tabName: "Activity",
       component:
-        // <div className="card-container add-leads-page">
         this.renderActivitySection(),
-      // </div>
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
   ];
@@ -1533,14 +1368,13 @@ export class AddNewLeadImpl extends React.Component<
   render() {
     return (
       <AppBar>
-        {/* <div className="card-container add-leads-page"> */}
+        <div className="card-container no-hover add-leads-page">
         {this.renderModal()}
-        {/* <Typography variant="h5" color="inherit" noWrap={true}>
+        <Typography variant="h5" color="inherit" noWrap={true}>
             {isDealer() ? "Lead Details - Customer" : "Lead - Dealer"}
-          </Typography> */}
+          </Typography>
         <div className="">
           {!isDealer() ? (
-            <div className="card-container add-leads-page">
               <Stepper
                 activeStep={this.state.activeStep}
                 onChangeStep={(index) => this.setState({ activeStep: index })}
@@ -1548,7 +1382,7 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Draft",
                     component: (
-                      <div>
+                      <div className="job-card-container">
                         <SubFormHeading>Lead Basic Details</SubFormHeading>
                         <FormComponent
                           onSubmit={(v: any) => {
@@ -1579,16 +1413,11 @@ export class AddNewLeadImpl extends React.Component<
                         <UploadContainer valKey={7} heading="Aadhaar Card" />
                         <UploadContainer valKey={8} heading="PAN Card" />{" "}
                         <FormComponent
-                          onSubmit={async (v: any) => {
+                          onSubmit={(v: any) => {
                             console.log(">> v", v);
-                            try {
-                              await this.insertInDistStep1(v);
-                              this.setState({
-                                activeStep: this.state.activeStep + 1,
-                              });
-                            } catch (error) {
-                              console.log(error);
-                            }
+                            this.setState({
+                              activeStep: this.state.activeStep + 1,
+                            });
                           }}
                           formModel="userForm"
                           hasSubmit={true}
@@ -1607,7 +1436,7 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Documents Collection",
                     component: (
-                      <div>
+                      <div className="job-card-container">
                         <SubFormHeading>
                           Regular Business Documentation
                         </SubFormHeading>
@@ -1620,6 +1449,7 @@ export class AddNewLeadImpl extends React.Component<
                               activeStep: this.state.activeStep + 1,
                             });
                             console.log(">> v", v);
+                            this.handleLeadDistributorSubmit();
                           }}
                           formModel="userForm"
                           hasSubmit={true}
@@ -1630,11 +1460,14 @@ export class AddNewLeadImpl extends React.Component<
                   },
                   {
                     label: "Approval",
-                    component: <div>Approvals {`&`} Inventory Load</div>,
+                    component: (
+                      <div className="job-card-container">
+                        Approvals {`&`} Inventory Load
+                      </div>
+                    ),
                   },
                 ]}
               />
-            </div>
           ) : (
             <Tabs
               // isIndex={this.state.activeTab}
@@ -1642,7 +1475,7 @@ export class AddNewLeadImpl extends React.Component<
             />
           )}
         </div>
-        {/* </div> */}
+        </div>
       </AppBar>
     );
   }

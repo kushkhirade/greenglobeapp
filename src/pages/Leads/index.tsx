@@ -150,7 +150,7 @@ export class LeadsImpl extends React.Component<
     try {
       if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
-          query: `SELECT id, recordtypeid, assigned_dealer__c, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city 
+          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city 
           FROM salesforce.Lead 
           WHERE RecordTypeId = '0122w000000chRpAAI' 
           AND (Assigned_Dealer__c LIKE '%${sfid}%') 
@@ -160,7 +160,7 @@ export class LeadsImpl extends React.Component<
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
         console.log("here");
         leadsData = await getData({
-          query: `SELECT id, recordtypeid, assigned_dealer__c, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city
+          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city
           FROM salesforce.Lead 
           WHERE (Assigned_Distributor__c LIKE '%${sfid}%') 
           AND sfid is not null`,
@@ -914,7 +914,7 @@ const CardDetails = (props: any) => {
         </Grid>
         // </React.Fragment>
       ) : (
-          ""
+        ""
         )}
       <Grid container >
         <Grid className="padding-6-corners" item xs={4} md={4}>
@@ -927,7 +927,7 @@ const CardDetails = (props: any) => {
           </span>
         </Grid>
         <Grid className="padding-6-corners" item xs={8} md={8}>
-          <div className="icon-container">
+          <div className="icon-container" style={{marginTop: '-8px'}}>
             <PhoneIcon className="phone-icon" />
                   &nbsp;
                   <ChatIcon className="chat-icon" />
@@ -942,6 +942,13 @@ const CardDetails = (props: any) => {
           </div>
         </Grid>
       </Grid>{" "}
+      {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ" ? "" :
+        <Grid container >
+          <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
+            {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
+          </span>
+        </Grid>
+      }
     </div>
     //     )}
     //   )}
@@ -996,6 +1003,8 @@ const CardDetailsForDealer = (props: any) => {
           <span className="description-text">City:</span>
           {details.city}
         </Grid>
+      </Grid>
+      <Grid container >
         <Grid className="padding-6-corners" item xs={4} md={4}>
           <span
             onClick={() => props.onClickDetails(details)}
@@ -1004,10 +1013,8 @@ const CardDetailsForDealer = (props: any) => {
             View Details
           </span>
         </Grid>
-      </Grid>
-      <Grid container className="padding-15 align-left">
-        <Grid className="padding-6-corners" item xs={12} md={12}>
-          <div className="icon-container">
+        <Grid className="padding-6-corners" item xs={8} md={8}>
+          <div className="icon-container" style={{marginTop: '-8px'}}>
             <PhoneIcon className="phone-icon" />
             &nbsp;
             <ChatIcon className="chat-icon" />
