@@ -18,6 +18,16 @@
     }
 }
 
+.field-error {
+    border: 1px solid red !important;
+    border-radius: 4px;
+
+    span,
+    label {
+        color: red
+    }
+}
+
 .padding-6-corners {
     padding: 6px 0px;
 }
@@ -120,15 +130,15 @@
         text-align: center;
         font-size: 12px;
         font-weight: 600;
-        color:black;
+        color: black;
         background-color: #e4e4e4;
 
         &:hover {
             cursor: pointer;
             // background-color: #48a89c;
             // color:white;
-        font-weight: 600;
-        color:black;
+            font-weight: 600;
+            color: black;
         }
     }
 
@@ -145,8 +155,9 @@
         color: black;
         text-align: center;
         border: 1px solid #d4cdcd;
-        width: 103px; height: 34px;
-        background-color:white;
+        width: 103px;
+        height: 34px;
+        background-color: white;
         border-radius: 4px;
     }
 }

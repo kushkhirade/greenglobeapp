@@ -64,9 +64,10 @@ export const routes = (isDealerApp) => [
   },
   { path: "/customers", title: "Customer", icon: () => <People /> },
   {
-    hidden: true,
+    hidden: false,
     path: "/customer/add-new-customer",
     title: "Add New Customer",
+    icon: () => <FiberNew/>
   },
   {
     path: "/add-new-jobcard",
@@ -112,6 +113,12 @@ export const routes = (isDealerApp) => [
   },
   {
     path: "/buy-order/add-new-order",
+    title: "Orders",
+    hidden: true,
+    icon: () => <Chat />,
+  },
+  {
+    path: "/eg-form",
     title: "Orders",
     hidden: true,
     icon: () => <Chat />,

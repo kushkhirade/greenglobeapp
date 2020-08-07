@@ -46,29 +46,34 @@ const users = [
 const userFormOptions = [
   {
     label: "First Name",
+    required: true,
     type: "text",
     model: ".firstName",
     required: true,
   },
   {
     label: "Last Name",
+    required: true,
     type: "text",
     model: ".lastName",
   },
   {
     label: "Email",
+    required: true,
     type: "text",
     model: ".email",
     required: true,
   },
   {
     label: "WhatsApp Number",
+    required: true,
     type: "text",
     model: ".phone",
     required: true,
   },
   {
     label: "Role",
+    required: true,
     type: "select",
     model: ".role",
     options: [
