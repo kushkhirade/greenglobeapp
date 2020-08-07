@@ -232,7 +232,7 @@ export class AddNewJobCardImpl extends React.Component<
           query: `SELECT * from salesforce.Lead 
           WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
           AND Name is not null AND Status != 'Closed'`,
-          token: data.token,
+          token: data.token
         });
         leadsData.result.map((l) => {
           l.type = "lead";
@@ -254,7 +254,7 @@ export class AddNewJobCardImpl extends React.Component<
           query: `SELECT * FROM salesforce.Lead 
           WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
           AND Name is not null AND Status != 'Closed'`,
-          token: data.token,
+          token: data.token
         });
       }
       console.log("custLeadsDataArr: ", custLeadsDataArr);
@@ -522,7 +522,7 @@ export class AddNewJobCardImpl extends React.Component<
     }
   };
 
-  insertJobCardForm = async (data, sfid) => {
+  insertleadForm = async (data, sfid) => {
     const {
       jobCardCheckboxes: jCC,
       complaintCheckboxes: cC,
@@ -744,7 +744,7 @@ export class AddNewJobCardImpl extends React.Component<
         }
       }
     }
-    this.insertJobCardForm(loggedInUserDetails, customerAdd);
+    this.insertleadForm(loggedInUserDetails, customerAdd);
     //  this.props.history.push("/leads")
   };
 
@@ -1003,34 +1003,16 @@ export class AddNewJobCardImpl extends React.Component<
               const isChecked = this.state.jobCardCheckboxesChanged[key];
               return (
                 <React.Fragment>
-                  <Grid
-                    key={key}
-                    className="checkbox-container"
-                    item
-                    xs={6}
-                    md={6}
-                    lg={6}
-                    sm={6}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
+                  <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6}> 
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", }} >
                       {/* <div className="label-text" >{key}</div> */}
                       <div>
-                        <Checkbox
-                          color="primary"
-                          inputProps={{ "aria-label": "secondary checkbox" }}
-                          onChange={this.handleToggle("complaintCheckboxes")}
-                          key={key}
-                          name={key}
-                          value={isChecked}
-                          {...(this.state.id && { checked: isChecked })}
-                        />
+                        <Checkbox 
+                          color="primary" inputProps={{ "aria-label": "secondary checkbox" }}
+                          style={{ width: '10px', height: '10px'}}
+                          onChange={this.handleToggle('complaintCheckboxes')} key={key} name={key} value={isChecked}
+                          {...this.state.id && { checked: isChecked }}
+                        /> 
                         {key}
                       </div>
                     </div>
@@ -1048,15 +1030,7 @@ export class AddNewJobCardImpl extends React.Component<
               const isChecked = this.state.jobCardCheckboxesChanged[key];
               return (
                 <React.Fragment>
-                  <Grid
-                    key={key}
-                    className="checkbox-container"
-                    item
-                    xs={6}
-                    md={6}
-                    lg={6}
-                    sm={6}
-                  >
+                  <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6}>
                     <div
                       style={{
                         display: "flex",
@@ -1069,6 +1043,7 @@ export class AddNewJobCardImpl extends React.Component<
                       <div>
                         <Checkbox
                           color="primary"
+                          style={{ width: '10px', height: '10px'}}
                           inputProps={{ "aria-label": "secondary checkbox" }}
                           onChange={this.handleToggle("jobCardCheckboxes")}
                           key={key}

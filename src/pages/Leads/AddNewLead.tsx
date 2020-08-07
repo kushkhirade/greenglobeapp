@@ -1515,17 +1515,13 @@ export class AddNewLeadImpl extends React.Component<
     {
       tabName: "Details",
       component:
-        // <div className="card-container add-leads-page">
         this.renderStepper(),
-      // </div>
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
     {
       tabName: "Activity",
       component:
-        // <div className="card-container add-leads-page">
         this.renderActivitySection(),
-      // </div>
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
   ];
@@ -1533,14 +1529,13 @@ export class AddNewLeadImpl extends React.Component<
   render() {
     return (
       <AppBar>
-        {/* <div className="card-container add-leads-page"> */}
+        <div className="card-container no-hover add-leads-page">
         {this.renderModal()}
-        {/* <Typography variant="h5" color="inherit" noWrap={true}>
+        <Typography variant="h5" color="inherit" noWrap={true}>
             {isDealer() ? "Lead Details - Customer" : "Lead - Dealer"}
-          </Typography> */}
+          </Typography>
         <div className="">
           {!isDealer() ? (
-            <div className="card-container add-leads-page">
               <Stepper
                 activeStep={this.state.activeStep}
                 onChangeStep={(index) => this.setState({ activeStep: index })}
@@ -1548,7 +1543,7 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Draft",
                     component: (
-                      <div>
+                      <div className="job-card-container">
                         <SubFormHeading>Lead Basic Details</SubFormHeading>
                         <FormComponent
                           onSubmit={(v: any) => {
@@ -1607,7 +1602,7 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Documents Collection",
                     component: (
-                      <div>
+                      <div className="job-card-container">
                         <SubFormHeading>
                           Regular Business Documentation
                         </SubFormHeading>
@@ -1630,11 +1625,14 @@ export class AddNewLeadImpl extends React.Component<
                   },
                   {
                     label: "Approval",
-                    component: <div>Approvals {`&`} Inventory Load</div>,
+                    component: (
+                      <div className="job-card-container">
+                        Approvals {`&`} Inventory Load
+                      </div>
+                    ),
                   },
                 ]}
               />
-            </div>
           ) : (
             <Tabs
               // isIndex={this.state.activeTab}
@@ -1642,7 +1640,7 @@ export class AddNewLeadImpl extends React.Component<
             />
           )}
         </div>
-        {/* </div> */}
+        </div>
       </AppBar>
     );
   }
