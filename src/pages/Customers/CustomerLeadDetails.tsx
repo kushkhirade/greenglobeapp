@@ -22,6 +22,9 @@ import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
 import { isDealer } from "./../../state/Utility";
 import { ChangePhoneFormat } from "src/components/Format";
+import { getToken } from "src/state/Utility";
+import getData from "src/utils/getData";
+import { JobCardsList } from "src/pages/JobCard/index";
 
 export interface IAssignedDealersProps {}
 
@@ -58,16 +61,61 @@ const options = {
 
 export class DealerDetailsImpl extends React.PureComponent<
   any,
-  { users: any; isLoading: boolean }
+  { users: any; isLoading: boolean; AllJobCards: any;}
 > {
   constructor(props: IAssignedDealersProps) {
     super(props);
-    this.state = { users: [], isLoading: false };
+    this.state = { users: [], isLoading: false, AllJobCards: [] };
   }
 
   componentWillMount() {
     if (isEmpty(this.props.dealerDetails)) {
-      this.props.history.push("/assign-dealers");
+      this.props.history.goBack();
+    }
+  }
+  componentDidMount() {
+    const data = getToken().data;
+    this.getAllJobCards(data);
+  }
+
+  getAllJobCards = async (data) => {
+    const dealer = this.props.dealerDetails;
+    console.log("this.props.dealerDetails", this.props.dealerDetails)
+    let sfid = data.sfid;
+    let recordtypeid = data.record_type;
+   
+    sfid = dealer.sfid;
+    recordtypeid = dealer.recordtypeid;
+
+    try{
+      let jobCardData;
+      if(recordtypeid === "0121s0000000WE4AAM"){
+        jobCardData = await getData({
+          query: `select gst_number__c,customer__c,Name,
+          (select Whatsapp_number__c from salesforce.contact where sfid like '%${sfid}%') ,
+          (select firstName from salesforce.contact where sfid like '%${sfid}%') ,
+          (select lastName from salesforce.contact where sfid like '%${sfid}%')
+          from salesforce.job_card__c where customer__c like '%${sfid}%'`,
+          token: data.token
+        })
+      }
+      else {
+        jobCardData = await getData({
+          query: `select gst_number__c,lead__c,Name,
+          (select Whatsapp_number__c from salesforce.lead where sfid like '%${sfid}%') ,
+          (select firstName from salesforce.contact where sfid like '%${sfid}%') ,
+          (select lastName from salesforce.contact where sfid like '%${sfid}%')
+          from salesforce.job_card__c where lead__c like '%${sfid}%'`,
+          token: data.token
+        });
+      }
+
+      console.log("jobCardData =>", jobCardData.result)
+      this.setState({ AllJobCards : jobCardData.result });
+
+    }
+    catch(e){
+      console.log(e);
     }
   }
 
@@ -78,9 +126,9 @@ export class DealerDetailsImpl extends React.PureComponent<
         <Grid container>
           <Grid item xs={12} md={12} lg={12}>
             <div
-              onClick={() =>
-                this.props.dealerDetails.onClickItem(this.props.dealerDetails)
-              }
+              // onClick={() =>
+              //   this.props.dealerDetails.onClickItem(this.props.dealerDetails)
+              // }
               className="card-container"
             >
               <SubFormHeading>Customer Details</SubFormHeading>
@@ -197,70 +245,23 @@ export class DealerDetailsImpl extends React.PureComponent<
         </Grid>
       ),
     },
-    // {
-    //   tabName: "Report",
-    //   component: (
-    //     <div className="margin-10">
-    //       <div className="margin-10">
-    //         <TableWithGrid
-    //           title={"Sale Target 3 wheeler"}
-    //           data={data.sales.data}
-    //           columns={columns}
-    //           options={options as any}
-    //         />{" "}
-    //       </div>
-    //       <div className="margin-10">
-    //         <TableWithGrid
-    //           title={"Sale Target 4 wheeler"}
-    //           data={data.sales.data}
-    //           columns={columns}
-    //           options={ as any}
-    //         />
-    //       </div>
-    //       <div className="card-container">
-    //         <SubFormHeading>Product wise sale</SubFormHeading>
-    //         <ResponsiveContainer width="100%" height={300}>
-    //           <BarChart width={730} height={250} data={chartData}>
-    //             <CartesianGrid />
-    //             <XAxis dataKey="name" />
-    //             <YAxis />
-    //             <Tooltip />
-    //             <Legend />
-    //             <Bar dataKey="uv" fill="#82ca9d" barSize ={100} />
-    //           </BarChart>
-    //         </ResponsiveContainer>
-    //       </div>
-    //       <div className="button-container">
-    //         <Button
-    //           onClick={() => this.props.history.push("/leads")}
-    //           variant="contained"
-    //           color="primary"
-    //           type="submit"
-    //         >
-    //           View Leads
-    //         </Button>
-    //         <span style={{ padding: "4px" }} />
-    //         <Button
-    //           onClick={() => this.props.history.push({pathname: "/inventory", data: this.props.dealerDetails})}
-    //           variant="contained"
-    //           color="primary"
-    //           type="submit"
-    //         >
-    //           View Inventory
-    //         </Button>{" "}
-    //         <span style={{ padding: "4px" }} />
-    //         <Button
-    //           onClick={() => this.props.history.push("/customers")}
-    //           variant="contained"
-    //           color="primary"
-    //           type="submit"
-    //         >
-    //           View Customers
-    //         </Button>
-    //       </div>
-    //     </div>
-    //   ),
-    // },
+    {
+      tabName: "Job Cards",
+      component: (
+        <Grid container>
+          {this.state.AllJobCards && this.state.AllJobCards.map(cust => {
+          return (
+            <Grid item xs={12} md={6}>
+              <JobCardsList
+                // onClickDetails={this.handleCustomerDetails}
+                jobCardData={cust}
+              />
+            </Grid>
+          )}
+          )}
+        </Grid>
+      ),
+    }
   ];
 
   render() {

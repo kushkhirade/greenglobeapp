@@ -50,17 +50,17 @@ export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {customers
       let jobCardData;
       if(recordtypeid === '0122w000000cwfSAAQ'){
         jobCardData = await getData({
-          query: `SELECT *
-          FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = ''`,
+          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
+          ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
+          WHERE salesforce.contact.assigned_dealer__c  LIKE '%${data.sfid}%' `,
           token: data.token
         })
       }
       else if(recordtypeid === "0122w000000cwfNAAQ"){
         jobCardData = await getData({
-          query: `SELECT *
-          FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = ''`,
+          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
+          ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
+          WHERE salesforce.contact.accountid  LIKE '%${data.sfid}%'`,
           token: data.token
         });
       }
@@ -100,7 +100,7 @@ export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {customers
           return (
             <Grid item xs={12} md={6}>
               <JobCardsList
-                onClickDetails={this.handleCustomerDetails}
+                // onClickDetails={this.handleCustomerDetails}
                 jobCardData={cust}
               />
             </Grid>
@@ -120,77 +120,45 @@ export const JobCards = withRouter(
   connect<{}, {}, IJobCardsProps>(mapStateToProps)(JobCardsImpl as any) as any
 );
 
-const JobCardsList = (props: any) => {
+export const JobCardsList = (props: any) => {
   const { jobCardData } = props;
   return (
-    // <div className="cards-main">
-    // {props.jobCardData.map((jobCardData: any, index: any) => {
-    // return (
-      <div className="card-container" >
-        <Grid container >
-          <Grid
-            item
-            className="padding-6-corners"
-            xs={6}
-            md={6}
-          >
-            <PersonPin /> <span style={{ padding: "5px" }} />
-            {jobCardData.name}
-          </Grid>
-          <Grid
-            className="padding-6-corners"
-            item
-            xs={6}
-            md={6}
-          >
-            <Phone /> <span style={{ padding: "5px" }} />
-            {jobCardData.phone && ChangePhoneFormat(jobCardData.phone)}
-          </Grid>
-        </Grid>
-        <Grid container >
-          {/* <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text"> Email:</span>
-            {jobCardData.email || 'NA'}
-          </Grid> */}
-          <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text"> Purchased Product:</span>
-            {jobCardData.purchased_product__c}
-          </Grid>
-          <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text"> Dealer Rating:</span>
-            {jobCardData.dealer_rating__c}
-          </Grid>
-        </Grid>
-        <Grid container >
-          <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text">Dealer Code:</span>
-            {jobCardData.dealer_code__c}
-            {/* <Rating
-              readOnly
-              precision={0.5}
-              value={jobCardData.dealerRating}
-            /> */}
-          </Grid>
-          <Grid className="padding-6-corners" item xs={4} md={4}> 
-          <span onClick={() => props.onClickDetails(jobCardData)} className="view">
-            View Details
-          </span>
-        </Grid>
-        </Grid>
-        <Grid className="padding-15 align-left">
-          <div className="icon-container">
-            <PhoneIcon className="phone-icon" />
-            &nbsp;
-            <ChatIcon className="chat-icon" />
-            &nbsp;
-            <MailIcon className="mail-icon" />
-            &nbsp;
-            <img height="42px" src={WhatsappIcon}/>
+    <div className="card-container" >
+      <Grid container > 
+        <Grid item className="padding-6-corners" xs={6} md={6} >
+          <PersonPin /> <span style={{ padding: "5px" }} />
+          <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+            {jobCardData.firstname} {jobCardData.lastname}
           </div>
         </Grid>
-      </div>
-  //    );
-  // })} 
-  // </div>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <Phone /> <span style={{ padding: "5px" }} />
+          <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+            {jobCardData.whatsapp_number__c && ChangePhoneFormat(jobCardData.whatsapp_number__c)}
+          </div>
+        </Grid>
+      </Grid>
+      {/* <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Purchased Product:</span>
+          {jobCardData.purchased_product__c}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Dealer Rating:</span>
+          {jobCardData.dealer_rating__c}
+        </Grid>
+      </Grid> */}
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={12} md={6}>
+          <span className="description-text">Jobcard No:</span>
+          {jobCardData.jcname__c}
+        </Grid>
+        {/* <Grid className="padding-6-corners" item xs={4} md={4}> 
+        <span onClick={() => props.onClickDetails(jobCardData)} className="view">
+          View Details
+        </span>
+        </Grid> */}
+      </Grid>
+    </div>
   )
 };

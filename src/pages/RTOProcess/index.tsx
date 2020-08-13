@@ -388,10 +388,16 @@ const RTOList = (props: any) => {
             <div className="rto-card-title">{rtoData.title}</div>
             <Grid key={index} container className="padding-6">
               <Grid item className="bold-font center" xs={6} md={6}>
-                <PersonPin /> {rtoData.contname__c}
+                <PersonPin /> <span style={{ padding: "5px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+                  {rtoData.contname__c}
+                </div>
               </Grid>
               <Grid className="bold-fon center" item xs={6} md={6}>
-                <Phone /> {rtoData.mobile_no__c && ChangePhoneFormat(rtoData.mobile_no__c)}
+                <Phone /> <span style={{ padding: "5px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+                  {rtoData.mobile_no__c && ChangePhoneFormat(rtoData.mobile_no__c)}
+                </div>
               </Grid>
             </Grid>
             <Grid container className="padding-6">

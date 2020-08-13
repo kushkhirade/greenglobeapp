@@ -90,6 +90,7 @@ export const styles = (theme: Theme) => ({
       overflowX: 'hidden'
     },
     fillSpace: {
-      flex: '1 1 auto'
+      flex: '1 1 auto',
+      marginLeft: '-30px'
     }
   });

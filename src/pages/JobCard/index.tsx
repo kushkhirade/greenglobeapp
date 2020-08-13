@@ -13,6 +13,8 @@ import { TableWithGrid } from "src/components/TableWithGrid";
 import AppBar from "src/navigation/App.Bar";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Stepper } from "../BuyOrders/Stepper";
+import { PersonPin, Phone } from "@material-ui/icons";
+import { ChangePhoneFormat } from "src/components/Format";
 import {
   addressDetails,
   leadDealer,
@@ -31,39 +33,8 @@ import { getToken, changeValuesInStore } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { AnyCnameRecord } from "dns";
 import { LabelList } from "recharts";
+
 var loggedInUserDetails;
-const detailsObj = [
-  // {
-  //   sNumber: 1,
-  //   subject: "Call",
-  //   dueDate: "4/30/2020",
-  //   rating: "Hot",
-  //   priotiy: "Normal",
-  //   status: "Open",
-  //   callResult: "Spoke with Customer ",
-  //   comments: "Customer Intrested",
-  // },
-  // {
-  //   sNumber: 2,
-  //   subject: "Call",
-  //   dueDate: "4/30/2020",
-  //   rating: "Hot",
-  //   priotiy: "Normal",
-  //   status: "Open",
-  //   callResult: "Spoke with Customer ",
-  //   comments: "Customer Intrested",
-  // },
-  // {
-  //   sNumber: 3,
-  //   subject: "Call",
-  //   dueDate: "4/30/2020",
-  //   rating: "Hot",
-  //   priotiy: "Normal",
-  //   status: "Open",
-  //   callResult: "Spoke with Customer ",
-  //   comments: "Customer Intrested",
-  // },
-];
 
 export interface IAddNewJobCardProps {}
 
@@ -100,6 +71,7 @@ export class AddNewJobCardImpl extends React.Component<
     activeTab: number;
     activeStep: number;
     jobCardCheckboxesChanged: boolean;
+    AllJobCards: any;
     OpenAddJobCard: boolean;
     jobCardCheckboxes: any;
     complaintCheckboxes: any;
@@ -115,6 +87,7 @@ export class AddNewJobCardImpl extends React.Component<
       activeStep: 0,
       OpenAddJobCard: false,
       jobCardCheckboxesChanged: false,
+      AllJobCards: [],
       jobCardCheckboxes: {
         "ANNUAL MAINTAINANACE CONTRACT": false,
         "AIR FILTER R/R": false,
@@ -210,6 +183,36 @@ export class AddNewJobCardImpl extends React.Component<
   componentDidMount() {
     loggedInUserDetails = getToken().data;
     this.getCustAndLeads(loggedInUserDetails);
+    this.getAllJobCards(loggedInUserDetails);
+  }
+
+  getAllJobCards = async (data) => {
+    try{
+      let jobCardData;
+      if(data.record_type === '0122w000000cwfSAAQ'){
+        jobCardData = await getData({
+          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
+          ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
+          WHERE salesforce.contact.assigned_dealer__c  LIKE '%${data.sfid}%' `,
+          token: data.token
+        })
+      }
+      else if(data.record_type === "0122w000000cwfNAAQ"){
+        jobCardData = await getData({
+          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
+          ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
+          WHERE salesforce.contact.accountid  LIKE '%${data.sfid}%'`,
+          token: data.token
+        });
+      }
+
+      console.log("jobCardData =>", jobCardData.result)
+      this.setState({ AllJobCards : jobCardData.result });
+
+    }
+    catch(e){
+      console.log(e);
+    }
   }
 
   getCustAndLeads = async (data) => {
@@ -328,6 +331,7 @@ export class AddNewJobCardImpl extends React.Component<
       ``;
       console.log("insertJobCard => ", insertJobCard);
       return insertJobCard.result;
+
     } catch (e) {
       console.log(e);
     }
@@ -522,13 +526,22 @@ export class AddNewJobCardImpl extends React.Component<
     }
   };
 
-  insertleadForm = async (data, sfid) => {
+  insertleadForm = async (data, customerId) => {
     const {
       jobCardCheckboxes: jCC,
       complaintCheckboxes: cC,
       selectedUser = null,
     } = this.state;
 
+      const getSFIDofCust = await getData ({
+        query: `Select sfid from salesforce.contact where id = ${customerId}`,
+        token: data.token,
+      });
+
+      console.log("getSFIDofCust:", getSFIDofCust.result);
+      const sfid = getSFIDofCust.result[0].sfid;
+      // this.setState({ selectedUser: getSFIDofCust.result[0].sfid})
+      
     try {
       const query = `INSERT INTO salesforce.job_card__c (customer__c,Lead__c,AIR_FILTER_R_R__c	,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,
         FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c	,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c	,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c	,GRECO_PRO_KIT_FITTING__c,
@@ -696,6 +709,7 @@ export class AddNewJobCardImpl extends React.Component<
       ``;
       console.log("insertLead => ", insertLead);
       return insertLead.result;
+
     } catch (e) {
       console.log(e);
     }
@@ -715,19 +729,20 @@ export class AddNewJobCardImpl extends React.Component<
   handleJobCardDealerInsert = async () => {
     let customerAdd = null;
     if (this.state.selectedUser == null) {
-      if (isDealer()) {
-        await this.insertLead(loggedInUserDetails, this.props.leadForm);
-        customerAdd = await this.getCreatedItem(
+      // if (isDealer()) {
+      //   await this.insertLead(loggedInUserDetails, this.props.leadForm);
+      //   customerAdd = await this.getCreatedItem(
+      //     loggedInUserDetails,
+      //     this.props.leadForm
+      //   );
+      // } else {
+        const res = await this.InsertJobCardDealer(
           loggedInUserDetails,
           this.props.leadForm
         );
-      } else {
-        await this.InsertJobCardDealer(
-          loggedInUserDetails,
-          this.props.leadForm
-        );
-        customerAdd = loggedInUserDetails.sfid;
-      }
+        console.log("res:", res);
+        customerAdd = res[0].id;
+      // }
       console.log(customerAdd);
     } else {
       if (isDealer()) {
@@ -763,7 +778,7 @@ export class AddNewJobCardImpl extends React.Component<
   // Basic Details Form
   public renderForm = () => {
     return (
-      <div className="job-card-container">
+      <div className="card-container job-card-container">
         <React.Fragment>
           <SubFormHeading>Lead Basic Details</SubFormHeading>
           <FormComponent
@@ -983,7 +998,7 @@ export class AddNewJobCardImpl extends React.Component<
 
   renderJobCard = () => {
     return (
-      <div className="job-card-container">
+      <div className="card-container job-card-container">
         <SubFormHeading>GST Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
@@ -1327,28 +1342,43 @@ export class AddNewJobCardImpl extends React.Component<
     return (
       <AppBar>
         <div
-          className="card-container no-hover add-leads-page"
-          style={{ paddingBottom: 500 }}
+          // className="card-container no-hover add-leads-page"
+          // style={{ paddingBottom: 500 }}
         >
           {this.renderModal()}
           {!this.state.OpenAddJobCard && (
-            <Select
-              className="r-select"
-              classNamePrefix="r-select-pre"
-              placeholder="Select Customer / Lead"
-              options={this.state.allCustAndLeads.map((p) => ({
-                label: p.name,
-                value: p.sfid,
-                obj: p,
-              }))}
-              onChange={this.dealerChange}
-            />
+            <div className="card-container no-hover add-leads-page">
+              <Select
+                className="r-select"
+                classNamePrefix="r-select-pre"
+                placeholder="Select Customer / Lead"
+                options={this.state.allCustAndLeads.map((p) => ({
+                  label: p.name,
+                  value: p.sfid,
+                  obj: p,
+                }))}
+                onChange={this.dealerChange}
+              />
+            </div>
           )}
+          {/* <Grid container>
+          {!this.state.OpenAddJobCard && (
+              this.state.AllJobCards && this.state.AllJobCards.map(cust => {
+              return (
+                <Grid item xs={12} md={6}>
+                  <JobCardsList
+                    // onClickDetails={this.handleCustomerDetails}
+                    jobCardData={cust}
+                  />
+                </Grid>
+              )})
+            )}
+          </Grid> */}
           {this.state.OpenAddJobCard && (
             <div className="">
-              <Typography variant="h5" color="inherit">
-                Add New Job Card
-              </Typography>
+              {/* <Typography variant="h5" color="inherit">
+                Add New JobCard
+              </Typography> */}
 
               {this.renderStepper()}
             </div>
@@ -1422,4 +1452,47 @@ const UploadContainer = (props: any) => {
       </div>
     </div>
   );
+};
+
+export const JobCardsList = (props: any) => {
+  const { jobCardData } = props;
+  return (
+    <div className="card-container" >
+      <Grid container > 
+        <Grid item className="padding-6-corners" xs={6} md={6} >
+          <PersonPin /> <span style={{ padding: "5px" }} />
+          <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+            {jobCardData.firstname} {jobCardData.lastname}
+          </div>
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <Phone /> <span style={{ padding: "5px" }} />
+          <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+            {jobCardData.whatsapp_number__c && ChangePhoneFormat(jobCardData.whatsapp_number__c)}
+          </div>
+        </Grid>
+      </Grid>
+      {/* <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Purchased Product:</span>
+          {jobCardData.purchased_product__c}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Dealer Rating:</span>
+          {jobCardData.dealer_rating__c}
+        </Grid>
+      </Grid> */}
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={12} md={6}>
+          <span className="description-text">Jobcard No:</span>
+          {jobCardData.jcname__c || jobCardData.name}
+        </Grid>
+        {/* <Grid className="padding-6-corners" item xs={4} md={4}> 
+        <span onClick={() => props.onClickDetails(jobCardData)} className="view">
+          View Details
+        </span>
+        </Grid> */}
+      </Grid>
+    </div>
+  )
 };

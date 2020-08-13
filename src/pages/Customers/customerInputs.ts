@@ -104,9 +104,9 @@ export const vehicleInputs = [
     type: "number",
   },
   {
-    label: "Registration Year.",
+    label: "Registration Year",
     model: ".registration",
-    type: "text",
+    type: "date",
   },
   {
     label: "Year Of Manufacturing",
@@ -248,6 +248,17 @@ export const leadDealer = [
     ]
   },
   {
+    label: "SubLead Type",
+    model: ".subleadType",
+    type: "select",
+    options: [
+      {label: "Customer", value: "Customer"},
+      {label: "Influencer", value: "Influencer"},
+      {label: "Fitment", value: "Fitment"},
+      {label: "Servicing", value: "Servicing"}
+    ]
+  },
+  {
     label: "Lead Source",
     model: ".leadSource",
     type: "select",
@@ -272,6 +283,24 @@ export const leadDealer = [
     required: true,
   },
   {
+    label: "Sub Lead Source",
+    model: ".subLeadSource",
+    type: "select",
+    options: [
+      {label: "Facebook", value: "Facebook"},
+      {label: "Google", value: "Google"},
+      {label: "Whatsapp", value: "Whatsapp"},
+      {label: "Mass Malling", value: "Mass malling"},
+      {label: "Mass Messaging", value: "Mass messaging"},
+      {label: "Instagram", value: "Instagram"},
+      {label: "YouTube", value: "YouTube"},
+      {label: "RTO", value: "RTO"},
+      {label: "BANK", value: "BANK"},
+      {label: "Patpedhi", value: "Patpedhi"},
+      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+    ],
+  },
+  {
     label: "Lead Status",
     model: ".leadStatus",
     type: "select",
@@ -285,24 +314,6 @@ export const leadDealer = [
       {label: "Qualified", value: "Qualified"}
     ],
     required: true,
-  },
-  {
-    label: "Sub Lead Source",
-    model: ".subLeadSource",
-    type: "select",
-    options: [
-      {label: "Facebook", value: "Facebook"},
-      {label: "Google", value: "Google"},
-      {label: "Whatsapp", value: "Whatsapp"},
-      {label: "Mass Malling", value: "Mass Malling"},
-      {label: "Mass Messaging", value: "Mass Messaging"},
-      {label: "Instagram", value: "Instagram"},
-      {label: "YouTube", value: "YouTube"},
-      {label: "RTO", value: "RTO"},
-      {label: "BANK", value: "BANK"},
-      {label: "Patpedhi", value: "Patpedhi"},
-      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
-    ],
   },
   {
     label: "Rating",
@@ -329,6 +340,17 @@ export const leadSource = [
     ],
   },
   {
+    label: "SubLead Type",
+    model: ".subleadType",
+    type: "select",
+    options: [
+      {label: "Customer", value: "Customer"},
+      {label: "Influencer", value: "Influencer"},
+      {label: "Fitment", value: "Fitment"},
+      {label: "Servicing", value: "Servicing"}
+    ]
+  },
+  {
     label: "Lead Source",
     model: ".leadSource",
     type: "select",
@@ -353,21 +375,6 @@ export const leadSource = [
     required: true,
   },
   {
-    label: "Lead Status",
-    model: ".leadStatus",
-    type: "select",
-    options: [
-      {label: "New", value: "New"},
-      {label: "Basic Details", value: "Basic Details"},
-      {label: "Document Collection", value: "Document Collection"},
-      {label: "Negotiation", value: "Negotiation"},
-      {label: "Closed", value: "Closed"},
-      {label: "Job Card", value: "Job Card"},
-      {label: "Qualified", value: "Qualified"}
-    ],
-    required: true,
-  },
-  {
     label: "Sub Lead Source",
     model: ".subLeadSource",
     type: "select",
@@ -384,6 +391,21 @@ export const leadSource = [
       {label: "Patpedhi", value: "Patpedhi"},
       {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
     ],
+  },
+  {
+    label: "Lead Status",
+    model: ".leadStatus",
+    type: "select",
+    options: [
+      {label: "New", value: "New"},
+      {label: "Basic Details", value: "Basic Details"},
+      {label: "Document Collection", value: "Document Collection"},
+      {label: "Negotiation", value: "Negotiation"},
+      {label: "Closed", value: "Closed"},
+      {label: "Job Card", value: "Job Card"},
+      {label: "Qualified", value: "Qualified"}
+    ],
+    required: true,
   },
   {
     label: "Rating",

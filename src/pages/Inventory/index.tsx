@@ -4,13 +4,15 @@ import { connect } from "react-redux";
 import moment from 'moment';
 import { BaseModal } from "src/components/BaseModal";
 import { Tabs } from "src/components/Tabs";
+import { Loading, NotFoundError } from "src/components/Loading";
 import AppBar from "src/navigation/App.Bar";
 import getData from "src/utils/getData";
 import data from "../../data";
 import { getToken, isDealer } from "src/state/Utility";
 import "./inventory.scss";
+import Typography from "material-ui/styles/typography";
 
-const productsFilterOptions = (invdata)=>  [
+const productsFilterOptions = (invdata) => [
   {label: "3W ACE ( "+ invdata.filter( inv =>  inv.family === "3 Wheeler Ace" ).length +" )", value: "3 Wheeler Ace"},
   {label: "3W Pro ( "+ invdata.filter( inv =>  inv.family === "3 Wheeler Pro" ).length +" )", value: "3 Wheeler Pro"},
   {label: "4W Ace ( "+ invdata.filter( inv =>  inv.family === "4 Wheeler Ace" ).length +" )", value: "4 Wheeler Ace"},
@@ -28,7 +30,7 @@ const tankFilterOptions = (invdata)=>[
   {label: "75 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "75" ).length +" )", value: "75"},
   {label: "90 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "90" ).length +" )", value: "90"},
 ]
-
+var filterLength;
 export interface IInventoryProps {location?: any;}
 
 export class InventoryImpl extends React.PureComponent<
@@ -48,7 +50,7 @@ export class InventoryImpl extends React.PureComponent<
     this.state = {
       currentItem: null,
       openEditModal: false,
-      data: [],
+      data: null,
       isFilterOpen: false,
       filterType: "",
       selectedProductFilter: "",
@@ -63,7 +65,7 @@ export class InventoryImpl extends React.PureComponent<
     const {location} = this.props;
     const sfid = location.data && location.data.sfid ? location.data.sfid : data.sfid;
     const recordtypeid = location.data && location.data.recordtypeid ? location.data.recordtypeid : data.record_type;
-    const res = await this.getAllInventoryData(data.token,  sfid, recordtypeid );
+    const res = await this.getAllInventoryData(data.token, sfid, recordtypeid );
     console.log("result ", res)
     this.setState({data : res});
   }
@@ -122,7 +124,7 @@ export class InventoryImpl extends React.PureComponent<
           <Grid item className="modal-margin" xs={12} md={12}>
             <div>
               <img src={currentItem.image_url__c} height="200px" alt="dta" />
-              <div className="description-text">Product Images</div>
+              {/* <div className="description-text">Product Images</div> */}
             </div>
             <div className="text-left">
               <div className="head">
@@ -222,7 +224,6 @@ export class InventoryImpl extends React.PureComponent<
   }
 
   public render() {
-    console.log(this.state.sortType)
     var invdata ;
     if(this.state.sortType === "asc"){ 
       invdata = this.state.data.sort((a,b) => new Date(a.date_purchased__c) - new Date(b.date_purchased__c))}
@@ -232,106 +233,119 @@ export class InventoryImpl extends React.PureComponent<
     else{
       invdata = this.state.data
     }
-
+   
     console.log("this.state.selectedTankFilter: ", this.state.selectedTankFilter)
     console.log("this.state.selectedProductFilter: ", this.state.selectedProductFilter)
     return (
       <AppBar>
         {this.renderModal()}
         {/* {this.renderFilterModel()} */}
-        <Tabs 
-          hasSort={true} 
-          sortValue={(sortVal) => this.setState({sortType: sortVal})}
-          tabsData={ [
-            { tabName: "All ( "+ invdata.length +" )",
-              options: [],
-              component: (
-                <div className="inventory-container">
-                  { invdata.map((inData) => {
-                    {console.log("ALL")}
-                    return(              
-                      // <Grid item xs={12} md={6}>
-                        <InventoryCards
-                          onClickItem={this.handleItemClick}
-                          data={inData}
-                        />
-                    // </Grid>
-                    )
-                  })
-                }
-                </div>
-              ),
-              onTabSelect: (tabname) => this.setState({ selectedProductFilter: "", selectedTankFilter: ""}),
-            },
-            { tabName: "Product",
-              options: productsFilterOptions(invdata),
-              component: (
-                <div className="inventory-container">
-                  
-                  { invdata.map((inData) => {
-                    // if(this.state.selectedTankFilter!==""){
-                    //   if(inData.family === this.state.selectedProductFilter && inData.tank_capacity__c === this.state.selectedTankFilter){
-                    //     // {console.log("product + tank")}
-                    //     return(              
-                    //       <InventoryCards
-                    //         onClickItem={this.handleItemClick}
-                    //         data={inData}
-                    //       />
-                    //     )
-                    //   }
-                    // }
-                    // else {
-                      if(inData.family === this.state.selectedProductFilter){
-                      // {console.log("product")}
-                      return(              
-                        <InventoryCards
-                          onClickItem={this.handleItemClick}
-                          data={inData}
-                        />
-                      )
-                    }
-                  // }
-                  })
-                }
-                </div>
-              ),
-              onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
-              onChangeTabValue : (tabValue) => this.setState({ selectedProductFilter: tabValue }),
-            },
-            { tabName: "Tank Capacity",
-              options: tankFilterOptions(invdata),
-              component: (
-                <div className="inventory-container">
-                  { invdata.map((inData) => {
-                    if(this.state.selectedProductFilter !== "" ){
-                      if(inData.tank_capacity__c === this.state.selectedTankFilter && inData.family === this.state.selectedProductFilter){
-                        // {console.log("Tank + Product")}
-                        return(              
-                          <InventoryCards
-                            onClickItem={this.handleItemClick}
-                            data={inData}
-                          />
-                        )
-                      }
-                    }
-                    else {if(inData.tank_capacity__c === this.state.selectedTankFilter){
-                      // {console.log("tank")}
-                      return(              
-                        <InventoryCards
-                          onClickItem={this.handleItemClick}
-                          data={inData}
-                        />
-                      )
-                    }}
-                  })
-                }
-                </div>
-              ),
-              onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
-              onChangeTabValue : (tabValue) => this.setState({ selectedTankFilter: tabValue }),
-            },
-          ]}  
-        />
+        { this.state.data === null
+          ? <Loading />
+          : ( this.state.data.length === 0)
+              ? <NotFoundError />
+              : <Tabs 
+                    hasSort={true} 
+                    sortValue={(sortVal) => this.setState({sortType: sortVal})}
+                    tabsData={ [
+                      { tabName: "All ( "+ invdata.length +" )",
+                        options: [],
+                        component: ( 
+                          <div className="inventory-container">
+                            { invdata.map((inData) => {
+                              return(              
+                                // <Grid item xs={12} md={6}>
+                                  <InventoryCards
+                                    onClickItem={this.handleItemClick}
+                                    data={inData}
+                                  />
+                              // </Grid>
+                              )
+                            })
+                          }
+                          </div>
+                        ),
+                        onTabSelect: (tabname) => this.setState({ selectedProductFilter: "", selectedTankFilter: ""}),
+                      },
+                      { tabName: "Product",
+                        options: productsFilterOptions(invdata),
+                        component: (
+                          <div className="inventory-container">
+                          {
+                            (this.state.selectedTankFilter !== null ? 
+                            invdata.filter( inv => inv.family === "Tank" && inv.tank_capacity__c === this.state.selectedTankFilter ).length > 0 :
+                            invdata.filter( inv => inv.family === this.state.selectedProductFilter ).length > 0 )
+                            ?
+                              invdata.map((inData) => {
+                                if(this.state.selectedTankFilter !== null){    
+                                  console.log("Filter length: ", invdata.filter( inv => inv.family === "Tank" && inv.tank_capacity__c === this.state.selectedTankFilter).length)                              
+                                  if(inData.family === this.state.selectedProductFilter && inData.tank_capacity__c === this.state.selectedTankFilter){
+                                    return(              
+                                      <InventoryCards
+                                        onClickItem={this.handleItemClick}
+                                        data={inData}
+                                      />
+                                    )
+                                  }
+                                }
+                                else if(inData.family === this.state.selectedProductFilter){
+                                   console.log("Product length: ", invdata.filter( inv => inv.family === this.state.selectedProductFilter ).length)
+                                   return(              
+                                    <InventoryCards
+                                      onClickItem={this.handleItemClick}
+                                      data={inData}
+                                    />
+                                  )
+                                }
+                              })
+                            : <NotFoundError />
+                          }
+                          </div>
+                        ),
+                        onTabSelect: (tabname) => this.setState({ isFilterOpen: true, filterType: "Product Type"}),
+                        onChangeTabValue : (tabValue) => this.setState({ selectedProductFilter: tabValue }),
+                      },
+                      { tabName: "Tank Capacity",
+                        options: tankFilterOptions(invdata),
+                        component: (
+                          <div className="inventory-container">
+                            { 
+                             (this.state.selectedProductFilter !== "" ? 
+                              invdata.filter( inv => inv.tank_capacity__c === this.state.selectedTankFilter && inv.family === "Tank" ).length > 0 :
+                              invdata.filter( inv => inv.tank_capacity__c === this.state.selectedTankFilter ).length > 0 )
+                              ?
+                                invdata.map((inData) => {
+                                  if(this.state.selectedProductFilter !== "" ){
+                                    if(inData.tank_capacity__c === this.state.selectedTankFilter && inData.family === this.state.selectedProductFilter){
+                                      // {console.log("Tank + Product")}
+                                      return(
+                                        <InventoryCards
+                                          onClickItem={this.handleItemClick}
+                                          data={inData}
+                                        />
+                                      )
+                                    }
+                                  }
+                                  else {if(inData.tank_capacity__c === this.state.selectedTankFilter){
+                                    // {console.log("tank")}
+                                    return(              
+                                      <InventoryCards
+                                        onClickItem={this.handleItemClick}
+                                        data={inData}
+                                      />
+                                    )
+                                  }}
+                                })
+                              : <NotFoundError />
+                            }
+                          </div>
+                        ),
+                        onTabSelect: (tabName) => this.setState({ isFilterOpen: true, filterType: "Tank Capacity" }),
+                        onChangeTabValue : (tabValue) => this.setState({ selectedTankFilter: tabValue }),
+                      },
+                    ]}  
+                />
+        }
         {/* <div className="inventory-container">
           <Grid container>
             <InventoryCards

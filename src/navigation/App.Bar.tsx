@@ -29,6 +29,7 @@ interface IAppProps extends IApplicationProps {
   classes: any;
   theme?: any;
   dealerDetails?:any;
+  isDealer?:any;
 }
 
 interface IState {
@@ -47,9 +48,9 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     routeName: routes(this.props.isDealer).find((routeData) =>
       window.location.hash.includes(routeData.path)
     ).title as any,
-    icon: routes(this.props.isDealer).find((routeData) =>
-      window.location.hash.includes(routeData.path)
-    ).icon() as any,
+    // icon: routes(this.props.isDealer).find((routeData) =>
+    //   window.location.hash.includes(routeData.path)
+    // ).icon() as any,
   };
 
   
@@ -71,7 +72,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     let path = (this.props.dealerDetails && this.props.dealerDetails.dealer
       && this.props.location.pathname == '/dealers/dealer-details' 
       || this.props.location.pathname == '/customer/customer-lead-details') 
-      ? `/leads/edit-lead/${this.props.dealerDetails.dealer ? this.props.dealerDetails.dealer.id : this.props.dealerDetails.id}` 
+      ? `/lead/edit-lead/${this.props.dealerDetails.dealer ? this.props.dealerDetails.dealer.id : this.props.dealerDetails.id}` 
       :'/';
     this.props.history.push(path);
     if (path == '/') {
@@ -122,7 +123,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     const { classes, utility, dealerDetails } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
-    
+    console.log("App Bar Props", routes)
     return (
       <AppBar
         position="fixed"
