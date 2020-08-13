@@ -29,6 +29,10 @@ export class Tabs extends React.Component<
         ? tab.onChangeTabValue && tab.onChangeTabValue(null)
         : this.setState({selectValue: [{name: null, label: null}] })
       })
+    }else if(tabData.tabName === "Product"){
+      this.props.tabsData[2].onChangeTabValue(null)   
+      const arr = this.state.selectValue.filter(item => 
+        item.name === "Tank Capacity" ? (item.label = null, item.name = null) : null) 
     }
   };
 

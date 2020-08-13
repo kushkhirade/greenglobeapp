@@ -76,13 +76,21 @@ export const routes = (isDealerApp) => [
   },
   {
     hidden: true,
-    path: "/leads/add-new-lead",
-    title: isDealer() ? "Lead Details - Customer" : "Lead - Dealer",
+    path: "/job-cards",
+    title: "Job Cards",
+    icon: () => <FiberNew/>
   },
   {
     hidden: true,
-    path: "/leads/edit-lead/:id",
-    title: isDealer() ? "Lead Details - Customer" : "Lead - Dealer",
+    path: "/lead/add-new-lead",
+    title: isDealer() ? "Add New Customer Lead" : "Add New Dealer Lead",
+    icon: () => <Pages /> 
+  },
+  {
+    hidden: true,
+    path: "/lead/edit-lead",
+    title: isDealer() ? "Lead Details - Customer" : "Lead Details - Dealer",
+    icon: () => <Pages /> 
   },
   {
     path: "/customer/customer-lead-details",

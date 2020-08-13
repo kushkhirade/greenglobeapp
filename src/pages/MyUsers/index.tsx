@@ -46,7 +46,6 @@ const users = [
 const userFormOptions = [
   {
     label: "First Name",
-    required: true,
     type: "text",
     model: ".firstName",
     required: true,
@@ -59,14 +58,12 @@ const userFormOptions = [
   },
   {
     label: "Email",
-    required: true,
     type: "text",
     model: ".email",
     required: true,
   },
   {
     label: "WhatsApp Number",
-    required: true,
     type: "text",
     model: ".phone",
     required: true,

@@ -10,6 +10,7 @@ import {
   InputLabel,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import moment from "moment";
 import { store } from "../../store/Store";
 import { changeValuesInStore, dispatch } from "src/state/Utility";
 import { connect } from "react-redux";
@@ -143,6 +144,30 @@ class FormComponentImpl extends React.Component {
                 const Custom = opt.custom();
                 return <Custom />;
 
+              case "date":
+                return(
+                  <Control
+                    className={
+                      props.errorFields.includes(opt.model)
+                        ? "form-input field-error"
+                        : "form-input"
+                    }
+                    required={opt.required}
+                    component={MUIDateField}
+                    type="number"
+                    name={opt.name}
+                    model={opt.model}
+                    label={opt.label}
+                    onFocus={() => this.handleInputFocus(opt.model)}
+                    onChange={(e) =>{ console.log("efblmflbkm")
+                      changeValuesInStore(
+                        `${props.formModel}${opt.model}`,
+                        e.target.value
+                      )
+                    }}
+                  />
+                );
+
               default:
                 return "";
             }
@@ -249,6 +274,45 @@ const MUISelectField = (props: any) => {
           })}
         </Select>
       </FormControl>
+    </Grid>
+  );
+};
+
+const MUIDateField = (props: any) => {
+  const dateNow = new Date();
+  const year = dateNow.getFullYear();
+  const monthWithOffset = dateNow.getUTCMonth() + 1; 
+  const month = monthWithOffset.toString().length < 2 ? `0${monthWithOffset}` : monthWithOffset; 
+  const date = dateNow.getUTCDate().toString().length < 2 ? `0${dateNow.getUTCDate()}` : dateNow.getUTCDate();
+  monthWithOffset.toString().length < 2 // Checking if month is < 10 and pre-prending 0 to adjust for date input.
+    ? `0${monthWithOffset}`
+    : monthWithOffset;
+  const toDate = `${year}-${month}-${date}`;
+
+  return (
+    <Grid item={true} xs={12} md={6} sm={6}>
+      <TextField
+        id="date"
+        label={props.label}
+        type="date"
+        defaultValue={toDate}
+        variant="outlined"
+        onChange={(e) =>{ console.log("props:", props)
+        const model = props.name.split(".");
+        console.log(`${model[1]}.${model[2]}`)
+          changeValuesInStore(
+            `${model[1]}.${model[2]}`,
+            e.target.value
+          )
+        }}
+        className="form-input"
+        // InputLabelProps={{
+        //   shrink: true
+        // }}
+      />
+      <div className={`error-text-hidden ${props.hasError} "error-text-show"}`}>
+        Please fill in this field
+      </div>
     </Grid>
   );
 };

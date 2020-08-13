@@ -770,7 +770,7 @@ export class AddNewLeadImpl extends React.Component<
   // Basic Details Form
   public renderForm = () => {
     return (
-      <div className="card-container add-leads-page">
+      <div className="card-container job-card-container">
         <React.Fragment>
           <SubFormHeading>Lead Basic Details</SubFormHeading>
           <FormComponent
@@ -838,7 +838,7 @@ export class AddNewLeadImpl extends React.Component<
   // RTO Docs Form
   renderDocsForRTO = () => {
     return (
-      <div className="card-container add-leads-page">
+      <div className="card-container job-card-container">
         <React.Fragment>
           <SubFormHeading>Documents Required for RTO</SubFormHeading>
           <UploadContainer valKey={1} heading="Original R.C. Book" />
@@ -987,7 +987,7 @@ export class AddNewLeadImpl extends React.Component<
 
   renderJobCard = () => {
     return (
-      <div className="card-container add-leads-page">
+      <div className="card-container job-card-container">
         <SubFormHeading>GST Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
@@ -1103,7 +1103,7 @@ export class AddNewLeadImpl extends React.Component<
 
   renderActivitySection = () => {
     return (
-      <div className="job-card-container">
+      <div className="job-card-container job-card-container">
         <SubFormHeading>
           Upcoming Tasks
           <div className="right-button">
@@ -1368,11 +1368,11 @@ export class AddNewLeadImpl extends React.Component<
   render() {
     return (
       <AppBar>
-        <div className="card-container no-hover add-leads-page">
+        <div className="">
         {this.renderModal()}
-        <Typography variant="h5" color="inherit" noWrap={true}>
+          {/* <Typography variant="h5" color="inherit" noWrap={true}>
             {isDealer() ? "Lead Details - Customer" : "Lead - Dealer"}
-          </Typography>
+          </Typography> */}
         <div className="">
           {!isDealer() ? (
               <Stepper
@@ -1382,7 +1382,7 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Draft",
                     component: (
-                      <div className="job-card-container">
+                      <div className="card-container job-card-container">
                         <SubFormHeading>Lead Basic Details</SubFormHeading>
                         <FormComponent
                           onSubmit={(v: any) => {
@@ -1436,7 +1436,7 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Documents Collection",
                     component: (
-                      <div className="job-card-container">
+                      <div className="card-container job-card-container">
                         <SubFormHeading>
                           Regular Business Documentation
                         </SubFormHeading>
@@ -1461,8 +1461,13 @@ export class AddNewLeadImpl extends React.Component<
                   {
                     label: "Approval",
                     component: (
-                      <div className="job-card-container">
+                      <div className="card-container job-card-container">
                         Approvals {`&`} Inventory Load
+                        <div className="button-container">
+                        <Button variant="contained" color="primary">  
+                          Approve
+                        </Button>{" "}
+                        </div>
                       </div>
                     ),
                   },

@@ -107,7 +107,7 @@ export class AddNewCustomerImpl extends React.PureComponent<
           Opportunities{" "}
           <div>
             <Button
-              onClick={() => this.props.history.push("/leads/add-new-lead")}
+              onClick={() => this.props.history.push("/lead/add-new-lead")}
               variant="contained"
               color="primary"
             >

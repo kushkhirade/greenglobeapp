@@ -138,11 +138,11 @@ class App extends React.Component {
               <ProtectedRoute path="/home" component={HomePage} />
               <ProtectedRoute path="/inventory" component={Inventory} />
               <ProtectedRoute
-                path="/leads/add-new-lead"
+                path="/lead/add-new-lead"
                 component={AddNewLead}
               />
               <ProtectedRoute
-                path="/leads/edit-lead/:id"
+                path="/lead/edit-lead/:id"
                 component={AddNewLead}
               />
               <ProtectedRoute path="/leads" component={Leads} />

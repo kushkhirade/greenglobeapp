@@ -135,7 +135,9 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <PersonPin /> <span style={{ padding: "5px" }} />
-            {customerData.name}
+            <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+              {customerData.name}
+            </div>
           </Grid>
           <Grid
             className="padding-6-corners"
@@ -144,7 +146,9 @@ const CustomerList = (props: any) => {
             md={6}
           >
             <Phone /> <span style={{ padding: "5px" }} />
-            {customerData.phone && ChangePhoneFormat(customerData.phone)}
+            <div style={{marginTop: '-25px', marginLeft: '25px'}}>
+              {customerData.whatsapp_number__c && ChangePhoneFormat(customerData.whatsapp_number__c)}
+            </div>
           </Grid>
         </Grid>
         <Grid container >
