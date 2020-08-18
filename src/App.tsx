@@ -62,6 +62,7 @@ const AddNewJobCard = React.lazy(() =>
 import { store } from "./store/Store";
 import { MyUsers } from "./pages/MyUsers";
 import { JobCards } from "./pages/JobCard/JobCardList";
+import { JobCardDetails } from "./pages/JobCard/JobCardDetails";
 import { AssignedDealers } from "./pages/AssignedDealers";
 import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
 import { CustomerLeadDetails } from "./pages/Customers/CustomerLeadDetails";
@@ -147,14 +148,16 @@ class App extends React.Component {
               />
               <ProtectedRoute path="/leads" component={Leads} />
               <ProtectedRoute
-                path="/customer/customer-lead-details"
+                path="/customer/customer-lead-details/:recordtypeid/:sfid"
                 component={CustomerLeadDetails}
               />
               <ProtectedRoute
                 path="/add-new-jobcard"
                 component={AddNewJobCard}
               />
-              <ProtectedRoute path="/job-cards" component={JobCards} />
+              <ProtectedRoute path="/job-cards/:recordtypeid/:sfid" component={JobCards} />
+              <ProtectedRoute path="/job-card-details/:sfid" component={JobCardDetails} />
+
               <ProtectedRoute path="/customers" component={Customers} />
               <ProtectedRoute
                 path="/customer/add-new-customer"
@@ -166,7 +169,7 @@ class App extends React.Component {
                 component={AssignedDealers}
               />
               <ProtectedRoute
-                path="/dealers/dealer-details"
+                path="/dealers/dealer-details/:recordtypeid/:sfid"
                 component={DealerDetails}
               />
               <ProtectedRoute path="/rto-process" component={RTOProcess} />

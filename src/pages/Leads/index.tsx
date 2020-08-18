@@ -15,11 +15,12 @@ import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import getData from "src/utils/getData";
 import data from "../../data";
-import { getToken, isDealer, IHistory } from "src/state/Utility";
+import { getToken, isDealer, IHistory, changeValuesInStore } from "src/state/Utility";
 import { saveLeadsData, saveAssignedDealersData, saveDealerData } from "src/actions/App.Actions";
 import { ChangePhoneFormat } from "src/components/Format";
 import "./leads.scss";
 import { Console } from "console";
+import Select from 'react-select';
 
 var loggedInUserDetails;
 const allfilterOptions = (leadsData) => [
@@ -96,6 +97,7 @@ export interface ILeadsProps {
   isDealer: boolean;
   leadsData: any;
   dealersData: any;
+  openSMSForm: any;
 }
 
 export class LeadsImpl extends React.Component<
@@ -112,6 +114,8 @@ export class LeadsImpl extends React.Component<
     selectedFilterValues: any;
     filterType: string;
     sortType: string;
+    showStatsModal: boolean;
+    phoneNumber: number;
   }
   > {
   public state = {
@@ -126,6 +130,8 @@ export class LeadsImpl extends React.Component<
     dealers: data.leads.data,
     filterType: "",
     sortType: "",
+    showStatsModal: false,
+    phoneNumber: 0,
   };
 
   async componentDidMount() {
@@ -150,7 +156,7 @@ export class LeadsImpl extends React.Component<
     try {
       if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
-          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city, sfid 
+          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, email, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city, sfid 
           FROM salesforce.Lead 
           WHERE RecordTypeId = '0122w000000chRpAAI' 
           AND (Assigned_Dealer__c LIKE '%${sfid}%') 
@@ -160,7 +166,7 @@ export class LeadsImpl extends React.Component<
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
         console.log("here");
         leadsData = await getData({
-          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city, sfid
+          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, email, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city, sfid
           FROM salesforce.Lead 
           WHERE (Assigned_Distributor__c LIKE '%${sfid}%') 
           AND sfid is not null`,
@@ -247,7 +253,13 @@ export class LeadsImpl extends React.Component<
           if (d.recordtypeid === '0122w000000chRpAAI' && d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} AssignedDealers={this.props.dealersData} history={this.props.history} />
+                <CardDetails 
+                  smsClick={this.handlesmsClick} 
+                  details={d} 
+                  onClickDetails={this.handleCustomerDetails} 
+                  AssignedDealers={this.props.dealersData} 
+                  history={this.props.history} 
+                />
               </Grid>
             );
           }
@@ -264,7 +276,13 @@ export class LeadsImpl extends React.Component<
           if (d.recordtypeid === '0122w000000chRpAAI' && !d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} onClickDetails={this.handleCustomerDetails} onClickAssign={this.openAssignDealerModal} history={this.props.history} />
+                <CardDetails 
+                  smsClick={this.handlesmsClick} 
+                  details={d} 
+                  onClickDetails={this.handleCustomerDetails} 
+                  onClickAssign={this.openAssignDealerModal} 
+                  history={this.props.history} 
+                />
               </Grid>
             );
           }
@@ -281,7 +299,12 @@ export class LeadsImpl extends React.Component<
           if (d.recordtypeid === '0122w000000chRuAAI') {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetailsForDealer details={d} onClickDetails={this.handleClickDealerDetails} history={this.props.history} />
+                <CardDetailsForDealer 
+                  smsClick={this.handlesmsClick} 
+                  details={d} 
+                  onClickDetails={this.handleClickDealerDetails} 
+                  history={this.props.history} 
+                />
               </Grid>
             );
           }
@@ -307,7 +330,11 @@ export class LeadsImpl extends React.Component<
           if (d.isDealer && !d.assigned) {
             return (
               <Grid item xs={12} md={6}>
-                <CardDetails details={d} history={this.props.history} />
+                <CardDetails 
+                  smsClick={this.handlesmsClick} 
+                  details={d} 
+                  history={this.props.history} 
+                />
               </Grid>
             );
           }
@@ -528,6 +555,13 @@ export class LeadsImpl extends React.Component<
     );
   };
 
+  handlesmsClick = (phone) => { 
+    console.log("Phone", phone)
+    changeValuesInStore("openSMSForm", {})
+    this.setState({ showStatsModal: true }), 
+    this.setState({ phoneNumber: phone}) 
+  };
+
   tabDataForDealer = (leadsData) => [
     {
       tabName: "All ( "+ ( leadsData.length ) +" )",
@@ -538,6 +572,7 @@ export class LeadsImpl extends React.Component<
             return (
               <Grid item xs={12} md={6} >
                 <CardDetailsForDealer
+                  smsClick={this.handlesmsClick} 
                   onClickDetails={this.handleCustomerDetails}
                   details={d} history={this.props.history} />
               </Grid>
@@ -571,6 +606,7 @@ export class LeadsImpl extends React.Component<
                   <Grid item xs={12} md={6} >
                     {console.log("d: ", d)}
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -583,6 +619,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -595,6 +632,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -606,6 +644,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -641,6 +680,7 @@ export class LeadsImpl extends React.Component<
                   <Grid item xs={12} md={6} >
                     {console.log("d: ", d)}
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -653,6 +693,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -665,6 +706,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -676,6 +718,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -711,6 +754,7 @@ export class LeadsImpl extends React.Component<
                   <Grid item xs={12} md={6} >
                     {console.log("d: ", d)}
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -723,6 +767,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -735,6 +780,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -746,6 +792,7 @@ export class LeadsImpl extends React.Component<
                 return (
                   <Grid item xs={12} md={6} >
                     <CardDetailsForDealer
+                      smsClick={this.handlesmsClick} 
                       onClickDetails={this.handleCustomerDetails}
                       details={d} history={this.props.history} />
                   </Grid>
@@ -773,6 +820,7 @@ export class LeadsImpl extends React.Component<
               return (
                 <Grid item xs={12} md={6} >
                   <CardDetailsForDealer
+                    smsClick={this.handlesmsClick} 
                     onClickDetails={this.handleCustomerDetails}
                     details={d} history={this.props.history} />
                 </Grid>
@@ -789,14 +837,124 @@ export class LeadsImpl extends React.Component<
     const customers = await this.getAllCustomersAssignedToDelaer(loggedInUserDetails.token, dealer.sfid);
     console.log("customer Data ", customers)
     saveDealerData({ dealer, customers });
-    this.props.history.push("/dealers/dealer-details");
+    this.props.history.push(`/dealers/dealer-details/${dealer.recordtypeid}/${dealer.sfid}`);
   };
 
   handleCustomerDetails = async (customer) => {
     console.log("customer Data ", customer)
     saveDealerData(customer);
-    this.props.history.push("/customer/customer-lead-details");
+    this.props.history.push(`/customer/customer-lead-details/${customer.recordtypeid}/${customer.sfid}`);
   };
+
+  handleChange = (key, value) => {
+    changeValuesInStore(`openSMSForm.${key}`, value);
+  };
+
+  public openSMSModel = () => {
+    const phoneNumber = this.state.phoneNumber;
+    console.log("phoneNumber", phoneNumber)
+    return(
+      <BaseModal
+        className="assign-dealer-modal"
+        onClose={() => this.setState({ showStatsModal: false })}
+        contentClassName="support-content"
+        open={this.state.showStatsModal}
+      >
+        <div style={{ height: "300px" }}>
+          <Grid item xs={12} style={{marginTop: "-10px", width: "222px"}}>
+          <Select
+            className="form-input"
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            placeholder="Select Template"
+            variant="outlined"
+            value={this.props.openSMSForm.temp1}
+            onClick={() => this.handleChange("temp1", null)}
+            onChange={(e) => {
+              this.handleChange("temp2", null)
+              this.handleChange("temp1", e)
+              { (e.value !== "Template 1" && e.value !== "Template 2") ?
+              this.handleChange("smsText", e.value) : this.handleChange("smsText", "")
+              }
+            }}
+            options={[
+              {label: "Template 1", value: "Template 1"}, 
+              {label: "Template 2", value: "Template 2"}, 
+              {label: "Template 3", value: "Selected Template 3"}, 
+              {label: "Template 4", value: "Selected Template 4"}, 
+              {label: "Template 5", value: "Selected Template 5"}
+            ]}
+          />
+          </Grid>
+          {this.props.openSMSForm.temp1 && (this.props.openSMSForm.temp1.value === "Template 1" || this.props.openSMSForm.temp1.value === "Template 2") && 
+          (<Grid item xs={12} style={{marginTop: "-10px", width: "222px"}}>
+            <Select
+              className="form-input"
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              placeholder="Select Template"
+              variant="outlined"
+              value={this.props.openSMSForm.temp2}
+              onChange={(e) => {
+                this.handleChange("temp2", e)
+                this.handleChange("smsText", e.value)
+              }}
+              options={this.props.openSMSForm.temp1.label === "Template 1" && 
+                [{label: "Template 1", value: "Selected Text Template1 - 111"}, 
+                {label: "Template 2", value: "Selected Text Template1 - 222"}, 
+                {label: "Template 3", value: "Selected Text Template1 - 333"}, 
+                {label: "Template 4", value: "Selected Text Template1 - 444"}, 
+                {label: "Template 5", value: "Selected Text Template1 - 555"}]
+                ||
+                this.props.openSMSForm.temp1.label === "Template 2" && 
+                [{label: "Template 1", value: "Selected Text Template2 - 111"}, 
+                {label: "Template 2", value: "Selected Text Template2 - 222"}, 
+                {label: "Template 3", value: "Selected Text Template2 - 333"}, 
+                {label: "Template 4", value: "Selected Text Template2 - 444"}, 
+                {label: "Template 5", value: "Selected Text Template2 - 555"}]
+
+              }
+            />
+          </Grid>)
+          }
+          <Grid item xs={12} style={{marginTop: "-10px", marginRight: "-20px"}}>
+          <TextField
+            id="filled-textarea"
+            placeholder="Type Text Here"
+            rows={4}
+            style={{width: "200px"}}
+            value={this.props.openSMSForm.smsText}
+            onChange={(e) => {
+              console.log("smatext: ",e)
+              this.handleChange("smsText", e.target.value)
+            }}
+            variant="outlined"
+            multiline={true}
+            className="r-select"
+          />
+          </Grid>
+          <div className="button-container">
+            <Button
+              onClick={() => this.setState({ showStatsModal: false })}
+              variant="contained"
+              color="default"
+            >
+              CANCEL
+            </Button>
+            <a href={`sms:${phoneNumber}?body=${this.props.openSMSForm.smsText}`}>
+              <Button
+                onClick={() => {console.log(`sms:${phoneNumber}?body=${this.props.openSMSForm.smsText}`), this.setState({ showStatsModal: false })}}
+                variant="contained"
+                color="primary"
+              >
+                SMS
+              </Button>
+            </a>
+          </div>
+        </div>
+      </BaseModal>
+    )
+  }
 
   public render() {
     var leadsData;
@@ -817,6 +975,7 @@ export class LeadsImpl extends React.Component<
     return (
       <AppBar>
         {this.renderAssignDealerModal()}
+        {this.openSMSModel()}
         {/* {this.renderFilterModal()} */}
         <div className="leads">
           {isDealer() ? ( leadsData !== undefined && 
@@ -852,6 +1011,7 @@ export function mapStateToProps(state) {
     isDealer: false,
     leadsData: state.users.get("leads"),
     dealersData: state.users.get("assigndealers"),
+    openSMSForm: state.rxFormReducer["openSMSForm"],
   };
 }
 export const Leads = withRouter(
@@ -889,24 +1049,24 @@ const CardDetails = (props: any) => {
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={6} md={6} >
-          <span className="description-text">Kit Enquiry:</span>
+          <span className="description-text">Kit Enquiry :</span>
           {details.kit_enquiry__c}
         </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
-          <span className="description-text">Vehicle Type:</span>
-          {details.x3_or_4_wheeler__c}
+          <span className="description-text">Vehicle Type :</span>
+          {details.x3_or_4_wheeler__c === "3 Wheeler" ? "3Wheeler" : "4Wheeler"}
         </Grid>
       </Grid>
       {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ" ? (
         // <React.Fragment>
         <Grid container>
           <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text">Assigned Dealer: </span>
+            <span className="description-text">Assigned Dealer : </span>
             {/* {assignedDealer && assignedDealer[0] && assignedDealer[0].name} */}
             {details.dealer_generated__c}
           </Grid>
           <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text">Lead Rating:</span>
+            <span className="description-text">Lead Rating :</span>
             {details.rating}
             {/* <Rating
                       readOnly
@@ -935,19 +1095,19 @@ const CardDetails = (props: any) => {
               <PhoneIcon className="phone-icon" />
             </a>
             &nbsp;
-            <a href={"tel:" + details.whatsapp_number__c}>
-              <ChatIcon className="chat-icon" />
-            </a>
+              <ChatIcon onClick={() => props.smsClick(details.whatsapp_number__c)} className="chat-icon" />
             &nbsp;
-            <a href={"tel:" + details.whatsapp_number__c}>
+            <a href={`mailto:${details.email}?subject=The subject of the mail&body=The Body of the mail`}>
               <MailIcon className="mail-icon" />
             </a>
             &nbsp;
-            <img
-              height="42px"
-              src={WhatsappIcon}
-            // src="https://img.icons8.com/color/48/000000/whatsapp.png"
-            />{" "}
+            <a href={`https://api.whatsapp.com/send?phone=91${details.whatsapp_number__c}&text=example Leads`}>
+              <img
+                height="42px"
+                src={WhatsappIcon}
+              // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+              />{" "}
+            </a>
           </div>
         </Grid>
       </Grid>{" "}
@@ -996,7 +1156,7 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text"> Vehicle Type:</span>
-          {details.x3_or_4_wheeler__c}
+          {details.x3_or_4_wheeler__c === "3 Wheeler" ? "3Wheeler" : "4Wheeler"}
         </Grid>
       </Grid>}
       <Grid container >
@@ -1010,10 +1170,12 @@ const CardDetailsForDealer = (props: any) => {
             value={CalRating()}
           /> */}
         </Grid>
+        {!isDealer() &&
         <Grid className="padding-6-corners" item xs={6} md={6}>
           <span className="description-text">City:</span>
           {details.city}
         </Grid>
+        }
       </Grid>
       <Grid container >
         <Grid className="padding-6-corners" item xs={4} md={4}>
@@ -1026,17 +1188,23 @@ const CardDetailsForDealer = (props: any) => {
         </Grid>
         <Grid className="padding-6-corners" item xs={8} md={8}>
           <div className="icon-container" style={{marginTop: '-8px'}}>
-            <PhoneIcon className="phone-icon" />
+            <a href={"tel:" + details.whatsapp_number__c}>
+              <PhoneIcon className="phone-icon" />
+            </a>
             &nbsp;
-            <ChatIcon className="chat-icon" />
+              <ChatIcon onClick={() => props.smsClick(details.whatsapp_number__c)} className="chat-icon" />
             &nbsp;
-            <MailIcon className="mail-icon" />
+            <a href={`mailto:${details.email}?subject=The subject of the mail&body=The Body of the mail`}>
+              <MailIcon className="mail-icon" />
+            </a>
             &nbsp;
-            <img
-              height="42px"
-              src={WhatsappIcon}
-            // src="https://img.icons8.com/color/48/000000/whatsapp.png"
-            />{" "}
+            <a href={`https://api.whatsapp.com/send?phone=91${details.whatsapp_number__c}&text=example Leads`}>
+              <img
+                height="42px"
+                src={WhatsappIcon}
+              // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+              />{" "}
+            </a>
           </div>
         </Grid>
       </Grid>

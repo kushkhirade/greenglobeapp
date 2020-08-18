@@ -1,68 +1,56 @@
-import { Fab, Grid } from "@material-ui/core";
-import { Add, PersonPin, Phone } from "@material-ui/icons";
-import ChatIcon from "@material-ui/icons/Chat";
-import MailIcon from "@material-ui/icons/Mail";
-import PhoneIcon from "@material-ui/icons/Phone";
-import WhatsappIcon from "./../Customers/wtsapimg.png";
-import Rating from "@material-ui/lab/Rating";
+import { Grid } from "@material-ui/core";
+import { PersonPin, Phone } from "@material-ui/icons";
 import * as React from "react";
 import { connect } from "react-redux";
 import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./../Customers/customers.scss";
 import { withRouter } from "react-router-dom";
-import filter from "./../Customers/filter.svg";
-import Search from "@material-ui/icons/Search";
 import { IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { getToken, isDealer } from "./../../state/Utility";
 import { saveDealerData } from "src/actions/App.Actions";
 import { ChangePhoneFormat } from "src/components/Format";
+import moment from 'moment';
 
 export interface IJobCardsProps {
   history: IHistory;
   location: any
 }
 
-export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {customers: any}> {
+export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {allJobCards: any}> {
   constructor(props: IJobCardsProps) {
     super(props);
     this.state = {
-      customers : []
+      allJobCards : null
     }
   }
 
   async componentDidMount(){
     const { data } = getToken();
-    const jobCardData = await this.getAllCustomers(data);
-    this.setState({ customers : jobCardData });
+    const jobCardData = await this.getAllJobCards(data);
+    this.setState({ allJobCards : jobCardData });
   }
 
-  getAllCustomers = async (data) => {
-    const {location} = this.props;
-    let sfid = data.sfid;
-    let recordtypeid = data.record_type;
-    if(location && location.data && Object.keys(location.data).length){
-      data.sfid = location.data.sfid;
-      recordtypeid = location.data.recordtypeid;
+  getAllJobCards = async (data) => {
+    const {params} = this.props.match;
+    console.log("param props: ", params);
+    let sfid = "";
+    let recordtypeid = "";
+    if(params && params.recordtypeid && params.sfid){
+      sfid = params.sfid;
+      recordtypeid = params.recordtypeid;
     }
     try{
       let jobCardData;
       if(recordtypeid === '0122w000000cwfSAAQ'){
         jobCardData = await getData({
-          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
+          query: `SELECT *
+          FROM salesforce.contact Full OUTER JOIN salesforce.job_card__c
           ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
-          WHERE salesforce.contact.assigned_dealer__c  LIKE '%${data.sfid}%' `,
+          WHERE salesforce.contact.assigned_dealer__c  LIKE '%${sfid}%' `,
           token: data.token
         })
-      }
-      else if(recordtypeid === "0122w000000cwfNAAQ"){
-        jobCardData = await getData({
-          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
-          ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
-          WHERE salesforce.contact.accountid  LIKE '%${data.sfid}%'`,
-          token: data.token
-        });
       }
 
       console.log("jobCardData =>", jobCardData.result)
@@ -73,42 +61,25 @@ export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {customers
     }
   }
 
-  handleCustomerDetails = async (customer) => {
-    console.log("customer Data ", customer)
-    saveDealerData(customer);
-    this.props.history.push("/customer/customer-lead-details");
+  handleJobCardDetails = (data) => {
+    this.props.history.push(`/job-card-details/${data.sfid}`)
   };
 
   public render() {
     return (
       <AppBar>
-        {/* {" "}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-          }}
-        >
-          {" "}
-          <Search fontSize="large" color="primary" />
-          <img height="26px" src={filter} />
-        </div> */}
-        {/* <div className="cards-main customer-card"> */}
         <Grid container>
-          {this.state.customers && this.state.customers.map(cust => {
+          {this.state.allJobCards && this.state.allJobCards.map(cust => {
           return (
             <Grid item xs={12} md={6}>
               <JobCardsList
-                // onClickDetails={this.handleCustomerDetails}
+                onClickDetails={this.handleJobCardDetails}
                 jobCardData={cust}
               />
             </Grid>
           )}
           )}
         </Grid>
-
-        {/* </div> */}
       </AppBar>
     );
   }
@@ -138,26 +109,36 @@ export const JobCardsList = (props: any) => {
           </div>
         </Grid>
       </Grid>
-      {/* <Grid container >
-        <Grid className="padding-6-corners" item xs={6} md={6}>
-          <span className="description-text"> Purchased Product:</span>
-          {jobCardData.purchased_product__c}
-        </Grid>
-        <Grid className="padding-6-corners" item xs={6} md={6}>
-          <span className="description-text"> Dealer Rating:</span>
-          {jobCardData.dealer_rating__c}
-        </Grid>
-      </Grid> */}
       <Grid container >
-        <Grid className="padding-6-corners" item xs={12} md={6}>
-          <span className="description-text">Jobcard No:</span>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Dealer Name:</span>
+          {jobCardData.dealername__c}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Dealer Code:</span>
+          {jobCardData.dealer_code__c}
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Jobcard No:</span>
           {jobCardData.jcname__c}
         </Grid>
-        {/* <Grid className="padding-6-corners" item xs={4} md={4}> 
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Date:</span>
+          {moment(jobCardData.createddate).format("DD/MM/YYYY")}
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text">Jobcard Type:</span>
+          {jobCardData.sub_lead_type__c}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}> 
         <span onClick={() => props.onClickDetails(jobCardData)} className="view">
           View Details
         </span>
-        </Grid> */}
+        </Grid>
       </Grid>
     </div>
   )

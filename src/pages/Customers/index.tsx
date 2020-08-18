@@ -50,7 +50,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
       let customerData;
       if(recordtypeid === '0122w000000cwfSAAQ'){
         customerData = await getData({
-          query: `SELECT *
+          query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid  
           FROM salesforce.Contact 
           WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
           token: data.token
@@ -58,7 +58,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
       }
       else if(recordtypeid === "0122w000000cwfNAAQ"){
         customerData = await getData({
-          query: `SELECT *
+          query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid  
           FROM salesforce.Contact 
           WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
           token: data.token
@@ -76,7 +76,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
   handleCustomerDetails = async (customer) => {
     console.log("customer Data ", customer)
     saveDealerData(customer);
-    this.props.history.push("/customer/customer-lead-details");
+    this.props.history.push(`/customer/customer-lead-details/${customer.recordtypeid}/${customer.sfid}`);
   };
 
   public render() {
@@ -175,22 +175,36 @@ const CustomerList = (props: any) => {
               value={customerData.dealerRating}
             /> */}
           </Grid>
+        </Grid>
+        <Grid container >
           <Grid className="padding-6-corners" item xs={4} md={4}> 
           <span onClick={() => props.onClickDetails(customerData)} className="view">
             View Details
           </span>
-        </Grid>
-        </Grid>
-        <Grid className="padding-15 align-left">
-          <div className="icon-container">
-            <PhoneIcon className="phone-icon" />
+          </Grid>
+          <Grid className="padding-6-corners" item xs={8} md={8}>
+            <div className="icon-container" style={{marginTop: '-8px'}}>
+            <a href={"tel:" + customerData.whatsapp_number__c}>
+              <PhoneIcon className="phone-icon" />
+            </a>
             &nbsp;
-            <ChatIcon className="chat-icon" />
+            <a href={`sms:${customerData.whatsapp_number__c}?body=Text to Send.`}>
+              <ChatIcon className="chat-icon" />
+            </a>
             &nbsp;
-            <MailIcon className="mail-icon" />
+            <a href={`mailto:${customerData.email}?subject=The subject of the mail&body=The Body of the mail`}>
+              <MailIcon className="mail-icon" />
+            </a>
             &nbsp;
-            <img height="42px" src={WhatsappIcon}/>
-          </div>
+            <a href={`https://api.whatsapp.com/send?phone=91${customerData.whatsapp_number__c}&text=example Leads`}>
+              <img
+                height="42px"
+                src={WhatsappIcon}
+              // src="https://img.icons8.com/color/48/000000/whatsapp.png"
+              />{" "}
+            </a>
+            </div>
+          </Grid>
         </Grid>
       </div>
   //    );

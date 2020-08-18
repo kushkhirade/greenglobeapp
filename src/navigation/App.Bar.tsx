@@ -70,8 +70,8 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
 
   public topRightIconUrl = () => {
     let path = (this.props.dealerDetails && this.props.dealerDetails.dealer
-      && this.props.location.pathname == '/dealers/dealer-details' 
-      || this.props.location.pathname == '/customer/customer-lead-details') 
+      && this.props.location.pathname.includes('/dealers/dealer-details') 
+      || this.props.location.pathname.includes('/customer/customer-lead-details') )
       ? `/lead/edit-lead/${this.props.dealerDetails.dealer ? this.props.dealerDetails.dealer.id : this.props.dealerDetails.id}` 
       :'/';
     this.props.history.push(path);
@@ -123,7 +123,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
     const { classes, utility, dealerDetails } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
-    console.log("App Bar Props", routes)
+
     return (
       <AppBar
         position="fixed"
@@ -157,9 +157,9 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
               Logout <span style={{ paddingRight: "3px" }} />{" "}
             </div> */}
             { 
-              (dealerDetails 
-                && this.props.location.pathname == '/dealers/dealer-details' && dealerDetails.dealer.recordtypeid === '0122w000000chRuAAI'
-                || this.props.isDealer && this.props.location.pathname == '/customer/customer-lead-details' && dealerDetails.recordtypeid === '0122w000000chRpAAI') 
+              (dealerDetails && dealerDetails.dealer
+                && this.props.location.pathname.includes('/dealers/dealer-details') && dealerDetails.dealer.recordtypeid === '0122w000000chRuAAI'
+                || dealerDetails && this.props.isDealer && this.props.location.pathname.includes('/customer/customer-lead-details') && dealerDetails.recordtypeid === '0122w000000chRpAAI') 
                 ? <EditIcon /> : <ExitToAppIcon />
             }
             &nbsp; &nbsp;

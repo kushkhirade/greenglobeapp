@@ -248,7 +248,7 @@ export const leadDealer = [
     ]
   },
   {
-    label: "SubLead Type",
+    label: "Sub Lead Type",
     model: ".subleadType",
     type: "select",
     options: [
@@ -340,7 +340,7 @@ export const leadSource = [
     ],
   },
   {
-    label: "SubLead Type",
+    label: "Sub Lead Type",
     model: ".subleadType",
     type: "select",
     options: [
