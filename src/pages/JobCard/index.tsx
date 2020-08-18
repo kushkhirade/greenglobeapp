@@ -29,14 +29,16 @@ import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
 import { GSelect } from "src/components/GSelect";
 import data from "./../../data";
-import { getToken, changeValuesInStore } from "src/state/Utility";
+import { getToken, changeValuesInStore, IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
-import { AnyCnameRecord } from "dns";
-import { LabelList } from "recharts";
+import moment from 'moment';
 
 var loggedInUserDetails;
 
-export interface IAddNewJobCardProps {}
+export interface IAddNewJobCardProps {
+  history: IHistory;
+  location: any
+}
 
 const closedColumns = [
   {
@@ -191,7 +193,8 @@ export class AddNewJobCardImpl extends React.Component<
       let jobCardData;
       if(data.record_type === '0122w000000cwfSAAQ'){
         jobCardData = await getData({
-          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
+          query: `SELECT *
+          FROM salesforce.contact Full OUTER JOIN salesforce.job_card__c 
           ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
           WHERE salesforce.contact.assigned_dealer__c  LIKE '%${data.sfid}%' `,
           token: data.token
@@ -199,9 +202,10 @@ export class AddNewJobCardImpl extends React.Component<
       }
       else if(data.record_type === "0122w000000cwfNAAQ"){
         jobCardData = await getData({
-          query: `SELECT * FROM salesforce.job_card__c Full OUTER JOIN salesforce.contact 
-          ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
-          WHERE salesforce.contact.accountid  LIKE '%${data.sfid}%'`,
+          query: `SELECT *
+          FROM salesforce.contact Full OUTER JOIN salesforce.job_card__c
+          ON salesforce.job_card__c.customer__c = salesforce.contact.sfid
+          WHERE salesforce.contact.accountid  LIKE '%${data.sfid}%' AND customer__c is not null`,
           token: data.token
         });
       }
@@ -1011,6 +1015,7 @@ export class AddNewJobCardImpl extends React.Component<
           hasSubmit={false}
           options={gstDetails}
         />
+        {this.props.leadForm.subleadType === "Servicing" ? 
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
@@ -1038,6 +1043,8 @@ export class AddNewJobCardImpl extends React.Component<
             })}
           </Grid>
         </div>
+        : 
+        null}
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
@@ -1338,6 +1345,10 @@ export class AddNewJobCardImpl extends React.Component<
     this.setState({ selectedUser: obj });
   };
 
+  handleJobCardDetails = (data) => {
+    this.props.history.push(`/job-card-details/${data.sfid}`)
+  };
+
   render() {
     return (
       <AppBar>
@@ -1361,19 +1372,19 @@ export class AddNewJobCardImpl extends React.Component<
               />
             </div>
           )}
-          {/* <Grid container>
+          <Grid container>
           {!this.state.OpenAddJobCard && (
               this.state.AllJobCards && this.state.AllJobCards.map(cust => {
               return (
                 <Grid item xs={12} md={6}>
                   <JobCardsList
-                    // onClickDetails={this.handleCustomerDetails}
+                    onClickDetails={this.handleJobCardDetails}
                     jobCardData={cust}
                   />
                 </Grid>
               )})
             )}
-          </Grid> */}
+          </Grid>
           {this.state.OpenAddJobCard && (
             <div className="">
               {/* <Typography variant="h5" color="inherit">
@@ -1472,26 +1483,40 @@ export const JobCardsList = (props: any) => {
           </div>
         </Grid>
       </Grid>
-      {/* <Grid container >
-        <Grid className="padding-6-corners" item xs={6} md={6}>
-          <span className="description-text"> Purchased Product:</span>
-          {jobCardData.purchased_product__c}
-        </Grid>
-        <Grid className="padding-6-corners" item xs={6} md={6}>
-          <span className="description-text"> Dealer Rating:</span>
-          {jobCardData.dealer_rating__c}
-        </Grid>
-      </Grid> */}
+      { !isDealer() ?
       <Grid container >
-        <Grid className="padding-6-corners" item xs={12} md={6}>
-          <span className="description-text">Jobcard No:</span>
-          {jobCardData.jcname__c || jobCardData.name}
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Dealer Name:</span>
+          {jobCardData.dealername__c}
         </Grid>
-        {/* <Grid className="padding-6-corners" item xs={4} md={4}> 
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Dealer Code:</span>
+          {jobCardData.dealer_code__c}
+        </Grid>
+      </Grid>
+      : null}
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Jobcard No:</span>
+          {jobCardData.jcname__c}
+        </Grid>
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text"> Date:</span>
+          {moment(jobCardData.createddate).format("DD/MM/YYYY")}
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={7} md={7}>
+          <span className="description-text">Jobcard Type:</span>
+          {jobCardData.sub_lead_type__c}
+        </Grid>
+        {/* <Grid className="padding-6-corners" item xs={2} md={2}>
+        </Grid> */}
+        <Grid className="padding-6-corners" item xs={6} md={6}> 
         <span onClick={() => props.onClickDetails(jobCardData)} className="view">
           View Details
         </span>
-        </Grid> */}
+        </Grid>
       </Grid>
     </div>
   )

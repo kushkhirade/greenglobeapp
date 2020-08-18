@@ -21,11 +21,14 @@ import {
 import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
 import { ChangePhoneFormat } from "src/components/Format";
-import { getToken } from "src/state/Utility";
+import { getToken, IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { JobCardsList } from "src/pages/JobCard/index";
 
-export interface IAssignedDealersProps {}
+export interface IDealerDetailsProps {
+  history: IHistory;
+  location: any;
+}
 
 const columns = [
   {
@@ -60,16 +63,66 @@ const options = {
 
 export class DealerDetailsImpl extends React.PureComponent<
   any,
-  { users: any; isLoading: boolean; AllJobCards: any; }
+  { users: any; isLoading: boolean; detailsData: any; customerData: any; }
 > {
-  constructor(props: IAssignedDealersProps) {
+  constructor(props: IDealerDetailsProps) {
     super(props);
-    this.state = { users: [], isLoading: false, AllJobCards: [] };
+    this.state = { users: [], isLoading: false, detailsData: null, customerData: null };
   }
 
   componentWillMount() {
+    console.log("this.props", this.props)
     if (isEmpty(this.props.dealerDetails)) {
       this.props.history.goBack();
+    }
+  }
+ 
+  componentDidMount(){
+    const { data } = getToken();
+    console.log("DAta: ", data)
+    this.getdetailsData(data);
+  }
+
+  getdetailsData = async (data) => {
+    const {params} = this.props.match;
+    console.log("paramas", params)
+    let sfid = "";
+    let recordtypeid = "";
+    if(params && params.recordtypeid && params.sfid){
+      sfid = params.sfid;
+      recordtypeid = params.recordtypeid;
+    }
+    try{
+      let details;
+      if(recordtypeid === '0122w000000cwfSAAQ'){
+        details = await getData({
+          query: `SELECT * FROM salesforce.Account 
+          WHERE sfid = '${sfid}' AND RecordTypeId = '0122w000000cwfSAAQ'`,
+          token: data.token
+        })
+      }
+      else if(recordtypeid === '0122w000000chRuAAI'){
+        details = await getData({
+          query: `SELECT * FROM salesforce.lead 
+          WHERE sfid = '${sfid}' AND RecordTypeId = '0122w000000chRuAAI'`,
+          token: data.token
+        })
+      }
+
+      console.log("details =>", details.result)
+      this.setState({ detailsData : details.result[0] });
+
+      const customers = await getData({
+        query: `SELECT Name, whatsapp_number__c FROM salesforce.contact WHERE Assigned_Dealer__c LIKE '${sfid}%'`,
+        token: data.token
+      })
+
+      console.log("customers =>", customers);
+      this.setState({ customerData: customers.result})
+
+    }
+    catch(e){
+      console.log(e);
     }
   }
 
@@ -78,7 +131,7 @@ export class DealerDetailsImpl extends React.PureComponent<
       tabName: "Details",
       component: (
         <Grid container>
-          {this.props.dealerDetails.dealer.name && 
+          {this.state.detailsData && 
           <Grid item xs={12} md={12} lg={12}>
             <div
               onClick={() =>
@@ -91,31 +144,31 @@ export class DealerDetailsImpl extends React.PureComponent<
                 {" "}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Name:</span>
-                  {this.props.dealerDetails.dealer.name}
+                  {this.state.detailsData.name}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Name:</span>
-                  {this.props.dealerDetails.dealer.name}
+                  {this.state.detailsData.name}
                 </Grid>
                 {/* <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Type:</span>
-                  {this.props.dealerDetails.dealer.bank_account_type__c}
+                  {this.state.detailsData.bank_account_type__c}
                 </Grid> */}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">WhatsApp No.:</span>
-                  {this.props.dealerDetails.dealer.whatsapp_no__c}
+                  {this.state.detailsData.whatsapp_no__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Email:</span>
-                  {this.props.dealerDetails.dealer.email__c}
+                  {this.state.detailsData.email__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.dealer.phone && ChangePhoneFormat(this.props.dealerDetails.dealer.phone)}
+                  {this.state.detailsData.phone && ChangePhoneFormat(this.state.detailsData.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Dealer Avg Rating:</span>
-                  {this.props.dealerDetails.dealer.rating}
+                  {this.state.detailsData.rating}
                 </Grid>
               </Grid>
               <SubFormHeading>Address Details</SubFormHeading>
@@ -130,7 +183,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   sm={12}
                 >
                   <span className="description-text">Billing Address:</span>
-                  {this.props.dealerDetails.dealer.billingstreet} {this.props.dealerDetails.dealer.billingcity} {this.props.dealerDetails.dealer.billingpostalcode} {this.props.dealerDetails.dealer.billingstate}
+                  {this.state.detailsData.billingstreet} {this.state.detailsData.billingcity} {this.state.detailsData.billingpostalcode} {this.state.detailsData.billingstate}
                 </Grid>
                 <Grid
                   item
@@ -141,7 +194,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   sm={12}
                 >
                   <span className="description-text">Shipping Address:</span>
-                  {this.props.dealerDetails.dealer.shippingstreet} {this.props.dealerDetails.dealer.shippingcity} {this.props.dealerDetails.dealer.shippingpostalcode} {this.props.dealerDetails.dealer.shippingstate}
+                  {this.state.detailsData.shippingstreet} {this.state.detailsData.shippingcity} {this.state.detailsData.shippingpostalcode} {this.state.detailsData.shippingstate}
                 </Grid>
               </Grid>
               <SubFormHeading>Bank and KYC Details</SubFormHeading>
@@ -154,28 +207,28 @@ export class DealerDetailsImpl extends React.PureComponent<
                   lg={12}
                   sm={12}
                 >
-                  <b>GST Number - {this.props.dealerDetails.dealer.gst_number__c}</b>
+                  <b>GST Number - {this.state.detailsData.gst_number__c}</b>
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Bank Name:</span>
-                  {this.props.dealerDetails.dealer.bank_name__c}
+                  {this.state.detailsData.bank_name__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">IFSC:</span>
-                  {this.props.dealerDetails.dealer.bank_ifsc_code__c}
+                  {this.state.detailsData.bank_ifsc_code__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Number:</span>
-                  {this.props.dealerDetails.dealer.bank_account_number__c}
+                  {this.state.detailsData.bank_account_number__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Type:</span>
-                  {this.props.dealerDetails.dealer.bank_account_type__c}
+                  {this.state.detailsData.bank_account_type__c}
                 </Grid>
               </Grid>
               <SubFormHeading>Related Customers</SubFormHeading>{" "}
               <Grid container>
-                {this.props.dealerDetails.customers.map((x) => {
+                {this.state.customerData && this.state.customerData.map((x) => {
                   return (
                     <React.Fragment>
                       <Grid
@@ -198,7 +251,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                         sm={6}
                       >
                         <span className="description-text">Mob No. -</span>
-                        {x.phone && ChangePhoneFormat(x.phone)}
+                        {x.whatsapp_number__c && ChangePhoneFormat(x.whatsapp_number__c)}
                       </Grid>
                     </React.Fragment>
                   );
@@ -245,7 +298,7 @@ export class DealerDetailsImpl extends React.PureComponent<
           </div>
           <div className="button-container">
             <Button
-              onClick={() => this.props.history.push({pathname:"/leads", data: this.props.dealerDetails.dealer})}
+              onClick={() => this.props.history.push({pathname:"/leads", data: this.state.detailsData})}
               variant="contained"
               color="primary"
               type="submit"
@@ -254,7 +307,7 @@ export class DealerDetailsImpl extends React.PureComponent<
             </Button>
             <span style={{ padding: "4px" }} />
             <Button
-              onClick={() => this.props.history.push({pathname: "/inventory", data: this.props.dealerDetails.dealer})}
+              onClick={() => this.props.history.push({pathname: "/inventory", data: this.state.detailsData})}
               variant="contained"
               color="primary"
               type="submit"
@@ -263,7 +316,7 @@ export class DealerDetailsImpl extends React.PureComponent<
             </Button>{" "}
             <span style={{ padding: "4px" }} />
             <Button
-              onClick={() => this.props.history.push({pathname:"/customers", data: this.props.dealerDetails.dealer})}
+              onClick={() => this.props.history.push({pathname:"/customers", data: this.state.detailsData})}
               variant="contained"
               color="primary"
               type="submit"
@@ -272,7 +325,7 @@ export class DealerDetailsImpl extends React.PureComponent<
             </Button>
             <span style={{ padding: "4px" }} />
             <Button
-              onClick={() => this.props.history.push({pathname:"/job-cards", data: this.props.dealerDetails.dealer})}
+              onClick={() => this.props.history.push({pathname:`/job-cards/${this.state.detailsData.recordtypeid}/${this.state.detailsData.sfid}`})}
               variant="contained"
               color="primary"
               type="submit"
@@ -290,44 +343,39 @@ export class DealerDetailsImpl extends React.PureComponent<
       tabName: "Details",
       component: (
         <Grid container>
-          {this.props.dealerDetails.dealer.name && 
+          {this.state.detailsData.name && 
           <Grid item xs={12} md={12} lg={12}>
-            <div
-              onClick={() =>
-                this.props.dealerDetails.onClickItem(this.props.dealerDetails)
-              }
-              className="card-container"
-            > 
+            <div className="card-container"> 
               <SubFormHeading>Dealer Details</SubFormHeading>
               <Grid container>
                 {" "}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Name:</span>
-                  {this.props.dealerDetails.dealer.name}
+                  {this.state.detailsData.name}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Name:</span>
-                  {this.props.dealerDetails.dealer.name}
+                  {this.state.detailsData.name}
                 </Grid>
                 {/* <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Type:</span>
-                  {this.props.dealerDetails.dealer.bank_account_type__c}
+                  {this.state.detailsData.bank_account_type__c}
                 </Grid> */}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">WhatsApp No.:</span>
-                  {this.props.dealerDetails.dealer.whatsapp_no__c}
+                  {this.state.detailsData.whatsapp_no__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Email:</span>
-                  {this.props.dealerDetails.dealer.email__c}
+                  {this.state.detailsData.email__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
-                  {this.props.dealerDetails.dealer.phone && ChangePhoneFormat(this.props.dealerDetails.dealer.phone)}
+                  {this.state.detailsData.phone && ChangePhoneFormat(this.state.detailsData.phone)}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Dealer Avg Rating:</span>
-                  {this.props.dealerDetails.dealer.rating}
+                  {this.state.detailsData.rating}
                 </Grid>
               </Grid>
               <SubFormHeading>Address Details</SubFormHeading>
@@ -342,7 +390,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   sm={12}
                 >
                   <span className="description-text">Billing Address:</span>
-                  {this.props.dealerDetails.dealer.billingstreet} {this.props.dealerDetails.dealer.billingcity} {this.props.dealerDetails.dealer.billingpostalcode} {this.props.dealerDetails.dealer.billingstate}
+                  {this.state.detailsData.billingstreet} {this.state.detailsData.billingcity} {this.state.detailsData.billingpostalcode} {this.state.detailsData.billingstate}
                 </Grid>
                 <Grid
                   item
@@ -353,7 +401,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   sm={12}
                 >
                   <span className="description-text">Shipping Address:</span>
-                  {this.props.dealerDetails.dealer.shippingstreet} {this.props.dealerDetails.dealer.shippingcity} {this.props.dealerDetails.dealer.shippingpostalcode} {this.props.dealerDetails.dealer.shippingstate}
+                  {this.state.detailsData.shippingstreet} {this.state.detailsData.shippingcity} {this.state.detailsData.shippingpostalcode} {this.state.detailsData.shippingstate}
                 </Grid>
               </Grid>
               <SubFormHeading>Bank and KYC Details</SubFormHeading>
@@ -366,23 +414,23 @@ export class DealerDetailsImpl extends React.PureComponent<
                   lg={12}
                   sm={12}
                 >
-                  <b>GST Number - {this.props.dealerDetails.dealer.gst_number__c}</b>
+                  <b>GST Number - {this.state.detailsData.gst_number__c}</b>
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Bank Name:</span>
-                  {this.props.dealerDetails.dealer.bank_name__c}
+                  {this.state.detailsData.bank_name__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">IFSC:</span>
-                  {this.props.dealerDetails.dealer.bank_ifsc_code__c}
+                  {this.state.detailsData.bank_ifsc_code__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Number:</span>
-                  {this.props.dealerDetails.dealer.bank_account_number__c}
+                  {this.state.detailsData.bank_account_number__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Type:</span>
-                  {this.props.dealerDetails.dealer.bank_account_type__c}
+                  {this.state.detailsData.bank_account_type__c}
                 </Grid>
               </Grid>
               <SubFormHeading>Related Customers</SubFormHeading>{" "}
@@ -425,12 +473,11 @@ export class DealerDetailsImpl extends React.PureComponent<
   ];
 
   render() {
-    const { dealerDetails } = this.props;
-    console.log("dealerDetails: ", dealerDetails)
+    console.log("detailsData: ", this.state.detailsData)
     return (
       <AppBar>
         {/* <div style={{ padding: "20px" }}> */}
-          <Tabs tabsData={dealerDetails.dealer.recordtypeid === "0122w000000chRuAAI" ? this.tabDataforLead() :this.tabDataforDealer()} />
+          <Tabs tabsData={this.state.detailsData && this.state.detailsData.recordtypeid === "0122w000000chRuAAI" ? this.tabDataforLead() :this.tabDataforDealer()} />
         {/* </div> */}
       </AppBar>
     );
@@ -440,7 +487,7 @@ export function mapStateToProps(state) {
   return { dealerDetails: state.users.get("data") };
 }
 export const DealerDetails = withRouter(
-  connect<{}, {}, IAssignedDealersProps>(mapStateToProps)(
+  connect<{}, {}, IDealerDetailsProps>(mapStateToProps)(
     DealerDetailsImpl
   ) as any
 );

@@ -77,6 +77,7 @@ const rxFormReducer = combineForms({
   },
   customerForm: {},
   editUserForm: {},
+  openSMSForm: {},
 });
 
 export const reducers = combineReducers({

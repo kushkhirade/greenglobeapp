@@ -110,8 +110,8 @@ export class InventoryImpl extends React.PureComponent<
       { label: "Product Name", value: currentItem.family },
       { label: "SKU", value: currentItem.stockkeepingunit },
       { label: "Manf. Date", value: currentItem.manufacture_date__c },
-      { label: "Tank ID", value: currentItem.tank_id__c },
-      { label: "Tank Capacity", value: currentItem.tank_capacity__c },
+      // { label: "Tank ID", value: currentItem.tank_id__c },
+      // { label: "Tank Capacity", value: currentItem.tank_capacity__c },
     ];
     return (
       <BaseModal
@@ -122,8 +122,8 @@ export class InventoryImpl extends React.PureComponent<
       >
         <Grid container spacing={1} className="">
           <Grid item className="modal-margin" xs={12} md={12}>
-            <div>
-              <img src={currentItem.image_url__c} height="200px" alt="dta" />
+            <div style={{marginTop: '-30px'}}>
+              <img src={currentItem.image_url__c} height="200px" alt="dta" className="inv-image"/>
               {/* <div className="description-text">Product Images</div> */}
             </div>
             <div className="text-left">
@@ -132,11 +132,11 @@ export class InventoryImpl extends React.PureComponent<
                 <hr />
               </div>
               {dataToDisplay.map((data) => (
-                <Grid container className="padding-6">
-                  <Grid item md={6} xs={6} className="grid-label">
+                <Grid container style={{padding:'5px'}}>
+                  <Grid item xs={6} md={6} className="grid-label">
                     <span className="description-text">{data.label}</span>
                   </Grid>
-                  <Grid item md={6} xs={6}>
+                  <Grid item xs={6} md={6}>
                     {data.value}
                   </Grid>
                 </Grid>
@@ -233,7 +233,7 @@ export class InventoryImpl extends React.PureComponent<
     else{
       invdata = this.state.data
     }
-   
+  
     console.log("this.state.selectedTankFilter: ", this.state.selectedTankFilter)
     console.log("this.state.selectedProductFilter: ", this.state.selectedProductFilter)
     return (

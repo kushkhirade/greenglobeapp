@@ -50,31 +50,10 @@ export class AssignedDealersImpl extends React.Component<
     }
   }
 
-  getAllCustomersAssignedToDelaer = async ({token, sfid}) => {
-    console.log("token: ",token);
-    console.log("sfid: ",sfid)
-    try {
-        const customerData = await getData({
-          query: `SELECT Name FROM salesforce.contact WHERE Assigned_Dealer__c LIKE '${sfid}%'`,
-          token: token
-        })
-
-        console.log("customerData =>", customerData);
-        return customerData.result;
-        
-    } catch (e) {
-        console.log('fetch Inventory Error', e)
-    }
-  }
-
-    handleClickDetails = async (dealer) => {
+  handleClickDetails = async (dealer) => {
     console.log("dealer Data ", dealer)
-
-    const  loginDetails  = getToken().data;
-    const customers = await this.getAllCustomersAssignedToDelaer({token: loginDetails.token, sfid: dealer.sfid});
-    console.log("customer Data ", customers)
-    saveDealerData({dealer, customers});
-    this.props.history.push("/dealers/dealer-details");
+    saveDealerData({dealer});
+    this.props.history.push(`/dealers/dealer-details/${dealer.recordtypeid}/${dealer.sfid}`);
   };
 
   render() {
