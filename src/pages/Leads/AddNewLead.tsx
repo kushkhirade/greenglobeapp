@@ -98,6 +98,8 @@ const products = [
   },
 ];
 
+let intervalId = null;
+
 export class AddNewLeadImpl extends React.Component<
   IAddNewLeadProps,
   {
@@ -110,6 +112,8 @@ export class AddNewLeadImpl extends React.Component<
     complainCheckList: any;
     dealerCheckboxesChanged: boolean;
     currentInsertEmail: string;
+    currentInsertId: string;
+    currentNewSfid: string;
   }
 > {
   constructor(props: IAddNewLeadProps) {
@@ -121,14 +125,16 @@ export class AddNewLeadImpl extends React.Component<
       allTasks: [],
       id: 0,
       dealerCheckboxesChanged: false,
-      currentInsertEmail: '',
+      currentInsertEmail: "",
+      currentInsertId: "",
+      currentNewSfid: "",
       complainCheckList: {
         "Low Average / Mileage": false,
         "Late Starting Problem": false,
         "Jerking / Missing / Low Pick": false,
         "Changeover - Switch / Pressure Gauge Indication Problem": false,
         "Vehicle Not Changing over to CNG": false,
-        "GVehicle Not starting in Petrol": false,
+        "Vehicle Not starting in Petrol": false,
         "Engine Shutdown in Idleing mode / Return to idle from high RPM": false,
         "Less/Slow Gas Filling in Tank": false,
         "Check Engine Light on Cluster": false,
@@ -178,7 +184,7 @@ export class AddNewLeadImpl extends React.Component<
         "TAPPET SETTING": false,
         "OIL & OIL FILTER REPLACE": false,
         "HEIGHT PAD FITMENT": false,
-        "O2 SENSOR R/R	": false,
+        "O2 SENSOR R/R": false,
         "O2 SENSOR CLEAN": false,
         "ENGINE TUNE UP": false,
         "ENGINE COMPRESSION CHECK": false,
@@ -202,7 +208,7 @@ export class AddNewLeadImpl extends React.Component<
         "2ND FREE SERVICE": false,
         "3RD FREE SERVICE": false,
         "TAPPET COVER PACKING REPLACE": false,
-        "VACCUM HOSE PIPE R/R	": false,
+        "VACCUM HOSE PIPE R/R": false,
         "FUEL GAUGE CORRECTOR FITMENT": false,
         "RAIL BRACKET R/R": false,
         "ECM BRACKET R/R": false,
@@ -433,7 +439,7 @@ export class AddNewLeadImpl extends React.Component<
       rating ?? ""
     }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
       country ?? ""
-    }', '0122w000000chRuAAI', '${currentUser.sfid}')`;
+    }', '0122w000000chRpAAI', '${currentUser.sfid}')`;
 
     try {
       const result = await getData({
@@ -486,7 +492,7 @@ export class AddNewLeadImpl extends React.Component<
       chassis,
       gstNumber,
     } = userForm;
-    const query = `INSERT INTO salesforce.Lead (FirstName, MiddleName, LastName, Company,Email,Whatsapp_number__c,Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c ,Rating,  Street,  City ,State ,PostalCode,Country, Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,  GST_Number__c , RecordTypeId, Assigned_Dealer__c) 
+    const query = `INSERT INTO salesforce.Lead (FirstName, MiddleName, LastName,Email, Company,Whatsapp_number__c,Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c ,Rating,Street,City,State ,PostalCode,Country, Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,GST_Number__c , RecordTypeId, Assigned_Dealer__c) 
     VALUES    
     ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
       email ?? ""
@@ -503,7 +509,7 @@ export class AddNewLeadImpl extends React.Component<
       registration ? registration : "4/5/2019"
     }',${mfg ? mfg : 0},'${chassis ?? ""}','${
       gstNumber ?? ""
-    }', '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING email`;
+    }', '0122w000000chRpAAI', '${currentUser.sfid}') RETURNING id, email, sfid`;
 
     try {
       const result = await getData({
@@ -524,22 +530,62 @@ export class AddNewLeadImpl extends React.Component<
     }
   };
 
-  insertDealerStep = async (status) => {
+  getSfid = async (email) => {
     const currentUser = getToken().data;
-    const { currentInsertEmail } = this.state;
-    console.log(this.state)
-    const query = `select sfid from salesforce.lead where email = '${currentInsertEmail}' `;
+    const query = `select id, email,sfid from salesforce.lead where email = '${email}' `;
     const result = await getData({
       query,
       token: currentUser.token,
     });
-    console.log(result);
-    /* const statusQuery = `UPDATE salesforce.lead set Status = '${status}' WHERE  sfid = '0010l000017kOHr'`;
+    console.log(result.result[0].sfid);
+    if (result.result[0].sfid !== null) {
+      this.setState({ currentNewSfid: result.result[0].sfid });
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  };
+
+  setIntervalSfid = (email) => {
+    const that = this;
+    intervalId = setInterval(async () => that.getSfid(email), 2500);
+  };
+
+  getSfidFromContact = async () => {
+    const currentUser = getToken().data;
+    const { currentInsertEmail } = this.state;
+    const query = `select id, email, sfid from salesforce.contact where email ='${currentInsertEmail}'`;
+    const result = await getData({
+      query,
+      token: currentUser.token,
+    });
+    console.log(result)
+    if (result && result.result && result.result[0] &&  result.result[0].sfid !== null) {
+      console.log(result.result)
+      this.setState({ currentNewSfid: result.result[0].sfid });
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  };
+
+  setIntervalSfidFromContact = () => {
+    const that = this;
+    intervalId = setInterval(async () => that.getSfidFromContact(), 2500);
+  };
+
+  insertDealerStep = async (status) => {
+    console.log("***************************************");
+    const currentUser = getToken().data;
+    const { currentNewSfid } = this.state;
+    const statusQuery = `UPDATE salesforce.lead set Status = '${status}' WHERE  sfid='${currentNewSfid}'`;
     const resultStatusQuery = await getData({
       query: statusQuery,
       token: currentUser.token,
     });
-    console.log(resultStatusQuery); */
+    console.log(resultStatusQuery);
+    if (status === "Closed") {
+      this.setState({ currentNewSfid: null });
+      this.setIntervalSfidFromContact();
+    }
   };
 
   InsertNewTask = async (data, leadTaskForm, id) => {
@@ -944,8 +990,10 @@ export class AddNewLeadImpl extends React.Component<
             onSubmit={async (v: any) => {
               try {
                 const result = await this.insertDealerStep1(v);
+                this.setIntervalSfid(v.email);
                 this.setState({
-                  currentInsertEmail: 'abac@gamil.com',
+                  currentInsertId: result.result[0].id,
+                  currentInsertEmail: v.email,
                   activeStep: this.state.activeStep + 1,
                 });
               } catch (error) {
@@ -1001,10 +1049,13 @@ export class AddNewLeadImpl extends React.Component<
           <FormComponent
             onSubmit={async (v: any) => {
               console.log(">> v", v);
-              await this.insertDealerStep('Document Collection');
-              this.setState({
-                activeStep: this.state.activeStep + 1,
-              });
+              console.log(this.state);
+              if (this.state.currentNewSfid) {
+                await this.insertDealerStep("Document Collection");
+                this.setState({
+                  activeStep: this.state.activeStep + 1,
+                });
+              }
             }}
             formModel="leadForm"
             hasSubmit={true}
@@ -1054,11 +1105,13 @@ export class AddNewLeadImpl extends React.Component<
         </div>{" "}
         <FormComponent
           onSubmit={async (v: any) => {
-            await this.insertDealerStep('Negotiation');
-            this.setState({
-              activeStep: this.state.activeStep + 1,
-            });
-            console.log(">> v", v);
+            if (this.state.currentNewSfid) {
+              await this.insertDealerStep("Negotiation");
+              this.setState({
+                activeStep: this.state.activeStep + 1,
+              });
+              console.log(">> v", v);
+            }
           }}
           submitTitle="Next"
           cancelTitle="Previous"
@@ -1106,12 +1159,14 @@ export class AddNewLeadImpl extends React.Component<
           options={{ responsive: "scrollMaxHeight" }}
         />{" "}
         <FormComponent
-          onSubmit={async(v: any) => {
+          onSubmit={async (v: any) => {
             console.log(">> v", v);
-            await this.insertDealerStep('Closed');
-            this.setState({
-              activeStep: this.state.activeStep + 1,
-            });
+            if (this.state.currentNewSfid) {
+              await this.insertDealerStep("Closed");
+              this.setState({
+                activeStep: this.state.activeStep + 1,
+              });
+            }
           }}
           formModel="leadForm"
           hasSubmit={true}
@@ -1132,6 +1187,48 @@ export class AddNewLeadImpl extends React.Component<
     "GRECO ACE KIT FITTING",
     "GRECO PRO KIT FITTING",
   ];
+
+  insertDealerJobCard = async () => {
+    const currentUser = getToken().data;
+    const {
+      dealerCheckboxes: jCC,
+      complainCheckList: cC,
+      currentInsertEmail,
+      currentNewSfid
+    } = this.state;
+
+    const query1 = `select sfid from salesforce.contact where email ='${currentInsertEmail}'`;
+    const result1 = await getData({
+      query: query1,
+      token: currentUser.token,
+    });
+
+    console.log(result1);
+
+    const query = `INSERT INTO salesforce.job_card__c (customer__c,Lead__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c	,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c	,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c	,GRECO_PRO_KIT_FITTING__c,HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c,Low_Average_Mileage__c,Late_Starting_Problem__c,Jerking_Missing_Low_Pick__c,Changeover__c,Vehicle_Not_Changing__c,Vehicle_Not_starting__c,Engine_Shutdown__c	,Less_Slow_Gas__c,Check_Engine__c,Petrol_Consumption__c,Noise_after__c,Gas_Leakage__c,Switch_Not_Working_No_lights_on_switch__c,Buzzer_Noise_on_Switch__c
+      ) VALUES
+      
+       ('${currentNewSfid}','',${jCC["AIR FILTER R/R"]},${jCC["BLOCK PISTON R/R"]},${jCC["CARBURETTOR SERVICE"]},${jCC["CAR SCANNING"]},${jCC["CNG LEAKAGE CHECK"]},${jCC["CNG SEQ. KIT TUNE UP"]},${jCC["CNG TUNE UP"]},${jCC["COOLANT REPLACE"]},${jCC["CYLINDER BRACKET R/R"]},${jCC["CYLINDER HYDROTESTING"]},
+      ${jCC["CYLINDER REFITTING"]},${jCC["CYLINDER REMOVE"]},${jCC["CYLINDER VALVE R/R"]},${jCC["DICKY FLOOR REPAIR"]},${jCC["ECM BRACKET R/R"]},${jCC["ECM R/R"]},${jCC["EMULATOR R/R"]},${jCC["ENGINE COMPRESSION CHECK"]},${jCC["ENGINE TUNE UP"]},${jCC["FILLER VALVE REPAIR"]},
+      ${jCC["FILLER VALVE R/R"]},${jCC["FUEL FILTER R/R"]},${jCC["FUEL GAUGE CORRECTOR FITMENT"]},${jCC["FUEL PUMP RELAY R/R"]},${jCC["FUEL PUMP R/R"]},${jCC["GAS FILLTER R/R"]},${jCC["GENERAL LABOUR CHARGES"]},${jCC["GRECO ACE KIT FITTING"]},${jCC["GRECO INJECTOR R/R"]},${jCC["GRECO PRO KIT FITTING"]},
+      ${jCC["HEIGHT PAD FITMENT"]},${jCC["HIGH PRESSURE PIPE R/R"]},${jCC["INGNITION COILS R/R"]},${jCC["INGNITION COIL CODE R/R"]},${jCC["INJECTOR NOZZLE R/R"]},${jCC["KIT REFITTING"]},${jCC["KIT REMOVE"]},${jCC["KIT SERVICE"]},${jCC["LOW PRESSURE HOSE R/R"]},${jCC["MAF/MAP SENSOR CLEAN"]},
+
+      ${jCC["MAP SENSOR R/R"]},${jCC["MIXER R/R"]},${jCC["O2 SENSOR CLEAN"]},${jCC["O2 SENSOR R/R"]},${jCC["OIL & OIL FILTER REPLACE"]},${jCC["PETROL INJECTOR R/R"]},${jCC["PICK UP COIL R/R"]},${jCC["PRESSURE GAUGE R/R"]},${jCC["RAIL BRACKET R/R"]},${jCC["REDUCER BRACKET R/R"]},
+
+      ${jCC["REDUCER R/R"]},${jCC["REDUCER SERVICE"]},${jCC["SPARK PLUG R/R"]},${jCC["SWITCH R/R"]},${jCC["ANNUAL MAINTAINANACE CONTRACT"]},${jCC["TAPPET COVER PACKING REPLACE"]},${jCC["TAPPET SETTING"]},${jCC["TEMPRESURE SENSOR R/R"]},${jCC["THROTTLE BODY CLEANING"]},${jCC["TIMING ADVANCE PROCESS R/R"]},
+
+      ${jCC["VACCUM HOSE PIPE R/R"]},${jCC["WIRING REMOVE & REFITTING"]},${jCC["WIRING REPAIR"]},${jCC["1ST FREE SERVICE"]},${jCC["1ST STAGE REGULATOR ORING R/R"]},${jCC["1ST STAGE REGULATOR R/R"]},${jCC["2ND FREE SERVICE"]},${jCC["2ND STAGE REGULATOR R/R"]},${jCC["3RD FREE SERVICE"]},
+
+      ${cC["Low Average / Mileage"]}, ${cC["Late Starting Problem"]}, ${cC["Jerking / Missing / Low Pick"]}, ${cC["Changeover - Switch / Pressure Gauge Indication Problem"]}, ${cC["Vehicle Not Changing over to CNG"]}, ${cC["Vehicle Not starting in Petrol"]}, ${cC["Engine Shutdown in Idleing mode / Return to idle from high RPM"]}, ${cC["Less/Slow Gas Filling in Tank"]}, ${cC["Check Engine Light on Cluster"]}, ${cC["Petrol Consumption even when car running on CNG"]}, ${cC["Noise after/due to CNG Kit Fittment"]}, ${cC["Gas Leakage / Sound / Smell"]}, ${cC["Switch Not Working(No lights on switch)"]}, ${cC["Buzzer Noise on Switch"]}
+
+      )`;
+
+    const resultStatusQuery = await getData({
+      query,
+      token: currentUser.token,
+    });
+    console.log(resultStatusQuery);
+  };
 
   renderJobCard = () => {
     return (
@@ -1250,6 +1347,9 @@ export class AddNewLeadImpl extends React.Component<
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
+            if (this.state.currentNewSfid) {
+              this.insertDealerJobCard();
+            }
             //this.handleLeadDealerSubmit();
           }}
           formModel="leadForm"
@@ -1514,28 +1614,37 @@ export class AddNewLeadImpl extends React.Component<
   public tabData = () => [
     {
       tabName: "Details",
-      component:
-        this.renderStepper(),
+      component: this.renderStepper(),
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
     {
       tabName: "Activity",
-      component:
-        this.renderActivitySection(),
+      component: this.renderActivitySection(),
       onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
     },
   ];
+
+  updateLeadDistStep = async (status) => {
+    const currentUser = getToken().data;
+    const { currentNewSfid } = this.state;
+    const statusQuery = `UPDATE salesforce.lead set Status = '${status}' WHERE sfid like '${currentNewSfid}'`;
+    const resultStatusQuery = await getData({
+      query: statusQuery,
+      token: currentUser.token,
+    });
+    console.log(resultStatusQuery);
+  };
 
   render() {
     return (
       <AppBar>
         <div className="">
-        {this.renderModal()}
+          {this.renderModal()}
           {/* <Typography variant="h5" color="inherit" noWrap={true}>
             {isDealer() ? "Lead Details - Customer" : "Lead - Dealer"}
           </Typography> */}
-        <div className="">
-          {!isDealer() ? (
+          <div className="">
+            {!isDealer() ? (
               <Stepper
                 activeStep={this.state.activeStep}
                 onChangeStep={(index) => this.setState({ activeStep: index })}
@@ -1577,8 +1686,11 @@ export class AddNewLeadImpl extends React.Component<
                           onSubmit={async (v: any) => {
                             console.log(">> v", v);
                             try {
-                              await this.insertInDistStep1(v);
+                              const result = await this.insertInDistStep1(v);
+                              this.setIntervalSfid(v.email);
                               this.setState({
+                                currentInsertId: result.result[0].id,
+                                currentInsertEmail: v.email,
                                 activeStep: this.state.activeStep + 1,
                               });
                             } catch (error) {
@@ -1587,10 +1699,7 @@ export class AddNewLeadImpl extends React.Component<
                           }}
                           formModel="userForm"
                           hasSubmit={true}
-                          allFormOptions={[
-                            ...streetInputs,
-                            ...leadDealer,
-                          ]}
+                          allFormOptions={[...streetInputs, ...leadDealer]}
                           options={[]}
                           submitTitle="Next"
                           cancelTitle="Previous"
@@ -1610,11 +1719,16 @@ export class AddNewLeadImpl extends React.Component<
                           Workshop Approval Process
                         </SubFormHeading>
                         <FormComponent
-                          onSubmit={(v: any) => {
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                            console.log(">> v", v);
+                          onSubmit={async (v: any) => {
+                            if (this.state.currentNewSfid) {
+                              await this.updateLeadDistStep(
+                                "Document Collection"
+                              );
+                              this.setState({
+                                activeStep: this.state.activeStep + 1,
+                              });
+                              console.log(">> v", v);
+                            }
                           }}
                           formModel="userForm"
                           hasSubmit={true}
@@ -1629,22 +1743,31 @@ export class AddNewLeadImpl extends React.Component<
                       <div className="card-container job-card-container">
                         Approvals {`&`} Inventory Load
                         <div className="button-container">
-                        <Button variant="contained" color="primary">  
-                          Approve
-                        </Button>{" "}
+                          <FormComponent
+                            onSubmit={async (v: any) => {
+                              if (this.state.currentNewSfid) {
+                                await this.updateLeadDistStep("Approved");
+                                this.props.history.push("/leads");
+                                console.log(">> v", v);
+                              }
+                            }}
+                            hasSubmit={true}
+                            options={[]}
+                            hasCancel={false}
+                          />
                         </div>
                       </div>
                     ),
                   },
                 ]}
               />
-          ) : (
-            <Tabs
-              // isIndex={this.state.activeTab}
-              tabsData={this.tabData()}
-            />
-          )}
-        </div>
+            ) : (
+              <Tabs
+                // isIndex={this.state.activeTab}
+                tabsData={this.tabData()}
+              />
+            )}
+          </div>
         </div>
       </AppBar>
     );
