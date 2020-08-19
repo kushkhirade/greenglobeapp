@@ -72,6 +72,7 @@ export const routes = (isDealerApp) => [
   {
     path: "/add-new-jobcard",
     title: "Add New JobCard",
+    hideForDistributor: true,
     icon: () => <FiberNew/>
   },
   {
@@ -182,6 +183,7 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
         {routes(this.props.isDealer)
           .filter((x) => !x.hidden)
           .filter((x) => (isDealer() ? !x.hideForDealer : true))
+          .filter((x) => (!isDealer() ? !x.hideForDistributor : true))
           .map((route, index) => {
             return (
               <NavLink
