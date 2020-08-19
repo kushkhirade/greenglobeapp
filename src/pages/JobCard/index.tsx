@@ -1088,7 +1088,7 @@ export class AddNewJobCardImpl extends React.Component<
             formModel="leadForm"
             hasSubmit={true}
             options={vehicleInputs}
-            submitTitle="Nextyyy"
+            submitTitle="Next"
             allFormOptions={[
               ...options,
               ...vehicleInputs,
