@@ -530,6 +530,52 @@ export class AddNewLeadImpl extends React.Component<
     }
   };
 
+  updateDistStep1 = async (userForm) => {
+    const currentUser = getToken().data;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      email,
+      company,
+      whatsAppNumber,
+      leadType,
+      leadSource,
+      leadStatus,
+      subLeadSource,
+      rating,
+      street,
+      city,
+      state,
+      zip,
+      country,
+    } = userForm;
+
+    const query = `update  salesforce.Lead set FirstName = '${
+      firstName ?? ""
+    }',MiddleName = '${middleName ?? ""}',LastName = '${
+      lastName ?? ""
+    }', Email = '${email ?? ""}',Company = '${
+      company ?? ""
+    }',Whatsapp_number__c='${whatsAppNumber ?? 0}',Lead_Type__c = '${
+      leadType ?? ""
+    }', LeadSource = '${leadSource ?? ""}',Status = '${
+      leadStatus ?? ""
+    }',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${
+      rating ?? ""
+    }',   Street = '${street ?? ""}',City = '${city ?? ""}',State = '${
+      state ?? ""
+    }',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}' where id='${
+      this.state.id
+    }'`;
+    const updateLead = await getData({
+      query,
+      token: currentUser.token,
+    });
+    console.log("updateLead => ", updateLead);
+    return updateLead.result;
+  };
+
   getSfid = async (email) => {
     const currentUser = getToken().data;
     const query = `select id, email,sfid from salesforce.lead where email = '${email}' `;
@@ -558,9 +604,14 @@ export class AddNewLeadImpl extends React.Component<
       query,
       token: currentUser.token,
     });
-    console.log(result)
-    if (result && result.result && result.result[0] &&  result.result[0].sfid !== null) {
-      console.log(result.result)
+    console.log(result);
+    if (
+      result &&
+      result.result &&
+      result.result[0] &&
+      result.result[0].sfid !== null
+    ) {
+      console.log(result.result);
       this.setState({ currentNewSfid: result.result[0].sfid });
       clearInterval(intervalId);
       intervalId = null;
@@ -1194,7 +1245,7 @@ export class AddNewLeadImpl extends React.Component<
       dealerCheckboxes: jCC,
       complainCheckList: cC,
       currentInsertEmail,
-      currentNewSfid
+      currentNewSfid,
     } = this.state;
 
     const query1 = `select sfid from salesforce.contact where email ='${currentInsertEmail}'`;
@@ -1228,6 +1279,7 @@ export class AddNewLeadImpl extends React.Component<
       token: currentUser.token,
     });
     console.log(resultStatusQuery);
+    this.props.history.push("/leads");
   };
 
   renderJobCard = () => {
@@ -1685,16 +1737,32 @@ export class AddNewLeadImpl extends React.Component<
                         <FormComponent
                           onSubmit={async (v: any) => {
                             console.log(">> v", v);
-                            try {
-                              const result = await this.insertInDistStep1(v);
-                              this.setIntervalSfid(v.email);
-                              this.setState({
-                                currentInsertId: result.result[0].id,
-                                currentInsertEmail: v.email,
-                                activeStep: this.state.activeStep + 1,
-                              });
-                            } catch (error) {
-                              console.log(error);
+                            const { params } = this.props.match;
+                            if (params && params.id) {
+                              try {
+                                const result = await this.updateDistStep1(
+                                  v,
+                                  params.id
+                                );
+                                this.setIntervalSfid(v.email);
+                                this.setState({
+                                  currentInsertEmail: v.email,
+                                  activeStep: this.state.activeStep + 1,
+                                });
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            } else {
+                              try {
+                                const result = await this.insertInDistStep1(v);
+                                this.setIntervalSfid(v.email);
+                                this.setState({
+                                  currentInsertEmail: v.email,
+                                  activeStep: this.state.activeStep + 1,
+                                });
+                              } catch (error) {
+                                console.log(error);
+                              }
                             }
                           }}
                           formModel="userForm"
