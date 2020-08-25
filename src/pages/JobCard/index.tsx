@@ -78,6 +78,7 @@ export class AddNewJobCardImpl extends React.Component<
     complaintCheckboxes: any;
     allCustAndLeads: any;
     selectedUser: any;
+    basicDetailsFormRecordId : any;
   }
 > {
   constructor(props: IAddNewJobCardProps) {
@@ -178,7 +179,8 @@ export class AddNewJobCardImpl extends React.Component<
       },
       selectedUser: null,
       allCustAndLeads: [],
-      basicDetailsFormRecordId : ""
+      basicDetailsFormRecordId : "",
+      isLeadOrCustomer : ""
     };
   }
 
@@ -768,6 +770,7 @@ export class AddNewJobCardImpl extends React.Component<
 
     let { gstNumber , compnayName } = data;
     let { token , record_type , sfid } = loggedInUserDetails;
+    let { isLeadOrCustomer } = this.state;
     let basicDetailsFormId = this.state.basicDetailsFormRecordId;
     let queryToGetSfid = `Select sfid,name from Salesforce.contact where id=${basicDetailsFormId}`
     let sfidOfRecord = await getData({
@@ -866,6 +869,12 @@ export class AddNewJobCardImpl extends React.Component<
 
         if(addJobCardRes.status == 200 && addJobCardRes.result){
           alert("New Job Card Added Successfully");
+          if(isLeadOrCustomer === "leads"){
+            this.props.history.push({pathname: "/leads"});
+          }
+          if(isLeadOrCustomer === "customers"){
+            this.props.history.push({pathname: "/customers"});
+          }
         }
 
   };
@@ -883,17 +892,30 @@ export class AddNewJobCardImpl extends React.Component<
     this.setState(obj);
   };
 
- 
+  formatDate = () => {
+    let d = new Date();
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    let year = d.getFullYear();
 
-  handleBasicDetailsFormSubmit = async (v : any) => {
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+  handleBasicDetailsFormSubmit = async (obj : any) => {
    this.setState({ basicDetailsFormRecordId : "" });
+
+  
     let {
       chassis,city, company, country, dailyRunning, email, firstName, fuelType, gstNumber, lastName, leadSource, 
       leadStatus,leadType,mfg, middleName, rating, registration, state, street, subLeadSource, subleadType, usage, 
       vehicleMek, vehicleModel, vehicleNumber , vehicleType, whatsAppNumber, wheeles, zip
-    } = v;
+    } = obj;
 
-    console.log(v);
     let { token , record_type , sfid } = loggedInUserDetails;
 
     if(isDealer()){
@@ -922,7 +944,8 @@ export class AddNewJobCardImpl extends React.Component<
             alert("Successfully added record");
             this.setState({
               activeStep: this.state.activeStep + 1,
-              basicDetailsFormRecordId : res.result[0].id
+              basicDetailsFormRecordId : res.result[0].id,
+              isLeadOrCustomer : "leads"
             })
           }
           else { alert("failed to add as dealer");  }
@@ -950,7 +973,8 @@ export class AddNewJobCardImpl extends React.Component<
               alert("Successfully updated record");
               this.setState({
                 activeStep: this.state.activeStep + 1,
-                basicDetailsFormRecordId : res.result[0].id
+                basicDetailsFormRecordId : res.result[0].id,
+                isLeadOrCustomer : "customers"
               })
             }
             else { alert("failed to update customer as dealer");  }
@@ -974,10 +998,11 @@ export class AddNewJobCardImpl extends React.Component<
                 alert("Successfully updated record");
                 this.setState({
                   activeStep: this.state.activeStep + 1,
-                  basicDetailsFormRecordId : res.result[0].id
+                  basicDetailsFormRecordId : res.result[0].id,
+                  isLeadOrCustomer : "leads",
                 })
               }
-              else { alert("failed to update customer as dealer");  }
+              else { alert("failed to update lead as dealer");  }
            }
            catch(err) {
              alert("something went wrong");
@@ -1593,7 +1618,27 @@ export class AddNewJobCardImpl extends React.Component<
       chassis: obj.chassis_no__c,
       gstNumber: obj.gst_number__c,
     };
+      // DEFAULT VALUES
+      if(!newData.registration){
+        newData.registration = this.formatDate();
+      }
+      for(let key in newData){
+          if(!newData[key]){
+              if(key === "whatsAppNumber" || key === "zip" || key === "dailyRunning" || key === "mfg"){
+                newData[key] = 0;
+              }
+              else if(key === "email"){
+                newData[key] = "abc@gmail.com"
+              }
+              else {
+                newData[key] = "";
+              }
+          }
+      }
+    // END DEFAULT VALUES
+  
     changeValuesInStore("leadForm", newData);
+   
     console.log(obj);
     this.setState({ selectedUser: obj });
   };
