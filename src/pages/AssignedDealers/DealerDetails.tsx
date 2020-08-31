@@ -226,7 +226,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {this.state.detailsData.bank_account_type__c}
                 </Grid>
               </Grid>
-              <SubFormHeading>Related Customers</SubFormHeading>{" "}
+              {/* <SubFormHeading>Related Customers</SubFormHeading>{" "}
               <Grid container>
                 {this.state.customerData && this.state.customerData.map((x) => {
                   return (
@@ -256,7 +256,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                     </React.Fragment>
                   );
                 })}
-              </Grid>
+              </Grid> */}
             </div>
           </Grid>
           }
@@ -433,7 +433,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   {this.state.detailsData.bank_account_type__c}
                 </Grid>
               </Grid>
-              <SubFormHeading>Related Customers</SubFormHeading>{" "}
+              {/* <SubFormHeading>Related Customers</SubFormHeading>{" "}
               <Grid container>
                 {this.props.dealerDetails.customers.map((x) => {
                   return (
@@ -463,7 +463,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                     </React.Fragment>
                   );
                 })}
-              </Grid>
+              </Grid> */}
             </div>
           </Grid>
           }

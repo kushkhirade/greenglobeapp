@@ -221,7 +221,6 @@ export const leadDealer = [
   {
     label: "Company",
     model: ".company",
-    required: true,
     type: "text",
     required: true,
   },
@@ -234,6 +233,12 @@ export const leadDealer = [
   {
     label: "WhatsApp Number",
     model: ".whatsAppNumber",
+    type: "number",
+    required: true,
+  },
+  {
+    label: "Contact Person",
+    model: ".contactPerson",
     type: "text",
     required: true,
   },
@@ -328,6 +333,27 @@ export const leadDealer = [
   },
 ];
 
+const subLeadTypeOPT = () => {
+  // console.log("value: ", value)
+  // value === "Online" &&
+  [
+    {label: "Facebook", value: "Facebook"},
+    {label: "Google", value: "Google"},
+    {label: "Whatsapp", value: "Whatsapp"},
+    {label: "Mass Malling", value: "Mass malling"},
+    {label: "Mass Messaging", value: "Mass messaging"},
+    {label: "Instagram", value: "Instagram"},
+    {label: "YouTube", value: "YouTube"},
+    {label: "RTO", value: "RTO"},
+    {label: "BANK", value: "BANK"},
+    {label: "Patpedhi", value: "Patpedhi"},
+    {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+  ]
+  // ||
+  // [ {label: "Facebook", value: "Facebook"},
+  // {label: "Google", value: "Google"},
+  // {label: "Whatsapp", value: "Whatsapp"},]
+}
 export const leadSource = [
   {
     label: "Lead Type",
@@ -378,6 +404,8 @@ export const leadSource = [
     label: "Sub Lead Source",
     model: ".subLeadSource",
     type: "select",
+    dependetField: "leadSource",
+    dependetValue: "Online",
     options: [
       {label: "Facebook", value: "Facebook"},
       {label: "Google", value: "Google"},
@@ -390,10 +418,10 @@ export const leadSource = [
       {label: "BANK", value: "BANK"},
       {label: "Patpedhi", value: "Patpedhi"},
       {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
-    ],
+    ]
   },
   {
-    label: "Lead Status",
+    label: "Lead Status", 
     model: ".leadStatus",
     type: "select",
     options: [
@@ -435,9 +463,18 @@ export const addressDetails = [
 
 export const gstDetails = [
   {
+    label: "Jobcard Type",
+    model: ".jobcardtype",
+    type: "select",
+    options: [
+      {label: "Fitment", value: "Fitment"},
+      {label: "Servicing", value: "Servicing"}
+    ]
+  },
+  {
     label: "GST Number",
     model: ".gstNumber",
-    type: "text",
+    type: "number",
   },
   {
     label: "Compnay Name",
@@ -451,54 +488,45 @@ export const distCust = [
     label: "First Name",
     model: ".firstName",
     type: "text",
-    required: true,
   },
   {
     label: "Middle Name",
     model: ".middleName",
     type: "text",
-    required: true,
   },
   {
     label: "Last Name",
     model: ".lastName",
     type: "text",
-    required: true,
   },
   {
     label: "City",
     model: ".city",
     type: "text",
-    required: true,
   },
   {
     label: "Vehicle No.",
     model: ".vehicleNumber",
     type: "text",
-    required: true,
   },
   {
     label: "Vehicle Type",
     model: ".vehicleType",
     type: "text",
-    required: true,
   },
   {
     label: "Kit Installed",
     model: ".kitIns",
     type: "text",
-    required: true,
   },
   {
     label: "Assigned Dealer",
     model: ".assignedDealers",
     type: "text",
-    required: true,
   },
   {
     label: "Dealer Rating",
     model: ".dealerRating",
     type: "text",
-    required: true,
   },
 ];

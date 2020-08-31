@@ -31,6 +31,7 @@ class FormComponentImpl extends React.Component {
 
   render() {
     const { props } = this;
+    console.log("Store ", this.props)
     return (
       <Form
         model={`rxFormReducer.${props.formModel}`}
@@ -42,6 +43,7 @@ class FormComponentImpl extends React.Component {
       >
         <Grid container>
           {props.options.map((opt: any) => {
+            const dept = opt.dependentField ? opt.dependentField : "" ;
             switch (opt.type) {
               case "text":
                 return (
@@ -105,11 +107,12 @@ class FormComponentImpl extends React.Component {
                     }}
                     onFocus={() => this.handleInputFocus(opt.model)}
                     required={opt.required}
-                    options={opt.options}
+                    options={ store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`] === opt.dependetValue ? opt.options : []}
                     name={opt.name}
                     model={opt.model}
                     label={opt.label}
                     onChange={(e) => {
+                      console.log("sdfcsdvfv:: ", store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`])
                       changeValuesInStore(
                         `${props.formModel}${opt.model}`,
                         e.target.value
@@ -254,6 +257,7 @@ const MUITextArea = (props: any) => {
 
 const MUISelectField = (props: any) => {
   const { className, ...rest } = props;
+  console.log(props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <FormControl variant="outlined" className={className}>

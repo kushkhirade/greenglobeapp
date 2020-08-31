@@ -117,7 +117,9 @@
     transition: all 0.7s cubic-bezier(.25, .8, .25, 1);
 }
 
-
+.right-button {
+    text-align: right;
+}
 
 .tabs-container {
     display: flex;

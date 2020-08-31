@@ -17,6 +17,7 @@ import { getToken } from "src/state/Utility";
 import { saveOrderData } from "src/actions/App.Actions";
 import { BaseModal } from "src/components/BaseModal";
 import { values } from "lodash";
+import { getDefaultSettings } from "http2";
 
 var loggedInUserDetails;
 
@@ -130,6 +131,16 @@ export class AddNewOrderImpl extends React.PureComponent<
           token: data.token
         });
       }
+      if(details.details && details.details.courierName ){
+        updateorder = await getData({
+          query: `update salesforce.order set 
+          Consignment_No__c = '${details.details.consignmentNo}',
+          Courier_Name__c='${details.details.courierName}',
+          Shipping_Date__c ='${details.details.shippingDate}'
+          where id='${orderdetails.id}' returning id`,
+          token: data.token
+        })
+      }
       else{
         updateorder = await getData({
           query: `UPDATE salesforce.order SET 
@@ -146,18 +157,61 @@ export class AddNewOrderImpl extends React.PureComponent<
   }
 
   InsertUpdateItems = async (data, orderdetails, selectedProducts) => {
-    console.log("orderdetails ", orderdetails);
+    console.log("this.props ", this.props.location.orderType);
     console.log("selectedProducts ", selectedProducts);
+    console.log("new Date() ", new Date());
+    const orderType = this.props.location.orderType;
+    const UniqueId = new Date();
     let insertuser;
 
-    const SFID = await getData({
-      query: `SELECT * from salesforce.order where Id = '${orderdetails.id}' `,
-      token: data.token
-    })
-    console.log("SFID ", SFID.result);
-    this.setState({ orderdetails: SFID.result[0] });
-
+    // const SFID = await getData({
+    //   query: `SELECT * from salesforce.order where Id = '${orderdetails.id}' `,
+    //   token: data.token
+    // })
+    // console.log("SFID ", SFID.result);
+    // this.setState({ orderdetails: SFID.result[0] });
     try{
+      if(data.record_type === "0122w000000cwfSAAQ"){
+          
+        const SFID = await getData({
+          query: `select Assigned_distributor__c from salesforce.account where sfid = '${data.sfid}'`,
+          token : data.token
+        })
+        console.log("SFID: ", SFID)
+        insertuser = await getData({
+          query: `INSERT INTO salesforce.order
+          (status, EffectiveDate, Pricebook2Id, Sold_To_Dealer__c, AccountId, recordtypeid, app_id__c)
+          values
+          ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0','${data.sfid}', 
+          '${SFID.result[0].assigned_distributor__c}', '0122w000000UJe1AAG', '${UniqueId}' )
+          RETURNING Id`,
+          token: data.token
+        });
+      }
+      else if(data.record_type === "0122w000000cwfNAAQ"){
+        if(orderType === "Buy"){
+          insertuser = await getData({
+            query: `INSERT INTO salesforce.order
+            (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
+            values
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJdmAAG', '${UniqueId}')
+            RETURNING Id`,
+            token: data.token
+          });
+        }
+        else{
+          insertuser = await getData({
+            query: `INSERT INTO salesforce.order
+            (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
+            values
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJe1AAG', '${UniqueId}' )
+            RETURNING Id`,
+            token: data.token
+          });
+        }
+      }
+
+      console.log("insertuser => ", insertuser);
 
       selectedProducts.map(async (x) => 
         { x.itemNumber ? 
@@ -167,23 +221,23 @@ export class AddNewOrderImpl extends React.PureComponent<
             token: data.token
           }) 
         :
-          x.label !== "" &&
+          x.quantity !== "0" &&
             (insertuser = await getData({
               query: `INSERT INTO salesforce.orderitem 
-              (pricebookentryid, product2id, quantity, orderid, unitprice) 
+              (pricebookentryid, product2id, quantity, unitprice, Order__app_id__c) 
               VALUES (
                 (select sfid from salesforce.pricebookentry where product2id like '%${x.sfid}%'),
                 '${x.sfid}',
-                  ${x.quantity},
-                '${SFID.result[0].sfid}',
-                (select unitprice from salesforce.pricebookentry where product2id like '%${x.sfid}%')
+                ${x.quantity},
+                (select unitprice from salesforce.pricebookentry where product2id like '%${x.sfid}%'),
+                '${UniqueId}'
               )
               RETURNING id`,
               token: data.token
             }))
         }
       )
-      console.log("insertuser =>0", insertuser);
+      console.log("insertuser =>", insertuser);
 
     }catch(e){
       console.log(e);
@@ -211,6 +265,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             <RenderForm label="Submit" type="buy" history={this.props.history} 
               orderedproducts={orderedproducts} 
               onClick={( selectedProducts ) => {
+                this.setState({ orderedproducts: selectedProducts });
                 this.InsertUpdateItems(loggedInUserDetails, orderdetails, selectedProducts );
                 this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
               }} 
@@ -223,9 +278,190 @@ export class AddNewOrderImpl extends React.PureComponent<
               <SubmittedScreen
                 orderdetails={orderdetails}
                 onClick={async() =>{
-                  const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
-                  this.setState({ orderedproducts: res });
+                  // const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
+                  // this.setState({ orderedproducts: res });
                   this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
+                }}
+              />
+            ),
+          },
+          {
+            label: "PI Raised",
+            component: (
+              <Grid container className="align-center">
+                <Grid item xs={12} md={4} lg={4}>
+                  <div className="card-container no-hover">
+                    {/* <div className="head-title padding-6 ">Proforma Invoice</div> */}
+                    <Typography variant="h5">Proforma Invoice</Typography>
+                    <div className="invoice-date padding-6">
+                      <div>
+                        {" "}
+                        <span className="description-text">
+                          Invoice No -{" "}
+                        </span>{" "}
+                        {orderdetails && orderdetails.ordernumber}
+                      </div>
+                      <div>
+                        {" "}
+                        <span className="description-text">{" "}
+                          Date of Issue -
+                        </span>{" "}
+                        10/02/2020
+                      </div>
+                    </div>
+                    <div className="padding-6 invoice-add">
+                      {" "}
+                      <span className = "description-text">
+                        Billed to -
+                      </span>{" "}
+                      {orderdetails && orderdetails.billingstreet} {orderdetails && orderdetails.billingcity} {orderdetails && orderdetails.billingpostalcode} {orderdetails && orderdetails.billingstate} {orderdetails && orderdetails.billingcountry}
+                    </div>
+                    <div className="invoice-table">
+                      <div className="table-heads">
+                        {invoiceData.billHeads.map((name, index) => (
+                          <div key={index} className="heading">
+                            {name}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="table-data">
+                        {orderedproducts && orderedproducts.map((p, index) => ( 
+                          <div key={index} className="data-inner">
+                          {console.log("p==> ", p)}
+                            <div className="data">{p.prd_name__c}</div>
+                            <div className="data">{p.unitprice}</div>
+                            <div className="data">{p.quantity}</div>
+                            <div className="data">{p.totalprice}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="bill-total">
+                        <div>
+                          <span className="description-text">Sub Total:</span>
+                          {orderedproducts && orderedproducts.reduce(
+                            (s, a) => Number(a.totalprice)+ s,
+                            0
+                          )}
+                        </div>
+                        <div>
+                          <span className="description-text">Tax - 18% -</span>
+                          {(orderedproducts && orderedproducts.reduce(
+                            (s, a) => Number(a.totalprice) + s,
+                            0
+                          ) /
+                            100) *
+                            18}
+                        </div>
+                        <div className="invoice-total">
+                          {" "}
+                          <span className="description-text">
+                            Invoice Total -
+                          </span>
+                          {orderedproducts && orderedproducts.reduce(
+                            (s, a) => Number(a.totalprice) + s,
+                            0
+                          ) +
+                            (orderedproducts && orderedproducts.reduce(
+                              (s, a) => Number(a.totalprice) + s,
+                              0
+                            ) /
+                              100) *
+                              18}
+                        </div>
+                      </div>
+                    </div>{" "}
+                    <div className="align-center padding-6">
+                      <Button
+                        onClick={() =>
+                          this.setState({
+                            activeStepBuy: this.state.activeStepBuy + 1,
+                          })
+                        }
+                        variant="contained"
+                        color="primary"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                </Grid>
+              </Grid>
+            ),
+          },
+          {
+            label: "Payment Details",
+            component: (
+              <PaymentDetailsScreen
+                orderdetails={orderdetails}
+                onClick={(details) =>{
+                  this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)
+                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
+                }}
+                history= {this.props.history}
+              />
+            ),
+          },
+          {
+            label: "Dispatched",
+            component: (
+              <DispatchedScreen
+                orderdetails={orderdetails} type="buy" 
+                onClick={() =>
+                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1,})
+                }
+              />
+            ),
+          },
+          { label: "GRN", 
+            component: 
+            <RenderForm label="Confirm" type="buy" 
+              orderdetails={orderdetails}
+              orderedproducts={orderedproducts}
+              onClick={() => {
+                this.setState({activeStepBuy: this.state.activeStepBuy + 1});
+                this.props.history.goBack();
+              }} 
+            />
+            // this.renderForm("Add", "buy") ,
+        }
+        ]}
+      ></Stepper>
+    );
+  };
+
+  public renderSellStepper = ( ) => {
+    const { orderedproducts, orderdetails } = this.state;
+    console.log("this.state: ", this.state)
+    return (
+      <Stepper
+        identifier="sell"
+        activeStep={this.state.activeStepSell}
+        onChangeStep={ (index) =>  this.setState({ activeStepSell: index })}
+        stepData={[
+          {
+            label: "Draft",
+            component: 
+            <RenderForm label="Submit" type="sell" 
+              orderedproducts={orderedproducts}
+              orderdetails={orderdetails}
+              onClick={( selectedProducts ) => {
+                this.InsertUpdateItems(loggedInUserDetails, orderdetails, selectedProducts );
+                this.setState({ activeStepSell: this.state.activeStepSell + 1 });
+              }}
+              onSelectDelaer={(details) => this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)}
+              history={this.props.history}
+            />
+            // this.renderForm("Submit", "sell"),
+          },
+          {
+            label: "Submitted",
+            component: (
+              <SubmittedScreen
+                orderdetails={orderdetails}
+                onClick={async() =>{
+                  // const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
+                  // this.setState({ orderedproducts: res });
+                  this.setState({ activeStepSell: this.state.activeStepSell + 1 })
                 }}
               />
             ),
@@ -336,85 +572,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Payment Details",
             component: (
               <PaymentDetailsScreen
-                orderdetails={orderdetails}
-                onClick={(details) =>{
-                  this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)
-                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
-                }}
-                history= {this.props.history}
-              />
-            ),
-          },
-          {
-            label: "Dispatched",
-            component: (
-              <DispatchedScreen
-                orderdetails={orderdetails}
-                onClick={() =>
-                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1,})
-                }
-              />
-            ),
-          },
-          { label: "GRN", 
-            component: 
-            <RenderForm label="Confirm" type="buy" 
-              orderdetails={orderdetails}
-              orderedproducts={orderedproducts}
-              onClick={() => {
-                this.setState({activeStepBuy: this.state.activeStepBuy + 1});
-                this.props.history.goBack();
-              }} 
-            />
-            // this.renderForm("Add", "buy") ,
-        }
-        ]}
-      ></Stepper>
-    );
-  };
-
-  public renderSellStepper = ( ) => {
-    const { orderedproducts, orderdetails } = this.state;
-    console.log("this.state: ", this.state)
-    return (
-      <Stepper
-        identifier="sell"
-        activeStep={this.state.activeStepSell}
-        onChangeStep={ (index) =>  this.setState({ activeStepSell: index })}
-        stepData={[
-          {
-            label: "Draft",
-            component: 
-            <RenderForm label="Submit" type="sell" 
-              orderedproducts={orderedproducts}
-              orderdetails={orderdetails}
-              onClick={( selectedProducts ) => {
-                this.InsertUpdateItems(loggedInUserDetails, orderdetails, selectedProducts );
-                this.setState({ activeStepSell: this.state.activeStepSell + 1 });
-              }}
-              onSelectDelaer={(details) => this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)}
-              history={this.props.history}
-            />
-            // this.renderForm("Submit", "sell"),
-          },
-          {
-            label: "Submitted",
-            component: (
-              <SubmittedScreen
-                orderdetails={orderdetails}
-                onClick={async() =>{
-                  const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
-                  this.setState({ orderedproducts: res });
-                  this.setState({ activeStepSell: this.state.activeStepSell + 1 })
-                }}
-              />
-            ),
-          },
-          {
-            label: "Payment Details",
-            component: (
-              <PaymentDetailsScreen
-                orderdetails={orderdetails}
+                orderdetails={orderdetails} 
                 onClick={(details) =>{
                   this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)
                   this.setState({ activeStepSell: this.state.activeStepSell + 1 })
@@ -426,9 +584,10 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Dispatched",
             component: (
               <DispatchedScreen
-                orderdetails={orderdetails}
-                onClick={() => {
+                orderdetails={orderdetails} type="sell" 
+                onClick={(details) => {
                   this.props.history.goBack();
+                  this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)
                   this.setState({ activeStepSell: this.state.activeStepSell, });
                 }}
               />
@@ -472,7 +631,24 @@ class RenderForm extends React.Component <any> {
   state = {
     orderedproducts: this.props.orderedproducts && this.props.orderedproducts.length > 0 
       ? this.props.orderedproducts.map((p ,i)=> {return({sfid: "", label: p.prd_name__c, quantity: p.quantity, itemNumber: p.orderitemnumber})} )
-      : [{sfid: "", label: "", quantity: "1"}, {sfid: "", label: "", quantity: "1"}, {sfid: "", label: "", quantity: "1"}, {sfid: "", label: "", quantity: "1"}],
+      : [{sfid: "01t1s000000lFhu", label: "3 Wheeler Ace", quantity: "0", type: "text"}, {sfid: "01t1s000000lFYi", label: "3 Wheeler Pro", quantity: "0", type: "text"}, 
+         {sfid: "01t1s000000lFYs", label: "4 Wheeler Ace", quantity: "0", type: "text"}, {sfid: "01t1s000000lFYx", label: "4 Wheeler Pro", quantity: "0", type: "text"},
+         {sfid: "", label: "Tank", quantity: "0", type: "select", 
+            options: [
+              {label: "Tank Capacity - 30", value: "01t1s000000kmG6AAI"}, 
+              {label: "Tank Capacity - 35", value: "01t1s000000kmFXAAY"}, 
+              {label: "Tank Capacity - 60", value: "01t2w000003prqWAAQ"}, 
+              {label: "Tank Capacity - 65", value: "01t1s000000kvWaAAI"}, 
+              {label: "Tank Capacity - 70", value: "01t2w000003qExfAAE"}, 
+              {label: "Tank Capacity - 75", value: "01t2w00000451IkAAI"}, 
+              {label: "Tank Capacity - 90", value: "01t1s000000kgZiAAI"}]}, 
+         {sfid: "", label: "spares", quantity: "0", type: "select",
+            options: [
+              {label: "Spare - 1", value: "01t2w000000XnsXAAS"}, 
+              {label: "Spare - 2", value: "01t2w000002OB4cAAG"}, 
+              {label: "Spare - 3", value: "01t2w000002OB4SAAW"}, 
+              {label: "Spare - 4", value: "01t2w000002OB4NAAW"}, 
+              {label: "Spare - 5", value: "01t2w000002OB4XAAW"},]}],
     allProducts: [],
     selectedDealer: this.props.orderdetails && this.props.orderdetails.dealername__c,
     allDealers: [],
@@ -506,8 +682,7 @@ class RenderForm extends React.Component <any> {
     console.log("data: ", data)
     try {
         const products = await getData({
-          query: `SELECT StockKeepingUnit, sfid FROM salesforce.product2 
-          WHERE StockKeepingUnit is NOT NULL `,
+          query: `SELECT StockKeepingUnit, name, sfid FROM salesforce.product2 `,
           token: data.token
         })
         console.log("products =>", products);
@@ -570,19 +745,31 @@ class RenderForm extends React.Component <any> {
   renderAddProduct = (item, i) => {
     return(
       <div className="product-selection">
-        <Grid item xs={4} md={6} sm={6}>
+        <Grid item xs={6} md={6} sm={6}>
+          {this.state.orderedproducts[i].label === '3 Wheeler Ace'|| this.state.orderedproducts[i].label === '3 Wheeler Pro'
+            || this.state.orderedproducts[i].label === '4 Wheeler Ace'|| this.state.orderedproducts[i].label === '4 Wheeler Pro' ?
+          <input
+            className="r-select"
+            style={{textAlign: 'center', marginRight: '50px'}}
+            type="text"
+            disabled={true}
+            placeholder={this.state.orderedproducts[i].label}
+          />
+          :
           <Select
             className="r-select"
             classNamePrefix="r-select-pre"
             placeholder="Select"
             value={this.state.orderedproducts[i].label !== "" && this.state.orderedproducts[i]}
-            options={this.state.allProducts.map(p => ({
-              label: p.stockkeepingunit,
-              value: p.sfid
-            }))}
+            options={this.state.orderedproducts[i].options}
+            // options={this.state.allProducts.map(p => ({
+            //   label: p.stockkeepingunit,
+            //   value: p.sfid
+            // }))}
             onChange={(event: any) => this.handleChange(event, i)}
             isSearchable={false}
-          />{" "}
+          /> 
+          }
         </Grid>
         <Grid item xs={4} md={4} sm={4}>
           {this.renderValueManipulator(item, i)}
@@ -593,7 +780,7 @@ class RenderForm extends React.Component <any> {
 
   onClickChng =() => {
     var val = this.state.orderedproducts;
-    val.push({sfid: "", label: "", quantity: "1"});
+    val.push({sfid: "", label: "", quantity: "0"});
     this.setState({ orderedproducts: val})
   }
   
@@ -634,7 +821,7 @@ class RenderForm extends React.Component <any> {
                 {this.renderAddProduct(item, i)}
             </Grid>
           ))}
-        {this.props.label !== "Confirm" ?
+        {/* {this.props.label !== "Confirm" ?
           <Grid container spacing={4}>
             <Grid item xs={6} md={6} sm={6}></Grid>
               <Grid item xs={6} md={6} sm={6}>
@@ -643,7 +830,7 @@ class RenderForm extends React.Component <any> {
                 </Button>
             </Grid>
           </Grid>
-        : null}
+        : null} */}
 
         {this.props.label !== "Confirm" ?
           <div className="button-container">
@@ -680,6 +867,9 @@ class DispatchedScreen extends React.Component <any> {
 
   state={
     details: [],
+    courierName: "",
+    consignmentNo: "",
+    shippingDate: "",
   }
 
   async componentDidMount(){
@@ -696,12 +886,17 @@ class DispatchedScreen extends React.Component <any> {
           token: data.token
         })
         console.log("orderedproducts =>", orderedproducts);
+        this.setState({
+          courierName: orderedproducts.result[0].courier_name__c || "", 
+          consignmentNo: orderedproducts.result[0].Consignment_No__c || "",
+          shippingDate: orderedproducts.result[0].shipping_date__c || ""
+        })
         return orderedproducts.result;
 
     } catch (e) {
-      console.log('fetch Inventory Error', e)
+      console.log('fetch Order Error', e)
     }
-  }
+  };
 
   render(){
     console.log("props: ", this.props)
@@ -732,24 +927,62 @@ class DispatchedScreen extends React.Component <any> {
         <Grid container className="">
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
             <span className="description-text">Courier Name -</span>
-            <span className="disp-details"> {details && details.courier_name__c}</span>
+            { this.props.type === "sell"
+              ? details && details.courier_name__c 
+                && <span className="disp-details"> {details && details.courier_name__c}</span>
+                || <input
+                  onChange={(e) => this.setState({courierName: e.target.value}) }
+                  className="input-field"
+                  style={{marginTop: '2px'}}
+                  type="text"
+                  placeholder="Courier Name"
+                />
+              : <span className="disp-details"> {details && details.courier_name__c}</span>
+            }
             {/* <div className="disp-details"> */}
           </Grid>
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
-              <span className="description-text">Consignment No. -</span>
-              <span className="disp-details"> {details && details.Consignment_No__c}</span>
+            <span className="description-text">Consignment No. -</span>
+            { this.props.type === "sell"
+              ? details && details.consignment_no__c 
+                && <span className="disp-details"> {details && details.consignment_no__c}</span>
+                || <input
+                  onChange={(e) => this.setState({consignmentNo: e.target.value})}
+                  className="input-field"
+                  style={{marginTop: '2px'}}
+                  type="text"
+                  placeholder="Consignment No"
+                />
+              : <span className="disp-details"> {details && details.consignment_no__c}</span>
+            }
           </Grid>
             {/* </div>
             <div className="disp-details"> */}
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
-              <span className="description-text"> Shipping Date - </span>
-              <span className="disp-details"> {details && details.Shipping_date__c && moment(details.Shipping_date__c).format("DD/MM/YYYY")}</span>
+            <span className="description-text"> Shipping Date - </span>
+            { this.props.type === "sell"
+              ? details && details.shipping_date__c 
+                && <span className="disp-details"> {moment(details.shipping_date__c).format("DD/MM/YYYY")}</span>
+                || <input
+                  onChange={(e) => this.setState({shippingDate: e.target.value})}
+                  className="input-field"
+                  style={{marginTop: '2px'}}
+                  type="date"
+                  placeholder="Shipping Date"
+                />
+              : <span className="disp-details"> {details && details.shipping_date__c && moment(details.shipping_date__c).format("DD/MM/YYYY")}</span>
+            }
             {/* </div> */}
           </Grid>
         </Grid>{" "}
-        <div className="align-center padding-6">
-          <Button onClick={this.props.onClick} variant="contained" color="primary">
-            Next
+        <div className="align-center padding-6" style={{marginTop: '20px'}}>
+          <Button 
+            onClick={() => 
+            this.props.onClick({details: {...this.state} })
+            // this.props.onClick({details: (this.state.courierName, this.state.consignmentNo, this.state.shippingDate) })
+            } 
+            variant="contained" color="primary">
+            Update
           </Button>
         </div>
       </div>

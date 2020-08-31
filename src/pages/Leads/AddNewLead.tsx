@@ -1245,6 +1245,7 @@ export class AddNewLeadImpl extends React.Component<
           hasSubmit={false}
           options={gstDetails}
         />
+        {this.props.leadForm.subleadType === "Servicing" &&
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
@@ -1288,6 +1289,7 @@ export class AddNewLeadImpl extends React.Component<
             })}
           </Grid>
         </div>
+        }
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>

@@ -150,7 +150,12 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
             color="inherit"
             noWrap={true}
           >
-            {this.state.routeName}
+            { 
+            (dealerDetails && dealerDetails.dealer
+              && this.props.location.pathname.includes('/dealers/dealer-details') && dealerDetails.dealer.recordtypeid === '0122w000000chRuAAI'
+              || dealerDetails && this.props.location.pathname.includes('/customer/customer-lead-details') && dealerDetails.recordtypeid === '0122w000000chRpAAI') 
+              ? "Lead Details" : this.state.routeName
+            }
           </Typography>
           <div className="align-center" onClick={this.topRightIconUrl}>
             {/* <div>

@@ -211,7 +211,7 @@ export class RTOProcessImpl extends React.PureComponent<
                 onChange={this.handleStageSelect}
                 className="form-input"
               >
-                <MenuItem value="Document Collected">Document Collected</MenuItem>
+                <MenuItem value="Generate Document">Generate Document</MenuItem>
                 <MenuItem value="In Progress">In Progress</MenuItem>
                 <MenuItem value="Submitted">Submitted</MenuItem>
                 <MenuItem value="Closed">Closed</MenuItem>
@@ -359,14 +359,16 @@ export class RTOProcessImpl extends React.PureComponent<
         {this.renderAddNewRTODocModal()}
         {this.renderEditModal()}
         <Tabs tabsData={this.tabs()} />
-        <span
-          style={{ position: "absolute", right: 20, bottom: 20 }}
-          onClick={() => this.setState({ addNew: true })}
-        >
-          <Fab color="secondary" aria-labelledby="add-ticket">
-            <Add />
-          </Fab>
-        </span>
+        {isDealer() && 
+          <span
+            style={{ position: "absolute", right: 20, bottom: 20 }}
+            onClick={() => this.setState({ addNew: true })}
+          >
+            <Fab color="secondary" aria-labelledby="add-ticket">
+              <Add />
+            </Fab>
+          </span>
+        }
       </AppBar>
     );
   }
