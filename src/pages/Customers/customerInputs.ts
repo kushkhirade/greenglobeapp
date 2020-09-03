@@ -36,7 +36,8 @@ export const vehicleInputs = [
       {label: "Tata", value: "Tata"},
       {label: "Bajaj Auto Limited", value: "Bajaj Auto Limite"},
       {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."},
-    ]
+    ],
+    required: true,
   },
   {
     label: "Vehicle Model",
@@ -78,7 +79,8 @@ export const vehicleInputs = [
       {label: "MAHINDRA ALFA DX", value: "MAHINDRA ALFA DX"},
       {label: "MAHINDRA ALFA Champ", value: "MAHINDRA ALFA Champ"},
       {label: "MAHINDRA ALFA Comfy", value: "MAHINDRA ALFA Comfy"}, 
-    ]
+    ],
+    required: true,
   },
   {
     label: "Usage of Vehicle",
@@ -87,7 +89,8 @@ export const vehicleInputs = [
     options: [
       {label: "Commercial", value: "Commercial"},
       {label: "Private", value: "Private"},
-    ]
+    ],
+    required: true,
   },
   {
     label: "Engine Type",
@@ -96,17 +99,20 @@ export const vehicleInputs = [
     options: [
       {label: "2 Stroke", value: "2 Stroke"},
       {label: "4 Stroke", value: "4 Stroke"},
-    ]
+    ],
+    required: true,
   },
   {
     label: "Daily Running KMS",
     model: ".dailyRunning",
     type: "number",
+    required: true,
   },
   {
     label: "Registration Year",
     model: ".registration",
     type: "date",
+    required: true,
   },
   {
     label: "Year Of Manufacturing",
@@ -124,7 +130,8 @@ export const vehicleInputs = [
       {label: "2018", value: 2018},
       {label: "2019", value: 2019},
       {label: "2020", value: 2020},
-    ]
+    ],
+    required: true,
   },
   {
     label: "Chassis Number",
@@ -177,26 +184,31 @@ export const streetInputs = [
     label: "Street",
     model: ".street",
     type: "text",
+    required: true,
   },
   {
     label: "City",
     model: ".city",
     type: "text",
+    required: true,
   },
   {
     label: "State/Provinance",
     model: ".state",
     type: "text",
+    required: true,
   },
   {
     label: "Zip/Postal Code",
     model: ".zip",
     type: "text",
+    required: true,
   },
   {
     label: "Country",
     model: ".country",
     type: "text",
+    required: true,
   },
 ];
 
@@ -250,7 +262,8 @@ export const leadDealer = [
       {label: "B2B", value: "B2B"},
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
-    ]
+    ],
+    required: true,
   },
   {
     label: "Sub Lead Type",
@@ -261,7 +274,8 @@ export const leadDealer = [
       {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
       {label: "Servicing", value: "Servicing"}
-    ]
+    ],
+    required: true,
   },
   {
     label: "Lead Source",
@@ -311,12 +325,14 @@ export const leadDealer = [
     type: "select",
     options: [
       {label: "New", value: "New"},
-      {label: "Basic Details", value: "Basic Details"},
       {label: "Document Collection", value: "Document Collection"},
-      {label: "Negotiation", value: "Negotiation"},
-      {label: "Closed", value: "Closed"},
-      {label: "Job Card", value: "Job Card"},
-      {label: "Qualified", value: "Qualified"}
+      {label: "Approved", value: "Approved"},
+      // {label: "Basic Details", value: "Basic Details"},
+      // {label: "Document Collection", value: "Document Collection"},
+      // {label: "Negotiation", value: "Negotiation"},
+      // {label: "Closed", value: "Closed"},
+      // {label: "Job Card", value: "Job Card"},
+      // {label: "Qualified", value: "Qualified"}
     ],
     required: true,
   },
@@ -364,6 +380,7 @@ export const leadSource = [
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
     ],
+    required: true,
   },
   {
     label: "Sub Lead Type",
@@ -374,7 +391,8 @@ export const leadSource = [
       {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
       {label: "Servicing", value: "Servicing"}
-    ]
+    ],
+    required: true,
   },
   {
     label: "Lead Source",
@@ -448,6 +466,104 @@ export const leadSource = [
   },
 ];
 
+export const leadSourceForJobCard = [
+  {
+    label: "Lead Type",
+    model: ".leadType",
+    type: "select",
+    options: [
+      {label: "B2B", value: "B2B"},
+      {label: "B2C", value: "B2C"},
+      {label: "B2G", value: "B2G"}
+    ],
+    required: true,
+  },
+  {
+    label: "Sub Lead Type",
+    model: ".subleadType",
+    type: "select",
+    options: [
+      {label: "Customer", value: "Customer"},
+      {label: "Influencer", value: "Influencer"},
+      {label: "Fitment", value: "Fitment"},
+      {label: "Servicing", value: "Servicing"}
+    ],
+    required: true,
+  },
+  {
+    label: "Lead Source",
+    model: ".leadSource",
+    type: "select",
+    options: [
+      // {label: "Partner", value: "Partner"},
+      // {label: "Website", value: "Website"},
+      // {label: "Advertisement", value: "Advertisement"},
+      // {label: "Webinar", value: "Webinar"},
+      // {label: "Trade Show", value: "Trade Show"},
+      // {label: "Employee Referral", value: "Employee Referral"},
+      // {label: "Customer Event", value: "Customer Event"},
+      // {label: "Google AdWords", value: "Google AdWords"},
+      // {label: "Purchased List", value: "Purchased List"},
+      // {label: "Consumers", value: "Consumers"},
+      // {label: "Agents", value: "Agents"},
+      // {label: "Events", value: "Events"},
+      // {label: "ASM", value: "ASM"},
+      {label: "Online", value: "Online"},
+      {label: "Offline", value: "Offline"},
+      {label: "Store Visits", value: "Store Visits"}
+    ],
+    required: true,
+  },
+  {
+    label: "Sub Lead Source",
+    model: ".subLeadSource",
+    type: "select",
+    dependetField: "leadSource",
+    dependetValue: "Online",
+    options: [
+      {label: "Facebook", value: "Facebook"},
+      {label: "Google", value: "Google"},
+      {label: "Whatsapp", value: "Whatsapp"},
+      {label: "Mass Malling", value: "Mass malling"},
+      {label: "Mass Messaging", value: "Mass messaging"},
+      {label: "Instagram", value: "Instagram"},
+      {label: "YouTube", value: "YouTube"},
+      {label: "RTO", value: "RTO"},
+      {label: "BANK", value: "BANK"},
+      {label: "Patpedhi", value: "Patpedhi"},
+      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+    ]
+  },
+  {
+    label: "Lead Status", 
+    model: ".leadStatus",
+    type: "select",
+    defaultValue: "Closed",
+    isDisable: true,
+    options: [
+      {label: "New", value: "New"},
+      {label: "Basic Details", value: "Basic Details"},
+      {label: "Document Collection", value: "Document Collection"},
+      {label: "Negotiation", value: "Negotiation"},
+      {label: "Closed", value: "Closed"},
+      {label: "Job Card", value: "Job Card"},
+      {label: "Qualified", value: "Qualified"}
+    ],
+    required: true,
+  },
+  {
+    label: "Rating",
+    model: ".rating",
+    type: "select",
+    options: [
+      {label: "Hot", value: "Hot"},
+      {label: "Cold", value: "Cold"},
+      {label: "Warm", value: "Warm"}
+    ],
+    required: true,
+  },
+];
+
 export const addressDetails = [
   {
     label: "Billing Address",
@@ -462,24 +578,26 @@ export const addressDetails = [
 ];
 
 export const gstDetails = [
-  {
-    label: "Jobcard Type",
-    model: ".jobcardtype",
-    type: "select",
-    options: [
-      {label: "Fitment", value: "Fitment"},
-      {label: "Servicing", value: "Servicing"}
-    ]
-  },
+  // {
+  //   label: "Jobcard Type",
+  //   model: ".jobcardtype",
+  //   type: "select",
+  //   options: [
+  //     {label: "Fitment", value: "Fitment"},
+  //     {label: "Servicing", value: "Servicing"}
+  //   ]
+  // },
   {
     label: "GST Number",
     model: ".gstNumber",
     type: "number",
+    required: true,
   },
   {
-    label: "Compnay Name",
-    model: ".compnayName",
+    label: "Company Name",
+    model: ".companyName",
     type: "text",
+    required: true,
   },
 ];
 

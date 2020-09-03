@@ -302,6 +302,7 @@ export class AddNewLeadImpl extends React.Component<
       company: leadData.company,
       whatsAppNumber: leadData.whatsapp_number__c,
       leadType: leadData.lead_type__c,
+      subleadType: leadData.sub_lead_type__c,
       leadSource: leadData.leadsource,
       leadStatus: leadData.status,
       subLeadSource: leadData.sub_lead_source__c,
@@ -322,91 +323,90 @@ export class AddNewLeadImpl extends React.Component<
       registration: leadData.registration_year__c,
       mfg: leadData.year_of_manufacturing__c,
       chassis: leadData.chassis_no__c,
-      gstNumber: leadData.gst_number__c,
     };
-    const dealerCheckboxesData = {
-      "CNG TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
-      "KIT SERVICE": leadData.kit_service__c === "f" ? false : true,
-      "KIT REMOVE": leadData.cng_tune_up__c === "f" ? false : true,
-      "KIT REFITTING": leadData.kit_refitting__c === "f" ? false : true,
-      "CYLINDER REMOVE": leadData.cylinder_remove__c === "f" ? false : true,
-      "CYLINDER REFITTING":
-        leadData.cylinder_refitting__c === "f" ? false : true,
-      "GRECO ACE KIT FITTING":
-        leadData.greco_ace_kit_fitting__c === "f" ? false : true,
-      "GRECO PRO KIT FITTING":
-        leadData.greco_pro_kit_fitting__c === "f" ? false : true,
-      "DICKY FLOOR REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
-      "WIRING REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
-      "WIRING REMOVE & REFITTING":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "REDUCER R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "REDUCER SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
-      "CARBURETTOR SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
-      "THROTTLE BODY CLEANING": leadData.cng_tune_up__c === "f" ? false : true,
-      "AIR FILTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "SPARK PLUG R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "INGNITION COILS R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "INGNITION COIL CODE R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "PICK UP COIL R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "CNG SEQ. KIT TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
-      "ECM R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "MAP SENSOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "MAF/MAP SENSOR CLEAN": leadData.cng_tune_up__c === "f" ? false : true,
-      "GRECO INJECTOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "PETROL INJECTOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "TEMPRESURE SENSOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "TIMING ADVANCE PROCESS R/R":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "FILLER VALVE R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "FILLER VALVE REPAIR": leadData.cng_tune_up__c === "f" ? false : true,
-      "LOW PRESSURE HOSE R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "PRESSURE GAUGE R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "HIGH PRESSURE PIPE R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "CYLINDER VALVE R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "SWITCH R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "COOLANT REPLACE": leadData.cng_tune_up__c === "f" ? false : true,
-      "TAPPET SETTING": leadData.cng_tune_up__c === "f" ? false : true,
-      "OIL & OIL FILTER REPLACE":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "HEIGHT PAD FITMENT": leadData.cng_tune_up__c === "f" ? false : true,
-      "O2 SENSOR R/R	": leadData.cng_tune_up__c === "f" ? false : true,
-      "O2 SENSOR CLEAN": leadData.cng_tune_up__c === "f" ? false : true,
-      "ENGINE TUNE UP": leadData.cng_tune_up__c === "f" ? false : true,
-      "ENGINE COMPRESSION CHECK":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "FUEL PUMP R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "FUEL FILTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "FUEL PUMP RELAY R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "ANNUAL MAINTAINANACE CONTRACT":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "CNG LEAKAGE CHECK": leadData.cng_tune_up__c === "f" ? false : true,
-      "EMULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "MIXER R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "1ST STAGE REGULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "2ND STAGE REGULATOR R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "CYLINDER HYDROTESTING": leadData.cng_tune_up__c === "f" ? false : true,
-      "1ST STAGE REGULATOR ORING R/R":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "INJECTOR NOZZLE R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "GENERAL LABOUR CHARGES": leadData.cng_tune_up__c === "f" ? false : true,
-      "CAR SCANNING": leadData.cng_tune_up__c === "f" ? false : true,
-      "GAS FILLTER R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "CYLINDER BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "1ST FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
-      "2ND FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
-      "3RD FREE SERVICE": leadData.cng_tune_up__c === "f" ? false : true,
-      "TAPPET COVER PACKING REPLACE":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "VACCUM HOSE PIPE R/R	": leadData.cng_tune_up__c === "f" ? false : true,
-      "FUEL GAUGE CORRECTOR FITMENT":
-        leadData.cng_tune_up__c === "f" ? false : true,
-      "RAIL BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "ECM BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "REDUCER BRACKET R/R": leadData.cng_tune_up__c === "f" ? false : true,
-      "BLOCK PISTON R/R": leadData.cng_tune_up__c === "f" ? false : true,
-    };
-    this.setState({ dealerCheckboxes: dealerCheckboxesData });
+    // const dealerCheckboxesData = {
+    //   "CNG TUNE UP": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "KIT SERVICE": leadData.kit_service__c === "t" ? true : false,
+    //   "KIT REMOVE": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "KIT REFITTING": leadData.kit_refitting__c === "t" ? true : false,
+    //   "CYLINDER REMOVE": leadData.cylinder_remove__c === "t" ? true : false,
+    //   "CYLINDER REFITTING":
+    //     leadData.cylinder_refitting__c === "t" ? true : false,
+    //   "GRECO ACE KIT FITTING":
+    //     leadData.greco_ace_kit_fitting__c === "t" ? true : false,
+    //   "GRECO PRO KIT FITTING":
+    //     leadData.greco_pro_kit_fitting__c === "t" ? true : false,
+    //   "DICKY FLOOR REPAIR": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "WIRING REPAIR": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "WIRING REMOVE & REFITTING":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "REDUCER R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "REDUCER SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "CARBURETTOR SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "THROTTLE BODY CLEANING": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "AIR FILTER R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "SPARK PLUG R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "INGNITION COILS R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "INGNITION COIL CODE R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "PICK UP COIL R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "CNG SEQ. KIT TUNE UP": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "ECM R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "MAP SENSOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "MAF/MAP SENSOR CLEAN": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "GRECO INJECTOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "PETROL INJECTOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "TEMPRESURE SENSOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "TIMING ADVANCE PROCESS R/R":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "FILLER VALVE R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "FILLER VALVE REPAIR": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "LOW PRESSURE HOSE R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "PRESSURE GAUGE R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "HIGH PRESSURE PIPE R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "CYLINDER VALVE R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "SWITCH R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "COOLANT REPLACE": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "TAPPET SETTING": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "OIL & OIL FILTER REPLACE":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "HEIGHT PAD FITMENT": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "O2 SENSOR R/R	": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "O2 SENSOR CLEAN": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "ENGINE TUNE UP": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "ENGINE COMPRESSION CHECK":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "FUEL PUMP R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "FUEL FILTER R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "FUEL PUMP RELAY R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "ANNUAL MAINTAINANACE CONTRACT":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "CNG LEAKAGE CHECK": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "EMULATOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "MIXER R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "1ST STAGE REGULATOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "2ND STAGE REGULATOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "CYLINDER HYDROTESTING": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "1ST STAGE REGULATOR ORING R/R":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "INJECTOR NOZZLE R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "GENERAL LABOUR CHARGES": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "CAR SCANNING": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "GAS FILLTER R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "CYLINDER BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "1ST FREE SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "2ND FREE SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "3RD FREE SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "TAPPET COVER PACKING REPLACE":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "VACCUM HOSE PIPE R/R	": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "FUEL GAUGE CORRECTOR FITMENT":
+    //     leadData.cng_tune_up__c === "t" ? true : false,
+    //   "RAIL BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "ECM BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "REDUCER BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    //   "BLOCK PISTON R/R": leadData.cng_tune_up__c === "t" ? true : false,
+    // };
+    // this.setState({ dealerCheckboxes: dealerCheckboxesData });
     changeValuesInStore(formType, editData);
   };
 
@@ -419,7 +419,9 @@ export class AddNewLeadImpl extends React.Component<
       email,
       company,
       whatsAppNumber,
+      contactPerson,
       leadType,
+      subleadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -430,16 +432,16 @@ export class AddNewLeadImpl extends React.Component<
       zip,
       country,
     } = userForm;
-    const query = `INSERT INTO salesforce.Lead (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
+    const query = `INSERT INTO salesforce.Lead (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,Contact_Person__c,Lead_Type__c,sub_lead_type__c,LeadSource,Status,Sub_Lead_Source__c,Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
     VALUES ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
       email ?? ""
-    }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : ""},'${
+    }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : ""},'${contactPerson ?? ""}', '${
       leadType ?? ""
-    }', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
+    }', '${subleadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
       rating ?? ""
     }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
       country ?? ""
-    }', '0122w000000chRpAAI', '${currentUser.sfid}')`;
+    }', '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING ID`;
 
     try {
       const result = await getData({
@@ -460,6 +462,54 @@ export class AddNewLeadImpl extends React.Component<
     }
   };
 
+  updateDistStep1 = async (userForm) => {
+    const currentUser = getToken().data;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      email,
+      company,
+      whatsAppNumber,
+      contactPerson,
+      leadType,
+      subleadType,
+      leadSource,
+      leadStatus,
+      subLeadSource,
+      rating,
+      street,
+      city,
+      state,
+      zip,
+      country,
+    } = userForm;
+
+    const query = `update  salesforce.Lead set FirstName = '${
+      firstName ?? ""
+    }',MiddleName = '${middleName ?? ""}',LastName = '${
+      lastName ?? ""
+    }', Email = '${email ?? ""}',Company = '${
+      company ?? ""
+    }',Whatsapp_number__c='${whatsAppNumber ?? 0}',Contact_Person__c = '${contactPerson ?? ""}', Lead_Type__c = '${
+      leadType ?? ""
+    }', sub_lead_type__c = '${subleadType ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${
+      leadStatus ?? ""
+    }',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${
+      rating ?? ""
+    }',   Street = '${street ?? ""}',City = '${city ?? ""}',State = '${
+      state ?? ""
+    }',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}' where id='${
+      this.state.id
+    }'`;
+    const updateLead = await getData({
+      query,
+      token: currentUser.token,
+    });
+    console.log("updateLead => ", updateLead);
+    return updateLead.result;
+  };
+
   insertDealerStep1 = async (userForm) => {
     const currentUser = getToken().data;
     const {
@@ -470,6 +520,7 @@ export class AddNewLeadImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
+      subleadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -492,13 +543,13 @@ export class AddNewLeadImpl extends React.Component<
       chassis,
       gstNumber,
     } = userForm;
-    const query = `INSERT INTO salesforce.Lead (FirstName, MiddleName, LastName,Email, Company,Whatsapp_number__c,Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c ,Rating,Street,City,State ,PostalCode,Country, Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,GST_Number__c , RecordTypeId, Assigned_Dealer__c) 
+    const query = `INSERT INTO salesforce.Lead (FirstName, MiddleName, LastName,Email, Company,Whatsapp_number__c,Lead_Type__c,sub_lead_type__c,LeadSource,Status,Sub_Lead_Source__c ,Rating,Street,City,State ,PostalCode,Country, Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c, RecordTypeId, Assigned_Dealer__c) 
     VALUES    
     ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
       email ?? ""
     }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : 0},'${
       leadType ?? ""
-    }', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
+    }', '${subleadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
       rating ?? ""
     }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
       country ?? ""
@@ -507,9 +558,75 @@ export class AddNewLeadImpl extends React.Component<
     }','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
        ${dailyRunning ? dailyRunning : 0},'${
       registration ? registration : "4/5/2019"
-    }',${mfg ? mfg : 0},'${chassis ?? ""}','${
-      gstNumber ?? ""
+    }',${mfg ? mfg : 0},'${chassis ?? ""
     }', '0122w000000chRpAAI', '${currentUser.sfid}') RETURNING id, email, sfid`;
+
+    try {
+      const result = await getData({
+        query,
+        token: currentUser.token,
+      });
+      console.log(result);
+      if (
+        typeof result === "object" &&
+        result.name &&
+        result.name === "SyntaxError"
+      ) {
+        throw result;
+      }
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  updateDealerStep1 = async (userForm) => {
+    const currentUser = getToken().data;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      email,
+      company,
+      whatsAppNumber,
+      leadType,
+      subleadType,
+      leadSource,
+      leadStatus,
+      subLeadSource,
+      rating,
+      street,
+      city,
+      state,
+      zip,
+      country,
+      vehicleNumber,
+      fuelType,
+      wheeles,
+      vehicleMek,
+      vehicleModel,
+      usage,
+      vehicleType,
+      dailyRunning,
+      registration,
+      mfg,
+      chassis,
+      gstNumber,
+    } = userForm;
+    const query = `UPDATE salesforce.Lead SET 
+      FirstName = '${firstName ?? ""}', MiddleName = '${middleName ?? ""}', LastName = '${lastName ?? ""}',
+      Email = '${email ?? ""}', Company = '${company ?? ""}',Whatsapp_number__c = ${whatsAppNumber ? whatsAppNumber : 0},
+      Lead_Type__c = '${leadType ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${leadStatus ?? ""}',
+      Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${rating ?? ""}', sub_lead_type__c = '${subleadType ?? ""}',
+      Street = '${street ?? ""}',City = '${city ?? ""}',State = '${state ?? ""}',PostalCode = '${zip ?? ""}',Country = '${country ?? ""}', 
+      Vehicle_no__c = '${vehicleNumber ?? ""}',Fuel_Type__c = '${fuelType ?? ""}',X3_or_4_Wheeler__c = '${wheeles ?? ""}',
+      Vehicle_Make__c = '${vehicleMek ?? ""}', Vehicle_Model__c = '${vehicleModel ?? ""}',Usage_of_Vehicle__c = '${usage ?? ""}',
+      Engine__c = '${vehicleType ?? ""}',Daily_Running_Kms__c = ${dailyRunning ? dailyRunning : 0},
+      Registration_Year__c = '${registration ? registration : ""}',
+      Year_of_Manufacturing__c = ${mfg ? mfg : 0},Chassis_No__c = '${chassis ?? ""}',
+      RecordTypeId = '0122w000000chRpAAI', Assigned_Dealer__c = '${currentUser.sfid}'
+    WHERE ID = '${this.state.id}'
+    RETURNING id, email, sfid`;
 
     try {
       const result = await getData({
@@ -558,9 +675,14 @@ export class AddNewLeadImpl extends React.Component<
       query,
       token: currentUser.token,
     });
-    console.log(result)
-    if (result && result.result && result.result[0] &&  result.result[0].sfid !== null) {
-      console.log(result.result)
+    console.log(result);
+    if (
+      result &&
+      result.result &&
+      result.result[0] &&
+      result.result[0].sfid !== null
+    ) {
+      console.log(result.result);
       this.setState({ currentNewSfid: result.result[0].sfid });
       clearInterval(intervalId);
       intervalId = null;
@@ -634,120 +756,6 @@ export class AddNewLeadImpl extends React.Component<
     changeValuesInStore(`leadTaskForm`, {});
   };
 
-  InsertLeadDistributor = async (data, userForm) => {
-    const {
-      firstName,
-      middleName,
-      lastName,
-      email,
-      company,
-      whatsAppNumber,
-      leadType,
-      leadSource,
-      leadStatus,
-      subLeadSource,
-      rating,
-      street,
-      city,
-      state,
-      zip,
-      country,
-    } = userForm;
-    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
-    try {
-      const insertLead = await getData({
-        query: `INSERT INTO salesforce.Lead
-        (name, FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
-          Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
-          Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
-         Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${
-          lastName ?? ""
-        }','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${
-          leadType ?? ""
-        }',
-         '${leadSource ?? ""}','${leadStatus ?? ""}','${
-          subLeadSource ?? ""
-        }','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${
-          state ?? ""
-        }','${zip ?? ""}','${country ?? ""}','0122w000000chRuAAI','${
-          data.sfid
-        }')`,
-        token: data.token,
-      });
-      console.log("insertLead => ", insertLead);
-      return insertLead.result;
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  UpdateLeadDistributer = async (data, userForm) => {
-    const {
-      firstName,
-      middleName,
-      lastName,
-      email,
-      company,
-      whatsAppNumber,
-      leadType,
-      leadSource,
-      leadStatus,
-      subLeadSource,
-      rating,
-      street,
-      city,
-      state,
-      zip,
-      country,
-    } = userForm;
-    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
-    try {
-      const updateLead = await getData({
-        query: `update  salesforce.Lead set name = '${
-          name ?? ""
-        }', FirstName = '${firstName ?? ""}',MiddleName = '${
-          middleName ?? ""
-        }',LastName = '${lastName ?? ""}',
-        Email = '${email ?? ""}',Company = '${
-          company ?? ""
-        }',Whatsapp_number__c='${whatsAppNumber ?? 0}',Lead_Type__c = '${
-          leadType ?? ""
-        }',
-        LeadSource = '${leadSource ?? ""}',Status = '${
-          leadStatus ?? ""
-        }',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${
-          rating ?? ""
-        }',  
-        Street = '${street ?? ""}',City = '${city ?? ""}',State = '${
-          state ?? ""
-        }',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}'
-         where id='${this.state.id}'`,
-        token: data.token,
-      });
-      console.log("updateLead => ", updateLead);
-      return updateLead.result;
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  handleLeadDistributorSubmit = async () => {
-    if (this.state.id) {
-      this.handleLeadDistributorUpdate();
-    } else {
-      this.handleLeadDistributorInsert();
-    }
-  };
-  handleLeadDistributorInsert = async () => {
-    loggedInUserDetails = getToken().data;
-    await this.InsertLeadDistributor(loggedInUserDetails, this.props.userForm);
-    this.props.history.push("/leads");
-  };
-  handleLeadDistributorUpdate = async () => {
-    loggedInUserDetails = getToken().data;
-    await this.UpdateLeadDistributer(loggedInUserDetails, this.props.userForm);
-    this.props.history.push("/leads");
-  };
-
   InsertLeadDealer = async (data, leadForm) => {
     const {
       firstName,
@@ -780,6 +788,7 @@ export class AddNewLeadImpl extends React.Component<
       gstNumber,
     } = leadForm;
     const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
+    console.log("name", name)
     const { dealerCheckboxes } = this.state;
     try {
       const insertLead = await getData({
@@ -918,39 +927,16 @@ export class AddNewLeadImpl extends React.Component<
     }
   };
 
-  handleLeadDealerSubmit = async () => {
-    if (this.state.id) {
-      this.handleLeadDealerUpdate();
-    } else {
-      this.handleLeadDealerInsert();
-    }
-  };
-
-  handleLeadDealerInsert = async () => {
-    loggedInUserDetails = getToken().data;
-    if (this.state.id) {
-      await this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
-    } else {
-      await this.InsertLeadDealer(loggedInUserDetails, this.props.leadForm);
-    }
-    // this.setState({ activeTab: "Activity" })
-    this.props.history.push("/leads");
-  };
-  handleLeadDealerUpdate = async () => {
-    loggedInUserDetails = getToken().data;
-    await this.UpdateLeadDealer(loggedInUserDetails, this.props.leadForm);
-    // this.setState({ activeTab: "Activity" })
-    this.props.history.push("/leads");
-  };
-  handleToggle = (event, isInputChecked) => {
+  handleToggle = (type: string) =>  (event, isInputChecked) => {
     let fieldName = event.target.name;
-    let dealerCheckboxes = this.state.dealerCheckboxes;
+    let dealerCheckboxes = this.state[type];;
     dealerCheckboxes[fieldName] = isInputChecked;
     const dealerCheckboxesChanged = !this.state.dealerCheckboxesChanged;
-    this.setState({
+    const obj = {
       dealerCheckboxesChanged,
-      dealerCheckboxes,
-    });
+      [type]: dealerCheckboxes,
+    };
+    this.setState( obj );
     console.log(this.state.dealerCheckboxes);
   };
   // Basic Details Form
@@ -988,18 +974,34 @@ export class AddNewLeadImpl extends React.Component<
           <SubFormHeading>Vehicle Details</SubFormHeading>
           <FormComponent
             onSubmit={async (v: any) => {
-              try {
-                const result = await this.insertDealerStep1(v);
-                this.setIntervalSfid(v.email);
-                this.setState({
-                  currentInsertId: result.result[0].id,
-                  currentInsertEmail: v.email,
-                  activeStep: this.state.activeStep + 1,
-                });
-              } catch (error) {
-                console.log(error);
-              }
-            }}
+              const { params } = this.props.match;
+                if (params && params.id) {
+                  try {
+                    const result = await this.updateDealerStep1(
+                      v,
+                      params.id
+                    );
+                    this.setIntervalSfid(v.email);
+                    this.setState({
+                      currentInsertEmail: v.email,
+                      activeStep: this.state.activeStep + 1,
+                    });
+                  } catch (error) {
+                    console.log(error);
+                  }
+                } else {
+                  try {
+                    const result = await this.insertDealerStep1(v);
+                    this.setIntervalSfid(v.email);
+                    this.setState({
+                      currentInsertEmail: v.email,
+                      activeStep: this.state.activeStep + 1,
+                    });
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }
+              }}
             formModel="leadForm"
             hasSubmit={true}
             allFormOptions={[
@@ -1178,23 +1180,17 @@ export class AddNewLeadImpl extends React.Component<
     );
   };
 
-  checkboxInputs = [
-    "CNG TUNE UP",
-    "KIT SERVICE",
-    "KIT REFITTING",
-    "CYLINDER REMOVE",
-    "CYLINDER REFITTING",
-    "GRECO ACE KIT FITTING",
-    "GRECO PRO KIT FITTING",
-  ];
-
-  insertDealerJobCard = async () => {
+  insertDealerJobCard = async (data) => {
     const currentUser = getToken().data;
+    console.log("*************************************");
+    console.log("Data: ", data);
+
+    let { gstNumber , companyName } = data;
     const {
       dealerCheckboxes: jCC,
       complainCheckList: cC,
       currentInsertEmail,
-      currentNewSfid
+      currentNewSfid,
     } = this.state;
 
     const query1 = `select sfid from salesforce.contact where email ='${currentInsertEmail}'`;
@@ -1205,10 +1201,10 @@ export class AddNewLeadImpl extends React.Component<
 
     console.log(result1);
 
-    const query = `INSERT INTO salesforce.job_card__c (customer__c,Lead__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c	,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c	,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c	,GRECO_PRO_KIT_FITTING__c,HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c,Low_Average_Mileage__c,Late_Starting_Problem__c,Jerking_Missing_Low_Pick__c,Changeover__c,Vehicle_Not_Changing__c,Vehicle_Not_starting__c,Engine_Shutdown__c	,Less_Slow_Gas__c,Check_Engine__c,Petrol_Consumption__c,Noise_after__c,Gas_Leakage__c,Switch_Not_Working_No_lights_on_switch__c,Buzzer_Noise_on_Switch__c
+    const query = `INSERT INTO salesforce.job_card__c (customer__c, Company__c, GST_Number__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c	,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c	,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c	,GRECO_PRO_KIT_FITTING__c,HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c,Low_Average_Mileage__c,Late_Starting_Problem__c,Jerking_Missing_Low_Pick__c,Changeover__c,Vehicle_Not_Changing__c,Vehicle_Not_starting__c,Engine_Shutdown__c	,Less_Slow_Gas__c,Check_Engine__c,Petrol_Consumption__c,Noise_after__c,Gas_Leakage__c,Switch_Not_Working_No_lights_on_switch__c,Buzzer_Noise_on_Switch__c
       ) VALUES
       
-       ('${currentNewSfid}','',${jCC["AIR FILTER R/R"]},${jCC["BLOCK PISTON R/R"]},${jCC["CARBURETTOR SERVICE"]},${jCC["CAR SCANNING"]},${jCC["CNG LEAKAGE CHECK"]},${jCC["CNG SEQ. KIT TUNE UP"]},${jCC["CNG TUNE UP"]},${jCC["COOLANT REPLACE"]},${jCC["CYLINDER BRACKET R/R"]},${jCC["CYLINDER HYDROTESTING"]},
+       ('${currentNewSfid}','${companyName}','${gstNumber}',${jCC["AIR FILTER R/R"]},${jCC["BLOCK PISTON R/R"]},${jCC["CARBURETTOR SERVICE"]},${jCC["CAR SCANNING"]},${jCC["CNG LEAKAGE CHECK"]},${jCC["CNG SEQ. KIT TUNE UP"]},${jCC["CNG TUNE UP"]},${jCC["COOLANT REPLACE"]},${jCC["CYLINDER BRACKET R/R"]},${jCC["CYLINDER HYDROTESTING"]},
       ${jCC["CYLINDER REFITTING"]},${jCC["CYLINDER REMOVE"]},${jCC["CYLINDER VALVE R/R"]},${jCC["DICKY FLOOR REPAIR"]},${jCC["ECM BRACKET R/R"]},${jCC["ECM R/R"]},${jCC["EMULATOR R/R"]},${jCC["ENGINE COMPRESSION CHECK"]},${jCC["ENGINE TUNE UP"]},${jCC["FILLER VALVE REPAIR"]},
       ${jCC["FILLER VALVE R/R"]},${jCC["FUEL FILTER R/R"]},${jCC["FUEL GAUGE CORRECTOR FITMENT"]},${jCC["FUEL PUMP RELAY R/R"]},${jCC["FUEL PUMP R/R"]},${jCC["GAS FILLTER R/R"]},${jCC["GENERAL LABOUR CHARGES"]},${jCC["GRECO ACE KIT FITTING"]},${jCC["GRECO INJECTOR R/R"]},${jCC["GRECO PRO KIT FITTING"]},
       ${jCC["HEIGHT PAD FITMENT"]},${jCC["HIGH PRESSURE PIPE R/R"]},${jCC["INGNITION COILS R/R"]},${jCC["INGNITION COIL CODE R/R"]},${jCC["INJECTOR NOZZLE R/R"]},${jCC["KIT REFITTING"]},${jCC["KIT REMOVE"]},${jCC["KIT SERVICE"]},${jCC["LOW PRESSURE HOSE R/R"]},${jCC["MAF/MAP SENSOR CLEAN"]},
@@ -1221,13 +1217,14 @@ export class AddNewLeadImpl extends React.Component<
 
       ${cC["Low Average / Mileage"]}, ${cC["Late Starting Problem"]}, ${cC["Jerking / Missing / Low Pick"]}, ${cC["Changeover - Switch / Pressure Gauge Indication Problem"]}, ${cC["Vehicle Not Changing over to CNG"]}, ${cC["Vehicle Not starting in Petrol"]}, ${cC["Engine Shutdown in Idleing mode / Return to idle from high RPM"]}, ${cC["Less/Slow Gas Filling in Tank"]}, ${cC["Check Engine Light on Cluster"]}, ${cC["Petrol Consumption even when car running on CNG"]}, ${cC["Noise after/due to CNG Kit Fittment"]}, ${cC["Gas Leakage / Sound / Smell"]}, ${cC["Switch Not Working(No lights on switch)"]}, ${cC["Buzzer Noise on Switch"]}
 
-      )`;
+      ) RETURNING ID`;
 
     const resultStatusQuery = await getData({
       query,
       token: currentUser.token,
     });
     console.log(resultStatusQuery);
+    this.props.history.push("/leads");
   };
 
   renderJobCard = () => {
@@ -1250,7 +1247,8 @@ export class AddNewLeadImpl extends React.Component<
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
             {Object.keys(this.state.complainCheckList).map((key, value) => {
-              // const isChecked = this.state.complainCheckList[key];
+              console.log("key => ", this.state.complainCheckList[key])
+              const isChecked = this.state.complainCheckList[key];
               return (
                 <React.Fragment>
                   <Grid
@@ -1274,7 +1272,8 @@ export class AddNewLeadImpl extends React.Component<
                         <Checkbox
                           color="primary"
                           inputProps={{ "aria-label": "secondary checkbox" }}
-                          onChange={this.handleToggle}
+                          style={{ width: '10px', height: '10px'}}
+                          onChange={this.handleToggle("complainCheckList")}
                           key={key}
                           name={key}
                           // value={isChecked}
@@ -1318,11 +1317,12 @@ export class AddNewLeadImpl extends React.Component<
                         <Checkbox
                           color="primary"
                           inputProps={{ "aria-label": "secondary checkbox" }}
-                          onChange={this.handleToggle}
+                          style={{ width: '10px', height: '10px'}}
+                          onChange={this.handleToggle("dealerCheckboxes")}
                           key={key}
                           name={key}
-                          value={isChecked}
-                          {...(this.state.id && { checked: isChecked })}
+                          // value={isChecked}
+                          // {...(this.state.id && { checked: isChecked })}
                         />
                         {key}
                       </div>
@@ -1350,7 +1350,7 @@ export class AddNewLeadImpl extends React.Component<
           onSubmit={(v: any) => {
             console.log(">> v", v);
             if (this.state.currentNewSfid) {
-              this.insertDealerJobCard();
+              this.insertDealerJobCard(this.props.leadForm);
             }
             //this.handleLeadDealerSubmit();
           }}
@@ -1687,16 +1687,32 @@ export class AddNewLeadImpl extends React.Component<
                         <FormComponent
                           onSubmit={async (v: any) => {
                             console.log(">> v", v);
-                            try {
-                              const result = await this.insertInDistStep1(v);
-                              this.setIntervalSfid(v.email);
-                              this.setState({
-                                currentInsertId: result.result[0].id,
-                                currentInsertEmail: v.email,
-                                activeStep: this.state.activeStep + 1,
-                              });
-                            } catch (error) {
-                              console.log(error);
+                            const { params } = this.props.match;
+                            if (params && params.id) {
+                              try {
+                                const result = await this.updateDistStep1(
+                                  v,
+                                  params.id
+                                );
+                                this.setIntervalSfid(v.email);
+                                this.setState({
+                                  currentInsertEmail: v.email,
+                                  activeStep: this.state.activeStep + 1,
+                                });
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            } else {
+                              try {
+                                const result = await this.insertInDistStep1(v);
+                                this.setIntervalSfid(v.email);
+                                this.setState({
+                                  currentInsertEmail: v.email,
+                                  activeStep: this.state.activeStep + 1,
+                                });
+                              } catch (error) {
+                                console.log(error);
+                              }
                             }
                           }}
                           formModel="userForm"

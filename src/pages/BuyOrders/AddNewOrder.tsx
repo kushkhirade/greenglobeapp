@@ -18,6 +18,7 @@ import { saveOrderData } from "src/actions/App.Actions";
 import { BaseModal } from "src/components/BaseModal";
 import { values } from "lodash";
 import { getDefaultSettings } from "http2";
+import { Console } from "console";
 
 var loggedInUserDetails;
 
@@ -49,7 +50,7 @@ const invoiceData = {
   address: "Indiabulls, Lower Parel, Mumbai, MH 411093, India",
   totalItems: 25,
   orderTotal: 23123213,
-  billHeads: ["Item Name", "Unit Cost", "Qty", "Amount"],
+  billHeads: ["  Item Name   ", "Unit Cost", "Quantity", "Amount"],
   billData: [
     {
       itemName: "Item 1 ",
@@ -159,58 +160,53 @@ export class AddNewOrderImpl extends React.PureComponent<
   InsertUpdateItems = async (data, orderdetails, selectedProducts) => {
     console.log("this.props ", this.props.location.orderType);
     console.log("selectedProducts ", selectedProducts);
-    console.log("new Date() ", new Date());
+    console.log("orderdetails ", orderdetails);
     const orderType = this.props.location.orderType;
-    const UniqueId = new Date();
+    const UniqueId = orderdetails.app_id__c ? orderdetails.app_id__c : new Date();
     let insertuser;
-
-    // const SFID = await getData({
-    //   query: `SELECT * from salesforce.order where Id = '${orderdetails.id}' `,
-    //   token: data.token
-    // })
-    // console.log("SFID ", SFID.result);
-    // this.setState({ orderdetails: SFID.result[0] });
+  
     try{
-      if(data.record_type === "0122w000000cwfSAAQ"){
-          
-        const SFID = await getData({
-          query: `select Assigned_distributor__c from salesforce.account where sfid = '${data.sfid}'`,
-          token : data.token
-        })
-        console.log("SFID: ", SFID)
-        insertuser = await getData({
-          query: `INSERT INTO salesforce.order
-          (status, EffectiveDate, Pricebook2Id, Sold_To_Dealer__c, AccountId, recordtypeid, app_id__c)
-          values
-          ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0','${data.sfid}', 
-          '${SFID.result[0].assigned_distributor__c}', '0122w000000UJe1AAG', '${UniqueId}' )
-          RETURNING Id`,
-          token: data.token
-        });
-      }
-      else if(data.record_type === "0122w000000cwfNAAQ"){
-        if(orderType === "Buy"){
+      if(!orderdetails && !orderdetails.sfid ){
+        if(data.record_type === "0122w000000cwfSAAQ"){
+            
+          const SFID = await getData({
+            query: `select Assigned_distributor__c from salesforce.account where sfid = '${data.sfid}'`,
+            token : data.token
+          })
+          console.log("SFID: ", SFID)
           insertuser = await getData({
             query: `INSERT INTO salesforce.order
-            (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
+            (status, EffectiveDate, Pricebook2Id, Sold_To_Dealer__c, AccountId, recordtypeid, app_id__c)
             values
-            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJdmAAG', '${UniqueId}')
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0','${data.sfid}', 
+            '${SFID.result[0].assigned_distributor__c}', '0122w000000UJe1AAG', '${UniqueId}' )
             RETURNING Id`,
             token: data.token
           });
         }
-        else{
-          insertuser = await getData({
-            query: `INSERT INTO salesforce.order
-            (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
-            values
-            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJe1AAG', '${UniqueId}' )
-            RETURNING Id`,
-            token: data.token
-          });
+        else if(data.record_type === "0122w000000cwfNAAQ"){
+          if(orderType === "Buy"){
+            insertuser = await getData({
+              query: `INSERT INTO salesforce.order
+              (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
+              values
+              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJdmAAG', '${UniqueId}')
+              RETURNING Id`,
+              token: data.token
+            });
+          }
+          else{
+            insertuser = await getData({
+              query: `INSERT INTO salesforce.order
+              (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
+              values
+              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJe1AAG', '${UniqueId}' )
+              RETURNING Id`,
+              token: data.token
+            });
+          }
         }
       }
-
       console.log("insertuser => ", insertuser);
 
       selectedProducts.map(async (x) => 
@@ -277,6 +273,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             component: (
               <SubmittedScreen
                 orderdetails={orderdetails}
+                orderedproducts={orderedproducts} 
                 onClick={async() =>{
                   // const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
                   // this.setState({ orderedproducts: res });
@@ -325,28 +322,32 @@ export class AddNewOrderImpl extends React.PureComponent<
                         ))}
                       </div>
                       <div className="table-data">
-                        {orderedproducts && orderedproducts.map((p, index) => ( 
-                          <div key={index} className="data-inner">
-                          {console.log("p==> ", p)}
-                            <div className="data">{p.prd_name__c}</div>
-                            <div className="data">{p.unitprice}</div>
-                            <div className="data">{p.quantity}</div>
-                            <div className="data">{p.totalprice}</div>
-                          </div>
-                        ))}
+                        {orderedproducts && orderedproducts.map((p, index) => {
+                          if(p.quantity !== "0"){
+                            return( 
+                              <Grid key={index} className="data-inner" container>
+                              {console.log("p==> ", p)}
+                                <Grid item xs={4} className="data">{p.prd_name__c}</Grid>
+                                <Grid item xs={4} className="data">{p.unitprice}</Grid>
+                                <Grid item xs={3} className="data">{p.quantity}</Grid>
+                                <Grid item xs={1} className="data">{p.totalprice ?? p.quantity*p.unitprice}</Grid>
+                              </Grid>
+                            )
+                          }
+                        })}
                       </div>
                       <div className="bill-total">
                         <div>
                           <span className="description-text">Sub Total:</span>
                           {orderedproducts && orderedproducts.reduce(
-                            (s, a) => Number(a.totalprice)+ s,
+                            (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice)+ s,
                             0
                           )}
                         </div>
                         <div>
                           <span className="description-text">Tax - 18% -</span>
                           {(orderedproducts && orderedproducts.reduce(
-                            (s, a) => Number(a.totalprice) + s,
+                            (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice) + s,
                             0
                           ) /
                             100) *
@@ -358,11 +359,11 @@ export class AddNewOrderImpl extends React.PureComponent<
                             Invoice Total -
                           </span>
                           {orderedproducts && orderedproducts.reduce(
-                            (s, a) => Number(a.totalprice) + s,
+                            (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice) + s,
                             0
                           ) +
                             (orderedproducts && orderedproducts.reduce(
-                              (s, a) => Number(a.totalprice) + s,
+                              (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice) + s,
                               0
                             ) /
                               100) *
@@ -405,7 +406,9 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Dispatched",
             component: (
               <DispatchedScreen
-                orderdetails={orderdetails} type="buy" 
+                orderdetails={orderdetails} 
+                orderedproducts={orderedproducts} 
+                type="buy" 
                 onClick={() =>
                   this.setState({ activeStepBuy: this.state.activeStepBuy + 1,})
                 }
@@ -445,6 +448,7 @@ export class AddNewOrderImpl extends React.PureComponent<
               orderedproducts={orderedproducts}
               orderdetails={orderdetails}
               onClick={( selectedProducts ) => {
+                this.setState({ orderedproducts: selectedProducts });
                 this.InsertUpdateItems(loggedInUserDetails, orderdetails, selectedProducts );
                 this.setState({ activeStepSell: this.state.activeStepSell + 1 });
               }}
@@ -458,6 +462,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             component: (
               <SubmittedScreen
                 orderdetails={orderdetails}
+                orderedproducts={orderedproducts} 
                 onClick={async() =>{
                   // const res = await this.getAllOrderedProducts(loggedInUserDetails, orderdetails)
                   // this.setState({ orderedproducts: res });
@@ -506,27 +511,32 @@ export class AddNewOrderImpl extends React.PureComponent<
                         ))}
                       </div>
                       <div className="table-data">
-                        {orderedproducts && orderedproducts.map((p, index) => ( 
-                          <div key={index} className="data-inner">
-                            <div className="data">{p.prd_name__c}</div>
-                            <div className="data">{p.unitprice}</div>
-                            <div className="data">{p.quantity}</div>
-                            <div className="data">{p.totalprice}</div>
-                          </div>
-                        ))}
+                        {orderedproducts && orderedproducts.map((p, index) => {
+                          if(p.quantity !== "0"){
+                            return( 
+                              <Grid key={index} className="data-inner" container>
+                              {console.log("p==> ", p)}
+                                <Grid item xs={4} className="data">{p.prd_name__c}</Grid>
+                                <Grid item xs={4} className="data">{p.unitprice}</Grid>
+                                <Grid item xs={3} className="data">{p.quantity}</Grid>
+                                <Grid item xs={1} className="data">{p.totalprice ?? p.quantity*p.unitprice}</Grid>
+                              </Grid>
+                            )
+                          }
+                        })}
                       </div>
                       <div className="bill-total">
                         <div>
                           <span className="description-text">Sub Total:</span>
                           {orderedproducts && orderedproducts.reduce(
-                            (s, a) => Number(a.totalprice)+ s,
+                            (s, a) => Number(a.totalprice  ?? a.quantity*a.unitprice)+ s,
                             0
                           )}
                         </div>
                         <div>
                           <span className="description-text">Tax - 18% -</span>
                           {(orderedproducts && orderedproducts.reduce(
-                            (s, a) => Number(a.totalprice) + s,
+                            (s, a) => Number(a.totalprice  ?? a.quantity*a.unitprice) + s,
                             0
                           ) /
                             100) *
@@ -538,11 +548,11 @@ export class AddNewOrderImpl extends React.PureComponent<
                             Invoice Total -
                           </span>
                           {orderedproducts && orderedproducts.reduce(
-                            (s, a) => Number(a.totalprice) + s,
+                            (s, a) => Number(a.totalprice  ?? a.quantity*a.unitprice) + s,
                             0
                           ) +
                             (orderedproducts && orderedproducts.reduce(
-                              (s, a) => Number(a.totalprice) + s,
+                              (s, a) => Number(a.totalprice  ?? a.quantity*a.unitprice) + s,
                               0
                             ) /
                               100) *
@@ -554,7 +564,7 @@ export class AddNewOrderImpl extends React.PureComponent<
                       <Button
                         onClick={() =>
                           this.setState({
-                            activeStepBuy: this.state.activeStepBuy + 1,
+                            activeStepSell: this.state.activeStepSell + 1,
                           })
                         }
                         variant="contained"
@@ -584,7 +594,9 @@ export class AddNewOrderImpl extends React.PureComponent<
             label: "Dispatched",
             component: (
               <DispatchedScreen
-                orderdetails={orderdetails} type="sell" 
+                orderdetails={orderdetails} 
+                orderedproducts={orderedproducts} 
+                type="sell" 
                 onClick={(details) => {
                   this.props.history.goBack();
                   this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)
@@ -629,26 +641,25 @@ class RenderForm extends React.Component <any> {
   }
 
   state = {
-    orderedproducts: this.props.orderedproducts && this.props.orderedproducts.length > 0 
-      ? this.props.orderedproducts.map((p ,i)=> {return({sfid: "", label: p.prd_name__c, quantity: p.quantity, itemNumber: p.orderitemnumber})} )
-      : [{sfid: "01t1s000000lFhu", label: "3 Wheeler Ace", quantity: "0", type: "text"}, {sfid: "01t1s000000lFYi", label: "3 Wheeler Pro", quantity: "0", type: "text"}, 
-         {sfid: "01t1s000000lFYs", label: "4 Wheeler Ace", quantity: "0", type: "text"}, {sfid: "01t1s000000lFYx", label: "4 Wheeler Pro", quantity: "0", type: "text"},
-         {sfid: "", label: "Tank", quantity: "0", type: "select", 
-            options: [
-              {label: "Tank Capacity - 30", value: "01t1s000000kmG6AAI"}, 
-              {label: "Tank Capacity - 35", value: "01t1s000000kmFXAAY"}, 
-              {label: "Tank Capacity - 60", value: "01t2w000003prqWAAQ"}, 
-              {label: "Tank Capacity - 65", value: "01t1s000000kvWaAAI"}, 
-              {label: "Tank Capacity - 70", value: "01t2w000003qExfAAE"}, 
-              {label: "Tank Capacity - 75", value: "01t2w00000451IkAAI"}, 
-              {label: "Tank Capacity - 90", value: "01t1s000000kgZiAAI"}]}, 
-         {sfid: "", label: "spares", quantity: "0", type: "select",
-            options: [
-              {label: "Spare - 1", value: "01t2w000000XnsXAAS"}, 
-              {label: "Spare - 2", value: "01t2w000002OB4cAAG"}, 
-              {label: "Spare - 3", value: "01t2w000002OB4SAAW"}, 
-              {label: "Spare - 4", value: "01t2w000002OB4NAAW"}, 
-              {label: "Spare - 5", value: "01t2w000002OB4XAAW"},]}],
+    orderedproducts: 
+      // this.props.orderedproducts && this.props.orderedproducts.length > 0 
+      // ? this.props.orderedproducts.map((p ,i)=> {
+      //   return({
+      //     sfid: "", prd_name__c: p.prd_name__c, quantity: p.quantity, itemNumber: p.orderitemnumber
+      //   })})
+       [ {sfid: "01t1s000000lFhu", prd_name__c: "3 Wheeler Ace", unitprice: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace").unitprice) ?? "0",
+              quantity: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace").quantity) ?? "0", 
+              itemNumber: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace").orderitemnumber) ?? ""}, 
+          {sfid: "01t1s000000lFYi", prd_name__c: "3 Wheeler Pro", unitprice: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace").unitprice) ?? "0",
+              quantity: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Pro") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Pro").quantity) ?? "0", 
+              itemNumber: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Pro") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Pro").orderitemnumber) ?? ""}, 
+          {sfid: "01t1s000000lFYs", prd_name__c: "4 Wheeler Ace", unitprice: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace").unitprice) ?? "0",
+              quantity: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Ace").quantity) ?? "0", 
+              itemNumber: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Ace").orderitemnumber) ?? ""}, 
+          {sfid: "01t1s000000lFYx", prd_name__c: "4 Wheeler Pro", unitprice: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace").unitprice) ?? "0",
+              quantity: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Pro") && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Pro").quantity) ?? "0", 
+              itemNumber: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Pro") && this.props.orderedproducts.find(p=> p.prd_name__c === "4 Wheeler Pro").orderitemnumber) ?? ""},    
+        ],
     allProducts: [],
     selectedDealer: this.props.orderdetails && this.props.orderdetails.dealername__c,
     allDealers: [],
@@ -660,6 +671,32 @@ class RenderForm extends React.Component <any> {
     const allDealers = await this.getAllAssignedDealers(loggedInUserDetails);
     this.setState({ allProducts, allDealers });
     console.log("this.State =>", this.state);
+    console.log("this.props =>", this.props);
+    var arr = this.state.orderedproducts;
+    this.props.orderedproducts && this.props.orderedproducts.map((p ,i)=> {
+      if(!p.prd_name__c.includes("Wheeler")){
+        arr.push({sfid: p.sfid, prd_name__c: p.prd_name__c, unitprice: (this.props.orderedproducts && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace") && this.props.orderedproducts.find(p=> p.prd_name__c === "3 Wheeler Ace").unitprice) ?? "0", quantity: p.quantity, itemNumber: p.orderitemnumber})
+      }
+    })
+    this.setState({ orderedproducts : arr})
+  }
+
+  getUnitePrice = async (sfid) => {
+    const data = getToken().data;
+    console.log("data: ", data)
+    console.log("sfid: ", sfid)
+
+    try {
+        const price = await getData({
+          query: `select unitprice from salesforce.pricebookentry where product2id like '%${sfid}%' `,
+          token: data.token
+        })
+        console.log("price =>", price);
+        return price.result[0].unitprice;
+        
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
   }
 
   getAllAssignedDealers = async (data) => {
@@ -678,6 +715,7 @@ class RenderForm extends React.Component <any> {
         console.log('fetch Inventory Error', e)
     }
   }
+
   getAllProducts = async (data) => {
     console.log("data: ", data)
     try {
@@ -693,13 +731,20 @@ class RenderForm extends React.Component <any> {
     }
   }
 
-  handleChange = (event: any, index: number) => {
-    console.log("event: ", event, "index: ", index);
-    const arr = this.state.orderedproducts.filter((item, i) => i === index )
-      if(arr.length !== 0 ){
-        const val = this.state.orderedproducts;
-        val[index].label = event.label;
-        val[index].sfid = event.value;
+  handleChange = (event: any) => {
+    console.log("event: ", event);
+    // const arr = this.state.orderedproducts.filter((item, i) => i === index )
+    //   if(arr.length !== 0 ){
+    //     const val = this.state.orderedproducts;
+    //     val[index].prd_name__c = event.label;
+    //     val[index].sfid = event.value;
+    //     this.setState({ orderedproducts: val})
+    //   }
+      const arr = this.state.orderedproducts.filter((item, i) => item.prd_name__c === event.label )
+      console.log("arr", arr)
+      if(arr.length === 0 ){
+        var val = this.state.orderedproducts;
+        val.push({sfid: event.value, prd_name__c: event.label, unitprice: "0", quantity: "0", itemNumber: ""});
         this.setState({ orderedproducts: val})
       }
     
@@ -712,12 +757,18 @@ class RenderForm extends React.Component <any> {
   renderValueManipulator = (key, i) => (
     <div className="increaser" >
       <div 
-        onClick={() => {
+        onClick={async() => {
           var val = this.state.orderedproducts;
           console.log(val[i].quantity)
           val[i].quantity = Number(val[i].quantity) - 1;
+
+          var val = this.state.orderedproducts;
+          console.log("val : ", val[i])
+          const res = await this.getUnitePrice(val[i].sfid);
+          console.log("Price : ", res);
+          val[i].unitprice = res ?? "0";
+          
           this.setState({ orderedproducts: val});
-          console.log(this.state.orderedproducts);
           // this.setState({ [key]: this.state[key] + 1 })
         }}
         className="plus hover"
@@ -729,9 +780,16 @@ class RenderForm extends React.Component <any> {
         {/* {this.state[key]} */}
       </div>
       <div
-        onClick={() => {
+        onClick={async () => {
           var val = this.state.orderedproducts;
           val[i].quantity = Number(val[i].quantity) + 1;
+
+          var val = this.state.orderedproducts;
+          console.log("val : ", val[i])
+          const res = await this.getUnitePrice(val[i].sfid);
+          console.log("Price : ", res);
+          val[i].unitprice = res;
+          
           this.setState({ orderedproducts: val})
           // this.setState({ [key]: this.state[key] + 1 })
         }}
@@ -745,23 +803,14 @@ class RenderForm extends React.Component <any> {
   renderAddProduct = (item, i) => {
     return(
       <div className="product-selection">
-        <Grid item xs={6} md={6} sm={6}>
-          {this.state.orderedproducts[i].label === '3 Wheeler Ace'|| this.state.orderedproducts[i].label === '3 Wheeler Pro'
-            || this.state.orderedproducts[i].label === '4 Wheeler Ace'|| this.state.orderedproducts[i].label === '4 Wheeler Pro' ?
-          <input
-            className="r-select"
-            style={{textAlign: 'center', marginRight: '50px'}}
-            type="text"
-            disabled={true}
-            placeholder={this.state.orderedproducts[i].label}
-          />
-          :
-          <Select
+        <Grid item xs={7} md={7} sm={6}>
+          {/* {this.state.orderedproducts[i].prd_name__c === 'Tank'|| this.state.orderedproducts[i].prd_name__c === 'Spares' ? */}
+          {/* <Select
             className="r-select"
             classNamePrefix="r-select-pre"
             placeholder="Select"
-            value={this.state.orderedproducts[i].label !== "" && this.state.orderedproducts[i]}
-            options={this.state.orderedproducts[i].options}
+            value={this.state.orderedproducts[i].prd_name__c !== "" && {label: this.state.orderedproducts[i].prd_name__c}}
+            // options={this.state.orderedproducts[i].options}
             // options={this.state.allProducts.map(p => ({
             //   label: p.stockkeepingunit,
             //   value: p.sfid
@@ -769,7 +818,16 @@ class RenderForm extends React.Component <any> {
             onChange={(event: any) => this.handleChange(event, i)}
             isSearchable={false}
           /> 
-          }
+          : */}
+           <input
+           {...console.log("item", item)}
+              className="r-select"
+              style={{textAlign: 'center'}}
+              type="text"
+              disabled={true}
+              placeholder={this.state.orderedproducts[i].prd_name__c}
+            />
+          {/* } */}
         </Grid>
         <Grid item xs={4} md={4} sm={4}>
           {this.renderValueManipulator(item, i)}
@@ -778,16 +836,15 @@ class RenderForm extends React.Component <any> {
     )
   }
 
-  onClickChng =() => {
+  onClickChng = async() => {
     var val = this.state.orderedproducts;
-    val.push({sfid: "", label: "", quantity: "0"});
+    val.push({sfid: "", prd_name__c: "", unitprice: "", itemNumber: "", quantity: "0"});
     this.setState({ orderedproducts: val})
   }
   
   render(){
     console.log(this.props);
     console.log(this.state);
-
     return(
       <div className="card-container no-hover">
         {!isDealer() && this.props.type === "sell"?
@@ -806,21 +863,76 @@ class RenderForm extends React.Component <any> {
                 this.setState({ selectedDealer: e.label });
                 this.props.onSelectDelaer( e.value );
               }}
-              // id="combo-box-demo"
-              // blurOnSelect={true}
-              // getOptionLabel={option => option.label}
-              // renderInput={params => (
-              //   <TextField {...params} label="Select Dealer" variant="outlined" />
-              // )}
             />
           </Grid>
         </Grid>
         : null}
-        {this.state.orderedproducts.map((item, i) => (
-            <Grid container spacing={4}>
+        {this.state.orderedproducts.map((item, i) => {
+          if(item.prd_name__c.includes("Wheeler")){
+            return(
+              <Grid container spacing={4}>
                 {this.renderAddProduct(item, i)}
+              </Grid>
+            )
+          }
+        })}
+        <Grid container spacing={4}>
+          <Grid item xs={6} md={6} sm={6}>
+            <Select
+              className="r-select"
+              classNamePrefix="r-select-pre"
+              placeholder="Tank"
+              value={{label: "Tank"}}
+              options={[{label: "Tank 30", value: "01t1s000000kmG6AAI"}, 
+              {label: "Tank 35", value: "01t1s000000kmFXAAY"}, 
+              {label: "Tank 60", value: "01t2w000003prqWAAQ"}, 
+              {label: "Tank 65", value: "01t1s000000kvWaAAI"}, 
+              {label: "Tank 70", value: "01t2w000003qExfAAE"}, 
+              {label: "Tank 75", value: "01t2w00000451IkAAI"}, 
+              {label: "Tank 90", value: "01t1s000000kgZiAAI"}
+            ]}
+              onChange={(event: any) => this.handleChange(event)}
+              isSearchable={false}
+            /> 
+          </Grid>
+        </Grid>
+        {this.state.orderedproducts.map((item, i) => {
+          if(item.prd_name__c.includes("Tank")){
+            return(
+              <Grid container spacing={4}>
+                {this.renderAddProduct(item, i)}
+              </Grid>
+            )
+          }
+        })}
+        <Grid container spacing={4}>
+            <Grid item xs={6} md={6} sm={6}>
+              <Select
+                className="r-select"
+                classNamePrefix="r-select-pre"
+                placeholder="Spare"
+                value={{label: "Spare"}}
+                options={[{label: "Spare 1", value: "01t2w000000XnsXAAS"}, 
+                {label: "Spare 2", value: "01t2w000002OB4cAAG"}, 
+                {label: "Spare 3", value: "01t2w000002OB4SAAW"}, 
+                {label: "Spare 4", value: "01t2w000002OB4NAAW"}, 
+                {label: "Spare 5", value: "01t2w000002OB4XAAW"},
+              ]}
+                onChange={(event: any) => this.handleChange(event)}
+                isSearchable={false}
+              /> 
             </Grid>
-          ))}
+          </Grid>
+          {this.state.orderedproducts.map((item, i) => {
+            if(item.prd_name__c.includes("Spare")){
+              return(
+                <Grid container spacing={4}>
+                  {this.renderAddProduct(item, i)}
+                </Grid>
+              )
+            }
+          })}
+
         {/* {this.props.label !== "Confirm" ?
           <Grid container spacing={4}>
             <Grid item xs={6} md={6} sm={6}></Grid>
@@ -901,6 +1013,9 @@ class DispatchedScreen extends React.Component <any> {
   render(){
     console.log("props: ", this.props)
     const details = this.state.details && this.state.details[0];
+    const productQuantity = this.props.orderedproducts.filter(op => op.quantity !== "0").length;
+    const totalAmount = this.props.orderedproducts && this.props.orderedproducts.reduce((s, a) => Number(a.quantity * a.unitprice) + s, 0 );
+
     return (
       <div style={{ width: "100%" }} className="card-container dispatch-card">
         <Typography variant="h5">Dispatched</Typography>
@@ -917,11 +1032,13 @@ class DispatchedScreen extends React.Component <any> {
         <Grid container className="">
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
             <span className="description-text">Total Items -</span>
-            <span className="disp-details"> {details && details.product_quantity__c}</span>
+            {/* <span className="disp-details"> {details && details.product_quantity__c}</span> */}
+            <span className="disp-details"> {productQuantity}</span>
           </Grid>
           <Grid item className="padding-6" md={6} xs={12} lg={6}>
             <span className="description-text">Order Total:</span>
-            <span className="disp-details"> {details && details.totalamount}</span>
+            {/* <span className="disp-details"> {details && details.totalamount}</span> */}
+            <span className="disp-details"> {totalAmount}</span>
           </Grid>
         </Grid>
         <Grid container className="">
@@ -1056,8 +1173,10 @@ const PaymentDetailsScreen = (props) => {
 
 const SubmittedScreen = (props) => {
   const details = props.orderdetails || [];
-  console.log(details)
-  
+  console.log(props)
+  const itemQuantity = props.orderedproducts && props.orderedproducts.reduce((s, a) => Number(a.quantity) + s, 0 );
+  const totalAmount = props.orderedproducts && props.orderedproducts.reduce((s, a) => Number(a.quantity * a.unitprice) + s, 0 );
+
   return (
     <div className="card-container">
       <Grid container={true}>
@@ -1071,11 +1190,13 @@ const SubmittedScreen = (props) => {
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text"> Items Quantity -</span>
-          {details.item_quantity__c || ""}
+          {/* {details.item_quantity__c || ""} */}
+          {itemQuantity}
         </Grid>
         <Grid item={true} className="padding-6" xs={12} md={6}>
           <span className="description-text">Total -</span>
-          {details.totalamount || ""}
+          {/* {details.totalamount || ""} */}
+          {totalAmount}
         </Grid>
       </Grid>
       <div className="align-center padding-6">

@@ -31,7 +31,7 @@ class FormComponentImpl extends React.Component {
 
   render() {
     const { props } = this;
-    console.log("Store ", this.props)
+    // console.log("Store ", this.props)
     return (
       <Form
         model={`rxFormReducer.${props.formModel}`}
@@ -105,6 +105,8 @@ class FormComponentImpl extends React.Component {
                         : "form-input",
                       // onSelect: this.handleInputFocus,
                     }}
+                    disabled={opt.isDisable ?? false}
+                    value={opt.defaultValue ?? store.getState().rxFormReducer[props.formModel][`${opt.model}`]}
                     onFocus={() => this.handleInputFocus(opt.model)}
                     required={opt.required}
                     options={ store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`] === opt.dependetValue ? opt.options : []}
@@ -257,7 +259,7 @@ const MUITextArea = (props: any) => {
 
 const MUISelectField = (props: any) => {
   const { className, ...rest } = props;
-  console.log(props)
+  // console.log(props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <FormControl variant="outlined" className={className}>

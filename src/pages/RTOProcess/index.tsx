@@ -212,8 +212,8 @@ export class RTOProcessImpl extends React.PureComponent<
                 className="form-input"
               >
                 <MenuItem value="Generate Document">Generate Document</MenuItem>
+                <MenuItem value="Submitted to RTO">Submitted to RTO</MenuItem>
                 <MenuItem value="In Progress">In Progress</MenuItem>
-                <MenuItem value="Submitted">Submitted</MenuItem>
                 <MenuItem value="Closed">Closed</MenuItem>
               </Select>
             </FormControl>
