@@ -13,7 +13,7 @@ import { BaseModal } from "src/components/BaseModal";
 import { FormComponent } from "src/components/FormComponent";
 import { SubFormHeading } from "src/components/SubFormHeading";
 import AppBar from "src/navigation/App.Bar";
-import { changeValuesInStore } from "src/state/Utility";
+import { changeValuesInStore, isDealer } from "src/state/Utility";
 import "./communications.scss";
 import { StyledRadioButton } from "./StyledRadioButton";
 import getData from "src/utils/getData";
@@ -213,11 +213,11 @@ export class CommunicationsImpl extends React.Component<
             value={this.state.leadType}
             onChange={(e) => this.handleChangeLead(e)}
           >
-            <CustomRaidio value="leads" label="Leads" />
+          { !isDealer() && <CustomRaidio value="leads" label="Leads" />}
             <CustomRaidio value="loastLeads" label="Lost Leads" />
             <CustomRaidio value="3 Wheeler" label="3 Wheeler" />
             <CustomRaidio value="4 Wheeler" label="4 Wheeler" />
-            <CustomRaidio value="spare" label="spare" />
+          { !isDealer() && <CustomRaidio value="spare" label="spare" />}
           </RadioGroup>
         </Grid>
         <SubFormHeading>Select Lead Sub Type</SubFormHeading>
@@ -228,6 +228,7 @@ export class CommunicationsImpl extends React.Component<
             value={this.state.subLeadType}
             onChange={(e) => this.handleChangeSub(e)}
           >
+          { !isDealer() && <CustomRaidio value="Dealer Lead" label="Dealer Lead" />}
             <CustomRaidio value="Customer" label="Customer" />
             <CustomRaidio value="Influencer" label="Influencer" />
             <CustomRaidio value="Fitment" label="Fitment" />

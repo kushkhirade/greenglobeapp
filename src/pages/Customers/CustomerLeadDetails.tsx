@@ -132,7 +132,7 @@ export class CustomerDetailsImpl extends React.PureComponent<
     this.props.history.push(`/job-card-details/${data.sfid}`)
   };
 
-  tabData = () => [
+  tabDataForCust = () => [
     {
       tabName: "Details",
       component: (
@@ -295,13 +295,138 @@ export class CustomerDetailsImpl extends React.PureComponent<
     }
   ];
 
+  tabDataforLead = () => [
+    {
+      tabName: "Details",
+      component: (
+        <Grid container>
+          {this.state.detailsData && 
+          <Grid item xs={12} md={12} lg={12}>
+            <div className="card-container">
+              <SubFormHeading>Customer Details</SubFormHeading>
+              <Grid container>
+                {" "}
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Name:</span>
+                  {this.state.detailsData.name}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Mobile:</span>
+                  {this.state.detailsData.whatsapp_number__c && ChangePhoneFormat(this.state.detailsData.whatsapp_number__c)}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Kit Enquiry:</span>
+                  {this.state.detailsData.kit_enquiry__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Company:</span>
+                  {this.state.detailsData.company__c || this.state.detailsData.company}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Email:</span>
+                  {this.state.detailsData.email}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">WhatsApp No.:</span>
+                  {this.state.detailsData.whatsapp_number__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Dealer Avg Rating:</span>
+                  {this.state.detailsData.dealer_rating__c || this.state.detailsData.rating}
+                </Grid>
+              </Grid>
+              <SubFormHeading>Address Details</SubFormHeading>
+              <Grid container>
+                {" "}
+                <Grid item className="padding-6" xs={12} md={12} lg={12} sm={12}>
+                  <span className="description-text">Address:</span>
+                   {this.state.detailsData.mailingstreet || this.state.detailsData.street} {this.state.detailsData.mailingcity || this.state.detailsData.city} {this.state.detailsData.mailingpostalcode || this.state.detailsData.postalcode} {this.state.detailsData.mailingstate || this.state.detailsData.state}
+
+                </Grid>
+                {/* <Grid
+                  item
+                  className="padding-6"
+                  xs={12}
+                  md={12}
+                  lg={12}
+                  sm={12}
+                >
+                  <span className="description-text">Shipping Address:</span>
+                  {this.state.detailsData.shippingstreet} {this.state.detailsData.shippingcity} {this.state.detailsData.shippingpostalcode} {this.state.detailsData.shippingstate}
+                </Grid> */}
+              </Grid>
+              
+            {isDealer() && (
+              <div>
+              <SubFormHeading>Vehicle Details</SubFormHeading>
+              <Grid container>
+                {" "}
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Vehicle Number:</span>
+                  {this.state.detailsData.vehicle_no__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Fuel Type:</span>
+                  {this.state.detailsData.fuel_type__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">3 or 4 Wheeler.:</span>
+                  {this.state.detailsData.x3_or_4_wheeler__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Vehicle Make:</span>
+                  {this.state.detailsData.vehicle_make__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Vehicle Model:</span>
+                  {this.state.detailsData.vehicle_model__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Usage of Vehicle:</span>
+                  {this.state.detailsData.usage_of_vehicle__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Engine Type:</span>
+                  {this.state.detailsData.engine_type__c || this.state.detailsData.engine__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Daily Running KMs:</span>
+                  {this.state.detailsData.daily_running_kms__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Registration Year:</span>
+                  {this.state.detailsData.registration_year__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Year of Manufacturing:</span>
+                  {this.state.detailsData.year_of_manufacturing__c}
+                </Grid>
+                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                  <span className="description-text">Chassis Number:</span>
+                  {this.state.detailsData.chassis_no__c}
+                </Grid>
+              </Grid>
+              <SubFormHeading>Documents Required for RTO</SubFormHeading>
+              <Grid container>
+                {" "}
+              </Grid>
+              </div>
+            )}
+            </div>
+          </Grid>
+          } 
+        </Grid>
+      ),
+    }
+  ];
+
   render() {
     const { dealerDetails } = this.props;
-    console.log("dealerDetails: ", dealerDetails)
+    console.log("dealerDetails: ", this.state.detailsData)
     return (
       <AppBar>
         {/* <div style={{ padding: "20px" }}> */}
-          <Tabs tabsData={this.tabData()} />
+          <Tabs tabsData={this.props.match.params.recordtypeid === "0121s0000000WE4AAM" ? this.tabDataForCust() : this.tabDataforLead()} />
         {/* </div> */}
       </AppBar>
     );

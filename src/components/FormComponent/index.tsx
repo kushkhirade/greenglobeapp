@@ -15,6 +15,10 @@ import { store } from "../../store/Store";
 import { changeValuesInStore, dispatch } from "src/state/Utility";
 import { connect } from "react-redux";
 import { SET_ERROR, REMOVE_ERROR } from "src/reducers/formReducer";
+import { imageUpload } from "src/utils/getData";
+import { getImageBase64 } from "./../../utils/getBase64";
+import DeleteIcon from "@material-ui/icons/Delete";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 
 class FormComponentImpl extends React.Component {
   handleInputFocus = (model) => {
@@ -31,6 +35,7 @@ class FormComponentImpl extends React.Component {
 
   render() {
     const { props } = this;
+    // console.log("Store ", this.props)
     return (
       <Form
         model={`rxFormReducer.${props.formModel}`}
@@ -42,6 +47,10 @@ class FormComponentImpl extends React.Component {
       >
         <Grid container>
           {props.options.map((opt: any) => {
+            const dept = opt.dependentField ? opt.dependentField : "" ;
+            const model = `${opt.model}`.substr(1);
+            // console.log("MOddel : ", model)
+            // console.log(store.getState().rxFormReducer[props.formModel][`${model}`]);
             switch (opt.type) {
               case "text":
                 return (
@@ -51,6 +60,9 @@ class FormComponentImpl extends React.Component {
                       component={MUITextField}
                       type="text"
                       name={opt.name}
+                      default={opt.defaultValue}
+                      disabled={opt.isDisable ?? false}
+                      // value={opt.defaultValue ?? store.getState().rxFormReducer[props.formModel][`${model}`]}
                       onFocus={() => this.handleInputFocus(opt.model)}
                       onChange={(e) =>
                         changeValuesInStore(
@@ -103,13 +115,14 @@ class FormComponentImpl extends React.Component {
                         : "form-input",
                       // onSelect: this.handleInputFocus,
                     }}
-                    onFocus={() => this.handleInputFocus(opt.model)}
                     required={opt.required}
-                    options={opt.options}
+                    onFocus={() => this.handleInputFocus(opt.model)}
+                    options={ store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`] === opt.dependetValue ? opt.options : []}
                     name={opt.name}
                     model={opt.model}
                     label={opt.label}
                     onChange={(e) => {
+                      console.log("sdfcsdvfv:: ", store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`])
                       changeValuesInStore(
                         `${props.formModel}${opt.model}`,
                         e.target.value
@@ -143,7 +156,6 @@ class FormComponentImpl extends React.Component {
               case "custom":
                 const Custom = opt.custom();
                 return <Custom />;
-
               case "date":
                 return(
                   <Control
@@ -167,7 +179,29 @@ class FormComponentImpl extends React.Component {
                     }}
                   />
                 );
-
+              case "image":
+                return(
+                  <Control
+                    className={
+                      props.errorFields.includes(opt.model)
+                        ? "form-input field-error"
+                        : "form-input"
+                    }
+                    required={opt.required}
+                    component={MUIUploadContainer}
+                    type="file"
+                    name={opt.name}
+                    model={opt.model}
+                    label={opt.label}
+                    onFocus={() => this.handleInputFocus(opt.model)}
+                    // onChange={(e) =>{ console.log("image control")
+                    //   changeValuesInStore(
+                    //     `${props.formModel}${opt.model}`,
+                    //     e.target.value
+                    //   )
+                    // }}
+                  />
+                );
               default:
                 return "";
             }
@@ -217,6 +251,7 @@ class FormComponentImpl extends React.Component {
 }
 
 const MUITextField = (props: any) => {
+  console.log("props", props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <TextField
@@ -224,6 +259,7 @@ const MUITextField = (props: any) => {
         variant="outlined"
         className="form-input"
         type={props.type}
+        defaultValue={props.default}
         {...props}
       />{" "}
       <div className={`error-text-hidden ${props.hasError} "error-text-show"}`}>
@@ -254,6 +290,7 @@ const MUITextArea = (props: any) => {
 
 const MUISelectField = (props: any) => {
   const { className, ...rest } = props;
+  // console.log(props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <FormControl variant="outlined" className={className}>
@@ -295,7 +332,8 @@ const MUIDateField = (props: any) => {
         id="date"
         label={props.label}
         type="date"
-        defaultValue={toDate}
+        // defaultValue={toDate}
+        defaultValue={"2010-01-01"}
         variant="outlined"
         onChange={(e) =>{ console.log("props:", props)
         const model = props.name.split(".");
@@ -314,6 +352,67 @@ const MUIDateField = (props: any) => {
         Please fill in this field
       </div>
     </Grid>
+  );
+};
+
+const MUIUploadContainer = (props: any) => {
+  console.log("Image props : ", props)
+
+  const { className, ...rest } = props;
+  const model = props.name.split(".");
+  const spllited = props.value && props.value.split(".");
+  const ext = spllited && spllited[spllited.length - 1];
+
+  const getDocURL = async(image, id) => {
+    console.log("image", image)
+    if(image.name){
+    const documentURL = await imageUpload({
+      id: image.name + id,
+      img: await getImageBase64(image),
+      type: image.type
+    });
+    console.log("documentURL : ", documentURL)
+    return documentURL.url;
+    }
+    else return "";
+  };
+
+  return (
+  <Grid item={true} xs={12} md={6} sm={6}>
+    <div className="upload-container">
+      <div className="upload-head">{props.label}</div>
+      <div className="upload-button" item={true} xs={12} md={6} sm={6}>
+        <Button variant="contained" component="label">
+          Upload Photo
+          <input
+            type="file"
+            style={{ display: "none" }}
+            onChange={ async(e) =>{
+              const fileData = e.target.files[0];
+              const url = await getDocURL(e.target.files[0], `${model[2]}`);
+              console.log("url ", `${model[1]}.${model[2]}`)
+                changeValuesInStore(
+                  `${model[1]}.${model[2]}`,
+                  url
+                )
+            }}
+          />
+        </Button>
+          <span className="filename">
+            {`${props.value && props.value.length > 10
+              ? `${props.value.substr(0, 10)}...${ext}`
+              : ""}
+            `}
+          </span> 
+        <VisibilityIcon 
+          onClick={() => props.value && window.open(props.value, "_blank") }  
+        />
+        <DeleteIcon 
+          onClick={() => changeValuesInStore( `${model[1]}.${model[2]}`, "" ) }
+        />
+      </div>
+    </div>
+  </Grid>
   );
 };
 

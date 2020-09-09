@@ -52,7 +52,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
         customerData = await getData({
           query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid  
           FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM' AND SFID is not null`,
           token: data.token
         })
       }
@@ -60,7 +60,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, {custome
         customerData = await getData({
           query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid  
           FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
+          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM' AND SFID is not null`,
           token: data.token
         });
       }

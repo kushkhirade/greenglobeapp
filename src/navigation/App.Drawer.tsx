@@ -40,6 +40,7 @@ interface IAppDrawer {
   theme?: Theme;
   handleDrawerClose?: () => void;
 }
+
 export const routes = (isDealerApp) => [
 
   { path: "/home", title: "Home", icon: () => <DashboardIcon /> },
@@ -70,9 +71,9 @@ export const routes = (isDealerApp) => [
     icon: () => <FiberNew/>
   },
   {
+    hideForDist: true,
     path: "/add-new-jobcard",
     title: "Add New JobCard",
-    hideForDistributor: true,
     icon: () => <FiberNew/>
   },
   {
@@ -143,6 +144,7 @@ export const routes = (isDealerApp) => [
 class AppDrawer extends React.Component<IAppDrawer, {}> {
   public render(): JSX.Element {
     const { authentication, classes, utility, theme } = this.props;
+    
     return (
       <Drawer
         hidden={!authentication}
@@ -182,8 +184,7 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
         <Divider />
         {routes(this.props.isDealer)
           .filter((x) => !x.hidden)
-          .filter((x) => (isDealer() ? !x.hideForDealer : true))
-          .filter((x) => (!isDealer() ? !x.hideForDistributor : true))
+          .filter((x) => (isDealer() ? !x.hideForDealer : !isDealer() ? !x.hideForDist : true))
           .map((route, index) => {
             return (
               <NavLink

@@ -47,13 +47,13 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
       if(data.record_type === "0122w000000cwfSAAQ"){
         orders = await getData({
           query: `SELECT * FROM salesforce.order NATURAL FULL JOIN salesforce.orderItem 
-          WHERE salesforce.Order.Sold_To_Dealer__c LIKE '%${data.sfid}%' AND sfid is NOT NULL`,
+          WHERE salesforce.Order.Sold_To_Dealer__c LIKE '%${data.sfid}%'`,
           token: data.token
         })
       }else if(data.record_type === "0122w000000cwfNAAQ"){
         orders = await getData({
           query: `SELECT * FROM salesforce.order 
-          WHERE salesforce.order.accountid = '${data.sfid}' AND sfid is NOT NULL `,
+          WHERE salesforce.order.accountid = '${data.sfid}' `,
           token: data.token
         })
       }
@@ -232,10 +232,11 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
         <span
           style={{ position: "absolute", right: 20, bottom: 20 }}
           onClick={async () => {
-            const res = await this.InsertNewOrder(loggedInUserDetails, this.state.topActiveTab);
-            console.log("res: ", res)
+            // const res = await this.InsertNewOrder(loggedInUserDetails, this.state.topActiveTab);
+            // console.log("res: ", res)
             this.props.history.push({ pathname: "/buy-order/add-new-order", 
-              orderdetails: res, orderType: this.state.topActiveTab })
+              // orderdetails: res, 
+              orderType: this.state.topActiveTab })
           }}
         >
           <Fab color="secondary" aria-labelledby="add-ticket">

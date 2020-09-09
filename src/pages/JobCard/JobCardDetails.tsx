@@ -237,8 +237,19 @@ export class JobCardDetailsImpl extends React.PureComponent<
                   </Grid>
                 )}
               })}
-                
-
+              <div className="right-button">
+                <Button color="default" variant="contained">
+                  Close Job Card
+                </Button>
+              </div>
+              <SubFormHeading>
+                Request Customer Feedback{" "}
+                <div className="right-button" style={{marginTop: "-20px"}}>
+                  <Button color="default" variant="contained">
+                    Request
+                  </Button>
+                </div>
+              </SubFormHeading>{" "}
             </div>
           </Grid>
           }
@@ -268,22 +279,3 @@ export const JobCardDetails = withRouter(
     JobCardDetailsImpl
   ) as any
 );
-
-const distDetails = {
-  name: "Sachin T",
-  accountName: "GGFS",
-  whatApp: "",
-  email: "sadas@qdasdas.com",
-  mobile: "32321321321",
-  rating: "3.5",
-  billingAddress: "Indiabulls, Lower Parel, Mumbai, MH",
-  shippingAddress: "Indiabulls, Lower Parel, Mumbai, MH 411093, India",
-  gstNum: "27AACCN1235323",
-  bankName: "HDFC Bank",
-  IFSC: "HDFC0000646",
-  aaNum: "3242353243",
-  custDetails: [
-    { custName: "Ramesh T", mobileNumber: "21323231" },
-    { custName: "Suresh T", mobileNumber: "21323231" },
-  ],
-};

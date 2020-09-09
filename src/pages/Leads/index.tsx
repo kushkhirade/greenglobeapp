@@ -156,7 +156,7 @@ export class LeadsImpl extends React.Component<
     try {
       if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
-          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, email, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city, sfid 
+          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status 
           FROM salesforce.Lead 
           WHERE RecordTypeId = '0122w000000chRpAAI' 
           AND (Assigned_Dealer__c LIKE '%${sfid}%') 
@@ -166,10 +166,10 @@ export class LeadsImpl extends React.Component<
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
         console.log("here");
         leadsData = await getData({
-          query: `SELECT id, recordtypeid, createddate, assigned_dealer__c, email, name, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, rating, city, sfid
+          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status
           FROM salesforce.Lead 
           WHERE (Assigned_Distributor__c LIKE '%${sfid}%') 
-          AND sfid is not null`,
+          AND sfid is not null AND Status != 'Closed' AND Status != 'Approved'`,
           token: token
         })
       }
@@ -1057,28 +1057,29 @@ const CardDetails = (props: any) => {
           {details.x3_or_4_wheeler__c === "3 Wheeler" ? "3Wheeler" : "4Wheeler"}
         </Grid>
       </Grid>
-      {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ" ? (
-        // <React.Fragment>
-        <Grid container>
-          <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text">Assigned Dealer : </span>
-            {/* {assignedDealer && assignedDealer[0] && assignedDealer[0].name} */}
-            {details.dealer_generated__c}
-          </Grid>
-          <Grid className="padding-6-corners" item xs={6} md={6}>
-            <span className="description-text">Lead Rating :</span>
-            {details.rating}
-            {/* <Rating
-                      readOnly
-                      precision={0.5}
-                      value={CalRating()}
-                    /> */}
-          </Grid>
+      <Grid container>
+        <Grid className="padding-6-corners" item xs={6} md={6} >
+          <span className="description-text">Campaign :</span>
+          {details.company}
         </Grid>
-        // </React.Fragment>
-      ) : (
-        ""
-        )}
+        <Grid className="padding-6-corners" item xs={6} md={6}>
+          <span className="description-text">Lead Rating :</span>
+          {details.rating}
+          {/* <Rating
+                    readOnly
+                    precision={0.5}
+                    value={CalRating()}
+                  /> */}
+        </Grid>
+      </Grid>
+      <Grid container >
+        <Grid className="padding-6-corners" item xs={12} md={12}>
+          <span className="description-text">Assigned Dealer :</span>
+          {/* {assignedDealer && assignedDealer[0] && assignedDealer[0].name} */}
+          {details.dealer_generated__c}
+        </Grid>
+      </Grid>
+
       <Grid container >
         <Grid className="padding-6-corners" item xs={4} md={4}>
           <span>{"            "}</span>

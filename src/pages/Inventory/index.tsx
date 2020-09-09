@@ -79,7 +79,7 @@ export class InventoryImpl extends React.PureComponent<
       if(recordtypeid === "0122w000000cwfSAAQ"){
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
-          Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
+          Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,
           Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
           FROM salesforce.product2 WHERE sold_to_dealer__c = '${sfid}'`,
           token: token
@@ -87,7 +87,7 @@ export class InventoryImpl extends React.PureComponent<
       }else if(recordtypeid === "0122w000000cwfNAAQ"){
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
-            Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, 
+            Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,
             Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
             FROM salesforce.product2 WHERE sold_to_distributor__c ='${sfid}'`,
           token: token
@@ -365,13 +365,13 @@ export const Inventory = connect<{}, {}, IInventoryProps>(mapStateToProps)(
   InventoryImpl
 );
 
-const InventoryCards = (props: any) => {
+const InventoryCards = async (props: any) => {
   const inData =  props.data;
   var date1 = new Date();
   var date2 = new Date(inData.date_purchased__c);
   var diffinMonths = date1.getMonth() - date2.getMonth();
   var diffinDays = (date1.getDate() - date2.getDate()) + (30 * diffinMonths);
-
+  
   // return props.data.map((inData: any, key: string) => {
     return (
       <Grid item xs={12} md={4} lg={4}>

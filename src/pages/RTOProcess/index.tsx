@@ -174,7 +174,7 @@ export class RTOProcessImpl extends React.PureComponent<
     this.UpdateRTOStage(loggedInUserDetails, this.state.stage, this.state.currentData.sfid);
     const res = await this.getAllRTOProcesses(loggedInUserDetails);
     this.setState({rtoDataMain: res});
-    this.setState({openEditModal: false});
+    this.setState({openEditModal: false, customer: "", stage: ""});
   };
 
   handleRTOInsert = async() => {
@@ -183,7 +183,7 @@ export class RTOProcessImpl extends React.PureComponent<
     this.InsertRTOProcess(loggedInUserDetails, this.state.stage, this.state.customer);
     const res = await this.getAllRTOProcesses(loggedInUserDetails);
     this.setState({rtoDataMain: res});
-    this.setState({addNew: false});
+    this.setState({addNew: false, customer: "", stage: ""});
   };
 
   renderEditModal = () => {
@@ -191,7 +191,7 @@ export class RTOProcessImpl extends React.PureComponent<
       <BaseModal
         className="support-modal"
         contentClassName="support-content"
-        onClose={() => this.setState({ openEditModal: false })}
+        onClose={() => this.setState({ openEditModal: false, customer: "", stage: "" })}
         open={this.state.openEditModal}
       >
         <Grid container className="modal-content">
@@ -211,9 +211,9 @@ export class RTOProcessImpl extends React.PureComponent<
                 onChange={this.handleStageSelect}
                 className="form-input"
               >
-                <MenuItem value="Document Collected">Document Collected</MenuItem>
+                <MenuItem value="Generate Document">Generate Document</MenuItem>
+                <MenuItem value="Submitted to RTO">Submitted to RTO</MenuItem>
                 <MenuItem value="In Progress">In Progress</MenuItem>
-                <MenuItem value="Submitted">Submitted</MenuItem>
                 <MenuItem value="Closed">Closed</MenuItem>
               </Select>
             </FormControl>
@@ -221,7 +221,7 @@ export class RTOProcessImpl extends React.PureComponent<
         </Grid>
         <div className="button-container">
           <Button
-            onClick={(e) => this.setState({ openEditModal: false })}
+            onClick={(e) => this.setState({ openEditModal: false, customer: "", stage: "" })}
             variant="contained"
             color="default"
           >
@@ -282,7 +282,7 @@ export class RTOProcessImpl extends React.PureComponent<
       <BaseModal
         className="support-modal"
         contentClassName="support-content"
-        onClose={() => this.setState({ addNew: false })}
+        onClose={() => this.setState({ addNew: false, customer: "", stage: "" })}
         open={this.state.addNew}
       >
         <div style={{ minWidth: "300px" }}>
@@ -325,16 +325,16 @@ export class RTOProcessImpl extends React.PureComponent<
                 onChange={this.handleStageSelect}
                 className="form-input"
               >
-                <MenuItem value="Document Collected">Document Collected</MenuItem>
+                <MenuItem value="Generate Document">Generate Document</MenuItem>
+                <MenuItem value="Submitted to RTO">Submitted to RTO</MenuItem>
                 <MenuItem value="In Progress">In Progress</MenuItem>
-                <MenuItem value="Submitted">Submitted</MenuItem>
-                <MenuItem value="closed">Closed</MenuItem>
+                <MenuItem value="Closed">Closed</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <div className="button-container">
             <Button
-              onClick={(e) => this.setState({ addNew : false })}
+              onClick={(e) => this.setState({ addNew : false, customer: "", stage: "" })}
               variant="contained"
               color="default"
             >
@@ -359,14 +359,16 @@ export class RTOProcessImpl extends React.PureComponent<
         {this.renderAddNewRTODocModal()}
         {this.renderEditModal()}
         <Tabs tabsData={this.tabs()} />
-        <span
-          style={{ position: "absolute", right: 20, bottom: 20 }}
-          onClick={() => this.setState({ addNew: true })}
-        >
-          <Fab color="secondary" aria-labelledby="add-ticket">
-            <Add />
-          </Fab>
-        </span>
+        {isDealer() && 
+          <span
+            style={{ position: "absolute", right: 20, bottom: 20 }}
+            onClick={() => this.setState({ addNew: true })}
+          >
+            <Fab color="secondary" aria-labelledby="add-ticket">
+              <Add />
+            </Fab>
+          </span>
+        }
       </AppBar>
     );
   }
@@ -389,15 +391,11 @@ const RTOList = (props: any) => {
             <Grid key={index} container className="padding-6">
               <Grid item className="bold-font center" xs={6} md={6}>
                 <PersonPin /> <span style={{ padding: "5px" }} />
-                <div style={{marginTop: '-25px', marginLeft: '25px'}}>
                   {rtoData.contname__c}
-                </div>
               </Grid>
               <Grid className="bold-fon center" item xs={6} md={6}>
                 <Phone /> <span style={{ padding: "5px" }} />
-                <div style={{marginTop: '-25px', marginLeft: '25px'}}>
                   {rtoData.mobile_no__c && ChangePhoneFormat(rtoData.mobile_no__c)}
-                </div>
               </Grid>
             </Grid>
             <Grid container className="padding-6">
@@ -428,24 +426,31 @@ const RTOList = (props: any) => {
                 <Grid item xs={6} md={6}></Grid>
               }
             </Grid>
-            <Grid className="rto-status" item xs={6} md={6}>
-                {rtoData.stage__c || "Pending"}
+            <Grid container>
+              <Grid className="rto-status" item xs={6} md={6}>
+                <span>{rtoData.stage__c || "Pending"}</span>
+              </Grid>
+              <Grid item xs={6} md={6}>
+                {rtoData.stage__c !== "Closed" && (
+                  <div className="edit-button-container">
+                    <div
+                      className="edit-button"
+                      onClick={() => props.onClickEdit(rtoData)}
+                    >
+                      <Edit />
+                    </div>
+                  </div>
+                )}
+              
+                {rtoData.stage__c === "Closed" && (
+                  <div className="generate-doc">
+                    <a href={"http://www.africau.edu/images/default/sample.pdf"} target="_blank"> 
+                      <span>Generate Docs</span>{" "}
+                    </a>
+                  </div>
+                )}
+              </Grid>
             </Grid>
-            {!rtoData.isCleared && (
-              <div className="edit-button-container">
-                <div
-                  className="edit-button"
-                  onClick={() => props.onClickEdit(rtoData)}
-                >
-                  <Edit />
-                </div>
-              </div>
-            )}
-            {rtoData.isCleared && (
-              <div className="generate-doc">
-                <span>Generate Docs</span>{" "}
-              </div>
-            )}
           </div>
         </Grid>
       </React.Fragment>
