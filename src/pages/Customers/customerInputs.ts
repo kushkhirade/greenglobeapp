@@ -258,29 +258,30 @@ export const leadDealer = [
     label: "Lead Type",
     model: ".leadType",
     type: "select",
+    required: true,
     options: [
       {label: "B2B", value: "B2B"},
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
     ],
-    required: true,
   },
   {
     label: "Sub Lead Type",
     model: ".subleadType",
     type: "select",
+    required: true,
     options: [
       {label: "Customer", value: "Customer"},
       {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
       {label: "Servicing", value: "Servicing"}
     ],
-    required: true,
   },
   {
     label: "Lead Source",
     model: ".leadSource",
     type: "select",
+    required: true,
     options: [
       // {label: "Partner", value: "Partner"},
       // {label: "Website", value: "Website"},
@@ -299,7 +300,6 @@ export const leadDealer = [
       {label: "Offline", value: "Offline"},
       {label: "Store Visits", value: "Store Visits"}
     ],
-    required: true,
   },
   {
     label: "Sub Lead Source",
@@ -323,6 +323,7 @@ export const leadDealer = [
     label: "Lead Status",
     model: ".leadStatus",
     type: "select",
+    required: true,
     options: [
       {label: "New", value: "New"},
       {label: "Document Collection", value: "Document Collection"},
@@ -334,42 +335,20 @@ export const leadDealer = [
       // {label: "Job Card", value: "Job Card"},
       // {label: "Qualified", value: "Qualified"}
     ],
-    required: true,
   },
   {
     label: "Rating",
     model: ".rating",
     type: "select",
+    required: true,
     options: [
       {label: "Hot", value: "Hot"},
       {label: "Cold", value: "Cold"},
       {label: "Warm", value: "Warm"}
     ],
-    required: true,
   },
 ];
 
-const subLeadTypeOPT = () => {
-  // console.log("value: ", value)
-  // value === "Online" &&
-  [
-    {label: "Facebook", value: "Facebook"},
-    {label: "Google", value: "Google"},
-    {label: "Whatsapp", value: "Whatsapp"},
-    {label: "Mass Malling", value: "Mass malling"},
-    {label: "Mass Messaging", value: "Mass messaging"},
-    {label: "Instagram", value: "Instagram"},
-    {label: "YouTube", value: "YouTube"},
-    {label: "RTO", value: "RTO"},
-    {label: "BANK", value: "BANK"},
-    {label: "Patpedhi", value: "Patpedhi"},
-    {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
-  ]
-  // ||
-  // [ {label: "Facebook", value: "Facebook"},
-  // {label: "Google", value: "Google"},
-  // {label: "Whatsapp", value: "Whatsapp"},]
-}
 export const leadSource = [
   {
     label: "Lead Type",
@@ -537,18 +516,9 @@ export const leadSourceForJobCard = [
   {
     label: "Lead Status", 
     model: ".leadStatus",
-    type: "select",
+    type: "text",
     defaultValue: "Closed",
     isDisable: true,
-    options: [
-      {label: "New", value: "New"},
-      {label: "Basic Details", value: "Basic Details"},
-      {label: "Document Collection", value: "Document Collection"},
-      {label: "Negotiation", value: "Negotiation"},
-      {label: "Closed", value: "Closed"},
-      {label: "Job Card", value: "Job Card"},
-      {label: "Qualified", value: "Qualified"}
-    ],
     required: true,
   },
   {
@@ -600,6 +570,52 @@ export const gstDetails = [
     required: true,
   },
 ];
+
+export const rtoDocs = [
+  {
+    model : ".Original_RC_Book__c", 
+    label : "Original R.C. Book",
+    type: "image",
+  },
+  {
+    model : ".Bank_NOC__c", 
+    label : "Bank NOC In case of Hypothecation",
+    type: "image",
+  },
+  {
+    model : ".Insurance_Photocopy__c", 
+    label : "Valid Insurance Photocopy",
+    type: "image",
+  },
+  {
+    model : ".Permit_URL__c", 
+    label : "Permit",
+    type: "image",
+  },
+  {
+    model : ".Tax_url__c", 
+    label : "Tax",
+    type: "image",
+  },
+  {
+    model : ".Passing_url__c", 
+    label : "Passing",
+    type: "image",
+  }
+]
+
+export const kycDocs = [
+  {
+    model : ".Aadhaar__c", 
+    label : "Aadhar Card",
+    type: "image",
+  },
+  {
+    model : ".PAN__c", 
+    label : "PAN Card",
+    type: "image",
+  }
+]
 
 export const distCust = [
   {

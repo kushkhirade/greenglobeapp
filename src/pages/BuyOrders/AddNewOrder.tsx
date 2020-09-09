@@ -94,6 +94,12 @@ export class AddNewOrderImpl extends React.PureComponent<
     };
   }
 
+  componentWillMount(){
+    if(!this.props.location.orderType){
+      this.props.history.goBack();
+    }
+  }
+
   componentDidMount(){
     loggedInUserDetails = getToken().data;
     console.log("loggedInUserDetails: ", loggedInUserDetails);
@@ -1011,9 +1017,9 @@ class DispatchedScreen extends React.Component <any> {
   };
 
   render(){
-    console.log("props: ", this.props)
+    console.log("props: ", this.props);
     const details = this.state.details && this.state.details[0];
-    const productQuantity = this.props.orderedproducts.filter(op => op.quantity !== "0").length;
+    const productQuantity = this.props.orderedproducts && this.props.orderedproducts.filter(op => op.quantity !== "0").length;
     const totalAmount = this.props.orderedproducts && this.props.orderedproducts.reduce((s, a) => Number(a.quantity * a.unitprice) + s, 0 );
 
     return (

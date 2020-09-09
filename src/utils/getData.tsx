@@ -36,3 +36,26 @@ const getData = async ({ query, token }) => {
 };
 
 export default getData;
+
+export const imageUpload = ({ id, type, img }) => {
+  var data = new FormData();
+  console.log("id: ", id, "type: ", type, "image: ", img);
+  const dataToSend = JSON.stringify([{ id: btoa(id + new Date().toDateString()), type, img }
+  ]);
+
+  data.append("json_data", dataToSend);
+
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+    // xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === 4) {
+        resolve(JSON.parse(this.responseText));
+      }
+    });
+
+    xhr.open("POST", `https://grecokits.herokuapp.com/uploadImage.php`);
+    xhr.send(data);
+  });
+};

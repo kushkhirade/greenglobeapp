@@ -156,7 +156,7 @@ export class LeadsImpl extends React.Component<
     try {
       if (recordtypeid === "0122w000000cwfSAAQ") {
         leadsData = await getData({
-          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid 
+          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status 
           FROM salesforce.Lead 
           WHERE RecordTypeId = '0122w000000chRpAAI' 
           AND (Assigned_Dealer__c LIKE '%${sfid}%') 
@@ -166,10 +166,10 @@ export class LeadsImpl extends React.Component<
       } else if (recordtypeid === "0122w000000cwfNAAQ") {
         console.log("here");
         leadsData = await getData({
-          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid
+          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status
           FROM salesforce.Lead 
           WHERE (Assigned_Distributor__c LIKE '%${sfid}%') 
-          AND sfid is not null`,
+          AND sfid is not null AND Status != 'Closed' AND Status != 'Approved'`,
           token: token
         })
       }

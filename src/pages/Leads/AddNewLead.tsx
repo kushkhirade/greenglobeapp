@@ -22,13 +22,16 @@ import {
   streetInputs,
   vehicleInputs,
   gstDetails,
+  rtoDocs,
+  kycDocs,
 } from "../Customers/customerInputs";
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
 // import { GSelect } from "src/components/GSelect";
 import { getToken } from "src/state/Utility";
-import getData from "src/utils/getData";
+import getData, { imageUpload } from "src/utils/getData";
+import { getImageBase64 } from "./../../utils/getBase64";
 import { changeValuesInStore } from "src/state/Utility";
 import { modelReducer, actions } from "react-redux-form";
 import {
@@ -37,38 +40,6 @@ import {
 } from "../../reducers/CombinedReducers";
 
 var loggedInUserDetails;
-var detailsObj = [
-  // {
-  //   sNumber: 1,
-  //   subject: "Call",
-  //   dueDate: "4/30/2020",
-  //   rating: "Hot",
-  //   priotiy: "Normal",
-  //   status: "Open",
-  //   callResult: "Spoke with Customer ",
-  //   comments: "Customer Intrested",
-  // },
-  // {
-  //   sNumber: 2,
-  //   subject: "Call",
-  //   dueDate: "4/30/2020",
-  //   rating: "Hot",
-  //   priotiy: "Normal",
-  //   status: "Open",
-  //   callResult: "Spoke with Customer ",
-  //   comments: "Customer Intrested",
-  // },
-  // {
-  //   sNumber: 3,
-  //   subject: "Call",
-  //   dueDate: "4/30/2020",
-  //   rating: "Hot",
-  //   priotiy: "Normal",
-  //   status: "Open",
-  //   callResult: "Spoke with Customer ",
-  //   comments: "Customer Intrested",
-  // },
-];
 
 export interface IAddNewLeadProps {}
 
@@ -114,6 +85,9 @@ export class AddNewLeadImpl extends React.Component<
     currentInsertEmail: string;
     currentInsertId: string;
     currentNewSfid: string;
+    uploadImages: any;
+    adhar : any;
+    pan : any;
   }
 > {
   constructor(props: IAddNewLeadProps) {
@@ -128,6 +102,14 @@ export class AddNewLeadImpl extends React.Component<
       currentInsertEmail: "",
       currentInsertId: "",
       currentNewSfid: "",
+      uploadImages: [{docName : "Original R.C. Book", fileName: "", url: ""},
+      {docName : "Bank NOC In case of Hypothecation", fileName: "", url: ""},
+      {docName : "Valid Insurance Photocopy", fileName: "", url: ""},
+      {docName : "Permit", fileName: "", url: ""},
+      {docName : "Tax", fileName: "", url: ""},
+      {docName : "Passing", fileName: "", url: ""},],
+      adhar : ["url", "fileName"],
+      pan : ["url", "fileName"],
       complainCheckList: {
         "Low Average / Mileage": false,
         "Late Starting Problem": false,
@@ -300,6 +282,7 @@ export class AddNewLeadImpl extends React.Component<
       lastName: leadData.lastname,
       middleName: leadData.middlename,
       company: leadData.company,
+      contactPerson: leadData.contact_person__c,
       whatsAppNumber: leadData.whatsapp_number__c,
       leadType: leadData.lead_type__c,
       subleadType: leadData.sub_lead_type__c,
@@ -323,90 +306,15 @@ export class AddNewLeadImpl extends React.Component<
       registration: leadData.registration_year__c,
       mfg: leadData.year_of_manufacturing__c,
       chassis: leadData.chassis_no__c,
+      Original_RC_Book__c: leadData.original_rc_book__c, 
+      Bank_NOC__c: leadData.bank_noc__c, 
+      Insurance_Photocopy__c: leadData.insurance_photocopy__c, 
+      Permit_URL__c: leadData.permit_url__c, 
+      Tax_url__c: leadData.tax_url__c, 
+      Passing_url__c: leadData.passing_url__c, 
+      Aadhaar__c: leadData.aadhaar__c, 
+      PAN__c: leadData.pan__c,  
     };
-    // const dealerCheckboxesData = {
-    //   "CNG TUNE UP": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "KIT SERVICE": leadData.kit_service__c === "t" ? true : false,
-    //   "KIT REMOVE": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "KIT REFITTING": leadData.kit_refitting__c === "t" ? true : false,
-    //   "CYLINDER REMOVE": leadData.cylinder_remove__c === "t" ? true : false,
-    //   "CYLINDER REFITTING":
-    //     leadData.cylinder_refitting__c === "t" ? true : false,
-    //   "GRECO ACE KIT FITTING":
-    //     leadData.greco_ace_kit_fitting__c === "t" ? true : false,
-    //   "GRECO PRO KIT FITTING":
-    //     leadData.greco_pro_kit_fitting__c === "t" ? true : false,
-    //   "DICKY FLOOR REPAIR": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "WIRING REPAIR": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "WIRING REMOVE & REFITTING":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "REDUCER R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "REDUCER SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "CARBURETTOR SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "THROTTLE BODY CLEANING": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "AIR FILTER R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "SPARK PLUG R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "INGNITION COILS R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "INGNITION COIL CODE R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "PICK UP COIL R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "CNG SEQ. KIT TUNE UP": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "ECM R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "MAP SENSOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "MAF/MAP SENSOR CLEAN": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "GRECO INJECTOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "PETROL INJECTOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "TEMPRESURE SENSOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "TIMING ADVANCE PROCESS R/R":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "FILLER VALVE R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "FILLER VALVE REPAIR": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "LOW PRESSURE HOSE R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "PRESSURE GAUGE R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "HIGH PRESSURE PIPE R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "CYLINDER VALVE R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "SWITCH R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "COOLANT REPLACE": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "TAPPET SETTING": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "OIL & OIL FILTER REPLACE":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "HEIGHT PAD FITMENT": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "O2 SENSOR R/R	": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "O2 SENSOR CLEAN": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "ENGINE TUNE UP": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "ENGINE COMPRESSION CHECK":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "FUEL PUMP R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "FUEL FILTER R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "FUEL PUMP RELAY R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "ANNUAL MAINTAINANACE CONTRACT":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "CNG LEAKAGE CHECK": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "EMULATOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "MIXER R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "1ST STAGE REGULATOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "2ND STAGE REGULATOR R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "CYLINDER HYDROTESTING": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "1ST STAGE REGULATOR ORING R/R":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "INJECTOR NOZZLE R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "GENERAL LABOUR CHARGES": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "CAR SCANNING": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "GAS FILLTER R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "CYLINDER BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "1ST FREE SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "2ND FREE SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "3RD FREE SERVICE": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "TAPPET COVER PACKING REPLACE":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "VACCUM HOSE PIPE R/R	": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "FUEL GAUGE CORRECTOR FITMENT":
-    //     leadData.cng_tune_up__c === "t" ? true : false,
-    //   "RAIL BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "ECM BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "REDUCER BRACKET R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    //   "BLOCK PISTON R/R": leadData.cng_tune_up__c === "t" ? true : false,
-    // };
-    // this.setState({ dealerCheckboxes: dealerCheckboxesData });
     changeValuesInStore(formType, editData);
   };
 
@@ -431,8 +339,20 @@ export class AddNewLeadImpl extends React.Component<
       state,
       zip,
       country,
+      Original_RC_Book__c, 
+      Bank_NOC__c, 
+      Insurance_Photocopy__c, 
+      Permit_URL__c, 
+      Tax_url__c, 
+      Passing_url__c, 
+      Aadhaar__c,
+      PAN__c,
     } = userForm;
-    const query = `INSERT INTO salesforce.Lead (FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,Contact_Person__c,Lead_Type__c,sub_lead_type__c,LeadSource,Status,Sub_Lead_Source__c,Rating,Street,City,State,PostalCode,Country,RecordTypeId,Assigned_Distributor__c)
+    const query = `INSERT INTO salesforce.Lead 
+    ( FirstName ,MiddleName ,LastName ,Email ,Company ,Whatsapp_number__c ,Contact_Person__c ,
+      Lead_Type__c ,sub_lead_type__c ,LeadSource ,Status ,Sub_Lead_Source__c ,Rating ,
+      Street ,City ,State ,PostalCode ,Country ,RecordTypeId ,Assigned_Distributor__c
+      Original_RC_Book__c, Bank_NOC__c, Insurance_Photocopy__c, Permit_URL__c, Tax_url__c, Passing_url__c, Aadhaar__c,PAN__c,)
     VALUES ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
       email ?? ""
     }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : ""},'${contactPerson ?? ""}', '${
@@ -440,8 +360,10 @@ export class AddNewLeadImpl extends React.Component<
     }', '${subleadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
       rating ?? ""
     }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
-      country ?? ""
-    }', '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING ID`;
+      country ?? ""}', 
+    '${Original_RC_Book__c ?? ""}', '${Bank_NOC__c ?? ""}', '${Insurance_Photocopy__c ?? ""}', '${Permit_URL__c ?? ""}', 
+    '${Tax_url__c ?? ""}', '${Passing_url__c ?? ""}', '${Aadhaar__c}'${PAN__c}'
+    '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING ID`;
 
     try {
       const result = await getData({
@@ -694,11 +616,35 @@ export class AddNewLeadImpl extends React.Component<
     intervalId = setInterval(async () => that.getSfidFromContact(), 2500);
   };
 
-  insertDealerStep = async (status) => {
+  insertDealerStep = async (status, leadForm) => {
     console.log("***************************************");
     const currentUser = getToken().data;
     const { currentNewSfid } = this.state;
-    const statusQuery = `UPDATE salesforce.lead set Status = '${status}' WHERE  sfid='${currentNewSfid}'`;
+    const {
+      Original_RC_Book__c, 
+      Bank_NOC__c, 
+      Insurance_Photocopy__c, 
+      Permit_URL__c, 
+      Tax_url__c, 
+      Passing_url__c, 
+      Aadhaar__c,
+      PAN__c
+    } = leadForm;
+    let statusQuery;
+    if(status === "Document Collection"){
+    statusQuery =  `UPDATE salesforce.lead set Status = '${status}',
+      Original_RC_Book__c = '${Original_RC_Book__c ?? ""}', 
+      Bank_NOC__c = '${Bank_NOC__c ?? ""}', 
+      Insurance_Photocopy__c = '${Insurance_Photocopy__c ?? ""}', 
+      Permit_URL__c = '${Permit_URL__c ?? ""}', 
+      Tax_url__c = '${Tax_url__c ?? ""}', 
+      Passing_url__c = '${Passing_url__c ?? ""}', 
+      Aadhaar__c = '${Aadhaar__c ?? ""}',
+      PAN__c = '${PAN__c ?? ""}'
+      WHERE  sfid='${currentNewSfid}'`;
+    }else{
+    statusQuery = `UPDATE salesforce.lead set Status = '${status}' WHERE  sfid='${currentNewSfid}'`;
+    }
     const resultStatusQuery = await getData({
       query: statusQuery,
       token: currentUser.token,
@@ -746,6 +692,7 @@ export class AddNewLeadImpl extends React.Component<
       console.log(e);
     }
   };
+
   handleInsertTaskSubmit = async () => {
     this.InsertNewTask(
       loggedInUserDetails,
@@ -754,177 +701,6 @@ export class AddNewLeadImpl extends React.Component<
     );
     this.setState({ openEditModal: false });
     changeValuesInStore(`leadTaskForm`, {});
-  };
-
-  InsertLeadDealer = async (data, leadForm) => {
-    const {
-      firstName,
-      middleName,
-      lastName,
-      email,
-      company,
-      whatsAppNumber,
-      leadType,
-      leadSource,
-      leadStatus,
-      subLeadSource,
-      rating,
-      street,
-      city,
-      state,
-      zip,
-      country,
-      vehicleNumber,
-      fuelType,
-      wheeles,
-      vehicleMek,
-      vehicleModel,
-      usage,
-      vehicleType,
-      dailyRunning,
-      registration,
-      mfg,
-      chassis,
-      gstNumber,
-    } = leadForm;
-    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
-    console.log("name", name)
-    const { dealerCheckboxes } = this.state;
-    try {
-      const insertLead = await getData({
-        query: `INSERT INTO salesforce.Lead
-        (name,FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
-          Lead_Type__c,LeadSource,Status,Sub_Lead_Source__c,
-          Rating,Street,City,State,PostalCode,Country,
-          Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,
-          Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
-          GST_Number__c,Assigned_Dealer__c,RecordTypeId,CNG_TUNE_UP__c,KIT_SERVICE__c,KIT_REFITTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,
-          GRECO_ACE_KIT_FITTING__c,GRECO_PRO_KIT_FITTING__c)
-         Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${
-          lastName ?? ""
-        }','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? 0},'${
-          leadType ?? ""
-        }',
-         '${leadSource ?? ""}','${leadStatus ?? ""}','${
-          subLeadSource ?? ""
-        }','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${
-          state ?? ""
-        }','${zip ?? ""}','${country ?? ""}',
-         '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${
-          vehicleMek ?? ""
-        }','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
-         ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${
-          chassis ?? ""
-        }','${gstNumber ?? ""}','${data.sfid}','0122w000000chRpAAI',
-         ${dealerCheckboxes["CNG TUNE UP"]},${
-          dealerCheckboxes["KIT SERVICE"]
-        },${dealerCheckboxes["KIT REFITTING"]},
-         ${dealerCheckboxes["CYLINDER REFITTING"]},
-         ${dealerCheckboxes["CYLINDER REMOVE"]},${
-          dealerCheckboxes["GRECO ACE KIT FITTING"]
-        },${dealerCheckboxes["GRECO PRO KIT FITTING"]}) RETURNING Id`,
-        token: data.token,
-      });
-      ``;
-      console.log("insertLead => ", insertLead);
-      this.setState({ id: insertLead.result[0].id });
-      return insertLead.result;
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  UpdateLeadDealer = async (data, leadForm) => {
-    const {
-      firstName,
-      middleName,
-      lastName,
-      email,
-      company,
-      whatsAppNumber,
-      leadType,
-      leadSource,
-      leadStatus,
-      subLeadSource,
-      rating,
-      street,
-      city,
-      state,
-      zip,
-      country,
-      vehicleNumber,
-      fuelType,
-      wheeles,
-      vehicleMek,
-      vehicleModel,
-      usage,
-      vehicleType,
-      dailyRunning,
-      registration,
-      mfg,
-      chassis,
-      gstNumber,
-    } = leadForm;
-    const name = `${firstName ?? ""} ${middleName ?? ""} ${lastName ?? ""}`;
-    const { dealerCheckboxes } = this.state;
-    try {
-      const updateLead = await getData({
-        query: `UPDATE salesforce.Lead set name = '${
-          name ?? ""
-        }', FirstName = '${firstName ?? ""}', MiddleName = '${
-          middleName ?? ""
-        }', LastName = '${lastName ?? ""}', Email = '${
-          email ?? ""
-        }', Company = '${company ?? ""}', Whatsapp_number__c = '${
-          whatsAppNumber ?? 0
-        }',
-        Lead_Type__c = '${leadType ?? ""}', LeadSource = '${
-          leadSource ?? ""
-        }', Status = '${leadStatus ?? ""}',
-        Sub_Lead_Source__c = '${subLeadSource ?? ""}', Rating = '${
-          rating ?? ""
-        }', Street = '${street ?? ""}',
-        City = '${city ?? ""}' , State = '${state ?? ""}' , PostalCode = '${
-          zip ?? ""
-        }' , Country = '${country ?? ""}',
-        Vehicle_no__c = '${vehicleNumber ?? ""}', Fuel_Type__c = '${
-          fuelType ?? ""
-        }',
-        X3_or_4_Wheeler__c = '${wheeles ?? ""}', Vehicle_Make__c = '${
-          vehicleMek ?? ""
-        }',
-        Usage_of_Vehicle__c = '${usage ?? ""}', Engine__c = '${
-          vehicleType ?? ""
-        }',
-        Daily_Running_Kms__c = ${dailyRunning ?? 0}, Registration_Year__c = '${
-          registration ?? "4/5/2019"
-        }',
-        Year_of_Manufacturing__c = ${mfg ?? 0}, Chassis_No__c = '${
-          chassis ?? ""
-        }',
-        GST_Number__c = '${gstNumber ?? ""}', Assigned_Dealer__c = '${
-          data.sfid
-        }',
-        RecordTypeId = '0122w000000chRpAAI', CNG_TUNE_UP__c = ${
-          dealerCheckboxes["CNG TUNE UP"]
-        },
-        KIT_SERVICE__c = ${
-          dealerCheckboxes["KIT SERVICE"]
-        }, KIT_REFITTING__c = ${dealerCheckboxes["KIT REFITTING"]},
-        CYLINDER_REFITTING__c = ${dealerCheckboxes["CYLINDER REFITTING"]},
-        CYLINDER_REMOVE__c = ${dealerCheckboxes["CYLINDER REMOVE"]},
-        GRECO_ACE_KIT_FITTING__c = ${dealerCheckboxes["GRECO ACE KIT FITTING"]},
-        GRECO_PRO_KIT_FITTING__c = ${
-          dealerCheckboxes["GRECO PRO KIT FITTING"]
-        } where id='${this.state.id}'`,
-        token: data.token,
-      });
-      ``;
-      console.log("updateLead => ", updateLead);
-      return updateLead.result;
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   handleToggle = (type: string) =>  (event, isInputChecked) => {
@@ -973,6 +749,7 @@ export class AddNewLeadImpl extends React.Component<
           />
           <SubFormHeading>Vehicle Details</SubFormHeading>
           <FormComponent
+            onCancel={() => this.props.history.goBack()}
             onSubmit={async (v: any) => {
               const { params } = this.props.match;
                 if (params && params.id) {
@@ -1036,35 +813,40 @@ export class AddNewLeadImpl extends React.Component<
       <div className="card-container job-card-container">
         <React.Fragment>
           <SubFormHeading>Documents Required for RTO</SubFormHeading>
-          <UploadContainer valKey={1} heading="Original R.C. Book" />
-          <UploadContainer
-            valKey={2}
-            heading="Bank NOC In case of Hypothecation"
-          />
-          <UploadContainer valKey={3} heading="Valid Insurance Photocopy" />
-          <UploadContainer valKey={4} heading="Permit" />
-          <UploadContainer valKey={5} heading="Tax" />
-          <UploadContainer valKey={6} heading="Passing" />
-          <SubFormHeading>KYC Documents</SubFormHeading>
-          <UploadContainer valKey={7} heading="Aadhaar Card" />
-          <UploadContainer valKey={8} heading="PAN Card" />{" "}
-          <FormComponent
-            onSubmit={async (v: any) => {
-              console.log(">> v", v);
-              console.log(this.state);
-              if (this.state.currentNewSfid) {
-                await this.insertDealerStep("Document Collection");
+            <FormComponent
+              onSubmit={(v: any) => {
+                console.log(">> v", v);
                 this.setState({
                   activeStep: this.state.activeStep + 1,
                 });
-              }
-            }}
-            formModel="leadForm"
-            hasSubmit={true}
-            options={[]}
-            submitTitle="Next"
-            cancelTitle="Previous"
-          />
+              }}
+              formModel="leadForm"
+              hasSubmit={false}
+              options={rtoDocs}
+            />
+          <SubFormHeading>KYC Documents</SubFormHeading>
+            <FormComponent
+              onCancel={() => {
+                this.setState({
+                  activeStep: this.state.activeStep - 1,
+                })}}
+              onSubmit={async (v: any) => {
+                console.log(">> v", v);
+                console.log(this.state);
+                this.setIntervalSfid(v.email);
+                if (this.state.currentNewSfid) {
+                  await this.insertDealerStep("Document Collection", v);
+                  this.setState({
+                    activeStep: this.state.activeStep + 1,
+                  });
+                }
+              }}
+              formModel="leadForm"
+              hasSubmit={true}
+              options={kycDocs}
+              submitTitle="Next"
+              cancelTitle="Previous"
+            />
         </React.Fragment>
       </div>
     );
@@ -1106,9 +888,13 @@ export class AddNewLeadImpl extends React.Component<
           </div>
         </div>{" "}
         <FormComponent
+          onCancel={() => {
+            this.setState({
+              activeStep: this.state.activeStep - 1,
+            })}}
           onSubmit={async (v: any) => {
             if (this.state.currentNewSfid) {
-              await this.insertDealerStep("Negotiation");
+              await this.insertDealerStep("Negotiation", v );
               this.setState({
                 activeStep: this.state.activeStep + 1,
               });
@@ -1161,10 +947,14 @@ export class AddNewLeadImpl extends React.Component<
           options={{ responsive: "scrollMaxHeight" }}
         />{" "}
         <FormComponent
+          onCancel={() => {
+            this.setState({
+              activeStep: this.state.activeStep - 1,
+            })}}
           onSubmit={async (v: any) => {
             console.log(">> v", v);
             if (this.state.currentNewSfid) {
-              await this.insertDealerStep("Closed");
+              await this.insertDealerStep("Closed", v);
               this.setState({
                 activeStep: this.state.activeStep + 1,
               });
@@ -1247,7 +1037,6 @@ export class AddNewLeadImpl extends React.Component<
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
             {Object.keys(this.state.complainCheckList).map((key, value) => {
-              console.log("key => ", this.state.complainCheckList[key])
               const isChecked = this.state.complainCheckList[key];
               return (
                 <React.Fragment>
@@ -1347,6 +1136,7 @@ export class AddNewLeadImpl extends React.Component<
           </div>
         </SubFormHeading>{" "}
         <FormComponent
+          onCancel={() => this.props.history.goBack()}
           onSubmit={(v: any) => {
             console.log(">> v", v);
             if (this.state.currentNewSfid) {
@@ -1682,9 +1472,8 @@ export class AddNewLeadImpl extends React.Component<
                           options={streetInputs}
                         />
                         <SubFormHeading>KYC Documents</SubFormHeading>
-                        <UploadContainer valKey={7} heading="Aadhaar Card" />
-                        <UploadContainer valKey={8} heading="PAN Card" />{" "}
                         <FormComponent
+                          onCancel={() => this.props.history.goBack()}
                           onSubmit={async (v: any) => {
                             console.log(">> v", v);
                             const { params } = this.props.match;
@@ -1717,8 +1506,8 @@ export class AddNewLeadImpl extends React.Component<
                           }}
                           formModel="userForm"
                           hasSubmit={true}
-                          allFormOptions={[...streetInputs, ...leadDealer]}
-                          options={[]}
+                          allFormOptions={[...streetInputs, ...leadDealer, ...kycDocs]}
+                          options={kycDocs}
                           submitTitle="Next"
                           cancelTitle="Previous"
                         />
@@ -1737,6 +1526,7 @@ export class AddNewLeadImpl extends React.Component<
                           Workshop Approval Process
                         </SubFormHeading>
                         <FormComponent
+                          onCancel={() => this.props.history.goBack()}
                           onSubmit={async (v: any) => {
                             if (this.state.currentNewSfid) {
                               await this.updateLeadDistStep(
@@ -1762,6 +1552,7 @@ export class AddNewLeadImpl extends React.Component<
                         Approvals {`&`} Inventory Load
                         <div className="button-container">
                           <FormComponent
+                            onCancel={() => this.props.history.goBack()}
                             onSubmit={async (v: any) => {
                               if (this.state.currentNewSfid) {
                                 await this.updateLeadDistStep("Approved");
@@ -1810,12 +1601,28 @@ const SubFormHeading = (props: any) => (
 );
 
 const UploadContainer = (props: any) => {
+  console.log("Props: ", props)
   const [file, setFile] = React.useState({
     name: `File${props.valKey}`,
-    file: { name: "" },
+    file: { name: "" }, 
   });
   const spllited = file.file.name.split(".");
+  console.log("spllited: ", spllited)
+
   const ext = spllited[spllited.length - 1];
+  console.log("ext: ", ext)
+
+  const getDocURL = async(image, id) => {
+    const documentURL = await imageUpload({
+      id: image.name + id,
+      img: await getImageBase64(image),
+      type: image.type
+    });
+    console.log("documentURL : ", documentURL)
+
+    return documentURL.url;
+  }
+
   return (
     <div key={props.valKey} className="upload-container">
       <div className="upload-head">{props.heading}</div>
@@ -1824,19 +1631,26 @@ const UploadContainer = (props: any) => {
           Upload Photo
         </label>
         <input
-          onChange={(e) => {
+          onChange={ async(e) => {
             const fileData = e.target.files[0];
             setFile({ name: file.name, file: fileData });
+            const url = await getDocURL(e.target.files[0], props.id);
+            props.onSelectImage(props.valKey, url);
+            changeValuesInStore(
+              `${props.formModel}${opt.model}`,
+              e.target.value
+            )
           }}
           type="file"
           className="hidden-input"
           id="upload"
         />
+        {}
         <span className="filename">{`${
           file.file.name.length > 10
             ? `${file.file.name.substr(0, 10)}...${ext}`
             : ""
-        }`}</span>
+        }`}</span> 
         <div>
           <VisibilityIcon />
           <DeleteIcon
