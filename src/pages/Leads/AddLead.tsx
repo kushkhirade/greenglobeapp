@@ -493,22 +493,27 @@ export class AddNewLeadImpl extends React.PureComponent<
         stepData={[
           {
             label: "Basic Details",
+            disable: false,
             component: this.renderForm(),
           },
           {
             label: "Documents Collected",
+            disable: false,
             component: this.renderDocsForRTO(),
           },
           {
             label: "Negotiation",
+            disable: false,
             component: this.renderNegotitation(),
           },
           {
             label: "Closed",
+            disable: false,
             component: this.renderClosedTab(),
           },
           {
             label: "Job Card",
+            disable: false,
             component: this.renderJobCard(),
           },
         ]}
@@ -542,6 +547,7 @@ export class AddNewLeadImpl extends React.PureComponent<
               stepData={[
                 {
                   label: "Draft",
+                  disable: false,
                   component: (
                     <div>
                       <SubFormHeading>Lead Basic Details</SubFormHeading>
@@ -567,6 +573,7 @@ export class AddNewLeadImpl extends React.PureComponent<
                 },
                 {
                   label: "Documents Collection",
+                  disable: false,
                   component: (
                     <div>
                       <SubFormHeading>
@@ -586,6 +593,7 @@ export class AddNewLeadImpl extends React.PureComponent<
                 },
                 {
                   label: "Approval",
+                  disable: false,
                   component: <div>Approvals {`&`} Inventory Load</div>,
                 },
               ]}

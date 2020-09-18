@@ -151,7 +151,7 @@ class AppDrawer extends React.Component<IAppDrawer, {}> {
         variant="permanent"
         classes={{
           paper: classNames(
-            classes.drawerPaper,
+            // classes.drawerPaper,
             !utility.drawerOpen && classes.drawerPaperClose
           ),
         }}

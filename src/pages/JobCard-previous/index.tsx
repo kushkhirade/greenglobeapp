@@ -1273,6 +1273,7 @@ export class AddNewJobCardImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
+            disable: false,
             component: this.renderForm(),
           },
           // {
@@ -1289,6 +1290,7 @@ export class AddNewJobCardImpl extends React.Component<
           // },
           {
             label: "Job Card",
+            disable: false,
             component: this.renderJobCard(),
           },
         ]}

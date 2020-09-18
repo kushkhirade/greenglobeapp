@@ -120,7 +120,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
   }
 
   private renderAppBar() {
-    const { classes, utility, dealerDetails } = this.props;
+    const { classes, utility, dealerDetails, history } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
 
@@ -157,7 +157,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
               ? "Lead Details" : this.state.routeName
             }
           </Typography>
-          <div className="align-center" onClick={this.topRightIconUrl}>
+          <div className="align-center">
             {/* <div>
               Logout <span style={{ paddingRight: "3px" }} />{" "}
             </div> */}
@@ -165,7 +165,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
               (dealerDetails && dealerDetails.dealer
                 && this.props.location.pathname.includes('/dealers/dealer-details') && dealerDetails.dealer.recordtypeid === '0122w000000chRuAAI'
                 || dealerDetails && this.props.isDealer && this.props.location.pathname.includes('/customer/customer-lead-details') && dealerDetails.recordtypeid === '0122w000000chRpAAI') 
-                ? <EditIcon /> : <ExitToAppIcon />
+                ? <EditIcon onClick={this.topRightIconUrl} /> : <ExitToAppIcon onClick={()=> history.push("/")} />
             }
             &nbsp; &nbsp;
           </div>

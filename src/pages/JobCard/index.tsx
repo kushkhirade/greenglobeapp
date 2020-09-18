@@ -228,43 +228,46 @@ export class AddNewJobCardImpl extends React.Component<
         console.log("----------------Dealer---------------------------");
         const custData = await getData({
           query: `SELECT * FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0121s0000000WE4AAM' AND Name is not null`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0121s0000000WE4AAM' 
+          AND Name is not null AND lead_status__c = 'Closed'`,
           token: data.token,
         });
+        console.log("custData => ", custData)
         custLeadsDataArr = custData.result.map((x) => {
           x.type = "customer";
           return x;
         });
 
-        const leadsData = await getData({
-          query: `SELECT * from salesforce.Lead 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
-          AND Name is not null AND Status != 'Closed'`,
-          token: data.token
-        });
-        leadsData.result.map((l) => {
-          l.type = "lead";
-          return custLeadsDataArr.push(l);
-        });
-      } else {
-        console.log("----------------Distributor---------------------------");
-        const custData = await getData({
-          query: `SELECT * FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WE4AAM'  AND Name is not null`,
-          token: data.token,
-        });
-        custLeadsDataArr = custData.result.map((x) => {
-          x.type = "customer";
-          return x;
-        });
+        // const leadsData = await getData({
+        //   query: `SELECT * from salesforce.Lead 
+        //   WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
+        //   AND Name is not null AND Status != 'Closed'`,
+        //   token: data.token
+        // });
+        // leadsData.result.map((l) => {
+        //   l.type = "lead";
+        //   return custLeadsDataArr.push(l);
+        // });
+      } 
+      // else {
+      //   console.log("----------------Distributor---------------------------");
+      //   const custData = await getData({
+      //     query: `SELECT * FROM salesforce.Contact 
+      //     WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WE4AAM'  AND Name is not null`,
+      //     token: data.token,
+      //   });
+      //   custLeadsDataArr = custData.result.map((x) => {
+      //     x.type = "customer";
+      //     return x;
+      //   });
 
-        const leadsData = await getData({
-          query: `SELECT * FROM salesforce.Lead 
-          WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
-          AND Name is not null AND Status != 'Closed'`,
-          token: data.token
-        });
-      }
+      //   const leadsData = await getData({
+      //     query: `SELECT * FROM salesforce.Lead 
+      //     WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
+      //     AND Name is not null AND Status != 'Closed'`,
+      //     token: data.token
+      //   });
+      // }
       console.log("custLeadsDataArr: ", custLeadsDataArr);
       this.setState({ allCustAndLeads: custLeadsDataArr });
     } catch (e) {
@@ -281,7 +284,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -317,7 +320,7 @@ export class AddNewJobCardImpl extends React.Component<
          Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${
           lastName ?? ""
         }','${company ?? ""}','${email ?? ""}','${whatsAppNumber ?? 0}','${
-          leadType ?? ""}', '${subleadType ?? ""
+          leadType ?? ""}', '${subLeadType ?? ""
         }',
          '${leadSource ?? ""}','${leadStatus ?? ""}','${
           subLeadSource ?? ""
@@ -362,7 +365,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -396,7 +399,7 @@ export class AddNewJobCardImpl extends React.Component<
         }', Company__c = '${company ?? ""}',Email = '${
           email ?? ""
         }',Whatsapp_number__c = '${whatsAppNumber ?? 0}',
-          Lead_Type__c = '${leadType ?? ""}', lead_sub_type__c='${subleadType ?? ""}', Lead_Source__c = '${
+          Lead_Type__c = '${leadType ?? ""}', lead_sub_type__c='${subLeadType ?? ""}', Lead_Source__c = '${
           leadSource ?? ""
         }',Lead_Status__c = '${leadStatus ?? ""}',Sub_Lead_Source__c = '${
           subLeadSource ?? ""
@@ -461,7 +464,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -497,7 +500,7 @@ export class AddNewJobCardImpl extends React.Component<
         }', Company = '${company ?? ""}', Whatsapp_number__c = '${
           whatsAppNumber ?? 0
         }',
-        Lead_Type__c = '${leadType ?? ""}', sub_lead_type__c = '${subleadType ?? ""}', LeadSource = '${
+        Lead_Type__c = '${leadType ?? ""}', sub_lead_type__c = '${subLeadType ?? ""}', LeadSource = '${
           leadSource ?? ""
         }', Status = '${leadStatus ?? ""}',
         Sub_Lead_Source__c = '${subLeadSource ?? ""}', Rating = '${
@@ -660,7 +663,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -697,7 +700,7 @@ export class AddNewJobCardImpl extends React.Component<
           lastName ?? ""
         }','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? ""},'${
           leadType ?? ""
-        }', '${subleadType ?? ""}'
+        }', '${subLeadType ?? ""}'
          '${leadSource ?? ""}','${leadStatus ?? ""}','${
           subLeadSource ?? ""
         }','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${
@@ -768,32 +771,38 @@ export class AddNewJobCardImpl extends React.Component<
   handleJobCardStep = async (data) => {
     console.log("=================handle job card =====================");
     console.log(data);
+    console.log(this.state);
     console.log("======================================");
 
-    let { gstNumber , companyName } = data;
+    let { gstNumber } = data;
     let { token , record_type , sfid } = loggedInUserDetails;
     let { isLeadOrCustomer } = this.state;
     let basicDetailsFormId = this.state.basicDetailsFormRecordId;
+    let custSfid ;
+    if(!basicDetailsFormId ){
+      custSfid = this.state.selectedUser.sfid
+    }else{
     let queryToGetSfid = `Select sfid,name from Salesforce.contact where id=${basicDetailsFormId}`
     let sfidOfRecord = await getData({
             query : queryToGetSfid,
             token: token
           });
       console.log("SFID ====" , sfidOfRecord);
-   
+      custSfid = sfidOfRecord.result[0].sfid
+    }
       const {
         jobCardCheckboxes: jCC,
         complaintCheckboxes: cC
       } = this.state;
 
-      let query = `INSERT INTO salesforce.job_card__c (customer__c, Company__c, GST_Number__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,
+      let query = `INSERT INTO salesforce.job_card__c (customer__c, GST_Number__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,
         FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c,GRECO_PRO_KIT_FITTING__c,
         HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,
         MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,
         REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,
         VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c,
         Low_Average_Mileage__c,Late_Starting_Problem__c,Jerking_Missing_Low_Pick__c,Changeover__c,Vehicle_Not_Changing__c,Vehicle_Not_starting__c,Engine_Shutdown__c,Less_Slow_Gas__c,Check_Engine__c,Petrol_Consumption__c,Noise_after__c,Gas_Leakage__c,Switch_Not_Working_No_lights_on_switch__c,Buzzer_Noise_on_Switch__c) 
-        VALUES ('${sfidOfRecord.result[0].sfid}','${companyName}','${gstNumber}',
+        VALUES ('${custSfid}','${gstNumber ?? ""}',
           ${jCC["AIR FILTER R/R"]},${jCC["BLOCK PISTON R/R"]},${
             jCC["CARBURETTOR SERVICE"]
           },${jCC["CAR SCANNING"]},${jCC["CNG LEAKAGE CHECK"]},${
@@ -871,15 +880,16 @@ export class AddNewJobCardImpl extends React.Component<
         console.log("#######################################################");
 
         if(addJobCardRes.status == 200 && addJobCardRes.result){
+          this.handleCloseAddJobCard()
           // alert("New Job Card Added Successfully");
-          if(isLeadOrCustomer === "leads"){
-            this.setState({ OpenAddJobCard: false })
-            // this.props.history.push({pathname: "/leads"});
-          }
-          if(isLeadOrCustomer === "customers"){
-            this.setState({ OpenAddJobCard: false })
-            // this.props.history.push({pathname: "/customers"});
-          }
+          // if(isLeadOrCustomer === "leads"){
+          //   this.handleCloseAddJobCard()
+          //   // this.props.history.push({pathname: "/leads"});
+          // }
+          // if(isLeadOrCustomer === "customers"){
+          //   this.handleCloseAddJobCard()
+          //   // this.props.history.push({pathname: "/customers"});
+          // }
         }
 
   };
@@ -917,7 +927,7 @@ export class AddNewJobCardImpl extends React.Component<
   
     let {
       chassis,city, company, country, dailyRunning, email, firstName, fuelType, gstNumber, lastName, leadSource, 
-      leadStatus,leadType,subleadType,mfg, middleName, rating, registration, state, street, subLeadSource, usage, 
+      leadStatus,leadType,subLeadType,mfg, middleName, rating, registration, state, street, subLeadSource, usage, 
       vehicleMek, vehicleModel, vehicleNumber , vehicleType, whatsAppNumber, wheeles, zip
     } = obj;
 
@@ -935,7 +945,7 @@ export class AddNewJobCardImpl extends React.Component<
 
           console.log(assignedDist);
           let query = `INSERT INTO salesforce.Contact (FirstName, MiddleName, LastName, Company__c,Email,Whatsapp_number__c,Lead_Type__c,lead_sub_type__c,Lead_Source__c,Lead_Status__c,Sub_Lead_Source__c,Lead_Rating__c,MailingStreet,MailingCity,MailingState,MailingCountry,MailingPostalCode,Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c,Vehicle_Model__c,Usage_of_Vehicle__c,Engine_Type__c,Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,accountid,RecordTypeId,Assigned_Dealer__c)
-          values('${firstName ?? ""}', '${middleName ?? ""}', '${lastName ?? ""}' , '${company ?? ""}' , '${email ?? ""}' , ${whatsAppNumber} , '${leadType ?? ""}' , '${subleadType ?? ""}', '${leadSource ?? ""}' , 'Closed' , '${subLeadSource ?? ""}' ,'${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${country ?? ""}',${zip},'${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',${dailyRunning},'${registration ?? ""}',${mfg},'${chassis ?? ""}','${assignedDist}', '0121s0000000WE4AAM' , '${sfid}') Returning Id`;    
+          values('${firstName ?? ""}', '${middleName ?? ""}', '${lastName ?? ""}' , '${company ?? ""}' , '${email ?? ""}' , ${whatsAppNumber} , '${leadType ?? ""}' , '${subLeadType ?? ""}', '${leadSource ?? ""}' , 'Closed' , '${subLeadSource ?? ""}' ,'${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${country ?? ""}',${zip},'${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',${dailyRunning},'${registration ?? ""}',${mfg},'${chassis ?? ""}','${assignedDist}', '0121s0000000WE4AAM' , '${sfid}') Returning Id`;    
           try {
             let res;
             res = await getData({
@@ -966,7 +976,7 @@ export class AddNewJobCardImpl extends React.Component<
           console.log(type);
           if(type === "customer"){
             // alert("And selected customer");
-            let updateQuery = `update salesforce.Contact set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company__c='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subleadType ?? ""}',Lead_Source__c='${leadSource ?? ""}',Lead_Status__c='${leadStatus ?? ""}',Sub_Lead_Source__c ='${subLeadSource ?? ""}'  ,Lead_Rating__c='${rating ?? ""}',  MailingStreet='${street ?? ""}',  MailingCity='${city ?? ""}' ,MailingState='${state ?? ""}' ,MailingCountry='${country ?? ""}',MailingPostalCode =${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine_Type__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c='${gstNumber ?? ""}'   where sfid like '${sfid}' Returning Id`;
+            let updateQuery = `update salesforce.Contact set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company__c='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subLeadType ?? ""}',Lead_Source__c='${leadSource ?? ""}',Lead_Status__c='${leadStatus ?? ""}',Sub_Lead_Source__c ='${subLeadSource ?? ""}'  ,Lead_Rating__c='${rating ?? ""}',  MailingStreet='${street ?? ""}',  MailingCity='${city ?? ""}' ,MailingState='${state ?? ""}' ,MailingCountry='${country ?? ""}',MailingPostalCode =${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine_Type__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c='${gstNumber ?? ""}'   where sfid like '${sfid}' Returning Id`;
             try {
               let res;
               res = await getData({
@@ -991,7 +1001,7 @@ export class AddNewJobCardImpl extends React.Component<
           }
           else {
               // alert("And selected lead");
-             let updateQuery  = `update salesforce.Lead set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subleadType ?? ""}',LeadSource='${leadSource ?? ""}',Status='${leadStatus ?? ""}',Sub_Lead_Source__c='${subLeadSource ?? ""}' ,Rating='${rating ?? ""}',  Street='${street ?? ""}',  City='${city ?? ""}' ,State='${state ?? ""}' ,Country='${country ?? ""}',PostalCode=${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c ='${gstNumber ?? ""}' where sfid like '${sfid}' Returning Id`;
+             let updateQuery  = `update salesforce.Lead set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subLeadType ?? ""}',LeadSource='${leadSource ?? ""}',Status='${leadStatus ?? ""}',Sub_Lead_Source__c='${subLeadSource ?? ""}' ,Rating='${rating ?? ""}',  Street='${street ?? ""}',  City='${city ?? ""}' ,State='${state ?? ""}' ,Country='${country ?? ""}',PostalCode=${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c ='${gstNumber ?? ""}' where sfid like '${sfid}' Returning Id`;
               try {
                 let res;
                 res = await getData({
@@ -1126,7 +1136,7 @@ export class AddNewJobCardImpl extends React.Component<
               ...leadSourceForJobCard,
             ]}
             cancelTitle="Close"
-            onCancel={() => this.setState({ OpenAddJobCard: false })}
+            onCancel={() => this.handleCloseAddJobCard()}
           />
         </React.Fragment>
       </div>
@@ -1311,7 +1321,7 @@ export class AddNewJobCardImpl extends React.Component<
           hasSubmit={false}
           options={gstDetails}
         />
-        {this.props.leadForm.subleadType === "Servicing" &&
+        {this.props.leadForm.subLeadType === "Servicing" &&
           <div>
             <SubFormHeading>Complaint Checklist</SubFormHeading>
             <Grid container>
@@ -1400,6 +1410,7 @@ export class AddNewJobCardImpl extends React.Component<
             // this.handleJobCardDealerInsert();
             this.handleJobCardStep(this.props.leadForm);
           }}
+          onCancel={() => this.handleCloseAddJobCard()}
           formModel="leadForm"
           hasSubmit={true}
           submitTitle="Save"
@@ -1573,11 +1584,13 @@ export class AddNewJobCardImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
+            disable: false,
             component: this.renderForm(),
           },
          
           {
             label: "Job Card",
+            disable: false,
             component: this.renderJobCard(),
           },
         ]}
@@ -1607,7 +1620,7 @@ export class AddNewJobCardImpl extends React.Component<
       company: obj.company ?? obj.company__c,
       whatsAppNumber: obj.whatsapp_number__c,
       leadType: obj.lead_type__c,
-      subleadType: obj.lead_sub_type__c ?? obj.sub_lead_type__c,
+      subLeadType: obj.lead_sub_type__c ?? obj.sub_lead_type__c,
       leadSource: obj.leadsource ?? obj.lead_source__c,
       leadStatus: obj.status ?? obj.lead_status__c,
       subLeadSource: obj.sub_lead_source__c,
@@ -1623,7 +1636,7 @@ export class AddNewJobCardImpl extends React.Component<
       vehicleMek: obj.vehicle_make__c,
       vehicleModel: obj.vehicle_model__c,
       usage: obj.usage_of_vehicle__c,
-      vehicleType: obj.engine__c,
+      vehicleType: obj.engine_type__c,
       dailyRunning: obj.daily_running_kms__c,
       registration: obj.registration_year__c,
       mfg: obj.year_of_manufacturing__c,
@@ -1654,6 +1667,42 @@ export class AddNewJobCardImpl extends React.Component<
     console.log(obj);
     this.setState({ selectedUser: obj });
   };
+
+  handleCloseAddJobCard = () => {
+    const newData = {
+      email: "",
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      company: "",
+      whatsAppNumber: "",
+      leadType: "",
+      subLeadType: "",
+      leadSource: "",
+      leadStatus: "",
+      subLeadSource: "",
+      rating: "",
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      country: "",
+      vehicleNumber: "",
+      fuelType: "",
+      wheeles: "",
+      vehicleMek: "",
+      vehicleModel: "",
+      usage: "",
+      vehicleType: "",
+      dailyRunning: "",
+      registration: "",
+      mfg: "",
+      chassis: "",
+      gstNumber: "",
+    };
+    changeValuesInStore("leadForm", newData);
+    this.setState({ OpenAddJobCard : false });
+  }
 
   handleJobCardDetails = (data) => {
     this.props.history.push(`/job-card-details/${data.sfid}`)

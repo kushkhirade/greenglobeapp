@@ -214,10 +214,10 @@ export class JobCardDetailsImpl extends React.PureComponent<
                   <span className="description-text">GST Number:</span>
                   {this.state.AllJobCards.gst_number__c}
                 </Grid>
-                <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
+                {/* <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Company:</span>
                   {this.state.AllJobCards.company__c || this.state.AllJobCards.company}
-                </Grid>
+                </Grid> */}
               </Grid>
               <SubFormHeading>Complaint List</SubFormHeading>
               {this.state.complaintList && this.state.complaintList.map(cl => {

@@ -13,7 +13,7 @@ const getData = async ({ query, token }) => {
   // console.log("encrypted ", encrypted)
   // convert CipherParams object to json string for transmission
   var encrypted_json_str = JSON.parse(encrypted.toString());
-  // console.log("encrypted_json_str ", encrypted_json_str)
+  console.log("encrypted_json_str ", encrypted_json_str)
 
   const data = await fetch('https://grecokits.herokuapp.com/encryptionjwt.php', {
     body: JSON.stringify({ query: encrypted_json_str, token: token }),
@@ -50,6 +50,8 @@ export const imageUpload = ({ id, type, img }) => {
     // xhr.withCredentials = true;
 
     xhr.addEventListener("readystatechange", function () {
+      console.log("this.responseText => ", this.responseText)
+      console.log("this.readyState => ", this.readyState)
       if (this.readyState === 4) {
         resolve(JSON.parse(this.responseText));
       }

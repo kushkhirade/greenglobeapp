@@ -50,7 +50,7 @@ const invoiceData = {
   address: "Indiabulls, Lower Parel, Mumbai, MH 411093, India",
   totalItems: 25,
   orderTotal: 23123213,
-  billHeads: ["  Item Name   ", "Unit Cost", "Quantity", "Amount"],
+  billHeads: ["  ", "Item Name", "Unit Cost", "Quantity", "Amount"],
   billData: [
     {
       itemName: "Item 1 ",
@@ -168,11 +168,11 @@ export class AddNewOrderImpl extends React.PureComponent<
     console.log("selectedProducts ", selectedProducts);
     console.log("orderdetails ", orderdetails);
     const orderType = this.props.location.orderType;
-    const UniqueId = orderdetails.app_id__c ? orderdetails.app_id__c : new Date();
+    const UniqueId = orderdetails && orderdetails.app_id__c ? orderdetails.app_id__c : new Date();
     let insertuser;
   
     try{
-      if(!orderdetails && !orderdetails.sfid ){
+      if(!orderdetails){
         if(data.record_type === "0122w000000cwfSAAQ"){
             
           const SFID = await getData({
@@ -214,6 +214,7 @@ export class AddNewOrderImpl extends React.PureComponent<
         }
       }
       console.log("insertuser => ", insertuser);
+      this.setState({ orderdetails: insertuser.result[0] });
 
       selectedProducts.map(async (x) => 
         { x.itemNumber ? 
@@ -259,10 +260,11 @@ export class AddNewOrderImpl extends React.PureComponent<
       <Stepper
         identifier="buy"
         activeStep={this.state.activeStepBuy}
-        onChangeStep={ (index) =>  this.setState({ activeStepBuy: index })}
+        onChangeStep={ (index) => this.setState({ activeStepBuy: index }) }
         stepData={[
           {
             label: "Draft",
+            disable: false,
             component: 
             <RenderForm label="Submit" type="buy" history={this.props.history} 
               orderedproducts={orderedproducts} 
@@ -276,6 +278,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "Submitted",
+            disable: false,
             component: (
               <SubmittedScreen
                 orderdetails={orderdetails}
@@ -290,6 +293,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "PI Raised",
+            disable: false,
             component: (
               <Grid container className="align-center">
                 <Grid item xs={12} md={4} lg={4}>
@@ -333,9 +337,9 @@ export class AddNewOrderImpl extends React.PureComponent<
                             return( 
                               <Grid key={index} className="data-inner" container>
                               {console.log("p==> ", p)}
-                                <Grid item xs={4} className="data">{p.prd_name__c}</Grid>
+                                <Grid item xs={5} className="data">{p.prd_name__c}</Grid>
                                 <Grid item xs={4} className="data">{p.unitprice}</Grid>
-                                <Grid item xs={3} className="data">{p.quantity}</Grid>
+                                <Grid item xs={2} className="data">{p.quantity}</Grid>
                                 <Grid item xs={1} className="data">{p.totalprice ?? p.quantity*p.unitprice}</Grid>
                               </Grid>
                             )
@@ -397,12 +401,15 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "Payment Details",
+            disable: false,
             component: (
               <PaymentDetailsScreen
                 orderdetails={orderdetails}
                 onClick={(details) =>{
                   this.UpdateAnOrder(loggedInUserDetails, orderdetails, details)
-                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
+                  this.setState({ activeStepBuy: this.state.activeStepBuy + 
+                    orderdetails.courier_name__c && orderdetails.consignment_No__c && orderdetails.shipping_date__c ? 1 : 0,
+                  })
                 }}
                 history= {this.props.history}
               />
@@ -410,18 +417,20 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "Dispatched",
+            disable: orderdetails && orderdetails.courier_name__c && orderdetails.consignment_No__c && orderdetails.shipping_date__c ? false : true,
             component: (
               <DispatchedScreen
                 orderdetails={orderdetails} 
                 orderedproducts={orderedproducts} 
                 type="buy" 
                 onClick={() =>
-                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1,})
+                  this.setState({ activeStepBuy: this.state.activeStepBuy + 1 })
                 }
               />
             ),
           },
           { label: "GRN", 
+            disable: orderdetails && orderdetails.courier_name__c && orderdetails.consignment_No__c && orderdetails.shipping_date__c ? false : true,
             component: 
             <RenderForm label="Confirm" type="buy" 
               orderdetails={orderdetails}
@@ -449,6 +458,7 @@ export class AddNewOrderImpl extends React.PureComponent<
         stepData={[
           {
             label: "Draft",
+            disable: false,
             component: 
             <RenderForm label="Submit" type="sell" 
               orderedproducts={orderedproducts}
@@ -465,6 +475,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "Submitted",
+            disable: false,
             component: (
               <SubmittedScreen
                 orderdetails={orderdetails}
@@ -479,6 +490,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "PI Raised",
+            disable: false,
             component: (
               <Grid container className="align-center">
                 <Grid item xs={12} md={4} lg={4}>
@@ -522,9 +534,9 @@ export class AddNewOrderImpl extends React.PureComponent<
                             return( 
                               <Grid key={index} className="data-inner" container>
                               {console.log("p==> ", p)}
-                                <Grid item xs={4} className="data">{p.prd_name__c}</Grid>
+                                <Grid item xs={5} className="data">{p.prd_name__c}</Grid>
                                 <Grid item xs={4} className="data">{p.unitprice}</Grid>
-                                <Grid item xs={3} className="data">{p.quantity}</Grid>
+                                <Grid item xs={2} className="data">{p.quantity}</Grid>
                                 <Grid item xs={1} className="data">{p.totalprice ?? p.quantity*p.unitprice}</Grid>
                               </Grid>
                             )
@@ -586,6 +598,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "Payment Details",
+            disable: false,
             component: (
               <PaymentDetailsScreen
                 orderdetails={orderdetails} 
@@ -598,6 +611,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "Dispatched",
+            disable: false,
             component: (
               <DispatchedScreen
                 orderdetails={orderdetails} 
@@ -1006,7 +1020,7 @@ class DispatchedScreen extends React.Component <any> {
         console.log("orderedproducts =>", orderedproducts);
         this.setState({
           courierName: orderedproducts.result[0].courier_name__c || "", 
-          consignmentNo: orderedproducts.result[0].Consignment_No__c || "",
+          consignmentNo: orderedproducts.result[0].consignment_No__c || "",
           shippingDate: orderedproducts.result[0].shipping_date__c || ""
         })
         return orderedproducts.result;

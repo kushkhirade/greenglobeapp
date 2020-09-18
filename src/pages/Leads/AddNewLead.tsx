@@ -27,6 +27,7 @@ import {
 } from "../Customers/customerInputs";
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
+import { store } from "../../store/Store";
 import { Tabs } from "src/components/Tabs";
 // import { GSelect } from "src/components/GSelect";
 import { getToken } from "src/state/Utility";
@@ -38,6 +39,16 @@ import {
   leadForm as leadFormInitObj,
   userForm as userFormInitObj,
 } from "../../reducers/CombinedReducers";
+import { 
+  Document, 
+  PDFDownloadLink, 
+  BlobProvider, pdf,
+  Page,  
+  View,
+  Text,
+  // Image, 
+  StyleSheet, 
+  PDFViewer } from "@react-pdf/renderer";
 
 var loggedInUserDetails;
 
@@ -68,6 +79,42 @@ const products = [
     label: "Open",
   },
 ];
+
+const invoiceData = {
+  orderID: "IN915426",
+  dateOfIssue: "10/02/2020",
+  billedTo: "GGFS",
+  address: "Indiabulls, Lower Parel, Mumbai, MH 411093, India",
+  totalItems: 25,
+  orderTotal: 23123213,
+  billHeads: ["  ", "Item Name", "Unit Cost", "Quantity", "Amount"],
+  billData: [
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+    {
+      itemName: "Item 1 ",
+      unitCost: "200",
+      qty: "2",
+      amount: "400",
+    },
+  ],
+};
 
 let intervalId = null;
 
@@ -285,7 +332,7 @@ export class AddNewLeadImpl extends React.Component<
       contactPerson: leadData.contact_person__c,
       whatsAppNumber: leadData.whatsapp_number__c,
       leadType: leadData.lead_type__c,
-      subleadType: leadData.sub_lead_type__c,
+      subLeadType: leadData.sub_lead_type__c,
       leadSource: leadData.leadsource,
       leadStatus: leadData.status,
       subLeadSource: leadData.sub_lead_source__c,
@@ -329,7 +376,7 @@ export class AddNewLeadImpl extends React.Component<
       whatsAppNumber,
       contactPerson,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -339,31 +386,22 @@ export class AddNewLeadImpl extends React.Component<
       state,
       zip,
       country,
-      Original_RC_Book__c, 
-      Bank_NOC__c, 
-      Insurance_Photocopy__c, 
-      Permit_URL__c, 
-      Tax_url__c, 
-      Passing_url__c, 
       Aadhaar__c,
       PAN__c,
     } = userForm;
     const query = `INSERT INTO salesforce.Lead 
     ( FirstName ,MiddleName ,LastName ,Email ,Company ,Whatsapp_number__c ,Contact_Person__c ,
       Lead_Type__c ,sub_lead_type__c ,LeadSource ,Status ,Sub_Lead_Source__c ,Rating ,
-      Street ,City ,State ,PostalCode ,Country ,RecordTypeId ,Assigned_Distributor__c
-      Original_RC_Book__c, Bank_NOC__c, Insurance_Photocopy__c, Permit_URL__c, Tax_url__c, Passing_url__c, Aadhaar__c,PAN__c,)
+      Street ,City ,State ,PostalCode ,Country ,Aadhaar__c,PAN__c,RecordTypeId ,Assigned_Distributor__c)
     VALUES ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
       email ?? ""
     }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : ""},'${contactPerson ?? ""}', '${
       leadType ?? ""
-    }', '${subleadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
+    }', '${subLeadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
       rating ?? ""
     }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
       country ?? ""}', 
-    '${Original_RC_Book__c ?? ""}', '${Bank_NOC__c ?? ""}', '${Insurance_Photocopy__c ?? ""}', '${Permit_URL__c ?? ""}', 
-    '${Tax_url__c ?? ""}', '${Passing_url__c ?? ""}', '${Aadhaar__c}'${PAN__c}'
-    '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING ID`;
+    '${Aadhaar__c ?? ""}', '${PAN__c ?? ""}', '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING ID`;
 
     try {
       const result = await getData({
@@ -395,7 +433,7 @@ export class AddNewLeadImpl extends React.Component<
       whatsAppNumber,
       contactPerson,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -405,6 +443,8 @@ export class AddNewLeadImpl extends React.Component<
       state,
       zip,
       country,
+      Aadhaar__c,
+      PAN__c,
     } = userForm;
 
     const query = `update  salesforce.Lead set FirstName = '${
@@ -415,13 +455,14 @@ export class AddNewLeadImpl extends React.Component<
       company ?? ""
     }',Whatsapp_number__c='${whatsAppNumber ?? 0}',Contact_Person__c = '${contactPerson ?? ""}', Lead_Type__c = '${
       leadType ?? ""
-    }', sub_lead_type__c = '${subleadType ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${
+    }', sub_lead_type__c = '${subLeadType ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${
       leadStatus ?? ""
     }',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${
       rating ?? ""
     }',   Street = '${street ?? ""}',City = '${city ?? ""}',State = '${
       state ?? ""
-    }',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}' where id='${
+    }',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}' ,Aadhaar__c = '${Aadhaar__c ?? ""}', PAN__c = '${PAN__c ?? ""}',
+    where id='${
       this.state.id
     }'`;
     const updateLead = await getData({
@@ -442,7 +483,7 @@ export class AddNewLeadImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -471,7 +512,7 @@ export class AddNewLeadImpl extends React.Component<
       email ?? ""
     }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : 0},'${
       leadType ?? ""
-    }', '${subleadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
+    }', '${subLeadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
       rating ?? ""
     }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
       country ?? ""
@@ -512,7 +553,7 @@ export class AddNewLeadImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -539,7 +580,7 @@ export class AddNewLeadImpl extends React.Component<
       FirstName = '${firstName ?? ""}', MiddleName = '${middleName ?? ""}', LastName = '${lastName ?? ""}',
       Email = '${email ?? ""}', Company = '${company ?? ""}',Whatsapp_number__c = ${whatsAppNumber ? whatsAppNumber : 0},
       Lead_Type__c = '${leadType ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${leadStatus ?? ""}',
-      Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${rating ?? ""}', sub_lead_type__c = '${subleadType ?? ""}',
+      Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${rating ?? ""}', sub_lead_type__c = '${subLeadType ?? ""}',
       Street = '${street ?? ""}',City = '${city ?? ""}',State = '${state ?? ""}',PostalCode = '${zip ?? ""}',Country = '${country ?? ""}', 
       Vehicle_no__c = '${vehicleNumber ?? ""}',Fuel_Type__c = '${fuelType ?? ""}',X3_or_4_Wheeler__c = '${wheeles ?? ""}',
       Vehicle_Make__c = '${vehicleMek ?? ""}', Vehicle_Model__c = '${vehicleModel ?? ""}',Usage_of_Vehicle__c = '${usage ?? ""}',
@@ -616,7 +657,7 @@ export class AddNewLeadImpl extends React.Component<
     intervalId = setInterval(async () => that.getSfidFromContact(), 2500);
   };
 
-  insertDealerStep = async (status, leadForm) => {
+  updateDealerSteps = async (status, leadForm) => {
     console.log("***************************************");
     const currentUser = getToken().data;
     const { currentNewSfid } = this.state;
@@ -835,7 +876,7 @@ export class AddNewLeadImpl extends React.Component<
                 console.log(this.state);
                 this.setIntervalSfid(v.email);
                 if (this.state.currentNewSfid) {
-                  await this.insertDealerStep("Document Collection", v);
+                  await this.updateDealerSteps("Document Collection", v);
                   this.setState({
                     activeStep: this.state.activeStep + 1,
                   });
@@ -852,23 +893,48 @@ export class AddNewLeadImpl extends React.Component<
     );
   };
 
+  myPDF = (
+  <Document>
+    <Page size="A4" >
+      <View style={{flexDirection: "row"}}>
+        {/* <Text>Hello World!</Text> */}
+      </View>
+      <View style={{flexGrow: 1}}>
+        {/* <Text>We're inside a PDF!</Text> */}
+      </View>
+    </Page>
+  </Document>
+  )
+
   // Negotiation Form
   renderNegotitation = () => {
     return (
       <div className="negotitation-container">
         <div style={{ textAlign: "right" }}>
-          <Button variant="contained" color="default">
-            Generate Proposal
-          </Button>
+          {/* {this.myPDF} */}
+         {/* <Proposal /> */}
+          <BlobProvider document={<Proposal />}>
+          {({ blob, url, loading, error }) => {
+            // const url = URL.createObjectURL(blob)
+            console.log("blob : ", blob);
+            console.log("url : ", url);
+            return(
+              <a href={`mailto:${store.getState().rxFormReducer["leadForm"].email}?subject=Proposal PDF url&body=PFA for Proposal %0A${url}%0A Thanks%20&%20Reagrds`} >
+              <Button variant="contained" color="default">
+                Send Proposal
+              </Button>
+              </a>
+          )}}
+          </BlobProvider>
         </div>
         <div className="negotitation-content">
           <div className="heading">Green Globe Fuel Solutions</div>
           <div className="info-container">
             <div className="image-container">
               {" "}
-              <Image
+              <img
                 src="https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png"
-                fallback={<Shimmer width={300} height={300} />}
+                // fallback={<Shimmer width={300} height={300} />}
               />
             </div>
             <div className="details">
@@ -894,7 +960,7 @@ export class AddNewLeadImpl extends React.Component<
             })}}
           onSubmit={async (v: any) => {
             if (this.state.currentNewSfid) {
-              await this.insertDealerStep("Negotiation", v );
+              await this.updateDealerSteps("Negotiation", v );
               this.setState({
                 activeStep: this.state.activeStep + 1,
               });
@@ -915,7 +981,7 @@ export class AddNewLeadImpl extends React.Component<
   renderClosedTab = () => {
     return (
       <div style={{ width: "100%" }}>
-        <TableWithGrid
+        {/* <TableWithGrid
           title={"Products Sold"}
           data={[
             {
@@ -945,7 +1011,89 @@ export class AddNewLeadImpl extends React.Component<
           ]}
           columns={closedColumns}
           options={{ responsive: "scrollMaxHeight" }}
-        />{" "}
+        />{" "} */}
+        <Grid container className="align-center">
+          <Grid item xs={12} md={4} lg={4}>
+            <div className="card-container no-hover">
+              {/* <div className="head-title padding-6 ">Proforma Invoice</div> */}
+              <Typography variant="h5">Products Sold</Typography>
+              <div className="invoice-date padding-6">
+                <div>
+                  {" "}
+                  <span className="description-text">
+                    Invoice No -{" "}
+                  </span>{" "}
+                  {/* {orderdetails && orderdetails.ordernumber} */}
+                </div>
+                <div>
+                  {" "}
+                  <span className="description-text">{" "}
+                    Date of Issue -
+                  </span>{" "}
+                  10/02/2020
+                </div>
+              </div>
+              <div className="padding-6 invoice-add">
+                {" "}
+                <span className = "description-text">
+                  Billed to -
+                </span>{" "}
+                {/* {orderdetails && orderdetails.billingstreet} {orderdetails && orderdetails.billingcity} {orderdetails && orderdetails.billingpostalcode} {orderdetails && orderdetails.billingstate} {orderdetails && orderdetails.billingcountry} */}
+              </div>
+              <div className="invoice-table">
+                <div className="table-heads">
+                  {invoiceData.billHeads.map((name, index) => (
+                    <div key={index} className="heading">
+                      {name}
+                    </div>
+                  ))}
+                </div>
+                <div className="table-data">
+                  <Grid className="data-inner" container>
+                    <Grid item xs={5} className="data">{store.getState().rxFormReducer["leadForm"].products}</Grid>
+                    <Grid item xs={4} className="data">{44500}</Grid>
+                    <Grid item xs={2} className="data">{1}</Grid>
+                    <Grid item xs={1} className="data">{44500}</Grid>
+                  </Grid>
+                </div>
+                <div className="bill-total">
+                  <div>
+                    <span className="description-text">Sub Total:</span>
+                    {/* {orderedproducts && orderedproducts.reduce(
+                      (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice)+ s,
+                      0
+                    )} */}
+                  </div>
+                  <div>
+                    <span className="description-text">Tax - 18% -</span>
+                    {/* {(orderedproducts && orderedproducts.reduce(
+                      (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice) + s,
+                      0
+                    ) /
+                      100) *
+                      18} */}
+                  </div>
+                  <div className="invoice-total">
+                    {" "}
+                    <span className="description-text">
+                      Invoice Total -
+                    </span>
+                    {/* {orderedproducts && orderedproducts.reduce(
+                      (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice) + s,
+                      0
+                    ) +
+                      (orderedproducts && orderedproducts.reduce(
+                        (s, a) => Number(a.totalprice ?? a.quantity*a.unitprice) + s,
+                        0
+                      ) /
+                        100) *
+                        18} */}
+                  </div>
+                </div>
+              </div>{" "}
+            </div>
+          </Grid>
+        </Grid>
         <FormComponent
           onCancel={() => {
             this.setState({
@@ -954,7 +1102,7 @@ export class AddNewLeadImpl extends React.Component<
           onSubmit={async (v: any) => {
             console.log(">> v", v);
             if (this.state.currentNewSfid) {
-              await this.insertDealerStep("Closed", v);
+              await this.updateDealerSteps("Closed", v);
               this.setState({
                 activeStep: this.state.activeStep + 1,
               });
@@ -975,7 +1123,7 @@ export class AddNewLeadImpl extends React.Component<
     console.log("*************************************");
     console.log("Data: ", data);
 
-    let { gstNumber , companyName } = data;
+    let { gstNumber } = data;
     const {
       dealerCheckboxes: jCC,
       complainCheckList: cC,
@@ -991,10 +1139,10 @@ export class AddNewLeadImpl extends React.Component<
 
     console.log(result1);
 
-    const query = `INSERT INTO salesforce.job_card__c (customer__c, Company__c, GST_Number__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c	,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c	,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c	,GRECO_PRO_KIT_FITTING__c,HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c,Low_Average_Mileage__c,Late_Starting_Problem__c,Jerking_Missing_Low_Pick__c,Changeover__c,Vehicle_Not_Changing__c,Vehicle_Not_starting__c,Engine_Shutdown__c	,Less_Slow_Gas__c,Check_Engine__c,Petrol_Consumption__c,Noise_after__c,Gas_Leakage__c,Switch_Not_Working_No_lights_on_switch__c,Buzzer_Noise_on_Switch__c
+    const query = `INSERT INTO salesforce.job_card__c (customer__c, GST_Number__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c	,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c	,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c	,GRECO_PRO_KIT_FITTING__c,HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c,Low_Average_Mileage__c,Late_Starting_Problem__c,Jerking_Missing_Low_Pick__c,Changeover__c,Vehicle_Not_Changing__c,Vehicle_Not_starting__c,Engine_Shutdown__c	,Less_Slow_Gas__c,Check_Engine__c,Petrol_Consumption__c,Noise_after__c,Gas_Leakage__c,Switch_Not_Working_No_lights_on_switch__c,Buzzer_Noise_on_Switch__c
       ) VALUES
       
-       ('${currentNewSfid}','${companyName}','${gstNumber}',${jCC["AIR FILTER R/R"]},${jCC["BLOCK PISTON R/R"]},${jCC["CARBURETTOR SERVICE"]},${jCC["CAR SCANNING"]},${jCC["CNG LEAKAGE CHECK"]},${jCC["CNG SEQ. KIT TUNE UP"]},${jCC["CNG TUNE UP"]},${jCC["COOLANT REPLACE"]},${jCC["CYLINDER BRACKET R/R"]},${jCC["CYLINDER HYDROTESTING"]},
+       ('${currentNewSfid}','${gstNumber ?? ""}',${jCC["AIR FILTER R/R"]},${jCC["BLOCK PISTON R/R"]},${jCC["CARBURETTOR SERVICE"]},${jCC["CAR SCANNING"]},${jCC["CNG LEAKAGE CHECK"]},${jCC["CNG SEQ. KIT TUNE UP"]},${jCC["CNG TUNE UP"]},${jCC["COOLANT REPLACE"]},${jCC["CYLINDER BRACKET R/R"]},${jCC["CYLINDER HYDROTESTING"]},
       ${jCC["CYLINDER REFITTING"]},${jCC["CYLINDER REMOVE"]},${jCC["CYLINDER VALVE R/R"]},${jCC["DICKY FLOOR REPAIR"]},${jCC["ECM BRACKET R/R"]},${jCC["ECM R/R"]},${jCC["EMULATOR R/R"]},${jCC["ENGINE COMPRESSION CHECK"]},${jCC["ENGINE TUNE UP"]},${jCC["FILLER VALVE REPAIR"]},
       ${jCC["FILLER VALVE R/R"]},${jCC["FUEL FILTER R/R"]},${jCC["FUEL GAUGE CORRECTOR FITMENT"]},${jCC["FUEL PUMP RELAY R/R"]},${jCC["FUEL PUMP R/R"]},${jCC["GAS FILLTER R/R"]},${jCC["GENERAL LABOUR CHARGES"]},${jCC["GRECO ACE KIT FITTING"]},${jCC["GRECO INJECTOR R/R"]},${jCC["GRECO PRO KIT FITTING"]},
       ${jCC["HEIGHT PAD FITMENT"]},${jCC["HIGH PRESSURE PIPE R/R"]},${jCC["INGNITION COILS R/R"]},${jCC["INGNITION COIL CODE R/R"]},${jCC["INJECTOR NOZZLE R/R"]},${jCC["KIT REFITTING"]},${jCC["KIT REMOVE"]},${jCC["KIT SERVICE"]},${jCC["LOW PRESSURE HOSE R/R"]},${jCC["MAF/MAP SENSOR CLEAN"]},
@@ -1032,7 +1180,7 @@ export class AddNewLeadImpl extends React.Component<
           hasSubmit={false}
           options={gstDetails}
         />
-        {this.props.leadForm.subleadType === "Servicing" &&
+        {this.props.leadForm.subLeadType === "Servicing" &&
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
@@ -1380,22 +1528,28 @@ export class AddNewLeadImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
+            disable: false,
             component: this.renderForm(),
           },
           {
             label: "Documents Collection",
+            disable: false,
             component: this.renderDocsForRTO(),
           },
           {
             label: "Negotiation",
+            disable: false,
+            // component: this.myPDF
             component: this.renderNegotitation(),
           },
           {
             label: "Closed",
+            disable: false,
             component: this.renderClosedTab(),
           },
           {
             label: "Job Card",
+            disable: false,
             component: this.renderJobCard(),
           },
         ]}
@@ -1664,3 +1818,24 @@ const UploadContainer = (props: any) => {
     </div>
   );
 };
+
+const Proposal = () => {
+  try{
+  return (
+    // <PDFViewer>
+      <Document>
+        <Page size="A4" >
+          <View style={{flexDirection: "row", margin: "10px", padding: "10px"}}>
+            <Text>Lead Proposal</Text>
+          </View>
+          <View style={{flexGrow: 1}}>
+            <Text>We're inside a PDF!</Text>
+          </View>
+        </Page>
+      </Document>
+    // </PDFViewer>
+  );
+}catch(e){
+  console.log(e)
+}
+}

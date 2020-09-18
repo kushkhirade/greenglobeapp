@@ -1,3 +1,5 @@
+import { store } from "../../store/Store";
+
 export const vehicleInputs = [
   {
     label: "Vehicle No.",
@@ -9,116 +11,211 @@ export const vehicleInputs = [
     label: "Fuel Type",
     model: ".fuelType",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "Petrol", value: "Petrol"},
       {label: "Diesel", value: "Diesel"},
-      {label: "CNG", value: "CNG"},
     ]
+  },
+  {
+    label: "Kit Enquired",
+    model: ".kitEnquired",
+    type: "text",
+    required: true,
   },
   {
     label: "3 or 4 Wheeler",
     model: ".wheeles",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "3 Wheeler", value: "3 Wheeler"},
       {label: "4 Wheeler", value: "4 Wheeler"},
     ],
-    required: true,
+  },
+  {
+    label: "Select Product",
+    model: ".products",
+    type: "select",
+    options: (props) => 
+    store.getState().rxFormReducer[props.formModel].wheeles === "3 Wheeler" 
+    ? [
+        {label: "3 Wheeler Ace", value: "3 Wheeler Ace"},
+        {label: "3 Wheeler Pro", value: "3 Wheeler Pro"},
+      ]
+    : store.getState().rxFormReducer[props.formModel].wheeles === "4 Wheeler" 
+    ? [
+        {label: "4 Wheeler Ace", value: "4 Wheeler Ace"},
+        {label: "4 Wheeler Pro", value: "4 Wheeler Pro"},
+      ]
+    : store.getState().rxFormReducer[props.formModel].wheeles === undefined
+    ? []
+    : [
+        {label: "3 Wheeler Ace", value: "3 Wheeler Ace"},
+        {label: "3 Wheeler Pro", value: "3 Wheeler Pro"},
+        {label: "4 Wheeler Ace", value: "4 Wheeler Ace"},
+        {label: "4 Wheeler Pro", value: "4 Wheeler Pro"},
+      ]
   },
   {
     label: "Vehicle Make",
     model: ".vehicleMek",
     type: "select",
-    options: [
-      {label: "Honda", value: "Honda"},
-      {label: "Hyundai", value: "Hyundai"},
-      {label: "Maruti Suzuki", value: "Maruti Suzuki"},
-      {label: "Tata", value: "Tata"},
-      {label: "Bajaj Auto Limited", value: "Bajaj Auto Limite"},
-      {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."},
+    options: (props) => 
+    store.getState().rxFormReducer[props.formModel].wheeles === "4 Wheeler" 
+    ? [ 
+        {label: "Honda", value: "Honda"},  // 4w
+        {label: "Hyundai", value: "Hyundai"}, // 4w
+        {label: "Maruti Suzuki", value: "Maruti Suzuki"}, // 4w
+        {label: "Tata", value: "Tata"}, // 4w
+      ]
+    : store.getState().rxFormReducer[props.formModel].wheeles === "3 Wheeler" 
+    ? [ 
+        {label: "Bajaj Auto Limited", value: "Bajaj Auto Limited"}, // 3w
+        {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."}, // 3w
+      ]
+    : store.getState().rxFormReducer[props.formModel].wheeles === undefined
+    ? []
+    : [
+        {label: "Honda", value: "Honda"},
+        {label: "Hyundai", value: "Hyundai"},
+        {label: "Maruti Suzuki", value: "Maruti Suzuki"},
+        {label: "Tata", value: "Tata"},
+        {label: "Bajaj Auto Limited", value: "Bajaj Auto Limited"},
+        {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."},
     ],
-    required: true,
+    // required: true,
   },
   {
     label: "Vehicle Model",
     model: ".vehicleModel",
     type: "select",
-    options: [
-      {label: "Tata Altroz", value: "Tata Altroz"},
-      {label: "Tata EVision", value: "Tata EVision"},
-      {label: "Tata Gravitas", value: "Tata Gravitas"},
-      {label: "Tata Harrier", value: "Tata Harrier"},
-      {label: "Tata Hexa", value: "Tata Hexa"},
-      {label: "Tata Hornbill", value: "Tata Hornbill"},
-      {label: "Tata Nexon", value: "Tata Nexon"},
-      {label: "Tata Tiago", value: "Tata Tiago"},
-      {label: "Tata Tigor", value: "Tata Tigor"},
-      {label: "Accord", value: "Accord"},
-      {label: "Acty", value: "Diesel"},
-      {label: "Amaze", value: "Amaze"},
-      {label: "Avancier", value: "Avancier"},
-      {label: "Ballade", value: "Ballade"},
-      {label: "Brio", value: "Brio"},
-      {label: "BR-V", value: "BR-V"},
-      {label: "City", value: "City"},
-      {label: "City Gienia", value: "City Gienia"},
-      {label: "City Grace", value: "City Grace"},
-      {label: "City Greiz", value: "City Greiz"},
-      {label: "Hyundai Tucson", value: "Hyundai Tucson"},
-      {label: "Hyundai Grand i10 Nios", value: "Hyundai Grand i10 Nios"},
-      {label: "Hyundai Kona Electric", value: "Hyundai Kona Electric"},
-      {label: "Hyundai Elantra", value: "Hyundai Elantra"},
-      {label: "Maruti Suzuki Dzire Facelift", value: "Maruti Suzuki Dzire Facelift"},
-      {label: "Maruti Suzuki Vitara Brezza", value: "Maruti Suzuki Vitara Brezza"},
-      {label: "Maruti Suzuki Baleno", value: "Maruti Suzuki Baleno"},
-      {label: "Maruti Suzuki Swift", value: "Maruti Suzuki Swift"},
-      {label: "Maruti Suzuki Ertiga", value: "Maruti Suzuki Ertiga"},
-      {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"},
-      {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"},
-      {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"},
-      {label: "MAHINDRA ALFA DX", value: "MAHINDRA ALFA DX"},
-      {label: "MAHINDRA ALFA Champ", value: "MAHINDRA ALFA Champ"},
-      {label: "MAHINDRA ALFA Comfy", value: "MAHINDRA ALFA Comfy"}, 
-    ],
-    required: true,
+    options: (props) => 
+    store.getState().rxFormReducer[props.formModel].vehicleMek === "Honda" 
+    ? [
+        {label: "Accord", value: "Accord"}, // Honda
+        {label: "Acty", value: "Diesel"}, // Honda
+        {label: "Amaze", value: "Amaze"}, // Honda
+        {label: "Avancier", value: "Avancier"}, // Honda
+        {label: "Ballade", value: "Ballade"}, // Honda
+        {label: "Brio", value: "Brio"}, // Honda
+        {label: "BR-V", value: "BR-V"}, // Honda
+        {label: "City", value: "City"}, // Honda
+        {label: "City Gienia", value: "City Gienia"}, // Honda
+        {label: "City Grace", value: "City Grace"}, // Honda
+        {label: "City Greiz", value: "City Greiz"}, // Honda
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Hyundai" 
+    ? [
+        {label: "Hyundai Tucson", value: "Hyundai Tucson"}, // Hyundai
+        {label: "Hyundai Grand i10 Nios", value: "Hyundai Grand i10 Nios"}, // Hyundai
+        {label: "Hyundai Kona Electric", value: "Hyundai Kona Electric"}, // Hyundai
+        {label: "Hyundai Elantra", value: "Hyundai Elantra"}, // Hyundai
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Maruti Suzuki" 
+    ? [
+        {label: "Maruti Suzuki Dzire Facelift", value: "Maruti Suzuki Dzire Facelift"}, // Maruti Suzuki
+        {label: "Maruti Suzuki Vitara Brezza", value: "Maruti Suzuki Vitara Brezza"}, // Maruti Suzuki
+        {label: "Maruti Suzuki Baleno", value: "Maruti Suzuki Baleno"}, // Maruti Suzuki
+        {label: "Maruti Suzuki Swift", value: "Maruti Suzuki Swift"}, // Maruti Suzuki
+        {label: "Maruti Suzuki Ertiga", value: "Maruti Suzuki Ertiga"}, // Maruti Suzuki
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Mahindra & Mahindra Ltd." 
+    ? [ 
+        {label: "MAHINDRA ALFA DX", value: "MAHINDRA ALFA DX"}, // Mahindra & Mahindra Ltd
+        {label: "MAHINDRA ALFA Champ", value: "MAHINDRA ALFA Champ"}, // Mahindra & Mahindra Ltd
+        {label: "MAHINDRA ALFA Comfy", value: "MAHINDRA ALFA Comfy"},  // Mahindra & Mahindra Ltd
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Bajaj Auto Limited" 
+    ? [
+        {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"}, // Bajaj Auto Limited
+        {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"}, // Bajaj Auto Limited
+        {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"}, // Bajaj Auto Limited
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Tata" 
+    ? [
+        {label: "Tata Altroz", value: "Tata Altroz"}, // Tata
+        {label: "Tata EVision", value: "Tata EVision"}, // Tata
+        {label: "Tata Gravitas", value: "Tata Gravitas"}, // Tata
+        {label: "Tata Harrier", value: "Tata Harrier"}, // Tata
+        {label: "Tata Hexa", value: "Tata Hexa"}, // Tata
+        {label: "Tata Hornbill", value: "Tata Hornbill"}, // Tata
+        {label: "Tata Nexon", value: "Tata Nexon"}, // Tata
+        {label: "Tata Tiago", value: "Tata Tiago"}, // Tata
+        {label: "Tata Tigor", value: "Tata Tigor"}, // Tata
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === undefined
+    ? []
+    : [
+        {label: "Accord", value: "Accord"},
+        {label: "Acty", value: "Diesel"},
+        {label: "Amaze", value: "Amaze"},
+        {label: "Avancier", value: "Avancier"},
+        {label: "Ballade", value: "Ballade"},
+        {label: "Brio", value: "Brio"},
+        {label: "BR-V", value: "BR-V"},
+        {label: "City", value: "City"},
+        {label: "City Gienia", value: "City Gienia"},
+        {label: "City Grace", value: "City Grace"},
+        {label: "City Greiz", value: "City Greiz"},
+        {label: "Hyundai Tucson", value: "Hyundai Tucson"},
+        {label: "Hyundai Grand i10 Nios", value: "Hyundai Grand i10 Nios"},
+        {label: "Hyundai Kona Electric", value: "Hyundai Kona Electric"},
+        {label: "Hyundai Elantra", value: "Hyundai Elantra"},
+        {label: "Maruti Suzuki Dzire Facelift", value: "Maruti Suzuki Dzire Facelift"},
+        {label: "Maruti Suzuki Vitara Brezza", value: "Maruti Suzuki Vitara Brezza"},
+        {label: "Maruti Suzuki Baleno", value: "Maruti Suzuki Baleno"},
+        {label: "Maruti Suzuki Swift", value: "Maruti Suzuki Swift"},
+        {label: "Maruti Suzuki Ertiga", value: "Maruti Suzuki Ertiga"},
+        {label: "MAHINDRA ALFA DX", value: "MAHINDRA ALFA DX"},
+        {label: "MAHINDRA ALFA Champ", value: "MAHINDRA ALFA Champ"},
+        {label: "MAHINDRA ALFA Comfy", value: "MAHINDRA ALFA Comfy"}, 
+        {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"},
+        {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"},
+        {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"},
+        {label: "Tata Altroz", value: "Tata Altroz"},
+        {label: "Tata EVision", value: "Tata EVision"},
+        {label: "Tata Gravitas", value: "Tata Gravitas"},
+        {label: "Tata Harrier", value: "Tata Harrier"},
+        {label: "Tata Hexa", value: "Tata Hexa"},
+        {label: "Tata Hornbill", value: "Tata Hornbill"},
+        {label: "Tata Nexon", value: "Tata Nexon"},
+        {label: "Tata Tiago", value: "Tata Tiago"},
+        {label: "Tata Tigor", value: "Tata Tigor"},
+      ],
+    // required: true,
   },
   {
     label: "Usage of Vehicle",
     model: ".usage",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "Commercial", value: "Commercial"},
       {label: "Private", value: "Private"},
     ],
-    required: true,
   },
-  {
-    label: "Engine Type",
-    model: ".vehicleType",
-    type: "select",
-    options: [
-      {label: "2 Stroke", value: "2 Stroke"},
-      {label: "4 Stroke", value: "4 Stroke"},
-    ],
-    required: true,
-  },
+  // {
+  //   label: "Engine Type",
+  //   model: ".vehicleType",
+  //   type: "select",
+  //   options: (props) => [
+  //     {label: "2 Stroke", value: "2 Stroke"},
+  //     {label: "4 Stroke", value: "4 Stroke"},
+  //   ],
+  // },
   {
     label: "Daily Running KMS",
     model: ".dailyRunning",
     type: "number",
-    required: true,
   },
   {
     label: "Registration Year",
     model: ".registration",
     type: "date",
-    required: true,
   },
   {
     label: "Year Of Manufacturing",
     model: ".mfg",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "2010", value: 2010},
       {label: "2011", value: 2011},
       {label: "2012", value: 2012},
@@ -131,14 +228,13 @@ export const vehicleInputs = [
       {label: "2019", value: 2019},
       {label: "2020", value: 2020},
     ],
-    required: true,
   },
-  {
-    label: "Chassis Number",
-    model: ".chassis",
-    type: "text",
-    required: true,
-  },
+  // {
+  //   label: "Chassis Number",
+  //   model: ".chassis",
+  //   type: "text",
+  //   required: true,
+  // },
 ];
 
 export const options = [
@@ -163,13 +259,11 @@ export const options = [
     label: "Company",
     model: ".company",
     type: "text",
-    required: true,
   },
   {
     label: "Email",
     model: ".email",
     type: "text",
-    required: true,
   },
   {
     label: "WhatsApp Number",
@@ -184,7 +278,6 @@ export const streetInputs = [
     label: "Street",
     model: ".street",
     type: "text",
-    required: true,
   },
   {
     label: "City",
@@ -196,7 +289,6 @@ export const streetInputs = [
     label: "State/Provinance",
     model: ".state",
     type: "text",
-    required: true,
   },
   {
     label: "Zip/Postal Code",
@@ -208,7 +300,6 @@ export const streetInputs = [
     label: "Country",
     model: ".country",
     type: "text",
-    required: true,
   },
 ];
 
@@ -234,13 +325,11 @@ export const leadDealer = [
     label: "Company",
     model: ".company",
     type: "text",
-    required: true,
   },
   {
     label: "Email",
     model: ".email",
     type: "text",
-    required: true,
   },
   {
     label: "WhatsApp Number",
@@ -259,7 +348,7 @@ export const leadDealer = [
     model: ".leadType",
     type: "select",
     required: true,
-    options: [
+    options: (props) => [
       {label: "B2B", value: "B2B"},
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
@@ -267,10 +356,10 @@ export const leadDealer = [
   },
   {
     label: "Sub Lead Type",
-    model: ".subleadType",
+    model: ".subLeadType",
     type: "select",
     required: true,
-    options: [
+    options: (props) => [
       {label: "Customer", value: "Customer"},
       {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
@@ -282,7 +371,7 @@ export const leadDealer = [
     model: ".leadSource",
     type: "select",
     required: true,
-    options: [
+    options: (props) => [
       // {label: "Partner", value: "Partner"},
       // {label: "Website", value: "Website"},
       // {label: "Advertisement", value: "Advertisement"},
@@ -305,26 +394,45 @@ export const leadDealer = [
     label: "Sub Lead Source",
     model: ".subLeadSource",
     type: "select",
-    options: [
-      {label: "Facebook", value: "Facebook"},
-      {label: "Google", value: "Google"},
-      {label: "Whatsapp", value: "Whatsapp"},
-      {label: "Mass Malling", value: "Mass malling"},
-      {label: "Mass Messaging", value: "Mass messaging"},
-      {label: "Instagram", value: "Instagram"},
-      {label: "YouTube", value: "YouTube"},
-      {label: "RTO", value: "RTO"},
-      {label: "BANK", value: "BANK"},
-      {label: "Patpedhi", value: "Patpedhi"},
-      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
-    ],
+    options: (props) => 
+    store.getState().rxFormReducer[props.formModel].leadSource === "Online" 
+    ? [
+        {label: "Facebook", value: "Facebook"},
+        {label: "Google", value: "Google"},
+        {label: "Whatsapp", value: "Whatsapp"},
+        {label: "Mass Malling", value: "Mass malling"},
+        {label: "Mass Messaging", value: "Mass messaging"},
+        {label: "Instagram", value: "Instagram"},
+        {label: "YouTube", value: "YouTube"},
+        {label: "RTO", value: "RTO"},
+        {label: "Bank", value: "Bank"},
+        {label: "Patpedhi", value: "Patpedhi"},
+        {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+      ]
+    : store.getState().rxFormReducer[props.formModel].leadSource === "Offline" 
+      || store.getState().rxFormReducer[props.formModel].leadSource === "Store Visits" 
+      || store.getState().rxFormReducer[props.formModel].leadSource === undefined 
+    ? []
+    : [
+        {label: "Facebook", value: "Facebook"},
+        {label: "Google", value: "Google"},
+        {label: "Whatsapp", value: "Whatsapp"},
+        {label: "Mass Malling", value: "Mass malling"},
+        {label: "Mass Messaging", value: "Mass messaging"},
+        {label: "Instagram", value: "Instagram"},
+        {label: "YouTube", value: "YouTube"},
+        {label: "RTO", value: "RTO"},
+        {label: "Bank", value: "Bank"},
+        {label: "Patpedhi", value: "Patpedhi"},
+        {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+      ]
   },
   {
     label: "Lead Status",
     model: ".leadStatus",
     type: "select",
     required: true,
-    options: [
+    options: (props) => [
       {label: "New", value: "New"},
       {label: "Document Collection", value: "Document Collection"},
       {label: "Approved", value: "Approved"},
@@ -341,7 +449,7 @@ export const leadDealer = [
     model: ".rating",
     type: "select",
     required: true,
-    options: [
+    options: (props) => [
       {label: "Hot", value: "Hot"},
       {label: "Cold", value: "Cold"},
       {label: "Warm", value: "Warm"}
@@ -354,18 +462,22 @@ export const leadSource = [
     label: "Lead Type",
     model: ".leadType",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "B2B", value: "B2B"},
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
+      // {label: "Customer", value: "Customer"},
+      // {label: "Influencer", value: "Influencer"},
+      // {label: "Fitment", value: "Fitment"},
+      // {label: "Servicing", value: "Servicing"}
     ],
     required: true,
   },
   {
     label: "Sub Lead Type",
-    model: ".subleadType",
+    model: ".subLeadType",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "Customer", value: "Customer"},
       {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
@@ -377,7 +489,7 @@ export const leadSource = [
     label: "Lead Source",
     model: ".leadSource",
     type: "select",
-    options: [
+    options: (props) => 
       // {label: "Partner", value: "Partner"},
       // {label: "Website", value: "Website"},
       // {label: "Advertisement", value: "Advertisement"},
@@ -391,6 +503,7 @@ export const leadSource = [
       // {label: "Agents", value: "Agents"},
       // {label: "Events", value: "Events"},
       // {label: "ASM", value: "ASM"},
+    [
       {label: "Online", value: "Online"},
       {label: "Offline", value: "Offline"},
       {label: "Store Visits", value: "Store Visits"}
@@ -401,27 +514,44 @@ export const leadSource = [
     label: "Sub Lead Source",
     model: ".subLeadSource",
     type: "select",
-    dependetField: "leadSource",
-    dependetValue: "Online",
-    options: [
-      {label: "Facebook", value: "Facebook"},
-      {label: "Google", value: "Google"},
-      {label: "Whatsapp", value: "Whatsapp"},
-      {label: "Mass Malling", value: "Mass malling"},
-      {label: "Mass Messaging", value: "Mass messaging"},
-      {label: "Instagram", value: "Instagram"},
-      {label: "YouTube", value: "YouTube"},
-      {label: "RTO", value: "RTO"},
-      {label: "BANK", value: "BANK"},
-      {label: "Patpedhi", value: "Patpedhi"},
-      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
-    ]
+    options: (props) => 
+    store.getState().rxFormReducer[props.formModel].leadSource === "Online" 
+    ? [
+        {label: "Facebook", value: "Facebook"},
+        {label: "Google", value: "Google"},
+        {label: "Whatsapp", value: "Whatsapp"},
+        {label: "Mass Malling", value: "Mass malling"},
+        {label: "Mass Messaging", value: "Mass messaging"},
+        {label: "Instagram", value: "Instagram"},
+        {label: "YouTube", value: "YouTube"},
+        {label: "RTO", value: "RTO"},
+        {label: "Bank", value: "Bank"},
+        {label: "Patpedhi", value: "Patpedhi"},
+        {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+      ]
+      : store.getState().rxFormReducer[props.formModel].leadSource === "Offline" 
+      || store.getState().rxFormReducer[props.formModel].leadSource === "Store Visits" 
+      || store.getState().rxFormReducer[props.formModel].leadSource === undefined 
+      ? []
+      : [
+          {label: "Facebook", value: "Facebook"},
+          {label: "Google", value: "Google"},
+          {label: "Whatsapp", value: "Whatsapp"},
+          {label: "Mass Malling", value: "Mass malling"},
+          {label: "Mass Messaging", value: "Mass messaging"},
+          {label: "Instagram", value: "Instagram"},
+          {label: "YouTube", value: "YouTube"},
+          {label: "RTO", value: "RTO"},
+          {label: "Bank", value: "Bank"},
+          {label: "Patpedhi", value: "Patpedhi"},
+          {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+        ]
   },
   {
     label: "Lead Status", 
     model: ".leadStatus",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "New", value: "New"},
       {label: "Basic Details", value: "Basic Details"},
       {label: "Document Collection", value: "Document Collection"},
@@ -436,7 +566,7 @@ export const leadSource = [
     label: "Rating",
     model: ".rating",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "Hot", value: "Hot"},
       {label: "Cold", value: "Cold"},
       {label: "Warm", value: "Warm"}
@@ -450,7 +580,7 @@ export const leadSourceForJobCard = [
     label: "Lead Type",
     model: ".leadType",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "B2B", value: "B2B"},
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
@@ -459,9 +589,9 @@ export const leadSourceForJobCard = [
   },
   {
     label: "Sub Lead Type",
-    model: ".subleadType",
+    model: ".subLeadType",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "Customer", value: "Customer"},
       {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
@@ -473,7 +603,7 @@ export const leadSourceForJobCard = [
     label: "Lead Source",
     model: ".leadSource",
     type: "select",
-    options: [
+    options: (props) => [
       // {label: "Partner", value: "Partner"},
       // {label: "Website", value: "Website"},
       // {label: "Advertisement", value: "Advertisement"},
@@ -497,21 +627,38 @@ export const leadSourceForJobCard = [
     label: "Sub Lead Source",
     model: ".subLeadSource",
     type: "select",
-    dependetField: "leadSource",
-    dependetValue: "Online",
-    options: [
-      {label: "Facebook", value: "Facebook"},
-      {label: "Google", value: "Google"},
-      {label: "Whatsapp", value: "Whatsapp"},
-      {label: "Mass Malling", value: "Mass malling"},
-      {label: "Mass Messaging", value: "Mass messaging"},
-      {label: "Instagram", value: "Instagram"},
-      {label: "YouTube", value: "YouTube"},
-      {label: "RTO", value: "RTO"},
-      {label: "BANK", value: "BANK"},
-      {label: "Patpedhi", value: "Patpedhi"},
-      {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
-    ]
+    options: (props) => 
+    store.getState().rxFormReducer[props.formModel].leadSource === "Online" 
+    ? [
+        {label: "Facebook", value: "Facebook"},
+        {label: "Google", value: "Google"},
+        {label: "Whatsapp", value: "Whatsapp"},
+        {label: "Mass Malling", value: "Mass malling"},
+        {label: "Mass Messaging", value: "Mass messaging"},
+        {label: "Instagram", value: "Instagram"},
+        {label: "YouTube", value: "YouTube"},
+        {label: "RTO", value: "RTO"},
+        {label: "Bank", value: "Bank"},
+        {label: "Patpedhi", value: "Patpedhi"},
+        {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+      ]
+      : store.getState().rxFormReducer[props.formModel].leadSource === "Offline" 
+      || store.getState().rxFormReducer[props.formModel].leadSource === "Store Visits" 
+      || store.getState().rxFormReducer[props.formModel].leadSource === undefined 
+      ? []
+      : [
+          {label: "Facebook", value: "Facebook"},
+          {label: "Google", value: "Google"},
+          {label: "Whatsapp", value: "Whatsapp"},
+          {label: "Mass Malling", value: "Mass malling"},
+          {label: "Mass Messaging", value: "Mass messaging"},
+          {label: "Instagram", value: "Instagram"},
+          {label: "YouTube", value: "YouTube"},
+          {label: "RTO", value: "RTO"},
+          {label: "Bank", value: "Bank"},
+          {label: "Patpedhi", value: "Patpedhi"},
+          {label: "Showroom Tie-Ups", value: "Showroom Tie-Ups"},
+        ]
   },
   {
     label: "Lead Status", 
@@ -519,13 +666,12 @@ export const leadSourceForJobCard = [
     type: "text",
     defaultValue: "Closed",
     isDisable: true,
-    required: true,
   },
   {
     label: "Rating",
     model: ".rating",
     type: "select",
-    options: [
+    options: (props) => [
       {label: "Hot", value: "Hot"},
       {label: "Cold", value: "Cold"},
       {label: "Warm", value: "Warm"}
@@ -561,14 +707,14 @@ export const gstDetails = [
     label: "GST Number",
     model: ".gstNumber",
     type: "number",
-    required: true,
+    // required: true,
   },
-  {
-    label: "Company Name",
-    model: ".companyName",
-    type: "text",
-    required: true,
-  },
+  // {
+  //   label: "Company Name",
+  //   model: ".NameCompany",
+  //   type: "text",
+  //   required: true,
+  // },
 ];
 
 export const rtoDocs = [

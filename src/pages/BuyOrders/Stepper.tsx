@@ -44,9 +44,9 @@ export class Stepper extends React.Component<any, any> {
               <div
                 key={index}
                 onClick={() => {
-                  this.setState({ activeStep: index });
-                  this.props.onChangeStep && this.props.onChangeStep(index);
-                  console.log("index: ", index)
+                  this.setState({ activeStep: step.disable === false && index });
+                  step.disable === false && this.props.onChangeStep && this.props.onChangeStep(index);
+                  console.log("step: ", step)
                 }}
                 className={`step ${
                   index === this.state.activeStep || index === props.activeStep
@@ -71,10 +71,10 @@ export class Stepper extends React.Component<any, any> {
         </div>
         <div className="stepper-content">
           {props.activeStep && props.activeStep < props.stepData.length
-            ? props.stepData[props.activeStep]
+            ? props.stepData[props.activeStep] && props.stepData[props.activeStep].disable === false
               ? props.stepData[props.activeStep].component
               : props.stepData[0].component
-            : props.stepData[activeStep]
+            : props.stepData[props.activeStep] && props.stepData[props.activeStep].disable === false
             ? props.stepData[activeStep].component
             : props.stepData[0].component}
         </div>
