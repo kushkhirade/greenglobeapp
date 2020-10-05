@@ -1,3 +1,4 @@
+import { leadForm } from "src/reducers/CombinedReducers";
 import { store } from "../../store/Store";
 
 export const vehicleInputs = [
@@ -17,12 +18,6 @@ export const vehicleInputs = [
     ]
   },
   {
-    label: "Kit Enquired",
-    model: ".kitEnquired",
-    type: "text",
-    required: true,
-  },
-  {
     label: "3 or 4 Wheeler",
     model: ".wheeles",
     type: "select",
@@ -32,8 +27,9 @@ export const vehicleInputs = [
     ],
   },
   {
-    label: "Select Product",
-    model: ".products",
+    label: "Kit Enquired",
+    model: ".kitEnquired",
+    required: true,
     type: "select",
     options: (props) => 
     store.getState().rxFormReducer[props.formModel].wheeles === "3 Wheeler" 
@@ -55,6 +51,30 @@ export const vehicleInputs = [
         {label: "4 Wheeler Pro", value: "4 Wheeler Pro"},
       ]
   },
+  // {
+  //   label: "Select Product",
+  //   model: ".products",
+  //   type: "select",
+  //   options: (props) => 
+  //   store.getState().rxFormReducer[props.formModel].wheeles === "3 Wheeler" 
+  //   ? [
+  //       {label: "3 Wheeler Ace", value: "3 Wheeler Ace"},
+  //       {label: "3 Wheeler Pro", value: "3 Wheeler Pro"},
+  //     ]
+  //   : store.getState().rxFormReducer[props.formModel].wheeles === "4 Wheeler" 
+  //   ? [
+  //       {label: "4 Wheeler Ace", value: "4 Wheeler Ace"},
+  //       {label: "4 Wheeler Pro", value: "4 Wheeler Pro"},
+  //     ]
+  //   : store.getState().rxFormReducer[props.formModel].wheeles === undefined
+  //   ? []
+  //   : [
+  //       {label: "3 Wheeler Ace", value: "3 Wheeler Ace"},
+  //       {label: "3 Wheeler Pro", value: "3 Wheeler Pro"},
+  //       {label: "4 Wheeler Ace", value: "4 Wheeler Ace"},
+  //       {label: "4 Wheeler Pro", value: "4 Wheeler Pro"},
+  //     ]
+  // },
   {
     label: "Vehicle Make",
     model: ".vehicleMek",
@@ -62,15 +82,29 @@ export const vehicleInputs = [
     options: (props) => 
     store.getState().rxFormReducer[props.formModel].wheeles === "4 Wheeler" 
     ? [ 
-        {label: "Honda", value: "Honda"},  // 4w
-        {label: "Hyundai", value: "Hyundai"}, // 4w
-        {label: "Maruti Suzuki", value: "Maruti Suzuki"}, // 4w
-        {label: "Tata", value: "Tata"}, // 4w
+        {label: "Honda", value: "Honda"},
+        {label: "Hyundai", value: "Hyundai"},
+        {label: "Maruti Suzuki", value: "Maruti Suzuki"},
+        {label: "Tata", value: "Tata"},
+        {label: "Toyota", value: "Toyota"},
+        {label: "Volkswagen", value: "Volkswagen"},
+        {label: "Chevrolet", value: "Chevrolet"},
+        {label: "Ford", value: "Ford"},
+        {label: "Flat", value: "Flat"},
+        {label: "Nissan", value: "Nissan"},
+        {label: "Skoda", value: "Skoda"},
+        {label: "Renault", value: "Renault"},
+        {label: "Audi", value: "Audi"},
+        {label: "Mercedes Benz ", value: "Mercedes Benz "},
+        {label: "Hindustan", value: "Hindustan"},
+        {label: "Opel", value: "Opel"},
+        {label: "Mitsubishi", value: "Mitsubishi"},
+        {label: "Mahindra", value: "Mahindra"},
       ]
     : store.getState().rxFormReducer[props.formModel].wheeles === "3 Wheeler" 
     ? [ 
-        {label: "Bajaj Auto Limited", value: "Bajaj Auto Limited"}, // 3w
-        {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."}, // 3w
+        {label: "Bajaj Auto Limited", value: "Bajaj Auto Limited"},
+        {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."},
       ]
     : store.getState().rxFormReducer[props.formModel].wheeles === undefined
     ? []
@@ -79,6 +113,19 @@ export const vehicleInputs = [
         {label: "Hyundai", value: "Hyundai"},
         {label: "Maruti Suzuki", value: "Maruti Suzuki"},
         {label: "Tata", value: "Tata"},
+        {label: "Toyota", value: "Toyota"},
+        {label: "Volkswagen", value: "Volkswagen"},
+        {label: "Chevrolet", value: "Chevrolet"},
+        {label: "Ford", value: "Ford"},
+        {label: "Flat", value: "Flat"},
+        {label: "Nissan", value: "Nissan"},
+        {label: "Skoda", value: "Skoda"},
+        {label: "Renault", value: "Renault"},
+        {label: "Audi", value: "Audi"},
+        {label: "Mercedes Benz ", value: "Mercedes Benz "},
+        {label: "Hindustan", value: "Hindustan"},
+        {label: "Opel", value: "Opel"},
+        {label: "Mitsubishi", value: "Mitsubishi"},
         {label: "Bajaj Auto Limited", value: "Bajaj Auto Limited"},
         {label: "Mahindra & Mahindra Ltd.", value: "Mahindra & Mahindra Ltd."},
     ],
@@ -89,97 +136,255 @@ export const vehicleInputs = [
     model: ".vehicleModel",
     type: "select",
     options: (props) => 
-    store.getState().rxFormReducer[props.formModel].vehicleMek === "Honda" 
-    ? [
-        {label: "Accord", value: "Accord"}, // Honda
-        {label: "Acty", value: "Diesel"}, // Honda
-        {label: "Amaze", value: "Amaze"}, // Honda
-        {label: "Avancier", value: "Avancier"}, // Honda
-        {label: "Ballade", value: "Ballade"}, // Honda
-        {label: "Brio", value: "Brio"}, // Honda
-        {label: "BR-V", value: "BR-V"}, // Honda
-        {label: "City", value: "City"}, // Honda
-        {label: "City Gienia", value: "City Gienia"}, // Honda
-        {label: "City Grace", value: "City Grace"}, // Honda
-        {label: "City Greiz", value: "City Greiz"}, // Honda
-      ]
-    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Hyundai" 
-    ? [
-        {label: "Hyundai Tucson", value: "Hyundai Tucson"}, // Hyundai
-        {label: "Hyundai Grand i10 Nios", value: "Hyundai Grand i10 Nios"}, // Hyundai
-        {label: "Hyundai Kona Electric", value: "Hyundai Kona Electric"}, // Hyundai
-        {label: "Hyundai Elantra", value: "Hyundai Elantra"}, // Hyundai
-      ]
-    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Maruti Suzuki" 
-    ? [
-        {label: "Maruti Suzuki Dzire Facelift", value: "Maruti Suzuki Dzire Facelift"}, // Maruti Suzuki
-        {label: "Maruti Suzuki Vitara Brezza", value: "Maruti Suzuki Vitara Brezza"}, // Maruti Suzuki
-        {label: "Maruti Suzuki Baleno", value: "Maruti Suzuki Baleno"}, // Maruti Suzuki
-        {label: "Maruti Suzuki Swift", value: "Maruti Suzuki Swift"}, // Maruti Suzuki
-        {label: "Maruti Suzuki Ertiga", value: "Maruti Suzuki Ertiga"}, // Maruti Suzuki
-      ]
-    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Mahindra & Mahindra Ltd." 
-    ? [ 
-        {label: "MAHINDRA ALFA DX", value: "MAHINDRA ALFA DX"}, // Mahindra & Mahindra Ltd
-        {label: "MAHINDRA ALFA Champ", value: "MAHINDRA ALFA Champ"}, // Mahindra & Mahindra Ltd
-        {label: "MAHINDRA ALFA Comfy", value: "MAHINDRA ALFA Comfy"},  // Mahindra & Mahindra Ltd
-      ]
-    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Bajaj Auto Limited" 
-    ? [
-        {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"}, // Bajaj Auto Limited
-        {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"}, // Bajaj Auto Limited
-        {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"}, // Bajaj Auto Limited
-      ]
-    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Tata" 
-    ? [
-        {label: "Tata Altroz", value: "Tata Altroz"}, // Tata
-        {label: "Tata EVision", value: "Tata EVision"}, // Tata
-        {label: "Tata Gravitas", value: "Tata Gravitas"}, // Tata
-        {label: "Tata Harrier", value: "Tata Harrier"}, // Tata
-        {label: "Tata Hexa", value: "Tata Hexa"}, // Tata
-        {label: "Tata Hornbill", value: "Tata Hornbill"}, // Tata
-        {label: "Tata Nexon", value: "Tata Nexon"}, // Tata
-        {label: "Tata Tiago", value: "Tata Tiago"}, // Tata
-        {label: "Tata Tigor", value: "Tata Tigor"}, // Tata
-      ] 
-    : store.getState().rxFormReducer[props.formModel].vehicleMek === undefined
+      store.getState().rxFormReducer[props.formModel].vehicleMek === undefined
+      || store.getState().rxFormReducer[props.formModel].wheeles === "3 Wheeler" 
     ? []
-    : [
-        {label: "Accord", value: "Accord"},
-        {label: "Acty", value: "Diesel"},
-        {label: "Amaze", value: "Amaze"},
-        {label: "Avancier", value: "Avancier"},
-        {label: "Ballade", value: "Ballade"},
-        {label: "Brio", value: "Brio"},
-        {label: "BR-V", value: "BR-V"},
-        {label: "City", value: "City"},
+    :  store.getState().rxFormReducer[props.formModel].vehicleMek === "Honda" 
+    ? [
+        {label: "JAZZ ", value: "JAZZ "},
+        {label: "AMAZE", value: "AMAZE"},
+        {label: "H BRV", value: "H BRV"},
+        {label: "BRIO", value: "BRIO"},
+        {label: "CITY ", value: "CITY "},
+        {label: "CIVIC", value: "CIVIC"},
+        {label: "BRV", value: "BRV"},
+        {label: "MOBILIO", value: "MOBILIO"},
         {label: "City Gienia", value: "City Gienia"},
         {label: "City Grace", value: "City Grace"},
         {label: "City Greiz", value: "City Greiz"},
-        {label: "Hyundai Tucson", value: "Hyundai Tucson"},
-        {label: "Hyundai Grand i10 Nios", value: "Hyundai Grand i10 Nios"},
-        {label: "Hyundai Kona Electric", value: "Hyundai Kona Electric"},
-        {label: "Hyundai Elantra", value: "Hyundai Elantra"},
-        {label: "Maruti Suzuki Dzire Facelift", value: "Maruti Suzuki Dzire Facelift"},
-        {label: "Maruti Suzuki Vitara Brezza", value: "Maruti Suzuki Vitara Brezza"},
-        {label: "Maruti Suzuki Baleno", value: "Maruti Suzuki Baleno"},
-        {label: "Maruti Suzuki Swift", value: "Maruti Suzuki Swift"},
-        {label: "Maruti Suzuki Ertiga", value: "Maruti Suzuki Ertiga"},
-        {label: "MAHINDRA ALFA DX", value: "MAHINDRA ALFA DX"},
-        {label: "MAHINDRA ALFA Champ", value: "MAHINDRA ALFA Champ"},
-        {label: "MAHINDRA ALFA Comfy", value: "MAHINDRA ALFA Comfy"}, 
-        {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"},
-        {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"},
-        {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"},
-        {label: "Tata Altroz", value: "Tata Altroz"},
-        {label: "Tata EVision", value: "Tata EVision"},
-        {label: "Tata Gravitas", value: "Tata Gravitas"},
-        {label: "Tata Harrier", value: "Tata Harrier"},
-        {label: "Tata Hexa", value: "Tata Hexa"},
-        {label: "Tata Hornbill", value: "Tata Hornbill"},
-        {label: "Tata Nexon", value: "Tata Nexon"},
-        {label: "Tata Tiago", value: "Tata Tiago"},
-        {label: "Tata Tigor", value: "Tata Tigor"},
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Hyundai" 
+    ? [
+        {label: "SANTRI XING ", value: "SANTRI XING "},
+        {label: "I 10", value: "I 10"},
+        {label: "GRAND I 10", value: "GRAND I 10"},
+        {label: "I 20", value: "I 20"},
+        {label: "XCENT", value: "XCENT"},
+        {label: "EON", value: "EON"},
+        {label: "VERNA (1.4/1.6)", value: "VERNA (1.4/1.6)"},
+        {label: "ACCENT", value: "ACCENT"},
+        {label: "GETZ 1.4/1.5", value: "GETZ 1.4/1.5"},
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Maruti Suzuki" 
+    ? [
+        {label: "A STAR", value: "A STAR"},
+        {label: "OMNI CARGO", value: "OMNI CARGO"},
+        {label: "ALTO", value: "ALTO"},
+        {label: "ALTO K 10", value: "ALTO K 10"},
+        {label: "ALTO 800", value: "ALTO 800"},
+        {label: "CELERIO", value: "CELERIO"},
+        {label: "ZEN ESTILO", value: "ZEN ESTILO"},
+        {label: "RITZ", value: "RITZ"},
+        {label: "SWIFT", value: "SWIFT"},
+        {label: "SWIFT DZIRE", value: "SWIFT DZIRE"},
+        {label: "STRINGRAY", value: "STRINGRAY"},
+        {label: "EECO 5 SEAT ", value: "EECO 5 SEAT "},
+        {label: "WAGONR", value: "WAGONR"},
+        {label: "NEXA IGNIS", value: "NEXA IGNIS"},
+        {label: "EECO 7 SEAT", value: "EECO 7 SEAT"},
+        {label: "EECO AMBULANCE", value: "EECO AMBULANCE"},
+        {label: "EECO CARGO", value: "EECO CARGO"},
+        {label: "OMNI 5 SEAT", value: "OMNI 5 SEAT"},
+        {label: "OMNI 7 SEAT", value: "OMNI 7 SEAT"},
+        {label: "ERTIGA", value: "ERTIGA"},
+        {label: "BALENO", value: "BALENO"},
+        {label: "IGNIS", value: "IGNIS"},
+        {label: "CIAZ", value: "CIAZ"},
+        {label: "SX 4", value: "SX 4"},
+        {label: "GYPSY", value: "GYPSY"},
+        {label: "VERSA {5/8 SEATER}", value: "VERSA {5/8 SEATER}"},
+      ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Mahindra" 
+    ? [ 
+        {label: "VERTIO (1.4 / 1.6)", value: "VERTIO (1.4 / 1.6)"},
+        {label: "LINEA", value: "LINEA"},
+      ]
+    // : store.getState().rxFormReducer[props.formModel].vehicleMek === "Bajaj Auto Limited" 
+    // ? [
+    //     {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"},
+    //     {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"},
+    //     {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"},
+    //   ]
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Tata" 
+    ? [
+        {label: "INDICA VISTA", value: "INDICA VISTA"},
+        {label: "INDICA EV2", value: "INDICA EV2"},
+        {label: "INDICA e CS", value: "INDICA e CS"},
+        {label: "BOLD", value: "BOLD"},
+        {label: "INDIGO MANZA", value: "INDIGO MANZA"},
+        {label: "ZEST", value: "ZEST"},
+        {label: "INDICA XETA", value: "BR-V"},
+        {label: "INDIGO CS", value: "INDIGO CS"},
+        {label: "INDIGO e CS", value: "INDIGO e CS"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Toyota" 
+    ? [
+        {label: "COROLLA ALTIS", value: "COROLLA ALTIS"},
+        {label: "ETIOS LIVA", value: "ETIOS LIVA"},
+        {label: "ETIOS", value: "ETIOS"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Volkswagen" 
+    ? [
+        {label: "POLO", value: "POLO"},
+        {label: "VENTO", value: "VENTO"},
+        {label: "JEETA ", value: "JEETA "},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Chevrolet" 
+    ? [
+        {label: "BEAT", value: "BEAT"},
+        {label: "SPARK", value: "SPARK"},
+        {label: "AVEO UVA", value: "AVEO UVA"},
+        {label: "SAIL UVA", value: "SAIL UVA"},
+        {label: "SAIL", value: "SAIL"},
+        {label: "OPTRA 1.6/1.8", value: "OPTRA 1.6/1.8"}
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Ford" 
+    ? [
+        {label: "ECO SPORT 1.5", value: "ECO SPORT 1.5"},
+        {label: "ECO SPORT 1.0", value: "ECO SPORT 1.0"},
+        {label: "FIESTA", value: "FIESTA"},
+        {label: "FIGO", value: "FIGO"},
+        {label: "I KON 1.3/1.6", value: "Ballade"},
+        {label: "FUSION", value: "FUSION"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Flat" 
+    ? [
+        {label: "LINEA", value: "LINEA"},
+        {label: "GRAND PUNTO", value: "GRAND PUNTO"},
+        {label: "PALIO", value: "PALIO"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Nissan" 
+    ? [
+        {label: "SUNNY", value: "SUNNY"},
+        {label: "MICRA", value: "MICRA"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Skoda" 
+    ? [
+        {label: "FABIA", value: "FABIA"},
+        {label: "LAURA", value: "LAURA"},
+        {label: "RAPID", value: "RAPID"},
+        {label: "SUPERB (1390/1798)", value: "SUPERB (1390/1798)"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Renault" 
+    ? [
+        {label: "DUSTER", value: "DUSTER"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Audi" 
+    ? [
+        {label: "Audi-A4", value: "Audi-A4"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Mercedes Benz " 
+    ? [
+        {label: "Mercedes Benz -C200 CGI", value: "Mercedes Benz -C200 CGI"},
+        {label: "Mercedes Benz -E200 CGI", value: "Mercedes Benz -E200 CGI"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Hindustan" 
+    ? [
+        {label: "HM AMBASSDOR", value: "HM AMBASSDOR"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Mitsubishi" 
+    ? [
+        {label: "LANCER 1.4/1.8", value: "LANCER 1.4/1.8"},
+      ] 
+    : store.getState().rxFormReducer[props.formModel].vehicleMek === "Opel" 
+    ? [
+        {label: "Opel CORSA", value: "Opel CORSA"},
+      ] 
+    : [
+      {label: "JAZZ ", value: "JAZZ "},
+      {label: "AMAZE", value: "AMAZE"},
+      {label: "H BRV", value: "H BRV"},
+      {label: "BRIO", value: "BRIO"},
+      {label: "CITY ", value: "CITY "},
+      {label: "CIVIC", value: "CIVIC"},
+      {label: "BRV", value: "BRV"},
+      {label: "MOBILIO", value: "MOBILIO"},
+      {label: "City Gienia", value: "City Gienia"},
+      {label: "City Grace", value: "City Grace"},
+      {label: "City Greiz", value: "City Greiz"},
+      {label: "SANTRI XING ", value: "SANTRI XING "},
+      {label: "I 10", value: "I 10"},
+      {label: "GRAND I 10", value: "GRAND I 10"},
+      {label: "I 20", value: "I 20"},
+      {label: "XCENT", value: "XCENT"},
+      {label: "EON", value: "EON"},
+      {label: "VERNA (1.4/1.6)", value: "VERNA (1.4/1.6)"},
+      {label: "ACCENT", value: "ACCENT"},
+      {label: "GETZ 1.4/1.5", value: "GETZ 1.4/1.5"},
+      {label: "A STAR", value: "A STAR"},
+      {label: "OMNI CARGO", value: "OMNI CARGO"},
+      {label: "ALTO", value: "ALTO"},
+      {label: "ALTO K 10", value: "ALTO K 10"},
+      {label: "ALTO 800", value: "ALTO 800"},
+      {label: "CELERIO", value: "CELERIO"},
+      {label: "ZEN ESTILO", value: "ZEN ESTILO"},
+      {label: "RITZ", value: "RITZ"},
+      {label: "SWIFT", value: "SWIFT"},
+      {label: "SWIFT DZIRE", value: "SWIFT DZIRE"},
+      {label: "STRINGRAY", value: "STRINGRAY"},
+      {label: "EECO 5 SEAT ", value: "EECO 5 SEAT "},
+      {label: "WAGONR", value: "WAGONR"},
+      {label: "NEXA IGNIS", value: "NEXA IGNIS"},
+      {label: "EECO 7 SEAT", value: "EECO 7 SEAT"},
+      {label: "EECO AMBULANCE", value: "EECO AMBULANCE"},
+      {label: "EECO CARGO", value: "EECO CARGO"},
+      {label: "OMNI 5 SEAT", value: "OMNI 5 SEAT"},
+      {label: "OMNI 7 SEAT", value: "OMNI 7 SEAT"},
+      {label: "ERTIGA", value: "ERTIGA"},
+      {label: "BALENO", value: "BALENO"},
+      {label: "IGNIS", value: "IGNIS"},
+      {label: "CIAZ", value: "CIAZ"},
+      {label: "SX 4", value: "SX 4"},
+      {label: "GYPSY", value: "GYPSY"},
+      {label: "VERSA {5/8 SEATER}", value: "VERSA {5/8 SEATER}"},
+      {label: "VERTIO (1.4 / 1.6)", value: "VERTIO (1.4 / 1.6)"},
+      {label: "LINEA", value: "LINEA"},
+      {label: "Bajaj RE Auto Rickshaw Compact 4S", value: "Bajaj RE Auto Rickshaw Compact 4S"},
+      {label: "Bajaj RE Compact Diesel Auto Rickshaw", value: "Bajaj RE Compact Diesel Auto Rickshaw"},
+      {label: "Bajaj RE Compact LPG Auto Rickshaw", value: "Bajaj RE Compact LPG Auto Rickshaw"},
+      {label: "INDICA VISTA", value: "INDICA VISTA"},
+      {label: "INDICA EV2", value: "INDICA EV2"},
+      {label: "INDICA e CS", value: "INDICA e CS"},
+      {label: "BOLD", value: "BOLD"},
+      {label: "INDIGO MANZA", value: "INDIGO MANZA"},
+      {label: "ZEST", value: "ZEST"},
+      {label: "INDICA XETA", value: "BR-V"},
+      {label: "INDIGO CS", value: "INDIGO CS"},
+      {label: "INDIGO e CS", value: "INDIGO e CS"},
+      {label: "COROLLA ALTIS", value: "COROLLA ALTIS"},
+      {label: "ETIOS LIVA", value: "ETIOS LIVA"},
+      {label: "ETIOS", value: "ETIOS"},
+      {label: "POLO", value: "POLO"},
+      {label: "VENTO", value: "VENTO"},
+      {label: "JEETA ", value: "JEETA "},
+      {label: "BEAT", value: "BEAT"},
+      {label: "SPARK", value: "SPARK"},
+      {label: "AVEO UVA", value: "AVEO UVA"},
+      {label: "SAIL UVA", value: "SAIL UVA"},
+      {label: "SAIL", value: "SAIL"},
+      {label: "OPTRA 1.6/1.8", value: "OPTRA 1.6/1.8"},
+      {label: "ECO SPORT 1.5", value: "ECO SPORT 1.5"},
+      {label: "ECO SPORT 1.0", value: "ECO SPORT 1.0"},
+      {label: "FIESTA", value: "FIESTA"},
+      {label: "FIGO", value: "FIGO"},
+      {label: "I KON 1.3/1.6", value: "Ballade"},
+      {label: "FUSION", value: "FUSION"},
+      {label: "LINEA", value: "LINEA"},
+      {label: "GRAND PUNTO", value: "GRAND PUNTO"},
+      {label: "PALIO", value: "PALIO"},
+      {label: "SUNNY", value: "SUNNY"},
+      {label: "MICRA", value: "MICRA"},
+      {label: "FABIA", value: "FABIA"},
+      {label: "LAURA", value: "LAURA"},
+      {label: "RAPID", value: "RAPID"},
+      {label: "SUPERB (1390/1798)", value: "SUPERB (1390/1798)"},
+      {label: "DUSTER", value: "DUSTER"},
+      {label: "Audi-A4", value: "Audi-A4"},
+      {label: "Mercedes Benz -C200 CGI", value: "Mercedes Benz -C200 CGI"},
+      {label: "Mercedes Benz -E200 CGI", value: "Mercedes Benz -E200 CGI"},
+      {label: "Opel CORSA", value: "Opel CORSA"},
+      {label: "LANCER 1.4/1.8", value: "LANCER 1.4/1.8"},
+      {label: "HM AMBASSDOR", value: "HM AMBASSDOR"},
       ],
     // required: true,
   },
@@ -347,7 +552,7 @@ export const leadDealer = [
     label: "Lead Type",
     model: ".leadType",
     type: "select",
-    required: true,
+    // required: true,
     options: (props) => [
       {label: "B2B", value: "B2B"},
       {label: "B2C", value: "B2C"},
@@ -471,7 +676,7 @@ export const leadSource = [
       // {label: "Fitment", value: "Fitment"},
       // {label: "Servicing", value: "Servicing"}
     ],
-    required: true,
+    // required: true,
   },
   {
     label: "Sub Lead Type",
@@ -585,7 +790,7 @@ export const leadSourceForJobCard = [
       {label: "B2C", value: "B2C"},
       {label: "B2G", value: "B2G"}
     ],
-    required: true,
+    // required: true,
   },
   {
     label: "Sub Lead Type",

@@ -41,6 +41,7 @@ class FormComponentImpl extends React.Component {
       <Form
         model={`rxFormReducer.${props.formModel}`}
         className="form-content"
+        autoComplete="off"
         onSubmit={() => {
           const values = store.getState().rxFormReducer[props.formModel];
           props.onSubmit(values);
@@ -50,7 +51,7 @@ class FormComponentImpl extends React.Component {
           {props.options.map((opt: any) => {
             const dept = opt.dependentField ? opt.dependentField : "" ;
             const model = `${opt.model}`.substr(1);
-            console.log("opt : ", opt)
+            // console.log("opt : ", opt)
             // console.log("MOddel : ", model)
             // console.log(store.getState().rxFormReducer[props.formModel][`${model}`]);
             switch (opt.type) {
@@ -262,6 +263,7 @@ const MUITextField = (props: any) => {
         variant="outlined"
         className="form-input"
         type={props.type}
+        autoComplete="off"
         defaultValue={props.default}
         {...props}
       />{" "}
@@ -279,6 +281,7 @@ const MUITextArea = (props: any) => {
         label={props.name}
         variant="outlined"
         className="form-input"
+        autoComplete="off"
         type={props.type}
         {...props}
         multiline

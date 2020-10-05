@@ -356,12 +356,12 @@ export class LeadsImpl extends React.Component<
 
   public tabData = (leadsData) => [
     {
-      tabName: "Customer",
+      tabName: "Customer (" +leadsData.filter(l=> l.recordtypeid === "0122w000000chRpAAI").length+ ")",
       component: "",
       onTabSelect: (tabName: any) => { this.setState({ topActiveTab: tabName }) },
     },
     {
-      tabName: "Dealer",
+      tabName: "Dealer (" +leadsData.filter(l=> l.recordtypeid === "0122w000000chRuAAI").length+ ")",
       component: this.renderDealersAssigned(leadsData),
       onTabSelect: (tabName: any) => { this.getAllAssignedDealers(loggedInUserDetails), this.setState({ topActiveTab: tabName }) },
     },
@@ -369,17 +369,17 @@ export class LeadsImpl extends React.Component<
 
   public tabDataToDisplay = (leadsData) => [
     {
-      tabName: "Assigned",
+      tabName: "Assigned (" +leadsData.filter(l=> l.recordtypeid === '0122w000000chRpAAI' && l.assigned_dealer__c).length +")",
       component:
-        this.state.topActiveTab === "Customer"
+        this.state.topActiveTab.includes("Customer") 
           ? this.renderCustomersAssigned(leadsData)
           : this.renderDealersAssigned(leadsData),
       onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName }) },
     },
     {
-      tabName: "Unassigned",
+      tabName: "Unassigned (" +leadsData.filter(l=> l.recordtypeid === '0122w000000chRpAAI' && !l.assigned_dealer__c).length+ ")",
       component:
-        this.state.topActiveTab === "Customer"
+        this.state.topActiveTab.includes("Customer") 
           ? this.renderCustomersUnAssigned(leadsData)
           : this.renderDealersUnAssigned(),
       onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName }) },
@@ -969,7 +969,7 @@ export class LeadsImpl extends React.Component<
     }
 
     console.log("leadsData: ", leadsData);
-    console.log("this.state.activeTabType:", this.state.activeTabType)
+    console.log("this.state.topActiveTab:", this.state.topActiveTab)
     console.log("this.state.selectedFilterValues ", this.state.selectedFilterValues)
 
     return (
@@ -977,7 +977,7 @@ export class LeadsImpl extends React.Component<
         {this.renderAssignDealerModal()}
         {this.openSMSModel()}
         {/* {this.renderFilterModal()} */}
-        <div className="leads">
+        {/* <div> */}
           {isDealer() ? ( leadsData !== undefined && 
             <Tabs tabsData={this.tabDataForDealer(leadsData)}
               hasSort={true}
@@ -987,12 +987,12 @@ export class LeadsImpl extends React.Component<
               <React.Fragment>
                 <Tabs tabsData={this.tabData(leadsData)} />
 
-                {this.state.topActiveTab === "Customer" &&
+                {this.state.topActiveTab.includes("Customer") &&
                   <Tabs tabsData={this.tabDataToDisplay(leadsData)} />
                 }
               </React.Fragment>
             )}
-        </div>
+        {/* </div> */}
         <span
           onClick={() => this.props.history.push("/lead/add-new-lead")}
           style={{ position: "absolute", right: 20, bottom: 20 }}

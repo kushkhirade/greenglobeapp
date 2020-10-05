@@ -44,3 +44,15 @@ export const getPDFBase64 = file => new Promise((resolve, reject) => {
     }
     reader.onerror = (error) => reject(error);
 });
+
+export const getPDFBase64fromURL = blob => {
+        console.log("getBase64 file: ", blob);
+        
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise(resolve => {
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+    });
+  };

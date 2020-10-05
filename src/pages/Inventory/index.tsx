@@ -110,7 +110,7 @@ export class InventoryImpl extends React.PureComponent<
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
           Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,
           Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
-          FROM salesforce.product2 WHERE sold_to_dealer__c = '${sfid}'`,
+          FROM salesforce.product2`,
           token: token
         })
       }else if(recordtypeid === "0122w000000cwfNAAQ"){
@@ -118,7 +118,7 @@ export class InventoryImpl extends React.PureComponent<
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
             Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,
             Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
-            FROM salesforce.product2 WHERE sold_to_distributor__c ='${sfid}'`,
+            FROM salesforce.product2`,
           token: token
         })
       }
@@ -409,6 +409,8 @@ const InventoryCards = (props: any) => {
   
   // return props.data.map((inData: any, key: string) => {
     return (
+      (props.quantity && props.quantity.reduce((s, qnt) => Number(qnt.prd_name__c === inData.name && qnt.quantity) +s, 0)) > 0 
+      &&
       <Grid item xs={12} md={4} lg={4}>
         <div
           onClick={() => props.onClickItem(inData)}

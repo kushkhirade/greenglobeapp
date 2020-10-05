@@ -184,7 +184,7 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
     try{
       const customerData = await getData({
         query: `select date_part('dow', createddate), To_Char("createddate", 'DAY') from salesforce.lead
-        where assigned_dealer__c like '%0011s00000HEdJy%' and recordtypeid='0122w000000chRpAAI'`,
+        where assigned_dealer__c like '${data.sfid}' and recordtypeid='0122w000000chRpAAI'`,
         token: data.token
       })
       console.log("customerData : ", customerData );

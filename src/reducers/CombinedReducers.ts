@@ -26,6 +26,7 @@ export const leadForm = {
   vehicleNumber: "",
   fuelType: "",
   wheeles: "",
+  kitEnquired: "",
   vehicleMek: "",
   vehicleModel: "",
   usage: "",
@@ -69,7 +70,7 @@ export const leadTaskForm = {
 };
 const rxFormReducer = combineForms({
   userForm,
-  leadForm: {},
+  leadForm,
   leadTaskForm,
   egForm: {
     city: "",

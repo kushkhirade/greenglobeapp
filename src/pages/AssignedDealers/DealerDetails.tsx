@@ -363,11 +363,11 @@ export class DealerDetailsImpl extends React.PureComponent<
                 </Grid> */}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">WhatsApp No.:</span>
-                  {this.state.detailsData.whatsapp_no__c}
+                  {this.state.detailsData.whatsapp_number__c}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Email:</span>
-                  {this.state.detailsData.email__c}
+                  {this.state.detailsData.email}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Mobile:</span>
@@ -390,7 +390,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                   sm={12}
                 >
                   <span className="description-text">Billing Address:</span>
-                  {this.state.detailsData.billingstreet} {this.state.detailsData.billingcity} {this.state.detailsData.billingpostalcode} {this.state.detailsData.billingstate}
+                  {this.state.detailsData.street} {this.state.detailsData.city} {this.state.detailsData.postalcode} {this.state.detailsData.state}
                 </Grid>
                 <Grid
                   item

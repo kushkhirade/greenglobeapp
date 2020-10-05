@@ -1,5 +1,7 @@
 import * as React from "react";
 import "./resuableComponent.scss";
+import { Fab, Grid, Button, InputBase, InputAdornment } from "@material-ui/core";
+import Search from "@material-ui/icons/Search";
 import Select from "react-select";
 import InputLabel from '@material-ui/core/InputLabel';
 
@@ -9,6 +11,9 @@ export interface TabsProps {
   onChangeTabValue?: (value) => void;
   hasSort?: boolean;  isIndex?: number;
   sortValue?: (value) => void;
+  hasInputText?: boolean;
+  onInputChange?: (value) => void;
+  sortOptions?: any;
 }
 
 export class Tabs extends React.Component<
@@ -51,7 +56,24 @@ export class Tabs extends React.Component<
 
     return (
       <React.Fragment>
-        <div className="tabs-container">
+        <div className="tabs-container" >
+          {this.props.hasInputText && 
+            <InputBase
+              id="input-with-icon-adornment"
+              endAdornment={
+                <InputAdornment position='start'>
+                  <Search />
+                </InputAdornment>
+              }
+              type="text" 
+              autoComplete="off"
+              fullWidth={true}
+              className="search-input"
+              style={{ padding: 2, width: '100%', margin: '5px', backgroundColor: 'white'}}
+              placeholder="Search by Name or Mobile Number"
+              onChange={(e) => this.props.onInputChange(e)}
+            /> 
+          }
           {this.props.tabsData.map((tab: any, index: any) => {
             return (
               <div
@@ -67,14 +89,6 @@ export class Tabs extends React.Component<
                 {tab.options ?
                   tab.options.length > 0 ? 
                     <Select
-                      // autoFocus={true}
-                      // styles = {{option: (provided, state) => ({
-                      //   ...provided,
-                      //   color: state.isSelected ? 'white' : 'black',
-                      //   backgroundColor: state.isSelected ? '#48a89c' : 'white',
-                      // })}}
-                      // id= 'demo-simple-select-filled'
-                      // isMulti
                       isSearchable={true}
                       isDisabled={tab.tabName === "Tank Capacity" ?this.handleDisable(): false} 
                       // value={this.state.activeTab.tabName == tab.tabName ? this.state.selectValue : null}
@@ -112,20 +126,21 @@ export class Tabs extends React.Component<
               onChange={(e)=> this.props.sortValue(e.value)}
               placeholder={<div style={{color: 'black'}}>Sort</div>}
               isSearchable={false}
-              options={[
-                { label: "Assending", value: "asc" },
-                { label: "Descending", value: "dsc" },
-              ]}
+              options={this.props.sortOptions && this.props.sortOptions ||
+                [{ label: "Assending", value: "asc" }, { label: "Descending", value: "dsc" },]
+              }
             />
             </div>
           )}
-          
         </div>
-        {
-          this.props.tabsData.find(
-            (tab: any, index: any) => index === this.state.activeTabIndex
-          ).component
-        }
+        <div style={{padding: this.props.hasSort ? 25 : 10}}> </div>
+        <div style={{paddingTop: 27}}>
+          {
+            this.props.tabsData.find(
+              (tab: any, index: any) => index === this.state.activeTabIndex
+            ).component
+          }
+        </div>
       </React.Fragment>
     );
   }

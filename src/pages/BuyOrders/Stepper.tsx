@@ -70,12 +70,13 @@ export class Stepper extends React.Component<any, any> {
           })}
         </div>
         <div className="stepper-content">
+          {console.log("props.activeStep : ", props.activeStep)}
           {props.activeStep && props.activeStep < props.stepData.length
             ? props.stepData[props.activeStep] && props.stepData[props.activeStep].disable === false
               ? props.stepData[props.activeStep].component
               : props.stepData[0].component
             : props.stepData[props.activeStep] && props.stepData[props.activeStep].disable === false
-            ? props.stepData[activeStep].component
+            ? props.stepData[props.activeStep].component
             : props.stepData[0].component}
         </div>
       </div>

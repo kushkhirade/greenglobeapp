@@ -11,6 +11,16 @@
     align-items: center;
 }
 
+.search-input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    width: 85%;
+}
+
+
 @mixin svgColor($color) {
     fill: $color !important;
     border: 2px solid $color;
