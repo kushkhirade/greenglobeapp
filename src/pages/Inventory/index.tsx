@@ -38,6 +38,7 @@ export class InventoryImpl extends React.PureComponent<
   { currentItem: any; 
     openEditModal: boolean;
      data: any;
+     quantities: any;
      isFilterOpen: boolean;
      filterType: string;
      selectedProductFilter: string;
@@ -50,7 +51,8 @@ export class InventoryImpl extends React.PureComponent<
     this.state = {
       currentItem: null,
       openEditModal: false,
-      data: null,
+      data: [],
+      quantities: [],
       isFilterOpen: false,
       filterType: "",
       selectedProductFilter: "",
@@ -60,14 +62,41 @@ export class InventoryImpl extends React.PureComponent<
   };
 
   async componentDidMount(){
-
     const {data} = getToken();
     const {location} = this.props;
     const sfid = location.data && location.data.sfid ? location.data.sfid : data.sfid;
     const recordtypeid = location.data && location.data.recordtypeid ? location.data.recordtypeid : data.record_type;
-    const res = await this.getAllInventoryData(data.token, sfid, recordtypeid );
-    console.log("result ", res)
-    this.setState({data : res});
+    const invData = await this.getAllInventoryData(data.token, sfid, recordtypeid );
+    const qntData = await this.getquantities(data.token, sfid, recordtypeid );
+    console.log("result ", invData, qntData)
+    this.setState({data : invData, quantities: qntData});
+  }
+
+  getquantities = async (token, sfid, recordtypeid) => {
+    let quantityData;
+    try {
+      if(recordtypeid === "0122w000000cwfSAAQ"){
+        quantityData = await getData({
+          query: `SELECT product2id,quantity,prd_name__c FROM salesforce.order 
+          Full OUTER JOIN salesforce.orderitem ON  salesforce.order.sfid = salesforce.orderitem.orderid 
+          WHERE salesforce.order.Sold_To_Dealer__c LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJe1AAG'  `,
+          token: token
+        })
+      }else if(recordtypeid === "0122w000000cwfNAAQ"){
+        quantityData = await getData({
+          query: `SELECT product2id,quantity,prd_name__c FROM salesforce.order  
+          Full OUTER JOIN salesforce.orderitem ON  salesforce.order.sfid = salesforce.orderitem.orderid 
+          WHERE salesforce.order.accountid LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJdmAAG' `,
+          token: token
+        })
+      }
+      
+        console.log("quantityData =>", quantityData);
+        return quantityData.result;
+        
+    } catch (e) {
+        console.log('fetch Inventory Error', e)
+    }
   }
 
   getAllInventoryData = async (token, sfid, recordtypeid) => {
@@ -81,7 +110,7 @@ export class InventoryImpl extends React.PureComponent<
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
           Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,
           Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
-          FROM salesforce.product2 WHERE sold_to_dealer__c = '${sfid}'`,
+          FROM salesforce.product2`,
           token: token
         })
       }else if(recordtypeid === "0122w000000cwfNAAQ"){
@@ -89,7 +118,7 @@ export class InventoryImpl extends React.PureComponent<
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
             Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,
             Sold_To_Distributor__c, StockKeepingUnit, Tank_Capacity__c, Tank_Id__c, Customer_Name__c, Dealer_Name__c
-            FROM salesforce.product2 WHERE sold_to_distributor__c ='${sfid}'`,
+            FROM salesforce.product2`,
           token: token
         })
       }
@@ -258,6 +287,7 @@ export class InventoryImpl extends React.PureComponent<
                                   <InventoryCards
                                     onClickItem={this.handleItemClick}
                                     data={inData}
+                                    quantity={this.state.quantities}
                                   />
                               // </Grid>
                               )
@@ -284,6 +314,7 @@ export class InventoryImpl extends React.PureComponent<
                                       <InventoryCards
                                         onClickItem={this.handleItemClick}
                                         data={inData}
+                                        quantity={this.state.quantities}
                                       />
                                     )
                                   }
@@ -294,6 +325,7 @@ export class InventoryImpl extends React.PureComponent<
                                     <InventoryCards
                                       onClickItem={this.handleItemClick}
                                       data={inData}
+                                      quantity={this.state.quantities}
                                     />
                                   )
                                 }
@@ -322,6 +354,7 @@ export class InventoryImpl extends React.PureComponent<
                                         <InventoryCards
                                           onClickItem={this.handleItemClick}
                                           data={inData}
+                                          quantity={this.state.quantities}
                                         />
                                       )
                                     }
@@ -332,6 +365,7 @@ export class InventoryImpl extends React.PureComponent<
                                       <InventoryCards
                                         onClickItem={this.handleItemClick}
                                         data={inData}
+                                        quantity={this.state.quantities}
                                       />
                                     )
                                   }}
@@ -365,7 +399,8 @@ export const Inventory = connect<{}, {}, IInventoryProps>(mapStateToProps)(
   InventoryImpl
 );
 
-const InventoryCards = async (props: any) => {
+const InventoryCards = (props: any) => {
+  console.log(props)
   const inData =  props.data;
   var date1 = new Date();
   var date2 = new Date(inData.date_purchased__c);
@@ -374,6 +409,8 @@ const InventoryCards = async (props: any) => {
   
   // return props.data.map((inData: any, key: string) => {
     return (
+      (props.quantity && props.quantity.reduce((s, qnt) => Number(qnt.prd_name__c === inData.name && qnt.quantity) +s, 0)) > 0 
+      &&
       <Grid item xs={12} md={4} lg={4}>
         <div
           onClick={() => props.onClickItem(inData)}
@@ -395,10 +432,10 @@ const InventoryCards = async (props: any) => {
                 {" "}
                 <span className="description-text">Model - </span> {inData.name}
               </div>
-              {/* <div className="padding-6">
-                <span className="description-text">Price - </span>
-                {inData.price}
-              </div>{" "} */}
+              <div className="padding-6">
+                <span className="description-text">Quantity - </span>
+                {(props.quantity && props.quantity.reduce((s, qnt) => Number(qnt.prd_name__c === inData.name && qnt.quantity) +s, 0)) ?? 0}
+              </div>{" "}
               <div className="padding-6">
                 <span className="description-text">Inventory Aging - </span>
                 {diffinDays < 0 ? -diffinDays : diffinDays} days

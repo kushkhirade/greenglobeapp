@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
+import { BaseModal } from "src/components/BaseModal";
 import { store } from "../../store/Store";
 import { changeValuesInStore, dispatch } from "src/state/Utility";
 import { connect } from "react-redux";
@@ -40,6 +41,7 @@ class FormComponentImpl extends React.Component {
       <Form
         model={`rxFormReducer.${props.formModel}`}
         className="form-content"
+        autoComplete="off"
         onSubmit={() => {
           const values = store.getState().rxFormReducer[props.formModel];
           props.onSubmit(values);
@@ -49,6 +51,7 @@ class FormComponentImpl extends React.Component {
           {props.options.map((opt: any) => {
             const dept = opt.dependentField ? opt.dependentField : "" ;
             const model = `${opt.model}`.substr(1);
+            // console.log("opt : ", opt)
             // console.log("MOddel : ", model)
             // console.log(store.getState().rxFormReducer[props.formModel][`${model}`]);
             switch (opt.type) {
@@ -117,7 +120,8 @@ class FormComponentImpl extends React.Component {
                     }}
                     required={opt.required}
                     onFocus={() => this.handleInputFocus(opt.model)}
-                    options={ store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`] === opt.dependetValue ? opt.options : []}
+                    // options={ store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`] === opt.dependetValue ? opt.options(props) : []}
+                    options={ opt.options(props) }
                     name={opt.name}
                     model={opt.model}
                     label={opt.label}
@@ -251,7 +255,7 @@ class FormComponentImpl extends React.Component {
 }
 
 const MUITextField = (props: any) => {
-  console.log("props", props)
+  // console.log("props", props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <TextField
@@ -259,6 +263,7 @@ const MUITextField = (props: any) => {
         variant="outlined"
         className="form-input"
         type={props.type}
+        autoComplete="off"
         defaultValue={props.default}
         {...props}
       />{" "}
@@ -276,6 +281,7 @@ const MUITextArea = (props: any) => {
         label={props.name}
         variant="outlined"
         className="form-input"
+        autoComplete="off"
         type={props.type}
         {...props}
         multiline
@@ -290,7 +296,7 @@ const MUITextArea = (props: any) => {
 
 const MUISelectField = (props: any) => {
   const { className, ...rest } = props;
-  // console.log(props)
+  console.log(props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <FormControl variant="outlined" className={className}>
@@ -356,8 +362,8 @@ const MUIDateField = (props: any) => {
 };
 
 const MUIUploadContainer = (props: any) => {
-  console.log("Image props : ", props)
-
+  // console.log("Image props : ", props)
+  const [openImg, setOpenImg] = React.useState(false);
   const { className, ...rest } = props;
   const model = props.name.split(".");
   const spllited = props.value && props.value.split(".");
@@ -376,8 +382,31 @@ const MUIUploadContainer = (props: any) => {
     }
     else return "";
   };
-
+  const renderModal = (imgURL) => {
+    // const { currentItem, data } = this.state;
+    // if (!currentItem) {
+    //   return ;
+    // }
+    return (
+      <BaseModal
+        open={openImg}
+        className="inventory-modal"
+        contentClassName="inventory-modal"
+        onClose={() => setOpenImg(false) }
+      >
+        <Grid container spacing={1} className="">
+          <Grid item className="modal-margin" xs={12} md={12}>
+            <div >
+              <img src={imgURL} height="200px" width="300" alt="dta" className="inv-image"/>
+            </div>
+          </Grid>
+        </Grid>
+      </BaseModal>
+    );
+  };
   return (
+    <div>
+      {renderModal(props.value)}
   <Grid item={true} xs={12} md={6} sm={6}>
     <div className="upload-container">
       <div className="upload-head">{props.label}</div>
@@ -405,7 +434,7 @@ const MUIUploadContainer = (props: any) => {
             `}
           </span> 
         <VisibilityIcon 
-          onClick={() => props.value && window.open(props.value, "_blank") }  
+          onClick={() => setOpenImg(true) }  
         />
         <DeleteIcon 
           onClick={() => changeValuesInStore( `${model[1]}.${model[2]}`, "" ) }
@@ -413,6 +442,7 @@ const MUIUploadContainer = (props: any) => {
       </div>
     </div>
   </Grid>
+  </div>
   );
 };
 

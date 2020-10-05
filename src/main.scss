@@ -125,6 +125,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    position: fixed;
+    width: 100%;
 
     .tab-button {
         padding: 5px 5px;
@@ -134,7 +136,7 @@
         font-weight: 600;
         color: black;
         background-color: #e4e4e4;
-
+        
         &:hover {
             cursor: pointer;
             // background-color: #48a89c;

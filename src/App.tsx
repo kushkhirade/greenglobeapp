@@ -29,7 +29,7 @@ const AddNewCustomer = React.lazy(() =>
   }))
 );
 const HomePage = React.lazy(() =>
-  import("./pages/Home").then(({ HomePage }) => ({ default: HomePage }))
+  import("./pages/Home/Home").then(({ HomePage }) => ({ default: HomePage }))
 );
 const Inventory = React.lazy(() =>
   import("./pages/Inventory").then(({ Inventory }) => ({ default: Inventory }))

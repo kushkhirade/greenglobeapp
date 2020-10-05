@@ -77,6 +77,7 @@ export class AddNewJobCardImpl extends React.Component<
     jobCardCheckboxes: any;
     complaintCheckboxes: any;
     allCustAndLeads: any;
+    custVehicles: any;
     selectedUser: any;
     basicDetailsFormRecordId : any;
     isLeadOrCustomer : string;
@@ -180,6 +181,7 @@ export class AddNewJobCardImpl extends React.Component<
       },
       selectedUser: null,
       allCustAndLeads: [],
+      custVehicles: [],
       basicDetailsFormRecordId : "",
       isLeadOrCustomer : ""
     };
@@ -189,6 +191,7 @@ export class AddNewJobCardImpl extends React.Component<
     loggedInUserDetails = getToken().data;
     this.getCustAndLeads(loggedInUserDetails);
     this.getAllJobCards(loggedInUserDetails);
+    changeValuesInStore("leadForm", {});
   }
 
   getAllJobCards = async (data) => {
@@ -220,6 +223,19 @@ export class AddNewJobCardImpl extends React.Component<
     }
   }
 
+  getCustomerVehicles = async (data, custSFID) => {
+    try {
+        const vehicles = await getData({
+          query: `select * from salesforce.vehicle_detail__c where customer__c like '${custSFID}'`,
+          token: data.token,
+        });
+      console.log("vehicles => ", vehicles)
+      this.setState({ custVehicles: vehicles.result });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   getCustAndLeads = async (data) => {
     console.log("data: ", data);
     let custLeadsDataArr;
@@ -228,43 +244,47 @@ export class AddNewJobCardImpl extends React.Component<
         console.log("----------------Dealer---------------------------");
         const custData = await getData({
           query: `SELECT * FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0121s0000000WE4AAM' AND Name is not null`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0121s0000000WE4AAM' 
+          AND SFID is not null AND Name is not null AND lead_status__c = 'Closed'`,
           token: data.token,
         });
+
+        console.log("custData => ", custData)
         custLeadsDataArr = custData.result.map((x) => {
           x.type = "customer";
           return x;
         });
 
-        const leadsData = await getData({
-          query: `SELECT * from salesforce.Lead 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
-          AND Name is not null AND Status != 'Closed'`,
-          token: data.token
-        });
-        leadsData.result.map((l) => {
-          l.type = "lead";
-          return custLeadsDataArr.push(l);
-        });
-      } else {
-        console.log("----------------Distributor---------------------------");
-        const custData = await getData({
-          query: `SELECT * FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WE4AAM'  AND Name is not null`,
-          token: data.token,
-        });
-        custLeadsDataArr = custData.result.map((x) => {
-          x.type = "customer";
-          return x;
-        });
+        // const leadsData = await getData({
+        //   query: `SELECT * from salesforce.Lead 
+        //   WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
+        //   AND Name is not null AND Status != 'Closed'`,
+        //   token: data.token
+        // });
+        // leadsData.result.map((l) => {
+        //   l.type = "lead";
+        //   return custLeadsDataArr.push(l);
+        // });
+      } 
+      // else {
+      //   console.log("----------------Distributor---------------------------");
+      //   const custData = await getData({
+      //     query: `SELECT * FROM salesforce.Contact 
+      //     WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WE4AAM'  AND Name is not null`,
+      //     token: data.token,
+      //   });
+      //   custLeadsDataArr = custData.result.map((x) => {
+      //     x.type = "customer";
+      //     return x;
+      //   });
 
-        const leadsData = await getData({
-          query: `SELECT * FROM salesforce.Lead 
-          WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
-          AND Name is not null AND Status != 'Closed'`,
-          token: data.token
-        });
-      }
+      //   const leadsData = await getData({
+      //     query: `SELECT * FROM salesforce.Lead 
+      //     WHERE Assigned_Distributor__c LIKE '%${data.sfid}%' AND RecordTypeId = '0122w000000chRpAAI' 
+      //     AND Name is not null AND Status != 'Closed'`,
+      //     token: data.token
+      //   });
+      // }
       console.log("custLeadsDataArr: ", custLeadsDataArr);
       this.setState({ allCustAndLeads: custLeadsDataArr });
     } catch (e) {
@@ -281,7 +301,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -294,6 +314,7 @@ export class AddNewJobCardImpl extends React.Component<
       vehicleNumber,
       fuelType,
       wheeles,
+      kitEnquired,
       vehicleMek,
       vehicleModel,
       usage,
@@ -311,20 +332,20 @@ export class AddNewJobCardImpl extends React.Component<
         (name, FirstName, MiddleName, LastName, Company__c,Email,Whatsapp_number__c,
           Lead_Type__c, lead_sub_type__c, Lead_Source__c,Lead_Status__c,Sub_Lead_Source__c,Lead_Rating__c,
           MailingStreet,  MailingCity ,MailingState ,MailingCountry,MailingPostalCode,
-          Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,
+          Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c, Kit_Enquiry__c,Vehicle_Make__c, Vehicle_Model__c,
           Usage_of_Vehicle__c,Engine_Type__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
           GST_Number__c,Accountid,RecordTypeId)
          Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${
           lastName ?? ""
         }','${company ?? ""}','${email ?? ""}','${whatsAppNumber ?? 0}','${
-          leadType ?? ""}', '${subleadType ?? ""
+          leadType ?? ""}', '${subLeadType ?? ""
         }',
          '${leadSource ?? ""}','${leadStatus ?? ""}','${
           subLeadSource ?? ""
         }','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${
           state ?? ""
         }','${country ?? ""}','${zip ?? ""}',
-         '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${
+         '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${kitEnquired ?? ""}','${
           vehicleMek ?? ""
         }','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
          ${dailyRunning ?? 0},'${registration ?? "2020-07-07"}',${
@@ -362,7 +383,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -375,6 +396,7 @@ export class AddNewJobCardImpl extends React.Component<
       vehicleNumber,
       fuelType,
       wheeles,
+      kitEnquired,
       vehicleMek,
       vehicleModel,
       usage,
@@ -396,7 +418,7 @@ export class AddNewJobCardImpl extends React.Component<
         }', Company__c = '${company ?? ""}',Email = '${
           email ?? ""
         }',Whatsapp_number__c = '${whatsAppNumber ?? 0}',
-          Lead_Type__c = '${leadType ?? ""}', lead_sub_type__c='${subleadType ?? ""}', Lead_Source__c = '${
+          Lead_Type__c = '${leadType ?? ""}', lead_sub_type__c='${subLeadType ?? ""}', Lead_Source__c = '${
           leadSource ?? ""
         }',Lead_Status__c = '${leadStatus ?? ""}',Sub_Lead_Source__c = '${
           subLeadSource ?? ""
@@ -408,7 +430,7 @@ export class AddNewJobCardImpl extends React.Component<
         }',MailingPostalCode = '${zip ?? ""}',
           Vehicle_no__c = '${vehicleNumber ?? ""}',Fuel_Type__c = '${
           fuelType ?? ""
-        }',X3_or_4_Wheeler__c = '${wheeles ?? ""}',Vehicle_Make__c = '${
+        }',X3_or_4_Wheeler__c = '${wheeles ?? ""}', kit_enquiry__c = '${kitEnquired ?? ""}', Vehicle_Make__c = '${
           vehicleMek ?? ""
         }', Vehicle_Model__c = '${vehicleModel ?? ""}',
           Usage_of_Vehicle__c = '${usage ?? ""}',Engine_Type__c = '${
@@ -461,7 +483,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -474,6 +496,7 @@ export class AddNewJobCardImpl extends React.Component<
       vehicleNumber,
       fuelType,
       wheeles,
+      kitEnquired,
       vehicleMek,
       vehicleModel,
       usage,
@@ -497,7 +520,7 @@ export class AddNewJobCardImpl extends React.Component<
         }', Company = '${company ?? ""}', Whatsapp_number__c = '${
           whatsAppNumber ?? 0
         }',
-        Lead_Type__c = '${leadType ?? ""}', sub_lead_type__c = '${subleadType ?? ""}', LeadSource = '${
+        Lead_Type__c = '${leadType ?? ""}', sub_lead_type__c = '${subLeadType ?? ""}', LeadSource = '${
           leadSource ?? ""
         }', Status = '${leadStatus ?? ""}',
         Sub_Lead_Source__c = '${subLeadSource ?? ""}', Rating = '${
@@ -509,7 +532,7 @@ export class AddNewJobCardImpl extends React.Component<
         Vehicle_no__c = '${vehicleNumber ?? ""}', Fuel_Type__c = '${
           fuelType ?? ""
         }',
-        X3_or_4_Wheeler__c = '${wheeles ?? ""}', Vehicle_Make__c = '${
+        X3_or_4_Wheeler__c = '${wheeles ?? ""}', kit_enquiry__c = '${kitEnquired ?? ""}', Vehicle_Make__c = '${
           vehicleMek ?? ""
         }', Vehicle_Model__c = '${vehicleModel ?? ""}',
         Usage_of_Vehicle__c = '${usage ?? ""}', Engine__c = '${
@@ -660,7 +683,7 @@ export class AddNewJobCardImpl extends React.Component<
       company,
       whatsAppNumber,
       leadType,
-      subleadType,
+      subLeadType,
       leadSource,
       leadStatus,
       subLeadSource,
@@ -673,6 +696,7 @@ export class AddNewJobCardImpl extends React.Component<
       vehicleNumber,
       fuelType,
       wheeles,
+      kitEnquired,
       vehicleMek,
       vehicleModel,
       usage,
@@ -690,20 +714,20 @@ export class AddNewJobCardImpl extends React.Component<
         (name,FirstName,MiddleName,LastName,Email,Company,Whatsapp_number__c,
           Lead_Type__c,sub_lead_type__c,LeadSource,Status,Sub_Lead_Source__c,
           Rating,Street,City,State,PostalCode,Country,
-          Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c, Vehicle_Model__c,
+          Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c, kit_enquiry__c, Vehicle_Make__c, Vehicle_Model__c,
           Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,
           Assigned_Dealer__c,RecordTypeId)
          Values('${name ?? ""}','${firstName ?? ""}','${middleName ?? ""}','${
           lastName ?? ""
         }','${email ?? ""}','${company ?? ""}',${whatsAppNumber ?? ""},'${
           leadType ?? ""
-        }', '${subleadType ?? ""}'
+        }', '${subLeadType ?? ""}'
          '${leadSource ?? ""}','${leadStatus ?? ""}','${
           subLeadSource ?? ""
         }','${rating ?? ""}','${street ?? ""}','${city ?? ""}','${
           state ?? ""
         }','${zip ?? ""}','${country ?? ""}',
-         '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${
+         '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}', '${kitEnquired ?? ""}','${
           vehicleMek ?? ""
         }','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
          ${dailyRunning ?? 0},'${registration ?? "4/5/2019"}',${mfg ?? 0},'${
@@ -732,68 +756,41 @@ export class AddNewJobCardImpl extends React.Component<
     } catch (error) {}
   };
 
-  // handleJobCardDealerInsert = async () => {
-  //   let customerAdd = null;
-  //   console.log(this.state.selectedUser);
-  //   return;
-  //   if (this.state.selectedUser == null) {
-  //       const res = await this.InsertJobCardDealer(
-  //         loggedInUserDetails,
-  //         this.props.leadForm
-  //       );
-  //       console.log("res:", res);
-  //       customerAdd = res[0].id;
-  //     // }
-  //     console.log(customerAdd);
-  //   } else {
-  //     if (isDealer()) {
-  //       if (this.state.selectedUser.type === "customer") {
-  //         await this.updateCustomer(loggedInUserDetails, this.props.leadForm);
-  //       } else {
-  //         await this.updateLead(loggedInUserDetails, this.props.leadForm);
-  //       }
-  //     } else {
-  //       if (this.state.selectedUser.type === "customer") {
-  //         await this.updateCustomer(loggedInUserDetails, this.props.leadForm);
-  //       } else {
-  //         await this.updateLead(loggedInUserDetails, this.props.leadForm);
-  //       }
-  //     }
-  //   }
-  //   this.insertleadForm(loggedInUserDetails, customerAdd);
-  //   //  this.props.history.push("/leads")
-  // };
-
-
   handleJobCardStep = async (data) => {
     console.log("=================handle job card =====================");
     console.log(data);
+    console.log(this.state);
     console.log("======================================");
 
-    let { gstNumber , companyName } = data;
+    let { gstNumber } = data;
     let { token , record_type , sfid } = loggedInUserDetails;
     let { isLeadOrCustomer } = this.state;
     let basicDetailsFormId = this.state.basicDetailsFormRecordId;
+    let custSfid ;
+    if(!basicDetailsFormId ){
+      custSfid = this.state.selectedUser.sfid
+    }else{
     let queryToGetSfid = `Select sfid,name from Salesforce.contact where id=${basicDetailsFormId}`
     let sfidOfRecord = await getData({
             query : queryToGetSfid,
             token: token
           });
       console.log("SFID ====" , sfidOfRecord);
-   
+      custSfid = sfidOfRecord.result[0].sfid
+    }
       const {
         jobCardCheckboxes: jCC,
         complaintCheckboxes: cC
       } = this.state;
 
-      let query = `INSERT INTO salesforce.job_card__c (customer__c, Company__c, GST_Number__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,
+      let query = `INSERT INTO salesforce.job_card__c (customer__c, GST_Number__c,AIR_FILTER_R_R__c,BLOCK_PISTON_R_R__c,CARBURETTOR_SERVICE__c,CAR_SCANNING__c,CNG_LEAKAGE_CHECK__c,CNG_SEQ_KIT_TUNE_UP__c,CNG_TUNE_UP__c,COOLANT_REPLACE__c,CYLINDER_BRACKET_R_R__c,CYLINDER_HYDROTESTING__c,CYLINDER_REFITTING__c,CYLINDER_REMOVE__c,CYLINDER_VALVE_R_R__c,DICKY_FLOOR_REPAIR__c,ECM_BRACKET_R_R__c,ECM_R_R__c,EMULATOR_R_R__c,ENGINE_COMPRESSION_CHECK__c,ENGINE_TUNE_UP__c,FILLER_VALVE_REPAIR__c,
         FILLER_VALVE_R_R__c,FUEL_FILTER_R_R__c,FUEL_GAUGE_CORRECTOR_FITMENT__c,FUEL_PUMP_RELAY_R_R__c,FUEL_PUMP_R_R__c,GAS_FILLTER_R_R__c,GENERAL_LABOUR_CHARGES__c,GRECO_ACE_KIT_FITTING__c,GRECO_INJECTOR_R_R__c,GRECO_PRO_KIT_FITTING__c,
         HEIGHT_PAD_FITMENT__c,HIGH_PRESSURE_PIPE_R_R__c,INGNITION_COILS_R_R__c,INGNITION_COIL_CODE_R_R__c,INJECTOR_NOZZLE_R_R__c,KIT_REFITTING__c,KIT_REMOVE__c,KIT_SERVICE__c,LOW_PRESSURE_HOSE_R_R__c,MAF_MAP_SENSOR_CLEAN__c,
         MAP_SENSOR_R_R__c,MIXER_R_R__c,O2_SENSOR_CLEAN__c,O2_SENSOR_R_R__c,OIL_OIL_FILTER_REPLACE__c,PETROL_INJECTOR_R_R__c,PICK_UP_COIL_R_R__c,PRESSURE_GAUGE_R_R__c,RAIL_BRACKET_R_R__c,REDUCER_BRACKET_R_R__c,
         REDUCER_R_R__c,REDUCER_SERVICE__c,SPARK_PLUG_R_R__c,SWITCH_R_R__c,ANNUAL_MAINTAINANACE_CONTRACT__c,TAPPET_COVER_PACKING_REPLACE__c,TAPPET_SETTING__c,TEMPRESURE_SENSOR_R_R__c,THROTTLE_BODY_CLEANING__c,TIMING_ADVANCE_PROCESS_R_R__c,
         VACCUM_HOSE_PIPE_R_R__c,WIRING_REMOVE_REFITTING__c,WIRING_REPAIR__c,X1ST_FREE_SERVICE__c,X1ST_STAGE_REGULATOR_ORING_R_R__c,X1ST_STAGE_REGULATOR_R_R__c,X2ND_FREE_SERVICE__c,X2ND_STAGE_REGUALTOR_R_R__c,X3RD_FREE_SERVICE__c,
         Low_Average_Mileage__c,Late_Starting_Problem__c,Jerking_Missing_Low_Pick__c,Changeover__c,Vehicle_Not_Changing__c,Vehicle_Not_starting__c,Engine_Shutdown__c,Less_Slow_Gas__c,Check_Engine__c,Petrol_Consumption__c,Noise_after__c,Gas_Leakage__c,Switch_Not_Working_No_lights_on_switch__c,Buzzer_Noise_on_Switch__c) 
-        VALUES ('${sfidOfRecord.result[0].sfid}','${companyName}','${gstNumber}',
+        VALUES ('${custSfid}','${gstNumber ?? ""}',
           ${jCC["AIR FILTER R/R"]},${jCC["BLOCK PISTON R/R"]},${
             jCC["CARBURETTOR SERVICE"]
           },${jCC["CAR SCANNING"]},${jCC["CNG LEAKAGE CHECK"]},${
@@ -871,15 +868,16 @@ export class AddNewJobCardImpl extends React.Component<
         console.log("#######################################################");
 
         if(addJobCardRes.status == 200 && addJobCardRes.result){
+          this.handleCloseAddJobCard()
           // alert("New Job Card Added Successfully");
-          if(isLeadOrCustomer === "leads"){
-            this.setState({ OpenAddJobCard: false })
-            // this.props.history.push({pathname: "/leads"});
-          }
-          if(isLeadOrCustomer === "customers"){
-            this.setState({ OpenAddJobCard: false })
-            // this.props.history.push({pathname: "/customers"});
-          }
+          // if(isLeadOrCustomer === "leads"){
+          //   this.handleCloseAddJobCard()
+          //   // this.props.history.push({pathname: "/leads"});
+          // }
+          // if(isLeadOrCustomer === "customers"){
+          //   this.handleCloseAddJobCard()
+          //   // this.props.history.push({pathname: "/customers"});
+          // }
         }
 
   };
@@ -909,16 +907,15 @@ export class AddNewJobCardImpl extends React.Component<
         day = '0' + day;
 
     return [year, month, day].join('-');
-}
+  }
 
   handleBasicDetailsFormSubmit = async (obj : any) => {
    this.setState({ basicDetailsFormRecordId : "" });
-
   
     let {
       chassis,city, company, country, dailyRunning, email, firstName, fuelType, gstNumber, lastName, leadSource, 
-      leadStatus,leadType,subleadType,mfg, middleName, rating, registration, state, street, subLeadSource, usage, 
-      vehicleMek, vehicleModel, vehicleNumber , vehicleType, whatsAppNumber, wheeles, zip
+      leadStatus,leadType,subLeadType,mfg, middleName, rating, registration, state, street, subLeadSource, usage, 
+      vehicleMek, vehicleModel, vehicleNumber , vehicleType, whatsAppNumber, wheeles, kitEnquired, zip
     } = obj;
 
     let { token , record_type , sfid } = loggedInUserDetails;
@@ -934,8 +931,8 @@ export class AddNewJobCardImpl extends React.Component<
           let assignedDist = assignedDistRes.result[0].assigned_distributor__c;
 
           console.log(assignedDist);
-          let query = `INSERT INTO salesforce.Contact (FirstName, MiddleName, LastName, Company__c,Email,Whatsapp_number__c,Lead_Type__c,lead_sub_type__c,Lead_Source__c,Lead_Status__c,Sub_Lead_Source__c,Lead_Rating__c,MailingStreet,MailingCity,MailingState,MailingCountry,MailingPostalCode,Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c,Vehicle_Model__c,Usage_of_Vehicle__c,Engine_Type__c,Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,accountid,RecordTypeId,Assigned_Dealer__c)
-          values('${firstName ?? ""}', '${middleName ?? ""}', '${lastName ?? ""}' , '${company ?? ""}' , '${email ?? ""}' , ${whatsAppNumber} , '${leadType ?? ""}' , '${subleadType ?? ""}', '${leadSource ?? ""}' , 'Closed' , '${subLeadSource ?? ""}' ,'${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${country ?? ""}',${zip},'${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',${dailyRunning},'${registration ?? ""}',${mfg},'${chassis ?? ""}','${assignedDist}', '0121s0000000WE4AAM' , '${sfid}') Returning Id`;    
+          let query = `INSERT INTO salesforce.Contact (FirstName, MiddleName, LastName, Company__c,Email,Whatsapp_number__c,Lead_Type__c,lead_sub_type__c,Lead_Source__c,Lead_Status__c,Sub_Lead_Source__c,Lead_Rating__c,MailingStreet,MailingCity,MailingState,MailingCountry,MailingPostalCode,Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Kit_Enquired__c,Vehicle_Make__c,Vehicle_Model__c,Usage_of_Vehicle__c,Engine_Type__c,Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,accountid,RecordTypeId,Assigned_Dealer__c)
+          values('${firstName ?? ""}', '${middleName ?? ""}', '${lastName ?? ""}' , '${company ?? ""}' , '${email ?? ""}' , ${whatsAppNumber} , '${leadType ?? ""}' , '${subLeadType ?? ""}', '${leadSource ?? ""}' , 'Closed' , '${subLeadSource ?? ""}' ,'${rating ?? ""}','${street ?? ""}','${city ?? ""}','${state ?? ""}','${country ?? ""}',${zip ?? 0},'${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}','${kitEnquired ?? ""}','${vehicleMek ?? ""}','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',${dailyRunning},'${registration ?? ""}',${mfg},'${chassis ?? ""}','${assignedDist}', '0121s0000000WE4AAM' , '${sfid}') Returning Id`;    
           try {
             let res;
             res = await getData({
@@ -966,7 +963,7 @@ export class AddNewJobCardImpl extends React.Component<
           console.log(type);
           if(type === "customer"){
             // alert("And selected customer");
-            let updateQuery = `update salesforce.Contact set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company__c='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subleadType ?? ""}',Lead_Source__c='${leadSource ?? ""}',Lead_Status__c='${leadStatus ?? ""}',Sub_Lead_Source__c ='${subLeadSource ?? ""}'  ,Lead_Rating__c='${rating ?? ""}',  MailingStreet='${street ?? ""}',  MailingCity='${city ?? ""}' ,MailingState='${state ?? ""}' ,MailingCountry='${country ?? ""}',MailingPostalCode =${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine_Type__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c='${gstNumber ?? ""}'   where sfid like '${sfid}' Returning Id`;
+            let updateQuery = `update salesforce.Contact set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company__c='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subLeadType ?? ""}',Lead_Source__c='${leadSource ?? ""}',Lead_Status__c='${leadStatus ?? ""}',Sub_Lead_Source__c ='${subLeadSource ?? ""}'  ,Lead_Rating__c='${rating ?? ""}',  MailingStreet='${street ?? ""}',  MailingCity='${city ?? ""}' ,MailingState='${state ?? ""}' ,MailingCountry='${country ?? ""}',MailingPostalCode =${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}', kit_enquiry__c = '${kitEnquired ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine_Type__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c='${gstNumber ?? ""}'   where sfid like '${sfid}' Returning Id`;
             try {
               let res;
               res = await getData({
@@ -991,7 +988,7 @@ export class AddNewJobCardImpl extends React.Component<
           }
           else {
               // alert("And selected lead");
-             let updateQuery  = `update salesforce.Lead set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subleadType ?? ""}',LeadSource='${leadSource ?? ""}',Status='${leadStatus ?? ""}',Sub_Lead_Source__c='${subLeadSource ?? ""}' ,Rating='${rating ?? ""}',  Street='${street ?? ""}',  City='${city ?? ""}' ,State='${state ?? ""}' ,Country='${country ?? ""}',PostalCode=${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c ='${gstNumber ?? ""}' where sfid like '${sfid}' Returning Id`;
+             let updateQuery  = `update salesforce.Lead set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company='${company ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subLeadType ?? ""}',LeadSource='${leadSource ?? ""}',Status='${leadStatus ?? ""}',Sub_Lead_Source__c='${subLeadSource ?? ""}' ,Rating='${rating ?? ""}',  Street='${street ?? ""}',  City='${city ?? ""}' ,State='${state ?? ""}' ,Country='${country ?? ""}',PostalCode=${zip}, Vehicle_no__c='${vehicleNumber ?? ""}',Fuel_Type__c='${fuelType ?? ""}',X3_or_4_Wheeler__c='${wheeles ?? ""}', kit_enquiry__c = '${kitEnquired ?? ""}',Vehicle_Make__c='${vehicleMek ?? ""}', Vehicle_Model__c='${vehicleModel ?? ""}',Usage_of_Vehicle__c='${usage ?? ""}',Engine__c='${vehicleType ?? ""}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration ?? ""}',Year_of_Manufacturing__c=${mfg},Chassis_No__c='${chassis ?? ""}',  GST_Number__c ='${gstNumber ?? ""}' where sfid like '${sfid}' Returning Id`;
               try {
                 let res;
                 res = await getData({
@@ -1021,7 +1018,7 @@ export class AddNewJobCardImpl extends React.Component<
     //   if(!this.state.selectedUser){
     //     alert("Distributor , No Option is selected");
     //     let query = `INSERT INTO salesforce.Contact (FirstName, MiddleName, LastName, Company__c,Email,Whatsapp_number__c,Lead_Type__c,Lead_Source__c,Lead_Status__c,Sub_Lead_Source__c,Lead_Rating__c,MailingStreet,MailingCity,MailingState,MailingCountry,MailingPostalCode,Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c,Vehicle_Model__c,Usage_of_Vehicle__c,Engine_Type__c,Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,GST_Number__c,accountid,RecordTypeId)
-    //     values('${firstName}', '${middleName}', '${lastName}' , '${company}' , '${email}' , ${whatsAppNumber} , '${leadType}' , '${leadSource}' , '${leadStatus}' , '${subLeadSource}' ,'${rating}','${street}','${city}','${state}','${country}',${zip},'${vehicleNumber}','${fuelType}','${wheeles}','${vehicleMek}','${vehicleModel}','${usage}','${vehicleType}',${dailyRunning},'${registration}',${mfg},'${gstNumber}','${chassis}','${sfid}', '${record_type}') Returning Id`;    
+    //     values('${firstName}', '${middleName}', '${lastName}' , '${company}' , '${email}' , ${whatsAppNumber} , '${leadType}' , '${leadSource}' , '${leadStatus}' , '${subLeadSource}' ,'${rating}','${street}','${city}','${state}','${country}',${zip},'${vehicleNumber}','${fuelType}','${wheeles}', kit_enquiry__c = '${kitEnquired ?? ""}', kit_enquiry__c = '${kitEnquired ?? ""}','${vehicleMek}','${vehicleModel}','${usage}','${vehicleType}',${dailyRunning},'${registration}',${mfg},'${gstNumber}','${chassis}','${sfid}', '${record_type}') Returning Id`;    
     //     try {
     //       let res;
     //        res = await getData({
@@ -1046,7 +1043,7 @@ export class AddNewJobCardImpl extends React.Component<
     //   else {
     //     let sfid = this.state.selectedUser.sfid;
     //     alert("Distributor , Some Option is selected");
-    //     let updateQuery = `update salesforce.Contact set FirstName='${firstName}', MiddleName='${middleName}', LastName='${lastName}', Company__c='${company}',Email='${email}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType}',Lead_Source__c='${leadSource}',Lead_Status__c='${leadStatus}',Sub_Lead_Source__c ='${subLeadSource}'  ,Lead_Rating__c='${rating}',  MailingStreet='${street}',  MailingCity='${city}' ,MailingState='${state}' ,MailingCountry='${country}',MailingPostalCode =${zip}, Vehicle_no__c='${vehicleNumber}',Fuel_Type__c='${fuelType}',X3_or_4_Wheeler__c='${wheeles}',Vehicle_Make__c='${vehicleMek}', Vehicle_Model__c='${vehicleModel}',Usage_of_Vehicle__c='${usage}',Engine_Type__c='${vehicleType}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration}',Year_of_Manufacturing__c=${mfg},Chassis_No__c=${chassis},  GST_Number__c='${gstNumber}'   where sfid like '${sfid}' Returning Id`;
+    //     let updateQuery = `update salesforce.Contact set FirstName='${firstName}', MiddleName='${middleName}', LastName='${lastName}', Company__c='${company}',Email='${email}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType}',Lead_Source__c='${leadSource}',Lead_Status__c='${leadStatus}',Sub_Lead_Source__c ='${subLeadSource}'  ,Lead_Rating__c='${rating}',  MailingStreet='${street}',  MailingCity='${city}' ,MailingState='${state}' ,MailingCountry='${country}',MailingPostalCode =${zip}, Vehicle_no__c='${vehicleNumber}',Fuel_Type__c='${fuelType}',X3_or_4_Wheeler__c='${wheeles}', kit_enquiry__c = '${kitEnquired ?? ""}',Vehicle_Make__c='${vehicleMek}', Vehicle_Model__c='${vehicleModel}',Usage_of_Vehicle__c='${usage}',Engine_Type__c='${vehicleType}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration}',Year_of_Manufacturing__c=${mfg},Chassis_No__c=${chassis},  GST_Number__c='${gstNumber}'   where sfid like '${sfid}' Returning Id`;
     //     try {
     //       let res;
     //        res = await getData({
@@ -1105,6 +1102,18 @@ export class AddNewJobCardImpl extends React.Component<
             options={streetInputs}
           />
           <SubFormHeading>Vehicle Details</SubFormHeading>
+          {/* <div style={{padding: '10px'}}>
+            <Select
+              className="r-select"
+              classNamePrefix="r-select-pre"
+              placeholder="Select Customer"
+              options={this.state.custVehicles && this.state.custVehicles.map((p) => ({
+                label: p.vehicle_model__c,
+                value: p.sfid,
+              }))}
+              // onChange={this.dealerChange}
+            />
+          </div> */}
           <FormComponent
             // onSubmit={(v: any) => {
             //   alert("hello");
@@ -1126,176 +1135,13 @@ export class AddNewJobCardImpl extends React.Component<
               ...leadSourceForJobCard,
             ]}
             cancelTitle="Close"
-            onCancel={() => this.setState({ OpenAddJobCard: false })}
+            onCancel={() => this.handleCloseAddJobCard()}
           />
         </React.Fragment>
       </div>
     );
   };
-
-  renderRelated = () => {
-    return (
-      <SubFormHeading>
-        Opportunities{" "}
-        <Button variant="contained" color="primary">
-          New
-        </Button>{" "}
-      </SubFormHeading>
-    );
-  };
-
-  // RTO Docs Form
-  /* renderDocsForRTO = () => {
-    return (
-      <React.Fragment>
-        <SubFormHeading >
-          Documents Required for RTO
-        </SubFormHeading>
-        <UploadContainer valKey={1} heading="Original R.C. Book" />
-        <UploadContainer
-          valKey={2}
-          heading="Bank NOC In case of Hypothecation"
-        />
-        <UploadContainer valKey={3} heading="Valid Insurance Photocopy" />
-        <UploadContainer valKey={4} heading="Permit" />
-        <UploadContainer valKey={5} heading="Tax" />
-        <UploadContainer valKey={6} heading="Passing" />
-        <SubFormHeading >
-          KYC Documents
-        </SubFormHeading>
-        <UploadContainer valKey={7} heading="Aadhaar Card" />
-        <UploadContainer valKey={8} heading="PAN Card" />{" "}
-        <FormComponent
-          onSubmit={(v: any) => {
-            console.log(">> v", v);
-            this.setState({
-              activeStep: this.state.activeStep + 1,
-            });
-          }}
-          formModel="leadForm"
-          hasSubmit={true}
-          options={[]}
-          submitTitle="Next"
-          cancelTitle="Previous"
-        />
-      </React.Fragment>
-    );
-  };
- */
-  // Negotiation Form
-  /*   renderNegotitation = () => {
-    return (
-      <div className="negotitation-container">
-        <div style={{ textAlign: "right" }}>
-          <Button variant="contained" color="default">
-            Generate Proposal
-          </Button>
-        </div>
-        <div className="negotitation-content">
-          <div className="heading">Green Globe Fuel Solutions</div>
-          <div className="info-container">
-            <div className="image-container">
-              {" "}
-              <Image
-                src="https://cdn2.iconfinder.com/data/icons/random-outline-3/48/random_14-512.png"
-                fallback={<Shimmer width={300} height={300} />}
-              />
-            </div>
-            <div className="details">
-              <div className="detail">
-                <span className="description-text">Created On:</span>
-                06/05/2020
-              </div>
-              <div className="detail">
-                <span className="description-text">Expiration Date:</span>
-                03/11/2020
-              </div>
-              <div className="detail">
-                <span className="description-text">Contact Name:</span>
-                Nothing
-              </div>
-            </div>
-          </div>
-        </div>{" "}
-        <FormComponent
-          onSubmit={(v: any) => {
-            this.setState({
-              activeStep: this.state.activeStep + 1,
-            });
-            console.log(">> v", v);
-          }}
-          submitTitle="Next"
-          cancelTitle="Previous"
-          formModel="leadForm"
-          hasSubmit={true}
-          options={[]}
-        />
-      </div>
-    );
-  }; */
-
-  // Closed
-  /* renderClosedTab = () => {
-    return (
-      <div style={{ width: "100%" }}>
-        <TableWithGrid
-          title={"Products Sold"}
-          data={[
-            {
-              itemName: "Item 1",
-              unitCost: 100,
-              qty: 2,
-              amount: 200,
-            },
-            {
-              itemName: "Item 1",
-              unitCost: 100,
-              qty: 2,
-              amount: 200,
-            },
-            {
-              itemName: "Item 1",
-              unitCost: 100,
-              qty: 2,
-              amount: 200,
-            },
-            {
-              itemName: "Item 1",
-              unitCost: 100,
-              qty: 2,
-              amount: 200,
-            },
-          ]}
-          columns={closedColumns}
-          options={{ responsive: "scrollMaxHeight" }}
-        />{" "}
-        <FormComponent
-          onSubmit={(v: any) => {
-            console.log(">> v", v);
-            this.setState({
-              activeStep: this.state.activeStep + 1,
-            });
-          }}
-          formModel="leadForm"
-          hasSubmit={true}
-          options={[]}
-          submitTitle="Next"
-          cancelTitle="Previous"
-        />
-      </div>
-    );
-  }; */
-
-  checkboxInputs = [
-    "CNG TUNE UP",
-    "KIT SERVICE",
-    "KIT REFITTING",
-    "CYLINDER REMOVE",
-    "CYLINDER REFITTING",
-    "GRECO ACE KIT FITTING",
-    "GRECO PRO KIT FITTING",
-  ];
-
+  
   renderJobCard = () => {
     return (
       <div className="card-container job-card-container">
@@ -1311,7 +1157,7 @@ export class AddNewJobCardImpl extends React.Component<
           hasSubmit={false}
           options={gstDetails}
         />
-        {this.props.leadForm.subleadType === "Servicing" &&
+        {this.props.leadForm.subLeadType === "Servicing" &&
           <div>
             <SubFormHeading>Complaint Checklist</SubFormHeading>
             <Grid container>
@@ -1400,168 +1246,13 @@ export class AddNewJobCardImpl extends React.Component<
             // this.handleJobCardDealerInsert();
             this.handleJobCardStep(this.props.leadForm);
           }}
+          onCancel={() => this.handleCloseAddJobCard()}
           formModel="leadForm"
           hasSubmit={true}
           submitTitle="Save"
           options={[]}
         />
       </div>
-    );
-  };
-
-  renderActivitySection = () => {
-    return (
-      <div className="job-card-container">
-        <SubFormHeading>
-          Upcoming Tasks
-          <div className="right-button">
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => this.setState({ openEditModal: true })}
-            >
-              New
-            </Button>
-          </div>
-        </SubFormHeading>
-        <Grid container>
-          {detailsObj.map((dData) => {
-            return (
-              <Grid item xs={12} md={12} lg={12}>
-                <div className="activity-card card-container">
-                  <div className="details-text">
-                    <span className="description-text">S. No</span>{" "}
-                    {dData.sNumber}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Subject</span>{" "}
-                    {dData.subject}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Due Date</span>
-                    {dData.dueDate}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Rating</span>{" "}
-                    {dData.rating}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Priority</span>
-                    {dData.priotiy}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Status</span>{" "}
-                    {dData.status}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Call Result</span>
-                    {dData.callResult}
-                  </div>
-                  <div className="details-text">
-                    <span className="description-text">Comments</span>
-                    {dData.comments}
-                  </div>
-                  <div className="edit-button">
-                    <Edit />
-                  </div>
-                </div>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </div>
-    );
-  };
-
-  public renderFormForActivity = () => {
-    return (
-      <div className="lead-modal-form">
-        <Grid container spacing={4}>
-          <div className="product-selection">
-            <Grid xs={12} md={5} sm={5}>
-              <GSelect
-                className="r-select"
-                placeholder="Subject"
-                options={products}
-              />
-            </Grid>{" "}
-            <span style={{ padding: "10px" }} />
-            <Grid xs={12} md={5} sm={5}>
-              <input type="date" className="r-select" />{" "}
-            </Grid>
-          </div>
-        </Grid>
-        <Grid container spacing={4}>
-          <div className="product-selection">
-            <Grid xs={12} md={5} sm={5}>
-              <GSelect
-                className="r-select"
-                placeholder="Rating"
-                options={products}
-              />
-            </Grid>{" "}
-            <span style={{ padding: "10px" }} />
-            <Grid xs={12} md={5} sm={5}>
-              <GSelect
-                className="r-select"
-                placeholder="Status"
-                options={products}
-              />{" "}
-            </Grid>
-          </div>
-        </Grid>
-        <Grid container spacing={4}>
-          <div className="product-selection">
-            <Grid xs={12} md={5} sm={5}>
-              <GSelect
-                className="r-select"
-                placeholder="Call Result"
-                options={products}
-              />
-            </Grid>{" "}
-            <span style={{ padding: "10px" }} />
-            <Grid xs={12} md={5} sm={5}>
-              <TextField
-                multiline
-                rows={3}
-                className="r-select textarea-full"
-                placeholder="Comments"
-                variant="outlined"
-              />{" "}
-            </Grid>
-          </div>
-        </Grid>
-        <div className="button-container">
-          <Button
-            onClick={() => this.setState({ openEditModal: false })}
-            variant="contained"
-            color="default"
-          >
-            Cancel
-          </Button>
-          <Button variant="contained" color="primary">
-            Save
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  renderModal = () => {
-    return (
-      <BaseModal
-        className="leads-modal"
-        contentClassName="leads-content"
-        onClose={() => this.setState({ openEditModal: false })}
-        open={this.state.openEditModal}
-      >
-        <Grid container spacing={1} className="">
-          <Grid item className="modal-margin" xs={12} md={12}>
-            Add New Task
-          </Grid>
-          {this.renderFormForActivity()}
-        </Grid>
-      </BaseModal>
     );
   };
 
@@ -1573,30 +1264,19 @@ export class AddNewJobCardImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
+            disable: false,
             component: this.renderForm(),
           },
          
           {
             label: "Job Card",
+            disable: false,
             component: this.renderJobCard(),
           },
         ]}
       />
     );
   };
-
-  public tabData = () => [
-    {
-      tabName: "Details",
-      component: this.renderStepper(),
-      onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
-    },
-    {
-      tabName: "Activity",
-      component: this.renderActivitySection(),
-      onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
-    },
-  ];
 
   dealerChange = ({ obj }) => {
     const newData = {
@@ -1607,7 +1287,7 @@ export class AddNewJobCardImpl extends React.Component<
       company: obj.company ?? obj.company__c,
       whatsAppNumber: obj.whatsapp_number__c,
       leadType: obj.lead_type__c,
-      subleadType: obj.lead_sub_type__c ?? obj.sub_lead_type__c,
+      subLeadType: obj.lead_sub_type__c ?? obj.sub_lead_type__c,
       leadSource: obj.leadsource ?? obj.lead_source__c,
       leadStatus: obj.status ?? obj.lead_status__c,
       subLeadSource: obj.sub_lead_source__c,
@@ -1620,10 +1300,11 @@ export class AddNewJobCardImpl extends React.Component<
       vehicleNumber: obj.vehicle_no__c,
       fuelType: obj.fuel_type__c,
       wheeles: obj.x3_or_4_wheeler__c,
+      kitEnquired: obj.kit_enquiry__c,
       vehicleMek: obj.vehicle_make__c,
       vehicleModel: obj.vehicle_model__c,
       usage: obj.usage_of_vehicle__c,
-      vehicleType: obj.engine__c,
+      vehicleType: obj.engine_type__c,
       dailyRunning: obj.daily_running_kms__c,
       registration: obj.registration_year__c,
       mfg: obj.year_of_manufacturing__c,
@@ -1653,7 +1334,45 @@ export class AddNewJobCardImpl extends React.Component<
    
     console.log(obj);
     this.setState({ selectedUser: obj });
+    this.getCustomerVehicles(loggedInUserDetails, obj.sfid);
   };
+
+  handleCloseAddJobCard = () => {
+    const newData = {
+      email: "",
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      company: "",
+      whatsAppNumber: "",
+      leadType: "",
+      subLeadType: "",
+      leadSource: "",
+      leadStatus: "",
+      subLeadSource: "",
+      rating: "",
+      street: "",
+      city: "",
+      state: "",
+      zip: "",
+      country: "",
+      vehicleNumber: "",
+      fuelType: "",
+      wheeles: "",
+      kitEnquired: "",
+      vehicleMek: "",
+      vehicleModel: "",
+      usage: "",
+      vehicleType: "",
+      dailyRunning: "",
+      registration: "",
+      mfg: "",
+      chassis: "",
+      gstNumber: "",
+    };
+    changeValuesInStore("leadForm", newData);
+    this.setState({ OpenAddJobCard : false });
+  }
 
   handleJobCardDetails = (data) => {
     this.props.history.push(`/job-card-details/${data.sfid}`)
@@ -1666,13 +1385,12 @@ export class AddNewJobCardImpl extends React.Component<
           // className="card-container no-hover add-leads-page"
           // style={{ paddingBottom: 500 }}
         >
-          {this.renderModal()}
           {!this.state.OpenAddJobCard && (
             <div className="card-container no-hover add-leads-page">
               <Select
                 className="r-select"
                 classNamePrefix="r-select-pre"
-                placeholder="Select Customer / Lead"
+                placeholder="Select Customer"
                 options={this.state.allCustAndLeads.map((p) => ({
                   label: p.name,
                   value: p.sfid,
