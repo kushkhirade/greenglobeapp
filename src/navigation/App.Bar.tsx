@@ -205,6 +205,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
 
   public render() {
     const { classes } = this.props;
+    console.log("AppBar this.props:", this.props)
     const isLoggedIn = isAuthenticated();
     if (!isLoggedIn) {
       return <Redirect to="/" />;

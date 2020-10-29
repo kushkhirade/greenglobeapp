@@ -138,7 +138,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           token: data.token
         });
       }
-      if(details.details && details.details.courierName ){
+      else if(details.details && details.details.courierName ){
         updateorder = await getData({
           query: `update salesforce.order set 
           Consignment_No__c = '${details.details.consignmentNo}',
@@ -169,7 +169,7 @@ export class AddNewOrderImpl extends React.PureComponent<
     console.log("orderdetails ", orderdetails);
     const orderType = this.props.location.orderType;
     const UniqueId = orderdetails && orderdetails.app_id__c ? orderdetails.app_id__c : new Date();
-    let insertuser;
+    let insertOrder, insertItem;
   
     try{
       if(!orderdetails){
@@ -180,52 +180,54 @@ export class AddNewOrderImpl extends React.PureComponent<
             token : data.token
           })
           console.log("SFID: ", SFID)
-          insertuser = await getData({
+          insertOrder = await getData({
             query: `INSERT INTO salesforce.order
             (status, EffectiveDate, Pricebook2Id, Sold_To_Dealer__c, AccountId, recordtypeid, app_id__c)
             values
-            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0','${data.sfid}', 
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2),'${data.sfid}', 
             '${SFID.result[0].assigned_distributor__c}', '0122w000000UJe1AAG', '${UniqueId}' )
             RETURNING Id`,
             token: data.token
           });
+        console.log("insertOrder => ", insertOrder);
+        this.setState({ orderdetails: insertOrder.result[0] });
         }
         else if(data.record_type === "0122w000000cwfNAAQ"){
           if(orderType === "Buy"){
-            insertuser = await getData({
+            insertOrder = await getData({
               query: `INSERT INTO salesforce.order
               (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
               values
-              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJdmAAG', '${UniqueId}')
+              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2), '${data.sfid}', '0122w000000UJdmAAG', '${UniqueId}')
               RETURNING Id`,
               token: data.token
             });
           }
           else{
-            insertuser = await getData({
+            insertOrder = await getData({
               query: `INSERT INTO salesforce.order
               (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
               values
-              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJe1AAG', '${UniqueId}' )
+              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2), '${data.sfid}', '0122w000000UJe1AAG', '${UniqueId}' )
               RETURNING Id`,
               token: data.token
             });
           }
+        console.log("insertOrder => ", insertOrder);
+        this.setState({ orderdetails: insertOrder.result[0] });
         }
       }
-      console.log("insertuser => ", insertuser);
-      this.setState({ orderdetails: insertuser.result[0] });
 
       selectedProducts.map(async (x) => 
         { x.itemNumber ? 
-          insertuser = await getData({
+          insertItem = await getData({
             query: `update salesforce.orderitem set quantity = ${x.quantity} 
             where OrderItemNumber = '${x.itemNumber}' RETURNING id`,
             token: data.token
           }) 
         :
           x.quantity !== "0" &&
-            (insertuser = await getData({
+            (insertItem = await getData({
               query: `INSERT INTO salesforce.orderitem 
               (pricebookentryid, product2id, quantity, unitprice, Order__app_id__c) 
               VALUES (
@@ -240,7 +242,7 @@ export class AddNewOrderImpl extends React.PureComponent<
             }))
         }
       )
-      console.log("insertuser =>", insertuser);
+      console.log("insertItem =>", insertItem);
 
     }catch(e){
       console.log(e);
@@ -417,7 +419,7 @@ export class AddNewOrderImpl extends React.PureComponent<
           },
           {
             label: "Dispatched",
-            disable: orderdetails && orderdetails.courier_name__c && orderdetails.consignment_No__c && orderdetails.shipping_date__c ? false : true,
+            disable: orderdetails && orderdetails.courier_name__c && orderdetails.consignment_no__c && orderdetails.shipping_date__c ? false : true,
             component: (
               <DispatchedScreen
                 orderdetails={orderdetails} 
@@ -780,7 +782,7 @@ class RenderForm extends React.Component <any> {
         onClick={async() => {
           var val = this.state.orderedproducts;
           console.log(val[i].quantity)
-          val[i].quantity = Number(val[i].quantity) - 1;
+          val[i].quantity = Number(val[i].quantity) <= 0 ? 0 : Number(val[i].quantity) - 1;
 
           var val = this.state.orderedproducts;
           console.log("val : ", val[i])

@@ -220,7 +220,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, { showFi
       custData = this.alphabeticalOrder(this.state.customers, "mailingcity")
     }
     else {
-      custData = this.state.customers
+      custData = this.state.customers.sort((a, b) => new Date(b.createddate) - new Date(a.createddate))
     }
 
     console.log("custData => ", custData)

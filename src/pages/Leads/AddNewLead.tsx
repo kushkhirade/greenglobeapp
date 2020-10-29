@@ -1,4 +1,12 @@
-import { Button, Grid, Typography, TextField } from "@material-ui/core";
+import { Button, Grid, Typography, TextField, Fab,  FormControl, InputLabel} from "@material-ui/core";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import IconButton from "@material-ui/core/IconButton";
+import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
+import DownloadIcon from "@material-ui/icons/FontDownload";
+import GridList from "@material-ui/core/GridList";
+import GridListTile from "@material-ui/core/GridListTile";
+import GridListTileBar from "@material-ui/core/GridListTileBar";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Edit } from "@material-ui/icons";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -6,7 +14,7 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Control, Form } from "react-redux-form";
-import Select from "react-select";
+// import Select from "react-select";
 import { Shimmer } from "react-shimmer";
 import { BaseModal } from "src/components/BaseModal";
 import { FormComponent } from "src/components/FormComponent";
@@ -23,7 +31,9 @@ import {
   vehicleInputs,
   gstDetails,
   rtoDocs,
+  companyDetails,
   kycDocs,
+  activityForm,
 } from "../Customers/customerInputs";
 import "./leads.scss";
 import { isDealer } from "src/state/Utility";
@@ -39,6 +49,7 @@ import { modelReducer, actions } from "react-redux-form";
 import {
   // leadForm,
   leadForm as leadFormInitObj,
+  // userForm,
   userForm as userFormInitObj,
 } from "../../reducers/CombinedReducers";
 import { 
@@ -55,7 +66,11 @@ import BaseLogo from "src/pages/account/BaseLogo.png"
 
 var loggedInUserDetails;
 
-export interface IAddNewLeadProps {}
+export interface IAddNewLeadProps {
+  leadForm: any;
+  userForm: any;
+  leadTaskForm: any;
+}
 
 const closedColumns = [
   {
@@ -136,6 +151,9 @@ export class AddNewLeadImpl extends React.Component<
     currentInsertId: string;
     currentNewSfid: string;
     productPriceList: any;
+    statusLead: string;
+    openImg: string;
+    workshopImages: any;
   }
 > {
   constructor(props: IAddNewLeadProps) {
@@ -151,6 +169,14 @@ export class AddNewLeadImpl extends React.Component<
       currentInsertId: "",
       currentNewSfid: "",
       productPriceList: [],
+      statusLead: "",
+      openImg: "",
+      workshopImages: 
+        [
+        //  {url:'https://bucketeer-c550d01e-0ac2-41dc-a762-e083c38260fa.s3.eu-west-1.amazonaws.com/images/w9ASz7.png'},
+        //  {url:'https://bucketeer-c550d01e-0ac2-41dc-a762-e083c38260fa.s3.eu-west-1.amazonaws.com/images/IumpHh.png'},
+        //  {url:'https://bucketeer-c550d01e-0ac2-41dc-a762-e083c38260fa.s3.eu-west-1.amazonaws.com/images/HdqHLP.png'},
+        ],
       complainCheckList: {
         "Low Average / Mileage": false,
         "Late Starting Problem": false,
@@ -255,6 +281,8 @@ export class AddNewLeadImpl extends React.Component<
       match: { params },
     } = this.props;
 
+    this.getSfid(params.id);
+
     if (params && params.id) {
       this.setState({ id: params.id });
       let leadData = await this.getleadDataById(
@@ -267,12 +295,11 @@ export class AddNewLeadImpl extends React.Component<
       // let editData;
       if (loggedInUserDetails.record_type == "0122w000000cwfSAAQ") {
         formType = "leadForm";
-        // editData = leadFormInitObj;
+        changeValuesInStore("leadForm", leadFormInitObj);
       } else if (loggedInUserDetails.record_type == "0122w000000cwfNAAQ") {
         formType = "userForm";
-        // editData = userFormInitObj;
+        changeValuesInStore("userForm", userFormInitObj);
       }
-      changeValuesInStore(formType, {});
     }
   }
 
@@ -333,15 +360,20 @@ export class AddNewLeadImpl extends React.Component<
     } else if (record_type == "0122w000000cwfNAAQ") {
       formType = "userForm";
     }
-
+    const rtoCodesArr = leadData.rto_code__c && leadData.rto_code__c.split(',') || [];
+    const workshopImgArr = leadData.workshop_listt__c && leadData.workshop_listt__c.split(',') || [];
+    console.log("workshopImgArr: ", workshopImgArr)
+    this.setState({workshopImages: workshopImgArr })
     const editData = {
       email: leadData.email,
       firstName: leadData.firstname,
       lastName: leadData.lastname,
       middleName: leadData.middlename,
-      company: leadData.company,
+      company: leadData.company === "nullCompany" ? "" : leadData.company,
       contactPerson: leadData.contact_person__c,
       whatsAppNumber: leadData.whatsapp_number__c,
+      leadBackground: leadData.lead_background__c,
+      interestIn: leadData.interest_in__c,
       leadType: leadData.lead_type__c,
       subLeadType: leadData.sub_lead_type__c,
       leadSource: leadData.leadsource,
@@ -350,8 +382,12 @@ export class AddNewLeadImpl extends React.Component<
       rating: leadData.rating,
       street: leadData.street,
       city: leadData.city,
+      taluka: leadData.taluka__c,
+      district: leadData.district__c,
       state: leadData.state,
       zip: leadData.postalcode,
+      cgdCompany: leadData.cgd_company__c,
+      rtoCode: rtoCodesArr,
       country: leadData.country,
       vehicleNumber: leadData.vehicle_no__c,
       fuelType: leadData.fuel_type__c,
@@ -371,6 +407,9 @@ export class AddNewLeadImpl extends React.Component<
       Permit_URL__c: leadData.permit_url__c, 
       Tax_url__c: leadData.tax_url__c, 
       Passing_url__c: leadData.passing_url__c, 
+      Cheque_Photo__c: leadData.cheque_photo__c,
+      Company_PAN_Card__c: leadData.company_pan_card__c,
+      GST_Certificate__c: leadData.gst_certificate__c,
       Aadhaar__c: leadData.aadhaar__c, 
       PAN__c: leadData.pan__c,  
     };
@@ -387,6 +426,8 @@ export class AddNewLeadImpl extends React.Component<
       company,
       whatsAppNumber,
       contactPerson,
+      leadBackground,
+      interestIn,
       leadType,
       subLeadType,
       leadSource,
@@ -395,26 +436,31 @@ export class AddNewLeadImpl extends React.Component<
       rating,
       street,
       city,
+      taluka,
+      district,
+      rtoCode,
       state,
       zip,
+      cgdCompany,
       country,
       Aadhaar__c,
       PAN__c,
     } = userForm;
     const query = `INSERT INTO salesforce.Lead 
     ( FirstName ,MiddleName ,LastName ,Email ,Company ,Whatsapp_number__c ,Contact_Person__c ,
-      Lead_Type__c ,sub_lead_type__c ,LeadSource ,Status ,Sub_Lead_Source__c ,Rating ,
-      Street ,City ,State ,PostalCode ,Country ,Aadhaar__c,PAN__c,RecordTypeId ,Assigned_Distributor__c)
+      Lead_Background__c, Interest_In__c, LeadSource ,Status , Rating,
+      Street ,City , Taluka__c, District__c, State ,PostalCode ,CGD_Company__c, rto_code__c, RecordTypeId ,Assigned_Distributor__c)
     VALUES ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
       email ?? ""
-    }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : ""},'${contactPerson ?? ""}', '${
-      leadType ?? ""
-    }', '${subLeadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
+    }','${company ? company : "nullCompany"}',${whatsAppNumber ? whatsAppNumber : ""},'${
+      contactPerson ?? ""
+    }', '${leadBackground ?? ""}', '${interestIn ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${
       rating ?? ""
-    }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
-      country ?? ""}', 
+    }', '${street ?? ""}','${city ?? ""}','${taluka ?? ""}','${district ?? ""}','${state ?? ""}','${zip ?? ""}','${
+      cgdCompany ?? ""
+    }', '${rtoCode ?? ""}',
     '0122w000000chRuAAI', '${currentUser.sfid}') RETURNING ID`;
-    // '${Aadhaar__c ?? ""}', '${PAN__c ?? ""}', 
+    // '${Aadhaar__c ?? ""}', '${PAN__c ?? ""}', Lead_Type__c ,sub_lead_type__c, Sub_Lead_Source__c ,Country,  Workshop_Listt__c= '${this.state.workshopImages}'
     try {
       const result = await getData({
         query,
@@ -428,6 +474,7 @@ export class AddNewLeadImpl extends React.Component<
       ) {
         throw result;
       }
+      this.setState({ id: result.result[0].id});
       return result;
     } catch (error) {
       throw error;
@@ -444,6 +491,8 @@ export class AddNewLeadImpl extends React.Component<
       company,
       whatsAppNumber,
       contactPerson,
+      leadBackground,
+      interestIn,
       leadType,
       subLeadType,
       leadSource,
@@ -452,8 +501,12 @@ export class AddNewLeadImpl extends React.Component<
       rating,
       street,
       city,
+      taluka,
+      district,
       state,
       zip,
+      cgdCompany,
+      rtoCode,
       country,
       Aadhaar__c,
       PAN__c,
@@ -464,16 +517,14 @@ export class AddNewLeadImpl extends React.Component<
     }',MiddleName = '${middleName ?? ""}',LastName = '${
       lastName ?? ""
     }', Email = '${email ?? ""}',Company = '${
-      company ?? ""
-    }',Whatsapp_number__c='${whatsAppNumber ?? 0}',Contact_Person__c = '${contactPerson ?? ""}', Lead_Type__c = '${
-      leadType ?? ""
-    }', sub_lead_type__c = '${subLeadType ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${
-      leadStatus ?? ""
-    }',Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${
+      company ? company : "nullCompany"
+    }',Whatsapp_number__c='${whatsAppNumber ?? 0}',Contact_Person__c = '${contactPerson ?? ""}', Lead_Background__c = '${
+      leadBackground ?? ""
+    }', Interest_In__c = '${interestIn ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${leadStatus ?? ""}',Rating = '${
       rating ?? ""
-    }',   Street = '${street ?? ""}',City = '${city ?? ""}',State = '${
+    }',   Street = '${street ?? ""}',City = '${city ?? ""}', Taluka__c = '${taluka ?? ""}', District__c = '${district ?? ""}', State = '${
       state ?? ""
-    }',PostalCode ='${zip ?? ""}',Country ='${country ?? ""}'
+    }',PostalCode ='${zip ?? ""}',CGD_Company__c ='${cgdCompany ?? ""}', RTO_Code__c = '${rtoCode}'
     
     where id='${
       this.state.id
@@ -494,7 +545,6 @@ export class AddNewLeadImpl extends React.Component<
       middleName,
       lastName,
       email,
-      company,
       whatsAppNumber,
       leadType,
       subLeadType,
@@ -505,8 +555,12 @@ export class AddNewLeadImpl extends React.Component<
       street,
       city,
       state,
+      taluka,
+      district,
       zip,
       country,
+      rtoCode,
+      cgdCompany,
       vehicleNumber,
       fuelType,
       wheeles,
@@ -521,17 +575,17 @@ export class AddNewLeadImpl extends React.Component<
       chassis,
       gstNumber,
     } = leadForm;
-    const query = `INSERT INTO salesforce.Lead (FirstName, MiddleName, LastName,Email, Company,Whatsapp_number__c,Lead_Type__c,sub_lead_type__c,LeadSource,Status,Sub_Lead_Source__c ,Rating,Street,City,State ,PostalCode,Country, Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c, kit_enquiry__c, Vehicle_Make__c, Vehicle_Model__c,Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c, RecordTypeId, Assigned_Dealer__c) 
+    const query = `INSERT INTO salesforce.Lead (FirstName, MiddleName, LastName,Email, Company, Whatsapp_number__c,Lead_Type__c,sub_lead_type__c,LeadSource,Status,Sub_Lead_Source__c ,Rating,Street,City , Taluka__c, District__c, State ,PostalCode ,CGD_Company__c, rto_code__c, Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c, kit_enquiry__c, Vehicle_Make__c, Vehicle_Model__c,Usage_of_Vehicle__c,Engine__c, Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c, RecordTypeId, Assigned_Dealer__c) 
     VALUES    
     ('${firstName ?? ""}','${middleName ?? ""}','${lastName ?? ""}','${
-      email ?? ""
-    }','${company ?? ""}',${whatsAppNumber ? whatsAppNumber : 0},'${
+      email ?? ""}', 'nullCompany',
+    ${whatsAppNumber ? whatsAppNumber : 0},'${
       leadType ?? ""
     }', '${subLeadType ?? ""}', '${leadSource ?? ""}','${leadStatus ?? ""}','${subLeadSource ?? ""}','${
       rating ?? ""
-    }','${street ?? ""}','${city ?? ""}','${state ?? ""}','${zip ?? ""}','${
-      country ?? ""
-    }', '${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}', '${kitEnquired ?? ""}', '${
+    }','${street ?? ""}','${city ?? ""}','${taluka ?? ""}','${district ?? ""}','${state ?? ""}','${zip ?? ""}','${
+      cgdCompany ?? ""}', '${rtoCode ?? ""
+    }','${vehicleNumber ?? ""}','${fuelType ?? ""}','${wheeles ?? ""}', '${kitEnquired ?? ""}', '${
       vehicleMek ?? ""
     }','${vehicleModel ?? ""}','${usage ?? ""}','${vehicleType ?? ""}',
        ${dailyRunning ? dailyRunning : 0},'${
@@ -552,6 +606,7 @@ export class AddNewLeadImpl extends React.Component<
       ) {
         throw result;
       }
+      this.setState({ id: result.result[0].id});
       return result;
     } catch (error) {
       throw error;
@@ -565,7 +620,6 @@ export class AddNewLeadImpl extends React.Component<
       middleName,
       lastName,
       email,
-      company,
       whatsAppNumber,
       leadType,
       subLeadType,
@@ -575,8 +629,12 @@ export class AddNewLeadImpl extends React.Component<
       rating,
       street,
       city,
+      taluka,
+      district,
       state,
       zip,
+      cgdCompany,
+      rtoCode,
       country,
       vehicleNumber,
       fuelType,
@@ -594,10 +652,10 @@ export class AddNewLeadImpl extends React.Component<
     } = leadForm;
     const query = `UPDATE salesforce.Lead SET 
       FirstName = '${firstName ?? ""}', MiddleName = '${middleName ?? ""}', LastName = '${lastName ?? ""}',
-      Email = '${email ?? ""}', Company = '${company ?? ""}',Whatsapp_number__c = ${whatsAppNumber ? whatsAppNumber : 0},
+      Email = '${email ?? ""}', Company= 'nullCompany', Whatsapp_number__c = ${whatsAppNumber ? whatsAppNumber : 0},
       Lead_Type__c = '${leadType ?? ""}',LeadSource = '${leadSource ?? ""}',Status = '${leadStatus ?? ""}',
       Sub_Lead_Source__c = '${subLeadSource ?? ""}',Rating = '${rating ?? ""}', sub_lead_type__c = '${subLeadType ?? ""}',
-      Street = '${street ?? ""}',City = '${city ?? ""}',State = '${state ?? ""}',PostalCode = '${zip ?? ""}',Country = '${country ?? ""}', 
+      Street = '${street ?? ""}',City = '${city ?? ""}',Taluka__c = '${taluka ?? ""}', District__c = '${district ?? ""}',State = '${state ?? ""}',PostalCode = '${zip ?? ""}',CGD_Company__c ='${cgdCompany ?? ""}', RTO_Code__c = '${rtoCode}',
       Vehicle_no__c = '${vehicleNumber ?? ""}',Fuel_Type__c = '${fuelType ?? ""}',X3_or_4_Wheeler__c = '${wheeles ?? ""}', kit_enquiry__c = '${kitEnquired ?? ""}',
       Vehicle_Make__c = '${vehicleMek ?? ""}', Vehicle_Model__c = '${vehicleModel ?? ""}',Usage_of_Vehicle__c = '${usage ?? ""}',
       Engine__c = '${vehicleType ?? ""}',Daily_Running_Kms__c = ${dailyRunning ? dailyRunning : 0},
@@ -662,20 +720,30 @@ export class AddNewLeadImpl extends React.Component<
     console.log(resultStatusQuery);
     if (status === "Closed") {
       this.setState({ currentNewSfid: null });
-      this.setIntervalSfidFromContact();
+      this.setIntervalSfidFromContact(currentNewSfid);
     }
   };
 
   updateLeadDistStep = async (status, userForm) => {
     const currentUser = getToken().data;
+    console.log("status",status)
     const { currentNewSfid } = this.state;
     const {
+      Cheque_Photo__c,
+      Company_PAN_Card__c,
+      GST_Certificate__c,
       Aadhaar__c,
       PAN__c
     } = userForm;
     let statusQuery;
     if(status === "Document Collection"){
-      statusQuery = `UPDATE salesforce.lead set Aadhaar__c = '${Aadhaar__c ?? ""}', PAN__c = '${PAN__c ?? ""}', Status = '${status}' WHERE sfid like '${currentNewSfid}'`;
+      statusQuery = `UPDATE salesforce.lead set GST_Certificate__c = '${GST_Certificate__c ?? ""}', 
+      Company_PAN_Card__c = '${Company_PAN_Card__c ?? ""}', Cheque_Photo__c = '${Cheque_Photo__c ?? ""}', 
+      Aadhaar__c = '${Aadhaar__c ?? ""}', PAN__c = '${PAN__c ?? ""}', workshop_listt__c = '${this.state.workshopImages}',
+      Status = '${status}' WHERE sfid like '${currentNewSfid}'`;
+    }
+    else if(status === "Approved"){
+      statusQuery = `UPDATE salesforce.lead set approved__c = 'true' WHERE sfid like '${currentNewSfid}'`;
     }
     else{
       statusQuery = `UPDATE salesforce.lead set Status = '${status}' WHERE sfid like '${currentNewSfid}'`;
@@ -724,30 +792,33 @@ export class AddNewLeadImpl extends React.Component<
     }
   };
 
-  getSfid = async (email) => {
+  getSfid = async (id) => {
+    console.log("id: ", id)
     const currentUser = getToken().data;
-    const query = `select id, email,sfid from salesforce.lead where email = '${email}' `;
+    const query = `select id, email,sfid from salesforce.lead where id = '${id}' `;
     const result = await getData({
       query,
       token: currentUser.token,
     });
-    console.log(result.result[0].sfid);
-    if (result.result[0].sfid !== null) {
+    // console.log(result.result);
+    if (result && result.result && result.result[0].sfid !== null) {
       this.setState({ currentNewSfid: result.result[0].sfid });
       clearInterval(intervalId);
       intervalId = null;
+      return;
     }
+    
   };
 
-  setIntervalSfid = (email) => {
+  setIntervalSfid = (id) => {
     const that = this;
-    intervalId = setInterval(async () => that.getSfid(email), 2500);
+    intervalId = setInterval(async () => that.getSfid(id), 2500);
   };
 
-  getSfidFromContact = async () => {
+  getSfidFromContact = async (sfid) => {
     const currentUser = getToken().data;
     const { currentInsertEmail } = this.state;
-    const query = `select id, email, sfid from salesforce.contact where email ='${currentInsertEmail}'`;
+    const query = `select id, email, sfid from salesforce.contact where Leadid__c ='${sfid}'`;
     const result = await getData({
       query,
       token: currentUser.token,
@@ -766,9 +837,9 @@ export class AddNewLeadImpl extends React.Component<
     }
   };
 
-  setIntervalSfidFromContact = () => {
+  setIntervalSfidFromContact = (sfid) => {
     const that = this;
-    intervalId = setInterval(async () => that.getSfidFromContact(), 2500);
+    intervalId = setInterval(async () => that.getSfidFromContact(sfid), 2500);
   };
 
   handleInsertTaskSubmit = async () => {
@@ -830,15 +901,14 @@ export class AddNewLeadImpl extends React.Component<
             onCancel={() => this.props.history.goBack()}
             onSubmit={async (v: any) => {
               const { params } = this.props.match;
+              console.log("Params: ", params)
                 if (params && params.id) {
                   try {
-                    const result = await this.updateDealerStep1(
-                      v,
-                      params.id
-                    );
-                    this.setIntervalSfid(v.email);
+                    const result = await this.updateDealerStep1(v);
+                    this.setIntervalSfid(this.state.id);
                     this.setState({
                       currentInsertEmail: v.email,
+                      statusLead: v.leadStatus,
                       activeStep: this.state.activeStep + 1,
                     });
                   } catch (error) {
@@ -847,7 +917,8 @@ export class AddNewLeadImpl extends React.Component<
                 } else {
                   try {
                     const result = await this.insertDealerStep1(v);
-                    this.setIntervalSfid(v.email);
+                    console.log(result)
+                    this.setIntervalSfid(this.state.id);
                     this.setState({
                       currentInsertEmail: v.email,
                       activeStep: this.state.activeStep + 1,
@@ -911,10 +982,11 @@ export class AddNewLeadImpl extends React.Component<
               onSubmit={async (v: any) => {
                 console.log(">> v", v);
                 console.log(this.state);
-                this.setIntervalSfid(v.email);
+                this.setIntervalSfid(this.state.id);
                 if (this.state.currentNewSfid) {
                   await this.updateDealerSteps("Document Collection", v);
                   this.setState({
+                    statusLead: "Document Collection",
                     activeStep: this.state.activeStep + 1,
                   });
                 }
@@ -1141,6 +1213,7 @@ export class AddNewLeadImpl extends React.Component<
             if (this.state.currentNewSfid) {
               await this.updateDealerSteps("Closed", v);
               this.setState({
+                statusLead: "Closed",
                 activeStep: this.state.activeStep + 1,
               });
             }
@@ -1416,7 +1489,7 @@ export class AddNewLeadImpl extends React.Component<
 
     return (
       <div className="lead-modal-form">
-        <Grid container spacing={4}>
+        {/* <Grid container spacing={4}>
           <div className="product-selection">
             <Grid xs={12} md={5} sm={5}>
               <Select
@@ -1509,7 +1582,7 @@ export class AddNewLeadImpl extends React.Component<
               />{" "}
             </Grid>
           </div>
-        </Grid>
+        </Grid> */}
         <div className="button-container">
           {/* <Button
             onClick={() => this.setState({ openEditModal: false })}
@@ -1524,11 +1597,12 @@ export class AddNewLeadImpl extends React.Component<
           <FormComponent
             onCancel={() => {
               this.setState({ openEditModal: false });
-              changeValuesInStore(`editUserForm`, {});
+              changeValuesInStore(`leadTaskForm`, {});
             }}
-            options={[]}
+            options={activityForm}
             submitTitle="SAVE"
             onSubmit={(v) => {
+              console.log("Task Submit: ", v)
               this.handleInsertTaskSubmit();
             }}
             hasSubmit={true}
@@ -1565,17 +1639,17 @@ export class AddNewLeadImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
-            disable: false,
+            disable: this.state.statusLead === "Closed" ? true : false,
             component: this.renderForm(),
           },
           {
             label: "Documents Collection",
-            disable: false,
+            disable: this.state.statusLead === "Closed" ? true : false,
             component: this.renderDocsForRTO(),
           },
           {
             label: "Negotiation",
-            disable: false,
+            disable: this.state.statusLead === "Closed" ? true : false,
             // component: <Proposal/>
             // component: this.renderNegotitation(),
             component: <RenderNegotitationComp currentID={this.state.id}
@@ -1586,6 +1660,7 @@ export class AddNewLeadImpl extends React.Component<
                 if (this.state.currentNewSfid) {
                   await this.updateDealerSteps("Negotiation", v );
                   this.setState({
+                    statusLead: "Negotiation",
                     activeStep: this.state.activeStep + 1,
                   });
                   console.log(">> v", v);
@@ -1622,6 +1697,7 @@ export class AddNewLeadImpl extends React.Component<
   ];
 
   render() {
+    console.log("thi.state.workshopImages: ", this.state.workshopImages)
     return (
       <AppBar>
         <div className="">
@@ -1644,9 +1720,9 @@ export class AddNewLeadImpl extends React.Component<
                         <FormComponent
                           onSubmit={(v: any) => {
                             console.log(">> v", v.target.value);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
+                            // this.setState({
+                            //   activeStep: this.state.activeStep + 1,
+                            // });
                           }}
                           formModel="userForm"
                           hasSubmit={false}
@@ -1654,19 +1730,6 @@ export class AddNewLeadImpl extends React.Component<
                           options={leadDealer}
                         />
                         <SubFormHeading>Address Details</SubFormHeading>
-                        {/* <FormComponent
-                          onSubmit={(v: any) => {
-                            console.log(">> v", v);
-                            console.log(">> this", this);
-                            this.setState({
-                              activeStep: this.state.activeStep + 1,
-                            });
-                          }}
-                          formModel="userForm"
-                          hasSubmit={false}
-                          options={streetInputs}
-                        />
-                        <SubFormHeading>KYC Documents</SubFormHeading> */}
                         <FormComponent
                           onCancel={() => this.props.history.goBack()}
                           onSubmit={async (v: any) => {
@@ -1675,7 +1738,7 @@ export class AddNewLeadImpl extends React.Component<
                             if (params && params.id) {
                               try {
                                 const result = await this.updateDistStep1(v);
-                                this.setIntervalSfid(v.email);
+                                this.setIntervalSfid(this.state.id);
                                 this.setState({
                                   currentInsertEmail: v.email,
                                   activeStep: this.state.activeStep + 1,
@@ -1686,7 +1749,7 @@ export class AddNewLeadImpl extends React.Component<
                             } else {
                               try {
                                 const result = await this.insertInDistStep1(v);
-                                this.setIntervalSfid(v.email);
+                                this.setIntervalSfid(this.state.id);
                                 this.setState({
                                   currentInsertEmail: v.email,
                                   activeStep: this.state.activeStep + 1,
@@ -1714,6 +1777,24 @@ export class AddNewLeadImpl extends React.Component<
                       <div className="card-container job-card-container">
                         {/* <SubFormHeading>Regular Business Documentation</SubFormHeading>
                         <SubFormHeading>Workshop Approval Process</SubFormHeading> */}
+                        <SubFormHeading>Company Details</SubFormHeading>
+                        <div>
+                        <FormComponent
+                          onSubmit={(v: any) => {
+                            console.log(">> v", v);
+                          }}
+                          formModel="userForm"
+                          hasSubmit={false}
+                          options={companyDetails}
+                        >
+                        </FormComponent>
+                        <RenderConteiner photos={this.state.workshopImages} 
+                          onDelete={(imgArray)=>
+                            this.setState({workshopImages: imgArray})
+                          }
+                        />
+                        </div>
+                        
                         <SubFormHeading>KYC Documents</SubFormHeading> 
                         <FormComponent
                           onCancel={() => this.props.history.goBack()}
@@ -1745,13 +1826,15 @@ export class AddNewLeadImpl extends React.Component<
                           <FormComponent
                             onCancel={() => this.props.history.goBack()}
                             onSubmit={async (v: any) => {
+                              console.log("currentNewSfid", this.state.currentNewSfid)
                               if (this.state.currentNewSfid) {
-                                await this.updateLeadDistStep("Approved");
+                                await this.updateLeadDistStep("Approved", v);
                                 this.props.history.push("/leads");
                                 console.log(">> v", v);
                               }
                             }}
                             hasSubmit={true}
+                            formModel="userForm"
                             options={[]}
                             hasCancel={false}
                           />
@@ -1791,19 +1874,18 @@ const SubFormHeading = (props: any) => (
   </div>
 );
 
-const UploadContainer = (props: any) => {
-  console.log("Props: ", props)
-  const [file, setFile] = React.useState({
-    name: `File${props.valKey}`,
-    file: { name: "" }, 
-  });
-  const spllited = file.file.name.split(".");
-  console.log("spllited: ", spllited)
+class RenderConteiner extends React.Component <any> {
+  constructor(props){
+    super(props);
+  }
 
-  const ext = spllited[spllited.length - 1];
-  console.log("ext: ", ext)
+  state = {
+    photos : this.props.photos,
+    openImg: false,
+    photoIndex: "",
+  }
 
-  const getDocURL = async(image, id) => {
+  getDocURL = async(image, id) => {
     const documentURL = await imageUpload({
       id: image.name + id,
       img: await getImageBase64(image),
@@ -1812,49 +1894,94 @@ const UploadContainer = (props: any) => {
     console.log("documentURL : ", documentURL)
 
     return documentURL.url;
-  }
+  };
 
-  return (
-    <div key={props.valKey} className="upload-container">
-      <div className="upload-head">{props.heading}</div>
-      <div className="upload-button">
-        <label title="Click To Upload File" htmlFor="upload">
-          Upload Photo
-        </label>
-        <input
-          onChange={ async(e) => {
-            const fileData = e.target.files[0];
-            setFile({ name: file.name, file: fileData });
-            const url = await getDocURL(e.target.files[0], props.id);
-            props.onSelectImage(props.valKey, url);
-            changeValuesInStore(
-              `${props.formModel}${opt.model}`,
-              e.target.value
-            )
-          }}
-          type="file"
-          className="hidden-input"
-          id="upload"
-        />
-        {}
-        <span className="filename">{`${
-          file.file.name.length > 10
-            ? `${file.file.name.substr(0, 10)}...${ext}`
-            : ""
-        }`}</span> 
-        <div>
-          <VisibilityIcon />
-          <DeleteIcon
-            key={props.valKey}
-            onClick={() => {
-              setFile({ name: "", file: { name: "" } });
+  render() {
+    console.log("Photos : ", this.state.photos)
+    return(
+    <React.Fragment>
+      <div className="upload-container">
+        <div className="upload-head">Workshop Images</div>
+        <Grid item xs= {12} className="upload-button">
+          <label title="Click To Upload File" htmlFor="upload">
+            Upload Photo
+          </label>
+          <input
+            onChange={ async(e) => {
+              const fileData = e.target.files[0];
+              const url = await this.getDocURL(e.target.files[0], "props.id");
+              const arr = this.state.photos;
+              arr.push(url);
+              this.setState({photos: arr});
+              this.props.onDelete(arr);
             }}
+            type="file"
+            className="hidden-input"
+            id="upload"
           />
-        </div>
+        </Grid>
+        <Grid item xs={12} style={{marginTop: 10}}>
+          <GridList cellHeight={130} spacing={6} cols={3}>
+            {this.state.photos ? (
+              this.state.photos.map((r, index) => (
+                <GridListTile >
+                  <img
+                    src={r}
+                    alt="image"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      this.setState({ openImg: true, photoIndex: r });
+                    }}
+                  />
+                  <GridListTileBar
+                    titlePosition="top"
+                    // title={moment(r.photodatetime__c).format("DD-MM-YY")}
+                    actionIcon={
+                      <IconButton
+                        style={{ padding: 1 }}
+                        onClick={() => {
+                          const arr = this.state.photos;
+                          arr.splice(index, 1)
+                          this.setState({photos: arr})
+                          this.props.onDelete(arr);
+                        }}
+                      >
+                        <DeleteIcon style={{ color: "white" }} />
+                      </IconButton>
+                    }
+                  />
+                </GridListTile>
+              ))
+              ) : (
+                <Typography align="center" variant="caption">
+                  Please Upload
+                </Typography>
+              )
+            }
+          </GridList>
+        </Grid>
+        <Grid container justify="center" alignItems="center">
+          {this.state.openImg &&
+            <BaseModal
+            open={this.state.openImg}
+            className="inventory-modal"
+            contentClassName="inventory-modal"
+            onClose={() => this.setState({openImg: false}) }
+          >
+            <Grid container spacing={1} className="">
+              <Grid item className="modal-margin" xs={12} md={12}>
+                <div >
+                  <img src={this.state.photoIndex} height="200px" width="270px" alt="dta" />
+                </div>
+              </Grid>
+            </Grid>
+          </BaseModal>}
+        </Grid>
       </div>
-    </div>
-  );
-};
+    </React.Fragment>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   table: { display: "table", width: "auto", margin: "30px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }, 
@@ -2256,5 +2383,4 @@ const RenderNegotitationComp = (props: any) => {
     </div>
   );
 };
-
 

@@ -204,7 +204,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   };
 
   public render() {
-    const orderData = this.state.orders.sort((a,b) => 
+    let orderData;
+    orderData = this.state.orders && this.state.orders.sort((a,b) => 
       // Number(a.casenumber.substr(a.casenumber.length - 3)) - Number(b.casenumber.substr(b.casenumber - 3))
       new Date(a.createddate) - new Date(b.createddate)
       )
@@ -212,9 +213,9 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     const sellOrders = orderData && orderData.filter(data => data.recordtypeid === "0122w000000UJe1AAG")
     return (
       <AppBar>
-         {isDealer() ? (
+         {isDealer() ? ( orderData !== undefined && 
           this.renderCard(orderData)
-        ) : (
+        ) : orderData !== undefined && (
           <Tabs
             tabsData={[
               { tabName: "Buy", 

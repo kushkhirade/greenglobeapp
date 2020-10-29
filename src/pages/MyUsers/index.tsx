@@ -73,7 +73,7 @@ const userFormOptions = [
     required: true,
     type: "select",
     model: ".role",
-    options: [
+    options: (props, state) => [
       {label: "Sales", value: "Sales"},
       {label: "Inventory", value: "Inventory"},
       {label: "Account", value: "Account"},
