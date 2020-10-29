@@ -12,25 +12,25 @@ import { getToken, isDealer } from "src/state/Utility";
 import "./inventory.scss";
 import Typography from "material-ui/styles/typography";
 
-const productsFilterOptions = (invdata) => [
-  {label: "3W ACE ( "+ invdata.filter( inv =>  inv.family === "3 Wheeler Ace" ).length +" )", value: "3 Wheeler Ace"},
-  {label: "3W Pro ( "+ invdata.filter( inv =>  inv.family === "3 Wheeler Pro" ).length +" )", value: "3 Wheeler Pro"},
-  {label: "4W Ace ( "+ invdata.filter( inv =>  inv.family === "4 Wheeler Ace" ).length +" )", value: "4 Wheeler Ace"},
-  {label: "4W Pro ( "+ invdata.filter( inv =>  inv.family === "4 Wheeler Pro" ).length +" )", value: "4 Wheeler Pro"},
-  {label: "Tank ( "+ invdata.filter( inv =>  inv.family === "Tank" ).length +" )", value: "Tank"},
-  {label: "Spare ( "+ invdata.filter( inv =>  inv.family === "Spare" ).length +" )", value: "Spare"},
+const productsFilterOptions = (invdata, Quantity) => [
+  {label: "3W ACE ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "3 Wheeler Ace" && qnt.quantity) +s, 0) ?? 0) + " )", value: "3 Wheeler Ace"},
+  {label: "3W Pro ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "3 Wheeler Pro" && qnt.quantity) +s, 0) ?? 0) + " )", value: "3 Wheeler Pro"},
+  {label: "4W Ace ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "4 Wheeler Ace" && qnt.quantity) +s, 0) ?? 0) + " )", value: "4 Wheeler Ace"},
+  {label: "4W Pro ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "4 Wheeler Pro" && qnt.quantity) +s, 0) ?? 0) + " )", value: "4 Wheeler Pro"},
+  {label: "Tank ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c.includes("Tank") && qnt.quantity) +s, 0) ?? 0) + " )", value: "Tank"},
+  {label: "Spare ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c.includes("Spare") && qnt.quantity) +s, 0) ?? 0) + " )", value: "Spare"},
 ];
 
-const tankFilterOptions = (invdata)=>[
-  {label: "30 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "30" ).length +" )", value: "30"},
-  {label: "35 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "35" ).length +" )", value: "35"},
-  {label: "60 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "60" ).length +" )", value: "60"},
-  {label: "65 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "65" ).length +" )", value: "65"},
-  {label: "70 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "70" ).length +" )", value: "70"},
-  {label: "75 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "75" ).length +" )", value: "75"},
-  {label: "90 ( "+ invdata.filter( inv =>  inv.tank_capacity__c === "90" ).length +" )", value: "90"},
+const tankFilterOptions = (invdata, Quantity)=>[
+  {label: "30 ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "Tank 30" && qnt.quantity) +s, 0) ?? 0) + " )", value: "30"},
+  {label: "35 ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "Tank 35" && qnt.quantity) +s, 0) ?? 0) + " )", value: "35"},
+  {label: "60 ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "Tank 60" && qnt.quantity) +s, 0) ?? 0) + " )", value: "60"},
+  {label: "65 ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "Tank 65" && qnt.quantity) +s, 0) ?? 0) + " )", value: "65"},
+  {label: "70 ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "Tank 70" && qnt.quantity) +s, 0) ?? 0) + " )", value: "70"},
+  {label: "75 ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "Tank 75" && qnt.quantity) +s, 0) ?? 0) + " )", value: "75"},
+  {label: "90 ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "Tank 90" && qnt.quantity) +s, 0) ?? 0) + " )", value: "90"},
 ]
-var filterLength;
+// quantity.reduce((s, qnt) => Number(qnt.prd_name__c === inData.name && qnt.quantity) +s, 0)) ?? 0
 export interface IInventoryProps {location?: any;}
 
 export class InventoryImpl extends React.PureComponent<
@@ -79,14 +79,14 @@ export class InventoryImpl extends React.PureComponent<
         quantityData = await getData({
           query: `SELECT product2id,quantity,prd_name__c FROM salesforce.order 
           Full OUTER JOIN salesforce.orderitem ON  salesforce.order.sfid = salesforce.orderitem.orderid 
-          WHERE salesforce.order.Sold_To_Dealer__c LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJe1AAG'  `,
+          WHERE salesforce.order.Sold_To_Dealer__c LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJe1AAG' and product2id is not null `,
           token: token
         })
       }else if(recordtypeid === "0122w000000cwfNAAQ"){
         quantityData = await getData({
           query: `SELECT product2id,quantity,prd_name__c FROM salesforce.order  
           Full OUTER JOIN salesforce.orderitem ON  salesforce.order.sfid = salesforce.orderitem.orderid 
-          WHERE salesforce.order.accountid LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJdmAAG' `,
+          WHERE salesforce.order.accountid LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJdmAAG' and product2id is not null `,
           token: token
         })
       }
@@ -123,7 +123,7 @@ export class InventoryImpl extends React.PureComponent<
         })
       }
         console.log("inventoryData =>", inventoryData);
-        return inventoryData.result;
+        return inventoryData;
         
     } catch (e) {
         console.log('fetch Inventory Error', e)
@@ -253,31 +253,32 @@ export class InventoryImpl extends React.PureComponent<
   }
 
   public render() {
+    const quantities = this.state.quantities;
     var invdata ;
     if(this.state.sortType === "asc"){ 
-      invdata = this.state.data.sort((a,b) => new Date(a.date_purchased__c) - new Date(b.date_purchased__c))}
+      invdata = this.state.data.result.sort((a,b) => new Date(a.date_purchased__c) - new Date(b.date_purchased__c))}
     else if(this.state.sortType === "dsc"){
-      invdata = this.state.data.sort((a,b) => new Date(b.date_purchased__c) - new Date(a.date_purchased__c) )
+      invdata = this.state.data.result.sort((a,b) => new Date(b.date_purchased__c) - new Date(a.date_purchased__c) )
     }
     else{
-      invdata = this.state.data
+      invdata = this.state.data.result
     }
-  
+    console.log("invdata: ", invdata, quantities)
     console.log("this.state.selectedTankFilter: ", this.state.selectedTankFilter)
     console.log("this.state.selectedProductFilter: ", this.state.selectedProductFilter)
     return (
       <AppBar>
         {this.renderModal()}
         {/* {this.renderFilterModel()} */}
-        { this.state.data === null
+        { this.state.data.status !== 200
           ? <Loading />
-          : ( this.state.data.length === 0)
+          : ( this.state.data.result.length === 0)
               ? <NotFoundError />
               : <Tabs 
                     hasSort={true} 
                     sortValue={(sortVal) => this.setState({sortType: sortVal})}
                     tabsData={ [
-                      { tabName: "All ( "+ invdata.length +" )",
+                      { tabName: "All ( "+ (quantities.reduce((s, qnt) => Number(qnt.quantity) + s, 0)) +" )",
                         options: [],
                         component: ( 
                           <div className="inventory-container">
@@ -287,7 +288,7 @@ export class InventoryImpl extends React.PureComponent<
                                   <InventoryCards
                                     onClickItem={this.handleItemClick}
                                     data={inData}
-                                    quantity={this.state.quantities}
+                                    quantity={quantities}
                                   />
                               // </Grid>
                               )
@@ -298,7 +299,7 @@ export class InventoryImpl extends React.PureComponent<
                         onTabSelect: (tabname) => this.setState({ selectedProductFilter: "", selectedTankFilter: ""}),
                       },
                       { tabName: "Product",
-                        options: productsFilterOptions(invdata),
+                        options: productsFilterOptions(invdata, quantities),
                         component: (
                           <div className="inventory-container">
                           {
@@ -314,7 +315,7 @@ export class InventoryImpl extends React.PureComponent<
                                       <InventoryCards
                                         onClickItem={this.handleItemClick}
                                         data={inData}
-                                        quantity={this.state.quantities}
+                                        quantity={quantities}
                                       />
                                     )
                                   }
@@ -325,7 +326,7 @@ export class InventoryImpl extends React.PureComponent<
                                     <InventoryCards
                                       onClickItem={this.handleItemClick}
                                       data={inData}
-                                      quantity={this.state.quantities}
+                                      quantity={quantities}
                                     />
                                   )
                                 }
@@ -338,7 +339,7 @@ export class InventoryImpl extends React.PureComponent<
                         onChangeTabValue : (tabValue) => this.setState({ selectedProductFilter: tabValue }),
                       },
                       { tabName: "Tank Capacity",
-                        options: tankFilterOptions(invdata),
+                        options: tankFilterOptions(invdata, quantities),
                         component: (
                           <div className="inventory-container">
                             { 
@@ -354,7 +355,7 @@ export class InventoryImpl extends React.PureComponent<
                                         <InventoryCards
                                           onClickItem={this.handleItemClick}
                                           data={inData}
-                                          quantity={this.state.quantities}
+                                          quantity={quantities}
                                         />
                                       )
                                     }
@@ -365,7 +366,7 @@ export class InventoryImpl extends React.PureComponent<
                                       <InventoryCards
                                         onClickItem={this.handleItemClick}
                                         data={inData}
-                                        quantity={this.state.quantities}
+                                        quantity={quantities}
                                       />
                                     )
                                   }}
@@ -384,7 +385,7 @@ export class InventoryImpl extends React.PureComponent<
           <Grid container>
             <InventoryCards
               onClickItem={this.handleItemClick}
-              data={this.state.data}
+              data={this.state.data.result}
             />
           </Grid>
         </div> */}

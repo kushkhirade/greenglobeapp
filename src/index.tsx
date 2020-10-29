@@ -19,8 +19,8 @@ const initialUser = { name: '' };
 
 const store = createStore(combineForms({
   user: initialUser,
-  userForm: { name: "", email: "" },
-  leadForm: { name: "", email: "" },
+  userForm: {},
+  leadForm: {},
   customerForm: {},
   editUserForm: {},
 }));

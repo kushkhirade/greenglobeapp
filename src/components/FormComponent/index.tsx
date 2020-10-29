@@ -13,20 +13,79 @@ import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
 import { BaseModal } from "src/components/BaseModal";
 import { store } from "../../store/Store";
+import getData from "src/utils/getData";
+import { getToken } from "src/state/Utility";
 import { changeValuesInStore, dispatch } from "src/state/Utility";
 import { connect } from "react-redux";
+import { saveSelectData } from "src/actions/App.Actions";
 import { SET_ERROR, REMOVE_ERROR } from "src/reducers/formReducer";
 import { imageUpload } from "src/utils/getData";
 import { getImageBase64 } from "./../../utils/getBase64";
 import DeleteIcon from "@material-ui/icons/Delete";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
-class FormComponentImpl extends React.Component {
+
+export interface IFormComponentProps {
+  zipCodeResult: any;
+  errorFields: any; formModel: any;
+  hasSubmit: any; submitTitle: any;
+  onSubmit?: (value) => void;  
+  options: any; allFormOptions: any;
+  cancelTitle: any; onCancel?: (value) => void; 
+}
+
+class FormComponentImpl extends React.Component <IFormComponentProps, any> {
+
+  constructor(props: IFormComponentProps) {
+    super(props);
+
+    this.state = {
+      cities: [],
+    };
+  }
+  getZipCodeResult = async () => {
+    const { data } = getToken();
+    const zipCode = store.getState().rxFormReducer[this.props.formModel].zip ;
+    console.log("zipCode => ", zipCode);
+    let getResult;
+
+    try{
+      // if(zipCode!==""){
+        getResult = await getData({
+          query: `Select * FROM salesforce.Address__c where zip_postal_code__c = ${zipCode}`,
+          token: data.token
+        })
+        changeValuesInStore(`${this.props.formModel}.taluka`, getResult.result[0].taluka__c);
+        changeValuesInStore(`${this.props.formModel}.district`, getResult.result[0].district__c);
+        changeValuesInStore(`${this.props.formModel}.state`, getResult.result[0].state__c);
+      // }else{
+      //   getResult = await getData({
+      //     query: `Select * FROM salesforce.Address__c`,
+      //     token: data.token
+      //   })
+      // }
+        console.log("getResult => ", getResult);
+        const arr = [];
+        getResult.result.map(city => {
+          arr.push({label: city.place_name__c, value: city.place_name__c})
+        })
+        this.setState({ cities: arr });
+      saveSelectData(getResult.result);
+    }
+    catch(e){
+      console.log(e);
+    }
+  };
+
   handleInputFocus = (model) => {
     dispatch({
       type: REMOVE_ERROR,
     });
   };
+
+  componentDidMount(){
+    // this.getZipCodeResult();
+  }
 
   componentWillUnmount() {
     dispatch({
@@ -35,8 +94,9 @@ class FormComponentImpl extends React.Component {
   }
 
   render() {
-    const { props } = this;
-    // console.log("Store ", this.props)
+    const { props, state } = this;
+    console.log("Props ", this.props)
+    console.log("state.places : ", this.state.places )
     return (
       <Form
         model={`rxFormReducer.${props.formModel}`}
@@ -65,14 +125,16 @@ class FormComponentImpl extends React.Component {
                       name={opt.name}
                       default={opt.defaultValue}
                       disabled={opt.isDisable ?? false}
-                      // value={opt.defaultValue ?? store.getState().rxFormReducer[props.formModel][`${model}`]}
+                      // value={store.getState().rxFormReducer[props.formModel][`${model}`]}
                       onFocus={() => this.handleInputFocus(opt.model)}
-                      onChange={(e) =>
+                      onChange={(e) =>{
                         changeValuesInStore(
                           `${props.formModel}${opt.model}`,
                           e.target.value
-                        )
-                      }
+                        );
+                        if(opt.model === ".zip")
+                          this.getZipCodeResult()
+                      }}
                       className={
                         props.errorFields.includes(opt.model)
                           ? "form-input field-error"
@@ -111,7 +173,6 @@ class FormComponentImpl extends React.Component {
                   <Control
                     component={MUISelectField}
                     type="select"
-                    // name="Email"
                     mapProps={{
                       className: props.errorFields.includes(opt.model)
                         ? "form-input field-error"
@@ -121,12 +182,37 @@ class FormComponentImpl extends React.Component {
                     required={opt.required}
                     onFocus={() => this.handleInputFocus(opt.model)}
                     // options={ store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`] === opt.dependetValue ? opt.options(props) : []}
-                    options={ opt.options(props) }
+                    options={ opt.options(props, state) }
                     name={opt.name}
                     model={opt.model}
                     label={opt.label}
                     onChange={(e) => {
                       console.log("sdfcsdvfv:: ", store.getState().rxFormReducer[props.formModel][`${opt.dependetField}`])
+                      changeValuesInStore(
+                        `${props.formModel}${opt.model}`,
+                        e.target.value
+                      );
+                    }}
+                  />
+                );
+              case "multiselect":
+                return (
+                  <Control
+                    component={MUIMultipleSelectField}
+                    type="select"
+                    mapProps={{
+                      className: props.errorFields.includes(opt.model)
+                        ? "form-input field-error"
+                        : "form-input",
+                    }}
+                    required={opt.required}
+                    onFocus={() => this.handleInputFocus(opt.model)}
+                    options={ opt.options(props, state) }
+                    name={opt.name}
+                    model={opt.model}
+                    label={opt.label}
+                    onChange={(e) => {
+                      console.log("e.target.value :: ",e.target.value)
                       changeValuesInStore(
                         `${props.formModel}${opt.model}`,
                         e.target.value
@@ -296,7 +382,7 @@ const MUITextArea = (props: any) => {
 
 const MUISelectField = (props: any) => {
   const { className, ...rest } = props;
-  console.log(props)
+  // console.log(props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <FormControl variant="outlined" className={className}>
@@ -321,6 +407,35 @@ const MUISelectField = (props: any) => {
   );
 };
 
+const MUIMultipleSelectField = (props: any) => {
+  const { className, ...rest } = props;
+  // console.log(props)
+  return (
+    <Grid item={true} xs={12} md={6} sm={6}>
+      <FormControl variant="outlined" className={className}>
+        <InputLabel id="demo-simple-select-outlined-label">
+          {props.label}
+        </InputLabel>
+        <Select
+          multiple
+          labelId="demo-simple-select-outlined-label"
+          id="demo-simple-select-outlined"
+          label={props.label}
+          {...rest}
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          {props.options.map((opt) => {
+            return <MenuItem value={opt.value}>{opt.label}</MenuItem>;
+          })}
+        </Select>
+      </FormControl>
+    </Grid>
+  );
+};
+
+
 const MUIDateField = (props: any) => {
   const dateNow = new Date();
   const year = dateNow.getFullYear();
@@ -340,6 +455,7 @@ const MUIDateField = (props: any) => {
         type="date"
         // defaultValue={toDate}
         defaultValue={"2010-01-01"}
+        value={props.value ? props.value : "2010-01-01"}
         variant="outlined"
         onChange={(e) =>{ console.log("props:", props)
         const model = props.name.split(".");
@@ -370,14 +486,14 @@ const MUIUploadContainer = (props: any) => {
   const ext = spllited && spllited[spllited.length - 1];
 
   const getDocURL = async(image, id) => {
-    console.log("image", image)
+    // console.log("image", image)
     if(image.name){
     const documentURL = await imageUpload({
       id: image.name + id,
       img: await getImageBase64(image),
       type: image.type
     });
-    console.log("documentURL : ", documentURL)
+    // console.log("documentURL : ", documentURL)
     return documentURL.url;
     }
     else return "";
@@ -397,7 +513,7 @@ const MUIUploadContainer = (props: any) => {
         <Grid container spacing={1} className="">
           <Grid item className="modal-margin" xs={12} md={12}>
             <div >
-              <img src={imgURL} height="200px" width="300" alt="dta" className="inv-image"/>
+              <img src={imgURL} height="200px" width="270px" alt="dta" />
             </div>
           </Grid>
         </Grid>
@@ -407,48 +523,50 @@ const MUIUploadContainer = (props: any) => {
   return (
     <div>
       {renderModal(props.value)}
-  <Grid item={true} xs={12} md={6} sm={6}>
-    <div className="upload-container">
-      <div className="upload-head">{props.label}</div>
-      <div className="upload-button" item={true} xs={12} md={6} sm={6}>
-        <Button variant="contained" component="label">
-          Upload Photo
-          <input
-            type="file"
-            style={{ display: "none" }}
-            onChange={ async(e) =>{
-              const fileData = e.target.files[0];
-              const url = await getDocURL(e.target.files[0], `${model[2]}`);
-              console.log("url ", `${model[1]}.${model[2]}`)
-                changeValuesInStore(
-                  `${model[1]}.${model[2]}`,
-                  url
-                )
-            }}
-          />
-        </Button>
-          <span className="filename">
-            {`${props.value && props.value.length > 10
-              ? `${props.value.substr(0, 10)}...${ext}`
-              : ""}
-            `}
-          </span> 
-        <VisibilityIcon 
-          onClick={() => setOpenImg(true) }  
-        />
-        <DeleteIcon 
-          onClick={() => changeValuesInStore( `${model[1]}.${model[2]}`, "" ) }
-        />
-      </div>
+      <Grid item={true} xs={12} md={7} sm={7}>
+        <div className="upload-container">
+          <div className="upload-head">{props.label}</div>
+          <div className="upload-button" item={true} xs={12} md={7} sm={7}>
+            <Button variant="contained" component="label">
+              Upload Photo
+              <input
+                type="file"
+                style={{ display: "none" }}
+                onChange={ async(e) =>{
+                  const fileData = e.target.files[0];
+                  const url = await getDocURL(e.target.files[0], `${model[2]}`);
+                  // console.log("url ", `${model[1]}.${model[2]}`)
+                    changeValuesInStore(
+                      `${model[1]}.${model[2]}`,
+                      url
+                    )
+                }}
+              />
+            </Button>
+              <span className="filename">
+                {`${props.value && props.value.length > 10
+                  // ? `${props.value.substr(8, 10)}...${ext}`
+                  ? `${props.value.substr(89)}`
+                  : ""}
+                `}
+              </span> 
+            <VisibilityIcon 
+              onClick={() => setOpenImg(true) }  
+            />
+            <DeleteIcon 
+              onClick={() => changeValuesInStore( `${model[1]}.${model[2]}`, "" ) }
+            />
+          </div>
+        </div>
+      </Grid>
     </div>
-  </Grid>
-  </div>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
     errorFields: state.formReducer.formError,
+    zipCodeResult: state.users.get("selectdata"),
   };
 };
 

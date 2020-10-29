@@ -8,6 +8,16 @@ import {
 } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import { 
+  Document, 
+  PDFDownloadLink, 
+  BlobProvider, pdf,
+  Page,  
+  View,
+  Text,
+  Image, 
+  StyleSheet, 
+  PDFViewer } from "@react-pdf/renderer";
 import { Add, Edit, PersonPin, Phone } from "@material-ui/icons";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -35,8 +45,10 @@ export class RTOProcessImpl extends React.PureComponent<
   {
     openEditModal: boolean;
     stage: string;
+    vehicleDetails: string;
     customer: string;
     rtoDataMain: any;
+    custVehicles: any;
     currentData: any;
     addNew: boolean;
   }
@@ -47,9 +59,11 @@ export class RTOProcessImpl extends React.PureComponent<
       openEditModal: false,
       addNew: false,
       stage: "",
+      vehicleDetails: "",
       customer: "",
       currentData: null,
       rtoDataMain: data.rto.data,
+      custVehicles: [],
     };
   }
   
@@ -70,7 +84,7 @@ export class RTOProcessImpl extends React.PureComponent<
         getRTOs = await getData({
           query: `SELECT *
           FROM  salesforce.RTO_and_Insurance_Process__c 
-          WHERE Dealer__c like '%${data.sfid}%' `,
+           `,
           token: data.token
         });
       }
@@ -117,12 +131,28 @@ export class RTOProcessImpl extends React.PureComponent<
     }
   }
 
-  InsertRTOProcess = async (data, stage, customer) => {
+  getCustomerVehicles = async (data, custSFID) => {
+    try {
+        const vehicles = await getData({
+          query: `select * from salesforce.vehicle_detail__c where customer__c like '${custSFID}'`,
+          token: data.token,
+        });
+      console.log("vehicles => ", vehicles)
+      this.setState({ custVehicles: vehicles.result });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  
+  InsertRTOProcess = async (data, stage, customer, vehicleDetails) => {
     console.log("data: ", data);
+    console.log("vehicleDetails: ", vehicleDetails);
+    const vehicle = vehicleDetails;
     try{
       const insertRTO = await getData({
         query: `INSERT INTO salesforce.rto_and_insurance_process__c
-        (Customer__c,Stage__c) Values('${customer}','${stage}') RETURNING Id`,
+        (customer__c, Vehicle_Number__c, vehicle_no__c, vehicle_make__c, vehicle_model__c, x3_or_4_wheeler__c, Stage__c) 
+        Values('${customer}' ,'${vehicle.sfid}', '${vehicle.name}', '${vehicle.vehicle_make__c}', '${vehicle.vehicle_model__c}','${vehicle.x3_or_4_wheeler__c}', '${stage}') RETURNING Id`,
         token: data.token
       });
       console.log("insertRTO => ", insertRTO);
@@ -165,8 +195,16 @@ export class RTOProcessImpl extends React.PureComponent<
   };
 
   handleCustomerSelect = (event) => {
+    const custSFID = event.target.value;
     this.setState({
-      customer: event.target.value,
+      customer: custSFID,
+    });
+    this.getCustomerVehicles(loggedInUserDetails, custSFID)
+  };
+
+  handleVehicleSelect = (event) => {
+    this.setState({
+      vehicleDetails: event.target.value
     });
   };
 
@@ -180,7 +218,7 @@ export class RTOProcessImpl extends React.PureComponent<
   handleRTOInsert = async() => {
     console.log(this.state.customer)
     console.log(this.state.stage)
-    this.InsertRTOProcess(loggedInUserDetails, this.state.stage, this.state.customer);
+    this.InsertRTOProcess(loggedInUserDetails, this.state.stage, this.state.customer, this.state.vehicleDetails);
     const res = await this.getAllRTOProcesses(loggedInUserDetails);
     this.setState({rtoDataMain: res});
     this.setState({addNew: false, customer: "", stage: ""});
@@ -314,6 +352,28 @@ export class RTOProcessImpl extends React.PureComponent<
           <Grid item className="modal-margin" xs={12} md={12}>
             <FormControl variant="outlined" className="form-control">
               <InputLabel id="demo-simple-select-outlined-label">
+                Search Vehicle
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-helper-label"
+                id="demo-simple-select-helper"
+                // value={this.state.stage}
+                label="Select Vehicle"
+                onChange={this.handleVehicleSelect}
+                variant="outlined"
+                className="form-input"
+              >
+                {this.state.custVehicles && this.state.custVehicles.map(vehicle => {
+                  return(
+                    <MenuItem value={vehicle}>{vehicle.name}</MenuItem>
+                  )
+                })}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item className="modal-margin" xs={12} md={12}>
+            <FormControl variant="outlined" className="form-control">
+              <InputLabel id="demo-simple-select-outlined-label">
                 Select Stage
               </InputLabel>{" "}
               <Select
@@ -334,7 +394,7 @@ export class RTOProcessImpl extends React.PureComponent<
           </Grid>
           <div className="button-container">
             <Button
-              onClick={(e) => this.setState({ addNew : false, customer: "", stage: "" })}
+              onClick={(e) => this.setState({ addNew : false, customer: "", vehicleDetails: "", stage: "" })}
               variant="contained"
               color="default"
             >
@@ -387,7 +447,7 @@ const RTOList = (props: any) => {
       <React.Fragment>
         <Grid key={index} item xs={12} md={6}>
           <div className="card-container ">
-            <div className="rto-card-title">{rtoData.title}</div>
+            <div className="rto-card-title">{rtoData.name}</div>
             <Grid key={index} container className="padding-6">
               <Grid item className="bold-font center" xs={6} md={6}>
                 <PersonPin /> <span style={{ padding: "5px" }} />
@@ -416,7 +476,7 @@ const RTOList = (props: any) => {
             </Grid>
             <Grid container className="padding-6">
               <Grid item xs={6} md={6}>
-                {rtoData.chassis_no__c}
+                {/* {rtoData.chassis_no__c} */}
               </Grid>
               {!isDealer() ?
                 <Grid item xs={6} md={6}>
@@ -444,9 +504,20 @@ const RTOList = (props: any) => {
               
                 {rtoData.stage__c === "Closed" && (
                   <div className="generate-doc">
-                    <a href={"http://www.africau.edu/images/default/sample.pdf"} target="_blank"> 
+                    <BlobProvider document={ <GenerateDocs /> }> 
+                      { ({ blob, url, loading, error }) => {
+                        console.log("blob : ", blob);
+                        console.log("url : ", url);
+
+                        return(
+                          <a href={url} target="_blank">
+                            <span>Generate Docs</span>{" "}
+                          </a>
+                        )}} 
+                    </BlobProvider>
+                     {/* <a href={"http://www.africau.edu/images/default/sample.pdf"} target="_blank"> 
                       <span>Generate Docs</span>{" "}
-                    </a>
+                    </a>  */}
                   </div>
                 )}
               </Grid>
@@ -457,3 +528,101 @@ const RTOList = (props: any) => {
     );
   });
 };
+
+const styles = StyleSheet.create({
+  table: { display: "table", width: "auto", margin: "30px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }, 
+  tableRow: { margin: "auto", flexDirection: "row" }, 
+  tableColSr: { width: "15%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 }, 
+  tableColDes: { width: "65%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 }, 
+  tableColRt: { width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 }, 
+  tableCell: { margin: "auto", marginTop: 5, fontSize: 10, padding: 2 },
+  subTable: { display: "table", width: "30%", margin: "10px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }, 
+  subRow: {width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0},
+});
+
+const GenerateDocs = () => {
+  return (
+      <Document >
+        <Page size="A4">
+          <View style={{ margin: "10px", marginTop: "20px", textAlign: 'center'}}>
+            <Text style={{fontSize: 20, fontWeight: 'bold' }}>GRECOKITS FUEL SOLUTIONS</Text>
+          </View>
+          <View style={{ display: "table", width: "auto", height: "700px", margin: "10px", borderStyle: "solid", borderWidth: 1 }}>
+          {/* <View style={{ textAlign: 'center' }}>
+            <Text style={{fontSize: 12 }} >Plot No. 151, Brick Factory Compound, Shastri Nagar, Mulund colony, </Text>
+            <Text style={{fontSize: 12 }}>Mumbai - 400802 India Tel: 022-25677775 Fax : 022-25900903</Text>
+            <Text style={{fontSize: 12 }}>Mobile : 9519749360 / 70 / 90</Text>
+            <Text style={{fontSize: 12 }}>E-mail : sales@greco.co.in  Website : www.greco.co.in</Text>
+          </View> */}
+          <View style={{ margin: "10px", textAlign: 'center' }}>
+            <Text style={{fontSize: 16}}>RTO Basic Deatils and Documnets</Text>
+          </View>
+          
+          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row'}}>
+            <Text style={{fontSize: 10, width: '10%' }}> Vehicle. No. :</Text>
+            <Text style={{fontSize: 10, width: '40%' }}> MH-974 </Text>
+            <Text style={{fontSize: 12, width: '17%'}}> Date : </Text>
+            <Text style={{fontSize: 10, width: '33%' }}> 25/10/20 </Text>
+          </View>
+          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            <Text style={{fontSize: 12, width: '50%'}}> To,</Text>
+            <Text style={{fontSize: 12, width: '17%'}}> Vehicle Make: </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> Bajaj Auto Limited </Text>
+          </View>
+          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            <Text style={{fontSize: 10, width: '50%'}}></Text>
+            <Text style={{fontSize: 12, width: '17%'}}> Vehicle Model: </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> Bajaj RE Auto Rickshau Compact 4S </Text>
+          </View>
+          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            <Text style={{fontSize: 10, width: '50%'}}></Text>
+            <Text style={{fontSize: 12, width: '17%'}}> Running KMs: </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> 45 </Text>
+          </View>
+          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            <Text style={{fontSize: 12, width: '10%'}}> E-mail : </Text>
+            <Text style={{fontSize: 10, width: '40%'}}> anurag@gmail.com </Text>
+            <Text style={{fontSize: 12, width: '17%'}}> Mobile No.: </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> 9999999999</Text>
+          </View>
+          
+          {/* <View style={styles.table}>
+            <View style={styles.tableRow}> 
+              <View style={styles.tableColSr}> 
+                <Text style={styles.tableCell}>Sr. No. </Text> 
+              </View> 
+              <View style={styles.tableColDes}> 
+                <Text style={styles.tableCell}>Discription</Text> 
+              </View> 
+              <View style={styles.tableColRt}> 
+                <Text style={styles.tableCell}>Rate</Text> 
+              </View>
+            </View> 
+            <View style={styles.tableRow}> 
+              <View style={styles.tableColSr}> 
+                <Text style={styles.tableCell}>1</Text> 
+              </View> 
+              <View style={styles.tableColDes}> 
+                <Text style={styles.tableCell}> This is Discription. </Text> 
+              </View> 
+              <View style={styles.tableColRt}> 
+                <Text style={styles.tableCell}> 20% </Text> 
+              </View>
+            </View> 
+            <View style={styles.tableRow}> 
+              <View style={styles.tableColSr}> 
+                <Text style={styles.tableCell}>2</Text> 
+              </View> 
+              <View style={styles.tableColDes}> 
+                <Text style={styles.tableCell}> This is Discription. </Text> 
+              </View> 
+              <View style={styles.tableColRt}> 
+                <Text style={styles.tableCell}> 10% </Text> 
+              </View>
+            </View> 
+          </View> */}
+          </View>
+        </Page>
+      </Document>
+  );
+}

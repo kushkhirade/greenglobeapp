@@ -293,6 +293,7 @@ export class CommunicationsImpl extends React.Component<
   };
 
   render() {
+    console.log("CUstomers : ", this.state.customers)
     return (
       <AppBar>
         {this.renderDeliveryModal()}
