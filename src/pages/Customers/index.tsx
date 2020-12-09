@@ -42,6 +42,14 @@ const ratingfilterOptions = (custData) => [
   { value: "Warm", label: "Warm ( "+ custData.filter( lead =>  lead.lead_rating__c === "Warm" ).length +" )" },
 ];
 
+const sortingData = (custData) =>  [
+  {placeholder: "sort by Name", options: [{label: "Name Asc", value: "byNameAsc"},{label: "Name Desc", value: "byNameDesc"}]},
+  {placeholder: "sort by city", options: [{label: "City Asc", value: "byCityAsc"},{label: "City Desc", value: "byCityDesc"}]},
+  {placeholder: "sort by Date", options: [{label: "Date Asc", value: "byDateAsc"},{label: "Date Desc", value: "byDateDesc"}]},
+  {placeholder: "3 or 4 Wheeler", options: [
+    {label: "3 Wheeler ( "+ custData.filter( lead =>  lead.x3_or_4_wheeler__c === "3 Wheeler" ).length +" )", value: "3Wheeler"},
+    {label: "4 Wheeler ( "+ custData.filter( lead =>  lead.x3_or_4_wheeler__c === "4 Wheeler" ).length +" )", value: "4Wheeler"}]},
+]
 export interface ICustomersProps {
   history: IHistory;
   location: any
@@ -79,7 +87,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, { showFi
       let customerData;
       if(recordtypeid === '0122w000000cwfSAAQ'){
         customerData = await getData({
-          query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid  
+          query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid, createddate, x3_or_4_wheeler__c
           FROM salesforce.Contact 
           WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM' 
           AND SFID is not null AND (name ilike '%${name}%' or whatsapp_number__c ilike '%${name}%')`,
@@ -88,7 +96,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, { showFi
       }
       else if(recordtypeid === "0122w000000cwfNAAQ"){
         customerData = await getData({
-          query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid, createddate  
+          query: `SELECT name, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid, createddate, x3_or_4_wheeler__c  
           FROM salesforce.Contact 
           WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM' 
           AND SFID is not null AND (name like '%${name}%' or whatsapp_number__c ilike '%${name}%')`,
@@ -115,7 +123,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, { showFi
       let customerData;
       if(recordtypeid === '0122w000000cwfSAAQ'){
         customerData = await getData({
-          query: `SELECT name, mailingcity, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid, createddate  
+          query: `SELECT name, mailingcity, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid, createddate, x3_or_4_wheeler__c  
           FROM salesforce.Contact 
           WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM' AND SFID is not null`,
           token: data.token
@@ -123,7 +131,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, { showFi
       }
       else if(recordtypeid === "0122w000000cwfNAAQ"){
         customerData = await getData({
-          query: `SELECT name, mailingcity, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid  
+          query: `SELECT name, mailingcity, whatsapp_number__c, email, purchased_product__c, lead_rating__c, recordtypeid, sfid, createddate, x3_or_4_wheeler__c
           FROM salesforce.Contact 
           WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM' AND SFID is not null`,
           token: data.token
@@ -201,7 +209,7 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, { showFi
     },
   ];
 
-  alphabeticalOrder = (arr, arrField) => {
+  alphabeticalOrderAsc = (arr, arrField) => {
     // return arr.sort();
     return arr.sort((a, b) => {
       if (a[arrField] > b[arrField]) return 1;
@@ -210,30 +218,74 @@ export class CustomersImpl extends React.PureComponent<ICustomersProps, { showFi
     })
   }
 
+  alphabeticalOrderDesc = (arr, arrField) => {
+    // return arr.sort();
+    return arr.sort((a, b) => {
+      if (b[arrField] > a[arrField]) return 1;
+      if (b[arrField] < a[arrField]) return -1;
+      return 0;
+    })
+  }
+
   public render() {
     var custData ;
-
-    if (this.state.sortType === "asc") {
-      custData = this.alphabeticalOrder(this.state.customers, "name")
+    const { sortType, customers } = this.state;
+    if (sortType === "byNameAsc") {
+      custData = this.alphabeticalOrderAsc(customers, "name")
     }
-    else if (this.state.sortType === "dsc") {
-      custData = this.alphabeticalOrder(this.state.customers, "mailingcity")
+    else if (sortType === "byNameDesc") {
+      custData = this.alphabeticalOrderDesc(customers, "name")
+    }
+    else if (sortType === "byCityAsc") {
+      custData = this.alphabeticalOrderAsc(customers, "mailingcity")
+    }
+    else if (sortType === "byCityDesc") {
+      custData = this.alphabeticalOrderDesc(customers, "mailingcity")
+    }
+    else if (sortType === "byDateAsc"){
+      custData = customers.sort((a, b) => new Date(a.createddate) - new Date(b.createddate))
+    }
+    else if (sortType === "byDateDesc"){
+      custData = customers.sort((a, b) => new Date(b.createddate) - new Date(a.createddate))
+    }
+    else if (sortType === "3Wheeler"){
+      custData = customers.filter(cust => cust.x3_or_4_wheeler__c === "3 Wheeler")
+    }
+    else if (sortType === "4Wheeler"){
+      custData = customers.filter(cust => cust.x3_or_4_wheeler__c === "4 Wheeler")
     }
     else {
-      custData = this.state.customers.sort((a, b) => new Date(b.createddate) - new Date(a.createddate))
+      custData = customers
     }
 
     console.log("custData => ", custData)
-    console.log("this.state.sortType => ", this.state.sortType)
+    console.log("sortType => ", sortType)
     console.log("this.state.selectedFilterValues => ", this.state.selectedFilterValues)
 
     return (
       <AppBar>
         <div>
-          <Tabs tabsData={this.tabDataForDealer(custData)}
-            hasSort={true} sortValue={(sortVal) => this.setState({ sortType: sortVal })}
+          <Tabs 
+            tabsData={null}
+            SortingDatacomponent={ (
+              <Grid container>
+                {custData && custData.map((d) => {
+                  return (
+                    <Grid item xs={12} md={6} >
+                      <CustomerList
+                      onClickDetails={this.handleCustomerDetails}
+                      customerData={d}
+                    />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            )}
+            // hasSort={true} sortValue={(sortVal) => this.setState({ sortType: sortVal })}
+            // sortOptions={[{label: "by Name", value: "byName"},{label: "by City", value: "byCity"}, {label: "by Date", value: "byDate"}]}
+            sortingData={sortingData(customers)}
+            sortValue={(sortVal) => this.setState({ sortType: sortVal })}
             hasInputText={true} 
-            sortOptions={[{label: "by Name", value: "asc" },{label: "by City", value: "dsc" }]}
             onInputChange={async(e) => await this.getFilteredCustomers(loggedInUserDetails, e.target.value)}
           />  
         </div>
@@ -346,7 +398,11 @@ const CustomerList = (props: any) => {
               readOnly
               precision={0.5}
               value={customerData.dealerRating}
-            /> */}
+              /> */}
+          </Grid>
+          <Grid className="padding-6-corners" item xs={6} md={6}>
+            <span className="description-text"> 3 or 4 Wheeler:</span>
+            {customerData.x3_or_4_wheeler__c}
           </Grid>
         </Grid>
         <Grid container >

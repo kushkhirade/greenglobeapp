@@ -28,6 +28,7 @@ import {
   vehicleInputs,
   gstDetails,
 } from "../Customers/customerInputs";
+import { leadForm as leadFormInitObj } from "../../reducers/CombinedReducers";
 import "./jobCard.scss";
 import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
@@ -201,7 +202,7 @@ export class AddNewJobCardImpl extends React.Component<
     loggedInUserDetails = getToken().data;
     this.getCustAndLeads(loggedInUserDetails);
     this.getAllJobCards(loggedInUserDetails);
-    changeValuesInStore("leadForm", {});
+    changeValuesInStore("leadForm", leadFormInitObj);
   }
 
   getAllJobCards = async (data) => {
@@ -211,7 +212,7 @@ export class AddNewJobCardImpl extends React.Component<
         jobCardData = await getData({
           query: `SELECT * FROM salesforce.contact Full OUTER JOIN salesforce.job_card__c
           ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
-          WHERE salesforce.contact.assigned_dealer__c  LIKE '%${data.sfid}%' `,
+          WHERE salesforce.contact.assigned_dealer__c  LIKE '%${data.sfid}%' AND salesforce.job_card__c.sfid IS NOT NULL `,
           token: data.token
         });
       }
@@ -219,7 +220,7 @@ export class AddNewJobCardImpl extends React.Component<
         jobCardData = await getData({
           query: `SELECT * FROM salesforce.contact Full OUTER JOIN salesforce.job_card__c
           ON salesforce.job_card__c.customer__c = salesforce.contact.sfid 
-          WHERE salesforce.contact.accountid  LIKE '%${data.sfid}%'`,
+          WHERE salesforce.contact.accountid  LIKE '%${data.sfid}%' AND salesforce.job_card__c.sfid IS NOT NULL`,
           token: data.token
         });
       }

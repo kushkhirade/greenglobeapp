@@ -75,11 +75,19 @@ const LoginScreenImpl = (props: any) => {
       // }));
       // console.log(AllUser);
       // }
+      let AllRecordtypeIds;
+      if (data.status === "200") {
+        AllRecordtypeIds = (await getData({
+        query: `SELECT DeveloperName, Name, Id, sfid, SobjectType FROM salesforce.RecordType`,
+        token: data.token
+      }));
+      console.log(AllRecordtypeIds);
+      }
       if (data.status === "200") {
         if(data.record_type === "0122w000000cwfSAAQ"){
           saveLoggedInUserData({ recordType: data.record_type });
           saveLoggedInUserToken({ data });
-          saveLoggedInUserDetails({ data, isDealer: true, isDist: false });
+          saveLoggedInUserDetails({ data, isDealer: true, isDist: false, AllRecordtypeIds });
           props.history.push({pathname: "/home", showStatsModal: true});
         return {}
         }
