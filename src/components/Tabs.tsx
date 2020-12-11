@@ -7,6 +7,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 export interface TabsProps {
   tabsData: any;
+  sortingData: any;
+  SortingDatacomponent: any;
   onSortChange?: (value) => void;
   onChangeTabValue?: (value) => void;
   hasSort?: boolean;  isIndex?: number;
@@ -69,12 +71,12 @@ export class Tabs extends React.Component<
               autoComplete="off"
               fullWidth={true}
               className="search-input"
-              style={{ padding: 2, width: '100%', margin: '5px', backgroundColor: 'white'}}
+              style={{padding: 2, width: '100%', margin: '5px', backgroundColor: 'white'}}
               placeholder="Search by Name or Mobile Number"
               onChange={(e) => this.props.onInputChange(e)}
             /> 
           }
-          {this.props.tabsData.map((tab: any, index: any) => {
+          {this.props.tabsData ? this.props.tabsData.map((tab: any, index: any) => {
             return (
               <div
                 className={`tab-button ${
@@ -118,7 +120,8 @@ export class Tabs extends React.Component<
                 }
               </div>
             );
-          })}
+          })
+        : null}
 
           {this.props.hasSort && (
             <div className="tab-button">
@@ -132,15 +135,30 @@ export class Tabs extends React.Component<
             />
             </div>
           )}
+          { this.props.sortingData && this.props.sortingData.map( sort => {
+            return(
+              <div className="sortingButton">
+                <Select
+                  onChange={(e)=> this.props.sortValue(e.value)}
+                  placeholder={<div style={{color: 'black'}}>{sort.placeholder}</div>}
+                  isSearchable={false}
+                  options={sort.options}
+                />
+              </div>
+            )})
+          }
         </div>
-        <div style={{padding: this.props.hasSort ? 25 : 10}}> </div>
+        <div style={{padding: this.props.hasSort ? 25 : this.props.sortingData ? 40 : 10}}> </div>
+        
         <div style={{paddingTop: 27}}>
-          {
+          {this.props.tabsData ?
             this.props.tabsData.find(
               (tab: any, index: any) => index === this.state.activeTabIndex
             ).component
+            : this.props.SortingDatacomponent
           }
         </div>
+        
       </React.Fragment>
     );
   }

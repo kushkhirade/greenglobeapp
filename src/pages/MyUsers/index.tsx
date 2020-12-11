@@ -93,7 +93,9 @@ export class MyUsersImpl extends React.PureComponent<
   }
 
   componentDidMount(){
-    loggedInUserDetails = getToken().data;
+    // loggedInUserDetails = getToken().data;
+    loggedInUserDetails = JSON.parse(localStorage.getItem("userToken")).data;
+    console.log("loggedInUserDetails : ", loggedInUserDetails);
     this.getAllUsers(loggedInUserDetails);
   }
 
@@ -190,7 +192,7 @@ export class MyUsersImpl extends React.PureComponent<
               onCancel={() => this.setState({ openEditModal: false })}
               options={userFormOptions}
               onSubmit={(v)=> {
-                // this.InsertUpdateMyUser(loggedInUserDetails, values);
+                this.InsertUpdateMyUser(loggedInUserDetails, values);
                 console.log(">>v", v)
                 this.getAllUsers(loggedInUserDetails);
                 changeValuesInStore(`editUserForm`, {})

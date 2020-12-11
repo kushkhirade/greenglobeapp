@@ -78,20 +78,20 @@ export class JobCardDetailsImpl extends React.PureComponent<
     this.setState({ AllJobCards : details });
 
     const complist = [];
-    complist.push({label: "Low Average / Mileage", value: details.low_average_mileage__c},
-            {label: "Late Starting Problem", value: details.late_starting_problem__c},
-            {label: "Jerking / Missing / Low Pick", value: details.jerking_missing_low_pick__c},
-            {label: "Changeover - Switch / Pressure Gauge Ind", value: details.changeover__c},
-            {label: "Vehicle Not Changing over to CNG", value: details.vehicle_not_changing__c},
-            {label: "Vehicle Not starting in Petrol", value: details.vehicle_not_starting__c},
-            {label: "Engine Shutdown in Idleing mode / Return", value: details.engine_shutdown__c},
-            {label: "Less/Slow Gas Filling in Tank", value: details.less_slow_gas__c},
-            {label: "Check Engine Light on Cluster", value: details.check_engine__c},
-            {label: "Petrol Consumption even when car running", value: details.petrol_consumption__c},
-            {label: "Noise after/due to CNG Kit Fittment", value: details.noise_after__c},
-            {label: "Gas Leakage / Sound / Smell", value: details.gas_leakage__c}, 
-            {label: "Switch Not Working(No lights on switch)", value: details.switch_not_working_no_lights_on_switch__c},
-            {label: "Buzzer Noise on Switch", value: details.buzzer_noise_on_switch__c},);
+    complist.push({label: "Low Average / Mileage", value: details.low_average_mileage__c },
+            {label: "Late Starting Problem", value: details.late_starting_problem__c },
+            {label: "Jerking / Missing / Low Pick", value: details.jerking_missing_low_pick__c },
+            {label: "Changeover - Switch / Pressure Gauge Ind", value: details.changeover__c },
+            {label: "Vehicle Not Changing over to CNG", value: details.vehicle_not_changing__c },
+            {label: "Vehicle Not starting in Petrol", value: details.vehicle_not_starting__c },
+            {label: "Engine Shutdown in Idleing mode / Return", value: details.engine_shutdown__c },
+            {label: "Less/Slow Gas Filling in Tank", value: details.less_slow_gas__c },
+            {label: "Check Engine Light on Cluster", value: details.check_engine__c },
+            {label: "Petrol Consumption even when car running", value: details.petrol_consumption__c },
+            {label: "Noise after/due to CNG Kit Fittment", value: details.noise_after__c },
+            {label: "Gas Leakage / Sound / Smell", value: details.gas_leakage__c } , 
+            {label: "Switch Not Working(No lights on switch)", value: details.switch_not_working_no_lights_on_switch__c },
+            {label: "Buzzer Noise on Switch", value: details.buzzer_noise_on_switch__c } );
     this.setState({complaintList: complist});
 
     const joblist = [];

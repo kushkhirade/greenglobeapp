@@ -343,7 +343,7 @@ export class DealerDetailsImpl extends React.PureComponent<
       tabName: "Details",
       component: (
         <Grid container>
-          {this.state.detailsData.name && 
+          {this.state.detailsData.firstname && 
           <Grid item xs={12} md={12} lg={12}>
             <div className="card-container"> 
               <SubFormHeading>Dealer Details</SubFormHeading>
@@ -351,7 +351,7 @@ export class DealerDetailsImpl extends React.PureComponent<
                 {" "}
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Name:</span>
-                  {this.state.detailsData.name}
+                  {this.state.detailsData.firstname+" "+this.state.detailsData.middlename+" "+this.state.detailsData.lastname}
                 </Grid>
                 <Grid item className="padding-6" xs={12} md={6} lg={6} sm={6}>
                   <span className="description-text">Account Name:</span>

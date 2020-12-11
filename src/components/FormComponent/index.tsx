@@ -409,7 +409,7 @@ const MUISelectField = (props: any) => {
 
 const MUIMultipleSelectField = (props: any) => {
   const { className, ...rest } = props;
-  // console.log(props)
+  console.log(props)
   return (
     <Grid item={true} xs={12} md={6} sm={6}>
       <FormControl variant="outlined" className={className}>
@@ -421,6 +421,7 @@ const MUIMultipleSelectField = (props: any) => {
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
           label={props.label}
+          value={props.value === undefined ? [] : props.value}
           {...rest}
         >
           <MenuItem value="">

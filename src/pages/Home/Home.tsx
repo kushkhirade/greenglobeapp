@@ -276,6 +276,15 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
     },
   ];
 
+  CNGStationsData = (state) => [
+    { stages: "Current", 
+      count: 10
+    },
+    { stages: "Upcoming",   
+      count: 10
+    }
+  ];
+
   storeColumns = [
     { label: "Stores", name: "stores", options: { filter: true, sort: false, }, },
     { label: "Count", name: "count", options: { filter: true, sort: false, }, },
@@ -524,6 +533,12 @@ class HomePageImpl extends React.Component<{ classes: any }, {}> {
               />
           </div> */}
           <div className={classes.root + " home"}>
+              <TableWithGrid
+                title={"CNG Stations"}
+                data={this.CNGStationsData(this.state)}
+                columns={this.leadColumns}
+                options={options as any}
+              />
             {!isDealer() && (
               <TableWithGrid
                 title={"Store Status"}

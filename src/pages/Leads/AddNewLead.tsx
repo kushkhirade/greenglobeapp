@@ -151,7 +151,7 @@ export class AddNewLeadImpl extends React.Component<
     currentInsertId: string;
     currentNewSfid: string;
     productPriceList: any;
-    statusLead: string;
+    statusLead: number;
     openImg: string;
     workshopImages: any;
   }
@@ -169,7 +169,7 @@ export class AddNewLeadImpl extends React.Component<
       currentInsertId: "",
       currentNewSfid: "",
       productPriceList: [],
-      statusLead: "",
+      statusLead: 0,
       openImg: "",
       workshopImages: 
         [
@@ -349,6 +349,7 @@ export class AddNewLeadImpl extends React.Component<
       console.log(e);
     }
     console.log("leadsData =>", leadsData);
+    this.setStatusPersentage(leadsData.result[0].status)
     this.getAllTasks(loggedInUserDetails, leadsData.result[0].sfid);
     return leadsData.result;
   }
@@ -802,6 +803,7 @@ export class AddNewLeadImpl extends React.Component<
     });
     // console.log(result.result);
     if (result && result.result && result.result[0].sfid !== null) {
+      console.log(result.result[0]);
       this.setState({ currentNewSfid: result.result[0].sfid });
       clearInterval(intervalId);
       intervalId = null;
@@ -864,6 +866,29 @@ export class AddNewLeadImpl extends React.Component<
     this.setState( obj );
     console.log(this.state.dealerCheckboxes);
   };
+
+  setStatusPersentage = (status) => {
+    console.log("Status : ", status)
+    if(status === "Basic Details"){
+      this.setState({statusLead: 10 })
+    }else if(status === "Document Collection"){
+      this.setState({statusLead: 20})
+    }else if(status === "Negotiation"){
+      this.setState({statusLead: 30})
+    }else if(status === "Closed"){
+      this.setState({statusLead: 40})
+    }else if(status === "Job Card"){
+      this.setState({statusLead: 50})
+    // }else if(status === ""){
+
+    // }else if(status === ""){
+
+    // }else if(status === ""){
+
+    }
+    
+  }
+
   // Basic Details Form
   public renderForm = () => {
     return (
@@ -906,9 +931,10 @@ export class AddNewLeadImpl extends React.Component<
                   try {
                     const result = await this.updateDealerStep1(v);
                     this.setIntervalSfid(this.state.id);
+                    this.setStatusPersentage(v.leadStatus);
                     this.setState({
                       currentInsertEmail: v.email,
-                      statusLead: v.leadStatus,
+                      // statusLead: v.leadStatus,
                       activeStep: this.state.activeStep + 1,
                     });
                   } catch (error) {
@@ -919,6 +945,7 @@ export class AddNewLeadImpl extends React.Component<
                     const result = await this.insertDealerStep1(v);
                     console.log(result)
                     this.setIntervalSfid(this.state.id);
+                    this.setStatusPersentage("Basic Details")
                     this.setState({
                       currentInsertEmail: v.email,
                       activeStep: this.state.activeStep + 1,
@@ -985,8 +1012,9 @@ export class AddNewLeadImpl extends React.Component<
                 this.setIntervalSfid(this.state.id);
                 if (this.state.currentNewSfid) {
                   await this.updateDealerSteps("Document Collection", v);
+                  this.setStatusPersentage("Document Collection");
                   this.setState({
-                    statusLead: "Document Collection",
+                    // statusLead: "Document Collection",
                     activeStep: this.state.activeStep + 1,
                   });
                 }
@@ -1212,8 +1240,9 @@ export class AddNewLeadImpl extends React.Component<
             console.log(">> v", v);
             if (this.state.currentNewSfid) {
               await this.updateDealerSteps("Closed", v);
+              this.setStatusPersentage("Closed");
               this.setState({
-                statusLead: "Closed",
+                // statusLead: "Closed",
                 activeStep: this.state.activeStep + 1,
               });
             }
@@ -1639,17 +1668,17 @@ export class AddNewLeadImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
-            disable: this.state.statusLead === "Closed" ? true : false,
+            disable: this.state.statusLead < 40 ? false : true,
             component: this.renderForm(),
           },
           {
             label: "Documents Collection",
-            disable: this.state.statusLead === "Closed" ? true : false,
+            disable: this.state.statusLead >= 10 && this.state.statusLead < 40 ? false : true,
             component: this.renderDocsForRTO(),
           },
           {
             label: "Negotiation",
-            disable: this.state.statusLead === "Closed" ? true : false,
+            disable: this.state.statusLead >= 20 && this.state.statusLead < 40 ? false : true,
             // component: <Proposal/>
             // component: this.renderNegotitation(),
             component: <RenderNegotitationComp currentID={this.state.id}
@@ -1659,8 +1688,9 @@ export class AddNewLeadImpl extends React.Component<
               onSubmit={async (v: any) => {
                 if (this.state.currentNewSfid) {
                   await this.updateDealerSteps("Negotiation", v );
+                  this.setStatusPersentage("Negotiation");
                   this.setState({
-                    statusLead: "Negotiation",
+                    // statusLead: "Negotiation",
                     activeStep: this.state.activeStep + 1,
                   });
                   console.log(">> v", v);
@@ -1670,12 +1700,12 @@ export class AddNewLeadImpl extends React.Component<
           },
           {
             label: "Closed",
-            disable: false,
+            disable: this.state.statusLead >= 30 && this.state.statusLead <= 40 ? false : true,
             component: this.renderClosedTab(),
           },
           {
             label: "Job Card",
-            disable: false,
+            disable: this.state.statusLead >= 40 && this.state.statusLead <= 50 ? false : true,
             component: this.renderJobCard(),
           },
         ]}
@@ -1697,7 +1727,7 @@ export class AddNewLeadImpl extends React.Component<
   ];
 
   render() {
-    console.log("thi.state.workshopImages: ", this.state.workshopImages)
+    console.log("thi.state: ", this.state)
     return (
       <AppBar>
         <div className="">
