@@ -2361,7 +2361,7 @@ const RenderNegotitationComp = (props: any) => {
                         console.log("pdfLinkURL => ", url)
                       }}
                     >
-                      Generate Proposal
+                      <a href={url} target="_blank"> Generate Proposal </a>
                     </Button>
                   }
                   { pdfLinkURL &&

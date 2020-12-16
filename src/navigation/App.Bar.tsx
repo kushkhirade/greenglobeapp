@@ -215,7 +215,7 @@ class MiniDrawer extends React.Component<IAppProps, IState> {
         {this.renderToast()}
         {this.renderAppBar()}
         {this.renderDrawer()}
-        <div className="page-base"> {this.props.children}</div>
+        <div className="page-base" onClick={this.handleDrawerClose}> {this.props.children}</div>
         {this.renderAlert()}
         {this.renderSpinner()}
       </div>

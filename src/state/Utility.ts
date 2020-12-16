@@ -53,6 +53,15 @@ export function saveLoggedInUserToken(data) {
   return localStorage.setItem("userToken", JSON.stringify(data));
 }
 
+export function getAllRecordTypeIds() {
+  console.log(JSON.parse(localStorage.getItem("recordTypeIdList")))
+  return JSON.parse(localStorage.getItem("recordTypeIdList"));
+}
+
+export function saveAllRecordTypeIds(recordtypeIds) {
+  return localStorage.setItem("recordTypeIdList", JSON.stringify(recordtypeIds));
+}
+
 export function saveLoggedInUserData(recordType) {
   return localStorage.setItem("userData", JSON.stringify(recordType));
 }

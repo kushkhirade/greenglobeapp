@@ -28,6 +28,19 @@ import {
   vehicleInputs,
   gstDetails,
 } from "../Customers/customerInputs";
+import { 
+  Document, 
+  PDFDownloadLink, 
+  BlobProvider, pdf,
+  Page,  
+  View,
+  Text,
+  StyleSheet, 
+  PDFViewer } from "@react-pdf/renderer";
+import BaseLogo from "src/pages/account/BaseLogo.png"
+import getData, { imageUpload, pdfUpload } from "src/utils/getData";
+import { getPDFBase64fromURL } from "src/utils/getBase64";
+import { store } from "../../store/Store";
 import { leadForm as leadFormInitObj } from "../../reducers/CombinedReducers";
 import "./jobCard.scss";
 import { isDealer } from "src/state/Utility";
@@ -35,7 +48,6 @@ import { Tabs } from "src/components/Tabs";
 import { GSelect } from "src/components/GSelect";
 import data from "./../../data";
 import { getToken, changeValuesInStore } from "src/state/Utility";
-import getData from "src/utils/getData";
 import { AnyCnameRecord } from "dns";
 import { LabelList } from "recharts";
 import moment from "moment";
@@ -86,6 +98,7 @@ export class AddNewJobCardImpl extends React.Component<
     allCustAndLeads: any;
     custVehicles: any;
     selectedUser: any;
+    selectedJobCard: any;
     selectedVehicle: any;
     basicDetailsFormRecordId : any;
     vahicleId : any;
@@ -189,6 +202,7 @@ export class AddNewJobCardImpl extends React.Component<
         "Buzzer Noise on Switch": false,
       },
       selectedUser: null,
+      selectedJobCard: 0,
       selectedVehicle: null,
       allCustAndLeads: [],
       custVehicles: [],
@@ -419,27 +433,21 @@ export class AddNewJobCardImpl extends React.Component<
           }, ${cC["Gas Leakage / Sound / Smell"]}, ${
             cC["Switch Not Working(No lights on switch)"]
           }, ${cC["Buzzer Noise on Switch"]}    
-          )
+          ) RETURNING ID
         `
         let addJobCardRes = await getData({
           query ,
           token: token
         })
         console.log("#######################################################");
-        console.log(addJobCardRes);
+        console.log(addJobCardRes.result[0].id);
         console.log("#######################################################");
 
         if(addJobCardRes.status == 200 && addJobCardRes.result){
-          this.handleCloseAddJobCard()
-          // alert("New Job Card Added Successfully");
-          // if(isLeadOrCustomer === "leads"){
-          //   this.handleCloseAddJobCard()
-          //   // this.props.history.push({pathname: "/leads"});
-          // }
-          // if(isLeadOrCustomer === "customers"){
-          //   this.handleCloseAddJobCard()
-          //   // this.props.history.push({pathname: "/customers"});
-          // }
+          // this.handleCloseAddJobCard()
+          // this.setState({ selectedJobCard: Number(addJobCardRes.result[0].id)})
+          const jobCardDetails = await this.getJobCardDetails(Number(addJobCardRes.result[0].id));
+          this.setState({ selectedJobCard: jobCardDetails, activeStep: this.state.activeStep + 1})
         }
 
   };
@@ -469,6 +477,21 @@ export class AddNewJobCardImpl extends React.Component<
 
     return [year, month, day].join('-');
   }
+
+  getJobCardDetails = async(id) => {
+    console.log("job Card Id : ", id);
+    try{
+      const jobCardData = await getData({
+        query: `SELECT gst_number__c, name FROM salesforce.job_card__c WHERE id = ${id}`,
+        token: loggedInUserDetails.token
+      })
+      console.log("jobCardData =>", jobCardData.result);
+      return jobCardData.result[0];
+    }
+    catch(e){
+      console.log(e);
+    }
+  };
 
   handleBasicDetailsFormSubmit = async (obj : any) => {
    this.setState({ basicDetailsFormRecordId : "" });
@@ -536,7 +559,7 @@ export class AddNewJobCardImpl extends React.Component<
           console.log(type);
           if(type === "customer"){
             // alert("And selected customer");
-            let updateQuery = `update salesforce.Contact set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company__c = 'nullCompany', RTO_Code__c='${rtoCode ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subLeadType ?? ""}',Lead_Source__c='${leadSource ?? ""}',Lead_Status__c='${leadStatus ?? ""}',Sub_Lead_Source__c ='${subLeadSource ?? ""}'  ,Lead_Rating__c='${rating ?? ""}',  MailingStreet='${street ?? ""}',  MailingCity='${city ?? ""}' ,MailingState='${state ?? ""}' ,MailingCountry='${country ?? ""}',MailingPostalCode =${zip}  where sfid like '${sfid}' Returning Id`;
+            let updateQuery = `update salesforce.Contact set FirstName='${firstName ?? ""}', MiddleName='${middleName ?? ""}', LastName='${lastName ?? ""}', Company__c = 'nullCompany', RTO_Code__c='${rtoCode ?? ""}',Email='${email ?? ""}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType ?? ""}',lead_sub_type__c='${subLeadType ?? ""}',Lead_Source__c='${leadSource ?? ""}',Lead_Status__c='${leadStatus ?? ""}',Sub_Lead_Source__c ='${subLeadSource ?? ""}'  ,Lead_Rating__c='${rating ?? ""}',  MailingStreet='${street ?? ""}',  MailingCity='${city ?? ""}', MailingState='${state ?? ""}', MailingPostalCode =${zip}, Taluka__c='${taluka ?? ""}', district__c='${district}'  where sfid like '${sfid}' Returning Id`;
             try {
               let res;
               res = await getData({
@@ -547,6 +570,7 @@ export class AddNewJobCardImpl extends React.Component<
             if(res.status === 200 && res.result){
               // alert("Successfully updated record");
               this.setState({
+                selectedUser : obj,
                 activeStep: this.state.activeStep + 1,
                 basicDetailsFormRecordId : res.result[0].id,
                 isLeadOrCustomer : "customers"
@@ -592,6 +616,7 @@ export class AddNewJobCardImpl extends React.Component<
               if(res.status === 200 && res.result){
                 // alert("Successfully updated record");
                 this.setState({
+                  selectedUser : obj,
                   activeStep: this.state.activeStep + 1,
                   basicDetailsFormRecordId : res.result[0].id,
                   isLeadOrCustomer : "leads",
@@ -606,60 +631,6 @@ export class AddNewJobCardImpl extends React.Component<
           }
         }
     }
-    // else {
-    //   alert("you are dealing with distributor account");
-    //   if(!this.state.selectedUser){
-    //     alert("Distributor , No Option is selected");
-    //     let query = `INSERT INTO salesforce.Contact (FirstName, MiddleName, LastName, Company__c,Email,Whatsapp_number__c,Lead_Type__c,Lead_Source__c,Lead_Status__c,Sub_Lead_Source__c,Lead_Rating__c,MailingStreet,MailingCity,MailingState,MailingCountry,MailingPostalCode,Vehicle_no__c,Fuel_Type__c,X3_or_4_Wheeler__c,Vehicle_Make__c,Vehicle_Model__c,Usage_of_Vehicle__c,Engine_Type__c,Daily_Running_Kms__c,Registration_Year__c,Year_of_Manufacturing__c,Chassis_No__c,GST_Number__c,accountid,RecordTypeId)
-    //     values('${firstName}', '${middleName}', '${lastName}' , '${company}' , '${email}' , ${whatsAppNumber} , '${leadType}' , '${leadSource}' , '${leadStatus}' , '${subLeadSource}' ,'${rating}','${street}','${city}','${state}','${country}',${zip},'${vehicleNumber}','${fuelType}','${wheeles}', kit_enquiry__c = '${kitEnquired ?? ""}', kit_enquiry__c = '${kitEnquired ?? ""}','${vehicleMek}','${vehicleModel}','${usage}','${vehicleType}',${dailyRunning},'${registration}',${mfg},'${gstNumber}','${chassis}','${sfid}', '${record_type}') Returning Id`;    
-    //     try {
-    //       let res;
-    //        res = await getData({
-    //        query,
-    //        token: token
-    //      });
-    //      console.log(res);
-    //      if(res.status === 200 && res.result){
-    //        alert("Successfully added new record");
-    //        this.setState({
-    //          activeStep: this.state.activeStep + 1,
-    //          basicDetailsFormRecordId : res.result[0].id
-    //        })
-    //      }
-    //      else { alert("failed to insert");  }
-    //    }
-    //    catch(err) {
-    //      alert("something went wrong");
-    //      console.log(err);
-    //    }
-    //   }
-    //   else {
-    //     let sfid = this.state.selectedUser.sfid;
-    //     alert("Distributor , Some Option is selected");
-    //     let updateQuery = `update salesforce.Contact set FirstName='${firstName}', MiddleName='${middleName}', LastName='${lastName}', Company__c='${company}',Email='${email}',Whatsapp_number__c=${whatsAppNumber},Lead_Type__c='${leadType}',Lead_Source__c='${leadSource}',Lead_Status__c='${leadStatus}',Sub_Lead_Source__c ='${subLeadSource}'  ,Lead_Rating__c='${rating}',  MailingStreet='${street}',  MailingCity='${city}' ,MailingState='${state}' ,MailingCountry='${country}',MailingPostalCode =${zip}, Vehicle_no__c='${vehicleNumber}',Fuel_Type__c='${fuelType}',X3_or_4_Wheeler__c='${wheeles}', kit_enquiry__c = '${kitEnquired ?? ""}',Vehicle_Make__c='${vehicleMek}', Vehicle_Model__c='${vehicleModel}',Usage_of_Vehicle__c='${usage}',Engine_Type__c='${vehicleType}', Daily_Running_Kms__c=${dailyRunning},Registration_Year__c='${registration}',Year_of_Manufacturing__c=${mfg},Chassis_No__c=${chassis},  GST_Number__c='${gstNumber}'   where sfid like '${sfid}' Returning Id`;
-    //     try {
-    //       let res;
-    //        res = await getData({
-    //        query : updateQuery,
-    //        token: token
-    //      });
-    //      console.log(res);
-    //      if(res.status === 200 && res.result){
-    //        alert("Successfully updated record");
-    //        this.setState({
-    //          activeStep: this.state.activeStep + 1,
-    //          basicDetailsFormRecordId : res.result[0].id
-    //        })
-    //      }
-    //      else { alert("failed to update lead as distributor");  }
-    //    }
-    //    catch(err) {
-    //      alert("something went wrong");
-    //      console.log(err);
-    //    }
-    //   }
-    // }
-
   }
 
   // Basic Details Form
@@ -786,7 +757,12 @@ export class AddNewJobCardImpl extends React.Component<
                 const isChecked = this.state.jobCardCheckboxesChanged[key];
                 return (
                   <React.Fragment>
-                    <Grid key={key} className="checkbox-container" item xs={6} md={6} lg={6} sm={6}> 
+                    <Grid className="checkbox-container"
+                    item
+                    xs={6}
+                    md={6}
+                    lg={6}
+                    sm={6}> 
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", }} >
                         {/* <div className="label-text" >{key}</div> */}
                         <div>
@@ -836,8 +812,8 @@ export class AddNewJobCardImpl extends React.Component<
                           onChange={this.handleToggle("jobCardCheckboxes")}
                           key={key}
                           name={key}
-                          value={isChecked}
-                          {...(this.state.id && { checked: isChecked })}
+                          // value={isChecked}
+                          // {...(this.state.id && { checked: isChecked })}
                         />
                         {key}
                       </div>
@@ -891,8 +867,18 @@ export class AddNewJobCardImpl extends React.Component<
          
           {
             label: "Job Card",
-            disable: false,
+            disable: this.state.activeStep === 1 ? false  : true,
             component: this.renderJobCard(),
+          },
+
+          {
+            label: "Invoice",
+            disable: this.state.activeStep === 2 ? false  : true,
+            component: <RenderNegotitationComp 
+                          selectedUser={this.state.selectedUser}
+                          selectedJobCard={this.state.selectedJobCard}
+                          handleCloseAddJobCard={this.handleCloseAddJobCard} 
+                          previous={() => this.setState({activeStep : this.state.activeStep - 1})}/>
           },
         ]}
       />
@@ -901,13 +887,13 @@ export class AddNewJobCardImpl extends React.Component<
 
   dealerChange = ({ obj }) => {
     console.log(obj);
-
+    const rtoCodesArr = obj.rto_code__c && obj.rto_code__c.split(',') || [];
     const newData = {
       email: obj.email,
       firstName: obj.firstname,
       lastName: obj.lastname,
       middleName: obj.middlename,
-      rtoCode: obj.rto_code__c,
+      rtoCode: rtoCodesArr,
       // company: obj.company && obj.company !== "nullCompany" ? obj.company : obj.company__c && obj.company__c !== "nullCompany" ? obj.company__c : "",
       whatsAppNumber: obj.whatsapp_number__c,
       leadType: obj.lead_type__c,
@@ -920,6 +906,8 @@ export class AddNewJobCardImpl extends React.Component<
       city: obj.city ?? obj.mailingcity,
       state: obj.state ?? obj.mailingstate,
       zip: obj.postalcode ?? obj.mailingpostalcode,
+      taluka: obj.taluka__c ?? "",
+      district: obj.district__c ?? "",
       country: obj.country ?? obj.mailingcountry,
       vehicleNumber: "",
       fuelType: "",
@@ -963,12 +951,13 @@ export class AddNewJobCardImpl extends React.Component<
   vehicleChange = ({ obj }) => {
     console.log(obj)
     const leadData = this.props.leadForm;
+    console.log(leadData)
     const newData = {
       email: leadData.email,
       firstName: leadData.firstName,
       lastName: leadData.lastName,
       middleName: leadData.middleName,
-      rtoCode: leadData.rto_code__c,
+      rtoCode: leadData.rtoCode,
       // company: leadData.company === "nullCompany" ? "" : leadData.company,
       whatsAppNumber: leadData.whatsAppNumber,
       leadType: leadData.leadType,
@@ -981,6 +970,8 @@ export class AddNewJobCardImpl extends React.Component<
       city: leadData.city,
       state: leadData.state,
       zip: leadData.zip,
+      taluka: leadData.taluka,
+      district: leadData.district,
       country: leadData.country,
       vehicleNumber: obj.name,
       fuelType: obj.fuel_type__c,
@@ -1013,9 +1004,7 @@ export class AddNewJobCardImpl extends React.Component<
         }
     }
     // END DEFAULT VALUES
-  
     changeValuesInStore("leadForm", newData);
-    this.setState({ selectedVehicle: obj });
   };
 
   handleCloseAddJobCard = () => {
@@ -1060,12 +1049,25 @@ export class AddNewJobCardImpl extends React.Component<
     this.props.history.push(`/job-card-details/${data.sfid}`)
   };
 
+  public tabData = () => [
+    {
+      tabName: "Details",
+      component: this.renderStepper(),
+      onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
+    },
+    // {
+    //   tabName: "Activity",
+    //   component: this.renderActivitySection(),
+    //   onTabSelect: (tabName: any) => this.setState({ activeTab: tabName }),
+    // },
+  ];
+  
   render() {
-    const jobcards = this.state.AllJobCards.sort((a, b) => new Date(b.createddate) - new Date(a.createddate))
+    const jobcards = this.state.AllJobCards ? this.state.AllJobCards.sort((a, b) => new Date(b.createddate) - new Date(a.createddate)) : null;
     
     return (
       <AppBar>
-        <div
+        <div 
           // className="card-container no-hover add-leads-page"
           // style={{ paddingBottom: 500 }}
         >
@@ -1087,7 +1089,7 @@ export class AddNewJobCardImpl extends React.Component<
           )}
           <Grid container>
           {!this.state.OpenAddJobCard && (
-              jobcards.map(cust => {
+              jobcards && jobcards.map(cust => {
               return (
                 <Grid item xs={12} md={6}>
                   <JobCardsList
@@ -1100,11 +1102,8 @@ export class AddNewJobCardImpl extends React.Component<
           </Grid>
           {this.state.OpenAddJobCard && (
             <div className="">
-              {/* <Typography variant="h5" color="inherit">
-                Add New JobCard
-              </Typography> */}
-
-              {this.renderStepper()}
+              <Tabs tabsData={this.tabData()} />
+              {/* {this.renderStepper()} */}
             </div>
           )}
         </div>
@@ -1135,48 +1134,6 @@ const SubFormHeading = (props: any) => (
     {props.children}
   </div>
 );
-
-const UploadContainer = (props: any) => {
-  const [file, setFile] = React.useState({
-    name: `File${props.valKey}`,
-    file: { name: "" },
-  });
-  const spllited = file.file.name.split(".");
-  const ext = spllited[spllited.length - 1];
-  return (
-    <div key={props.valKey} className="upload-container">
-      <div className="upload-head">{props.heading}</div>
-      <div className="upload-button">
-        <label title="Click To Upload File" htmlFor="upload">
-          Upload Photo
-        </label>
-        <input
-          onChange={(e) => {
-            const fileData = e.target.files[0];
-            setFile({ name: file.name, file: fileData });
-          }}
-          type="file"
-          className="hidden-input"
-          id="upload"
-        />
-        <span className="filename">{`${
-          file.file.name.length > 10
-            ? `${file.file.name.substr(0, 10)}...${ext}`
-            : ""
-        }`}</span>
-        <div>
-          <VisibilityIcon />
-          <DeleteIcon
-            key={props.valKey}
-            onClick={() => {
-              setFile({ name: "", file: { name: "" } });
-            }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export const JobCardsList = (props: any) => {
   const { jobCardData } = props;
@@ -1235,3 +1192,642 @@ export const JobCardsList = (props: any) => {
   )
 };
 
+const styles = StyleSheet.create({
+  table: { display: "table", width: "auto", margin: "30px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }, 
+  tableRow: { margin: "auto", flexDirection: "row" }, 
+  tableColSr: { width: "15%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 }, 
+  tableColDes: { width: "65%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 }, 
+  tableColRt: { width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 }, 
+  tableCell: { margin: "auto", marginTop: 5, fontSize: 10, padding: 2 },
+  subTable: { display: "table", width: "30%", margin: "10px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }, 
+  subRow: {width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0},
+});
+
+export const InvoiceProposal = (props: any) => {
+  console.log("InvoiceProps", props);
+  const { userDetails, jobCardDetails } = props;
+  return (
+    // <PDFViewer>
+      <Document >
+        <Page size="A4">
+          <View style={{ display: "table", width: "auto",margin: "15px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }}>
+            <View style={styles.tableRow}> 
+              <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <View style={{ marginTop: "5px", textAlign: 'center'}}>
+                  <Text style={{fontSize: 17, fontWeight: 'extrabold' }}>GRECOKITS FUEL SOLUTIONS</Text>
+                </View>
+                <View style={{ textAlign: 'center' }}>
+                  <Text style={{fontSize: 11 }}>Plot No. 151, Brick Factory Compound, Shastri Nagar, </Text>
+                  <Text style={{fontSize: 11 }}>Mulund colony, Mulund (West) Mumbai - 400802 </Text>
+                  <Text style={{fontSize: 11 }}>Tel: +91-22-25677775, M-7718801122, FAX: +91-22-25900903</Text>
+                </View>
+                <View style={{ margin: "2px", flexDirection: 'row', marginBottom: "5px", marginTop: '5px'  }}>
+                  <Text style={{fontSize: 10, fontWeight: 900, width: '35%'}}> ISO 9001</Text>
+                  <Text style={{fontSize: 10, fontWeight: 'bold', width: '45%'}}> STATE- MAHARASHTRA, STATE CODE-27 </Text>
+                  <Text style={{fontSize: 10, fontWeight: 'ultrabold', width: '20%'}}> GSTIN:27AAHFG9723D1ZD </Text>
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+              <View style={{ margin: "5px", textAlign: 'center'}}>
+                <Text style={{fontSize: 17 }}>Tax Invoice</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "2px"}}> Customer Details :</Text> 
+                <Text style={{ fontSize: 10, margin: "2px"}}>  </Text> 
+                <Text style={{ fontSize: 10, margin: "2px"}}> {userDetails.firstName +" "+ userDetails.middleName +" "+ userDetails.lastName} </Text> 
+                <Text style={{ fontSize: 10, margin: "2px"}}> {userDetails.whatsAppNumber} </Text> 
+                <View style={{margin: "2px", flexDirection: 'row', marginBottom: "2px"}} >
+                  <Text style={{ fontSize: 8, margin: "2px", width: "50%"}}> State: Maharashtra </Text> 
+                  <Text style={{ fontSize: 10, margin: "2px", width: "50%"}}> GSTN: {jobCardDetails.gst_number__c}</Text> 
+                </View>
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "2px"}}> Consignee Address </Text> 
+                <Text style={{ fontSize: 10, margin: "2px"}}>  </Text> 
+                <Text style={{ fontSize: 10, margin: "2px"}}>  </Text> 
+                <Text style={{ fontSize: 10, margin: "2px"}}>  </Text> 
+                <View style={{margin: "2px", flexDirection: 'row', marginBottom: "2px"}} >
+                  <Text style={{ fontSize: 9, margin: "2px", width: "50%"}}> Place of Supply </Text> 
+                  <Text style={{ fontSize: 8, margin: "2px", width: "50%"}}> MAHARASHTRA </Text> 
+                </View>
+              </View>
+              <View style={{width: "25%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{ fontSize: 10, margin: "2px"}}> Invoice No </Text> 
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{ fontSize: 10, margin: "5px"}}> </Text> 
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <Text style={{ fontSize: 10, margin: "20px"}}> Date </Text> 
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={styles.tableRow}>
+                <View style={{width: "30%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Veh. Regn. No. : {userDetails.vehicleNumber}</Text> 
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Veh. Chassis No. :</Text> 
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Veh. Engine. No. :</Text> 
+                  </View>
+                </View>
+                <View style={{width: "30%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Job No. : {jobCardDetails && jobCardDetails.name}</Text> 
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Veh. Model : {userDetails.vehicleModel}</Text> 
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Veh. KM : {userDetails.dailyRunning}</Text> 
+                  </View>
+                </View>
+                <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Service Type : {userDetails.lead_sub_type__c}</Text> 
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+              <View style={styles.tableRow}>
+                <View style={{width: "30%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: '5px'}} > Vap No. </Text>
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderRightWidth: 0,  borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <View style={styles.tableRow}>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px',  paddingBottom: 10, paddingTop: 10, textAlign: "left"}} > SNo. </Text>  
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 1 </Text>
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 2 </Text>
+                        </View>
+                      </View>
+                      <View style={{width: "83%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <View style={{margin: "2px", flexDirection: 'row', marginBottom: "2px"}} >
+                          <Text style={{ fontSize: 9, margin: "2px", width: "50%", padding: 4}}> part Code </Text> 
+                          <Text style={{ fontSize: 10, margin: "2px", width: "50%", padding: 4}}> Discription </Text> 
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                <View style={{width: "70%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: '5px'}} > Tank. No. </Text>
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > HSN/ SAC </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > QTY </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > RATE </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Disc Amt </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 9, margin: '2px', padding: 1}} > Taxable Value </Text>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > CGST </Text>
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Rate </Text>
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Amt </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > SGST </Text>
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Rate </Text>
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Amt </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "16%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Item Total </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 1234 </Text>
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 1234 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 1.00 </Text>
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 1.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 0.00 </Text>
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 0.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 14.00 </Text>
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 9.00 </Text>
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text> 
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 14.00 </Text>
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > 9.00 </Text> 
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text> 
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "16%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text> 
+                      </View>
+                    </View>
+                  </View>    
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+              <View style={styles.tableRow}>
+                <View style={{width: "30%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                  </View>
+                </View>
+                <View style={{width: "70%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} > 2.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} > 0.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text> 
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text> 
+                      </View>
+                      <View style={{width: "16%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text> 
+                      </View>
+                    </View>
+                  </View>  
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+              <View style={styles.tableRow}>
+                <View style={{width: "30%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                    <View style={styles.tableRow}>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', paddingBottom: 10, paddingTop: 10, textAlign: "left"}} > SNo. </Text>  
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 8}} > 3 </Text>
+                        </View>
+                      </View>
+                      <View style={{width: "83%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <View style={{margin: "2px", flexDirection: 'row', marginBottom: "2px"}} >
+                          <Text style={{ fontSize: 9, margin: "2px", width: "50%", padding: 4}}> part Code </Text> 
+                          <Text style={{ fontSize: 10, margin: "2px", width: "50%", padding: 4}}> Discription </Text> 
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 3}} >  </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                <View style={{width: "70%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 3}} > HSN/ SAC </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > QTY </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > RATE </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Disc Amt </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 9, margin: '2px', padding: 1}} > Taxable Value </Text>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > CGST </Text>
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Rate </Text>
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Amt </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                          <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > SGST </Text>
+                        </View>
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Rate </Text>
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Amt </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "16%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px', padding: 1}} > Item Total </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} > 1234 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} > 1.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} > 0.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px', padding: 8}} > 9.00 </Text>
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                          <View style={styles.tableRow}> 
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px',  padding: 8}} > 9.00 </Text> 
+                            </View>
+                            <View style={{width: "50%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                              <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={{width: "16%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                    </View>
+                  </View>    
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+              <View style={styles.tableRow}>
+                <View style={{width: "30%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                  </View>
+                </View>
+                <View style={{width: "70%", borderStyle: "solid", borderWidth: 1, borderLeftWidth:0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} > 1.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} > 0.00 </Text>
+                      </View>
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text>
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text> 
+                      </View>
+                      <View style={{width: "17%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text> 
+                      </View>
+                      <View style={{width: "16%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                        <Text style={{ fontSize: 10, margin: '2px'}} >  </Text> 
+                      </View>
+                    </View>
+                  </View>  
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+              <View style={styles.tableRow}>
+                <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0,  borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "2px"}}> s </Text> 
+                    <Text style={{ fontSize: 10, margin: "2px"}}> u </Text> 
+                    <Text style={{ fontSize: 10, margin: "2px"}}> m </Text> 
+                    <Text style={{ fontSize: 10, margin: "2px"}}> m </Text> 
+                    <Text style={{ fontSize: 10, margin: "2px"}}> a </Text> 
+                    <Text style={{ fontSize: 10, margin: "2px"}}> r </Text> 
+                  </View>
+                </View>
+                <View style={{width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "9px"}}> Taxable Value </Text> 
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> (P) </Text> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> (P) </Text> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> (L) </Text> 
+                  </View>
+                </View>
+                <View style={{width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "2px", textAlign: 'center'}}> CGST </Text> 
+                    <View style={{ margin: "1px", flexDirection: 'row' }}>
+                      <Text style={{fontSize: 10, width: '50%', textAlign: 'center'}}> Rate</Text>
+                      <Text style={{fontSize: 10, width: '50%', textAlign: 'center'}}> Amt </Text>
+                    </View>
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> 14.00 % </Text> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> 9.00 % </Text> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> 9.00 % </Text> 
+                  </View>
+                </View>
+                <View style={{width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "2px", textAlign: 'center'}}> SGST </Text> 
+                    <View style={{ margin: "1px", flexDirection: 'row' }}>
+                      <Text style={{fontSize: 10, width: '50%', textAlign: 'center'}}> Rate</Text>
+                      <Text style={{fontSize: 10, width: '50%', textAlign: 'center'}}> Amt </Text>
+                    </View>
+                  </View>
+                  <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> 14.00 % </Text> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> 9.00 % </Text> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> 9.00 % </Text> 
+                  </View>
+                </View>
+                <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0, borderRightWidth: 0}}> 
+                  <Text style={{ fontSize: 10, margin: "5px"}}> Item Amount </Text> 
+                  <Text style={{ fontSize: 10, margin: "5px"}}> Labor Amount </Text> 
+                  <Text style={{ fontSize: 10, margin: "5px"}}> CGST Amount </Text> 
+                  <Text style={{ fontSize: 10, margin: "5px"}}> SGST Amount </Text> 
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+              <Text style={{ fontSize: 10, margin: "5px"}}> ROUND-OFF </Text> 
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+              <View style={{flexDirection: 'row' }}>
+                <Text style={{fontSize: 10, margin: "5px", width: '50%', textAlign: 'center'}}> (RUPEES ONLY)</Text>
+                <Text style={{fontSize: 10, margin: "5px", width: '50%', textAlign: 'center'}}> Bill Amount </Text>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+              <Text style={{ fontSize: 10, margin: "2px"}}> Terms & Conditions </Text> 
+              <Text style={{ fontSize: 10, margin: "2px"}}> 1. Goods once sold shall not be taken back. </Text> 
+              <Text style={{ fontSize: 10, margin: "2px"}}> 2. All disputes are subject to jurisdiction of Maharashtra state only. </Text> 
+              <Text style={{ fontSize: 10, margin: "2px"}}> 3. All the repairs & charges have been explaned to me. </Text> 
+              <Text style={{ fontSize: 10, margin: "2px"}}> BANK-DETAILS:- </Text> 
+              <View style={{ marginTop: "60px", flexDirection: 'row' }}>
+                <Text style={{fontSize: 13, margin: "5px", width: '50%', textAlign: 'center'}}> Customer Signature</Text>
+                <Text style={{fontSize: 13, margin: "5px", width: '50%', textAlign: 'center'}}> Bill Amount </Text>
+              </View>
+            </View>
+          </View>
+        </Page>
+      </Document>
+    // </PDFViewer>
+  );
+}
+
+export const RenderNegotitationComp = (props: any) => {
+  const [blobURL, setblobURL] = React.useState(null);
+  const [pdfLinkURL, setpdfLinkURL] = React.useState(null);
+
+  console.log("props => ", props);
+  return (
+    <div className="negotitation-container">
+        <div style={{ textAlign: "right" }}>
+          <BlobProvider document={ <InvoiceProposal userDetails={props.selectedUser} jobCardDetails={props.selectedJobCard}/> }> 
+            { ({ blob, url, loading, error }) => {
+              console.log("blob : ", blob);
+              console.log("url : ", url);
+              setblobURL(blob);
+
+              return(
+                // <a href={url} target="_blank">
+                //   <Button variant="contained" color="default" > Send Proposal </Button>
+                // </a>
+                <div className="negotitation-content">
+                <div className="heading">Green Globe Fuel Solutions</div>
+                <div className="info-container">
+                  <div className="image-container">
+                    {" "}
+                    {/* <a href={url} target="_blank">
+                      <Button variant="contained" color="default" > View Invoice </Button>
+                    </a> */}
+                  </div>{" "}
+                  <div className="details">
+                    { pdfLinkURL === null &&
+                      < Button variant="contained" color="default"
+                        onClick={async() => {
+                          const documentURL = await pdfUpload({
+                            id: store.getState().rxFormReducer["leadForm"].firstName + props.currentID,
+                            pdf: await getPDFBase64fromURL(blobURL),
+                          });
+                          console.log("documentURL => ", documentURL.url)
+                          const url = documentURL.url;
+                          setpdfLinkURL(url);
+                          console.log("pdfLinkURL => ", url)
+                        }}
+                      >
+                        <a href={url} target="_blank"> Generate Invoice </a>
+                      </Button>
+                    }
+                    { pdfLinkURL &&
+                      <a href={`mailto:${store.getState().rxFormReducer["leadForm"].email}?subject=Proposal PDF url&body=PFA for Proposal %0A${pdfLinkURL}%0A Thanks%20&%20Reagrds`} >
+                        <Button variant="contained" color="default" > Send Invoice </Button>
+                      </a>
+                    }
+                  </div>
+                </div>
+              </div>
+                // <div>
+                //   { <a href={url} target="_blank">
+                //       <Button variant="contained" color="default" > View Invoice </Button>
+                //     </a>
+                //   }
+                //   { pdfLinkURL === null &&
+                //     < Button variant="contained" color="default"
+                //       onClick={async() => {
+                //         const documentURL = await pdfUpload({
+                //           id: store.getState().rxFormReducer["leadForm"].firstName + props.currentID,
+                //           pdf: await getPDFBase64fromURL(blobURL),
+                //         });
+                //         console.log("documentURL => ", documentURL.url)
+                //         const url = documentURL.url;
+                //         setpdfLinkURL(url);
+                //         console.log("pdfLinkURL => ", url)
+                //       }}
+                //     >
+                //       Generate Invoice
+                //     </Button>
+                //   }
+                //   { pdfLinkURL &&
+                //     <a href={`mailto:${store.getState().rxFormReducer["leadForm"].email}?subject=Proposal PDF url&body=PFA for Proposal %0A${pdfLinkURL}%0A Thanks%20&%20Reagrds`} >
+                //       <Button variant="contained" color="default" > Send Invoice </Button>
+                //     </a>
+                //   }
+                // </div>
+              )
+            }}
+          </BlobProvider>
+        </div>
+
+      <FormComponent
+        onCancel={props.previous}
+        onSubmit={props.handleCloseAddJobCard}
+        submitTitle="Close"
+        cancelTitle="Previous"
+        formModel="leadForm"
+        hasSubmit={true}
+        options={[]}
+      />
+    </div>
+  );
+};

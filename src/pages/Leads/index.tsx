@@ -15,14 +15,15 @@ import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import getData from "src/utils/getData";
 import data from "../../data";
-import { getToken, isDealer, IHistory, changeValuesInStore } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds, isDealer, IHistory, changeValuesInStore } from "src/state/Utility";
 import { saveLeadsData, saveAssignedDealersData, saveDealerData } from "src/actions/App.Actions";
 import { ChangePhoneFormat } from "src/components/Format";
 import "./leads.scss";
 import { Console } from "console";
 import Select from 'react-select';
 
-var loggedInUserDetails;
+var loggedInUserDetails, recordTypeList;
+
 const allfilterOptions = (leadsData) => [
   {
     value: "all",
@@ -136,6 +137,9 @@ export class LeadsImpl extends React.Component<
 
   async componentDidMount() {
     loggedInUserDetails = getToken().data;
+    recordTypeList = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypeList ", recordTypeList)
+    console.log("getAllRecordTypeIds ", JSON.parse(localStorage.getItem("recordTypeIdList")));
     this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type);
     this.getAllAssignedDealers(loggedInUserDetails);
   }
@@ -154,16 +158,16 @@ export class LeadsImpl extends React.Component<
     console.log("recordtypeid: ", recordtypeid);
     let leadsData;
     try {
-      if (recordtypeid === "0122w000000cwfSAAQ") {
+      if (recordtypeid === recordTypeList.dealerAccount) {
         leadsData = await getData({
           query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status 
           FROM salesforce.Lead 
-          WHERE RecordTypeId = '0122w000000chRpAAI' 
+          WHERE RecordTypeId = '${recordTypeList.customerLead}' 
           AND (Assigned_Dealer__c LIKE '%${sfid}%') 
           AND sfid is not null AND Status != 'Closed'`,
           token: token
         })
-      } else if (recordtypeid === "0122w000000cwfNAAQ") {
+      } else if (recordtypeid === recordTypeList.distributorAccount) {
         console.log("here");
         leadsData = await getData({
           query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status
@@ -187,7 +191,7 @@ export class LeadsImpl extends React.Component<
     try {
       const assignedDealerData = await getData({
         query: `SELECT * FROM salesforce.Account 
-        WHERE Assigned_Distributor__c = '${data.sfid}' AND RecordTypeId = '0122w000000cwfSAAQ'`,
+        WHERE Assigned_Distributor__c = '${data.sfid}' AND RecordTypeId = '${recordTypeList.dealerAccount}'`,
         token: data.token
       })
 
@@ -250,7 +254,7 @@ export class LeadsImpl extends React.Component<
         {leadsData && leadsData.map((d) => {
           // console.log("DEtails: ", d)
           // if (!d.isDealer && d.assigned) {
-          if (d.recordtypeid === '0122w000000chRpAAI' && d.assigned_dealer__c) {
+          if (d.recordtypeid === recordTypeList.customerLead && d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
                 <CardDetails 
@@ -273,7 +277,7 @@ export class LeadsImpl extends React.Component<
       <Grid container>
         {leadsData && leadsData.map((d) => {
           // if (!d.isDealer && !d.assigned) {
-          if (d.recordtypeid === '0122w000000chRpAAI' && !d.assigned_dealer__c) {
+          if (d.recordtypeid === recordTypeList.customerLead && !d.assigned_dealer__c) {
             return (
               <Grid item xs={12} md={6}>
                 <CardDetails 
@@ -296,7 +300,7 @@ export class LeadsImpl extends React.Component<
     return (
       <Grid container>
         {leadsData && leadsData.map((d) => {
-          if (d.recordtypeid === '0122w000000chRuAAI') {
+          if (d.recordtypeid === recordTypeList.dealerLead) {
             return (
               <Grid item xs={12} md={6}>
                 <CardDetailsForDealer 
@@ -356,12 +360,12 @@ export class LeadsImpl extends React.Component<
 
   public tabData = (leadsData) => [
     {
-      tabName: "Customer (" +leadsData.filter(l=> l.recordtypeid === "0122w000000chRpAAI").length+ ")",
+      tabName: "Customer (" +leadsData.filter(l=> l.recordtypeid === recordTypeList.customerLead).length+ ")",
       component: "",
       onTabSelect: (tabName: any) => { this.setState({ topActiveTab: tabName }) },
     },
     {
-      tabName: "Dealer (" +leadsData.filter(l=> l.recordtypeid === "0122w000000chRuAAI").length+ ")",
+      tabName: "Dealer (" +leadsData.filter(l=> l.recordtypeid === recordTypeList.dealerLead).length+ ")",
       component: this.renderDealersAssigned(leadsData),
       onTabSelect: (tabName: any) => { this.getAllAssignedDealers(loggedInUserDetails), this.setState({ topActiveTab: tabName }) },
     },
@@ -369,7 +373,7 @@ export class LeadsImpl extends React.Component<
 
   public tabDataToDisplay = (leadsData) => [
     {
-      tabName: "Assigned (" +leadsData.filter(l=> l.recordtypeid === '0122w000000chRpAAI' && l.assigned_dealer__c).length +")",
+      tabName: "Assigned (" +leadsData.filter(l=> l.recordtypeid === recordTypeList.customerLead && l.assigned_dealer__c).length +")",
       component:
         this.state.topActiveTab.includes("Customer") 
           ? this.renderCustomersAssigned(leadsData)
@@ -377,7 +381,7 @@ export class LeadsImpl extends React.Component<
       onTabSelect: (tabName: any) => { this.getAllLeadsData(loggedInUserDetails.token, loggedInUserDetails.sfid, loggedInUserDetails.record_type), this.setState({ activeTabType: tabName }) },
     },
     {
-      tabName: "Unassigned (" +leadsData.filter(l=> l.recordtypeid === '0122w000000chRpAAI' && !l.assigned_dealer__c).length+ ")",
+      tabName: "Unassigned (" +leadsData.filter(l=> l.recordtypeid === recordTypeList.customerLead && !l.assigned_dealer__c).length+ ")",
       component:
         this.state.topActiveTab.includes("Customer") 
           ? this.renderCustomersUnAssigned(leadsData)
@@ -1112,10 +1116,10 @@ const CardDetails = (props: any) => {
           </div>
         </Grid>
       </Grid>{" "}
-      {details.assigned_dealer__c || details.recordtypeid === "0122w000000cwfSAAQ" ? "" :
+      {details.assigned_dealer__c || details.recordtypeid === recordTypeList.dealerAccount ? "" :
         <Grid container >
           <span className="clickable" onClick={() => props.onClickAssign(details.sfid)}>
-            {details.recordtypeid === "0122w000000chRpAAI" && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
+            {details.recordtypeid === recordTypeList.customerLead && !details.assigned_dealer__c ? "Click To Assign Dealer" : ""}
           </span>
         </Grid>
       }

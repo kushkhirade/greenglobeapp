@@ -6,7 +6,7 @@ import "./Login.scss";
 import Axios from "axios";
 import { Typography } from "@material-ui/core";
 import { NavLink, withRouter } from "react-router-dom";
-import { saveLoggedInUserData, saveLoggedInUserToken } from "src/state/Utility";
+import { saveLoggedInUserData, saveLoggedInUserToken, saveAllRecordTypeIds } from "src/state/Utility";
 import { saveLoggedInUserDetails } from "src/actions/App.Actions";
 import * as AppActionCreators from "../../actions/App.Actions";
 import getData from "src/utils/getData";
@@ -67,27 +67,42 @@ const LoginScreenImpl = (props: any) => {
             throw r
         }
       })
-      console.log(data.token)
-      // if (data.status !== "200") {
-      // const AllUser = (await getData({
-      //   query: `SELECT username__c, password__c from salesforce.Account where username__c = '${userName}'`,
-      //   token: data.token
-      // }));
-      // console.log(AllUser);
-      // }
-      let AllRecordtypeIds;
+      console.log(data)
+      
+      let AllRecordTypes, recordTypeIdsArr =[];
       if (data.status === "200") {
-        AllRecordtypeIds = (await getData({
+        AllRecordTypes = (await getData({
         query: `SELECT DeveloperName, Name, Id, sfid, SobjectType FROM salesforce.RecordType`,
         token: data.token
-      }));
-      console.log(AllRecordtypeIds);
+        }));
+        console.log(AllRecordTypes);
+        // AllRecordTypes.result.map(rci => {
+        //   const name = rci.name + rci.sobjecttype;
+        //   recordTypeIdsArr.push({ name : rci.sfid})
+        // })
+        const dealerAccount = AllRecordTypes.result.find(rc => rc.name === "Dealer" && rc.sobjecttype === "Account")
+        const distributorAccount = AllRecordTypes.result.find(rc => rc.name === "Distributor" && rc.sobjecttype === "Account")
+        const customer = AllRecordTypes.result.find(rc => rc.name === "Customer" && rc.sobjecttype === "Contact")
+        const user = AllRecordTypes.result.find(rc => rc.name === "User" && rc.sobjecttype === "Contact")
+        const customerLead = AllRecordTypes.result.find(rc => rc.name === "Customer" && rc.sobjecttype === "Lead")
+        const dealerLead = AllRecordTypes.result.find(rc => rc.name === "Dealer Lead" && rc.sobjecttype === "Lead")
+        const buyOrder = AllRecordTypes.result.find(rc => rc.name === "Buy" && rc.sobjecttype === "Order")
+        const sellOrder = AllRecordTypes.result.find(rc => rc.name === "Sell" && rc.sobjecttype === "Order")
+        recordTypeIdsArr = [{
+          dealerAccount: dealerAccount.sfid, distributorAccount: distributorAccount.sfid,
+          customer: customer.sfid, user: user.sfid, 
+          customerLead: customerLead.sfid, deaerLead: dealerLead.sfid,
+          buyOrder: buyOrder.sfid, sellOrder: sellOrder.sfid
+        }];
+        const recordTypeIds = recordTypeIdsArr[0];
+        saveAllRecordTypeIds({ recordTypeIds });
       }
+
       if (data.status === "200") {
         if(data.record_type === "0122w000000cwfSAAQ"){
           saveLoggedInUserData({ recordType: data.record_type });
           saveLoggedInUserToken({ data });
-          saveLoggedInUserDetails({ data, isDealer: true, isDist: false, AllRecordtypeIds });
+          saveLoggedInUserDetails({ data, isDealer: true, isDist: false });
           props.history.push({pathname: "/home", showStatsModal: true});
         return {}
         }
