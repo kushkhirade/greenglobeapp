@@ -13,14 +13,14 @@ import Autocomplete from "@material-ui/lab/Autocomplete"
 import moment from 'moment';
 import { GSelect } from "src/components/GSelect";
 import getData from "src/utils/getData";
-import { getToken } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds } from "src/state/Utility";
 import { saveOrderData } from "src/actions/App.Actions";
 import { BaseModal } from "src/components/BaseModal";
 import { values } from "lodash";
 import { getDefaultSettings } from "http2";
 import { Console } from "console";
 
-var loggedInUserDetails;
+var loggedInUserDetails, recordTypes;
 
 export interface IAddNewOrderProps {
   history: IHistory;
@@ -102,7 +102,8 @@ export class AddNewOrderImpl extends React.PureComponent<
 
   componentDidMount(){
     loggedInUserDetails = getToken().data;
-    console.log("loggedInUserDetails: ", loggedInUserDetails);
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes);
   }
 
   getAllOrderedProducts = async (data, orderdetails) => {
@@ -173,7 +174,7 @@ export class AddNewOrderImpl extends React.PureComponent<
   
     try{
       if(!orderdetails){
-        if(data.record_type === "0122w000000cwfSAAQ"){
+        if(data.record_type === recordTypes.dealerAccount){
             
           const SFID = await getData({
             query: `select Assigned_distributor__c from salesforce.account where sfid = '${data.sfid}'`,
@@ -185,20 +186,20 @@ export class AddNewOrderImpl extends React.PureComponent<
             (status, EffectiveDate, Pricebook2Id, Sold_To_Dealer__c, AccountId, recordtypeid, app_id__c)
             values
             ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2),'${data.sfid}', 
-            '${SFID.result[0].assigned_distributor__c}', '0122w000000UJe1AAG', '${UniqueId}' )
+            '${SFID.result[0].assigned_distributor__c}', '${recordTypes.sellOrder}', '${UniqueId}' )
             RETURNING Id`,
             token: data.token
           });
         console.log("insertOrder => ", insertOrder);
         this.setState({ orderdetails: insertOrder.result[0] });
         }
-        else if(data.record_type === "0122w000000cwfNAAQ"){
+        else if(data.record_type === recordTypes.distributorAccount){
           if(orderType === "Buy"){
             insertOrder = await getData({
               query: `INSERT INTO salesforce.order
               (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
               values
-              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2), '${data.sfid}', '0122w000000UJdmAAG', '${UniqueId}')
+              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2), '${data.sfid}', '${recordTypes.buyOrder}', '${UniqueId}')
               RETURNING Id`,
               token: data.token
             });
@@ -208,7 +209,7 @@ export class AddNewOrderImpl extends React.PureComponent<
               query: `INSERT INTO salesforce.order
               (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid, app_id__c)
               values
-              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2), '${data.sfid}', '0122w000000UJe1AAG', '${UniqueId}' )
+              ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', (select sfid from salesforce.PriceBook2), '${data.sfid}', '${recordTypes.sellOrder}', '${UniqueId}' )
               RETURNING Id`,
               token: data.token
             });

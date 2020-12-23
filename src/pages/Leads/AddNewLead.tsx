@@ -72,31 +72,117 @@ export interface IAddNewLeadProps {
   leadTaskForm: any;
 }
 
-const closedColumns = [
-  {
-    name: "itemName",
-    label: "Item Name",
-  },
-  {
-    name: "unitCost",
-    label: "Unit Cost",
-  },
-  {
-    name: "qty",
-    label: "Quantity",
-  },
-  {
-    name: "amount",
-    label: "Amount",
-  },
-];
-
-const products = [
-  {
-    value: "open",
-    label: "Open",
-  },
-];
+const threeWheelerCheckList = {
+  "ANNUAL MAINTAINANACE CONTRACT": false,
+  "AIR FILTER R/R": false,
+  "BLOCK PISTON R/R": false,
+  "CNG TUNE UP": false,
+  "CYLINDER REMOVE": false,
+  "CYLINDER REFITTING": false,
+  "CARBURETTOR SERVICE": false,
+  "CNG LEAKAGE CHECK": false,
+  "CYLINDER BRACKET R/R": false,
+  "CYLINDER HYDROTESTING": false,
+  "CYLINDER VALVE R/R": false,
+  "ENGINE COMPRESSION CHECK": false,
+  "ENGINE TUNE UP": false,
+  "FILLER VALVE REPAIR": false,
+  "FILLER VALVE R/R": false,
+  "GRECO ACE KIT FITTING": false,
+  "GRECO PRO KIT FITTING": false,
+  "GAS FILLTER R/R": false,
+  "GENERAL LABOUR CHARGES": false,
+  "HIGH PRESSURE PIPE R/R": false,
+  "INGNITION COIL CODE R/R": false,
+  "KIT REMOVE": false,
+  "KIT SERVICE": false,
+  "KIT REFITTING": false,
+  "LOW PRESSURE HOSE R/R": false,
+  "MIXER R/R": false,
+  "OIL & OIL FILTER REPLACE": false,
+  "PICK UP COIL R/R": false,
+  "PRESSURE GAUGE R/R": false,
+  "REDUCER R/R": false,
+  "REDUCER SERVICE": false,
+  "REDUCER BRACKET R/R" : false,
+  "SPARK PLUG R/R": false,
+  "SWITCH R/R": false,
+  "TAPPET COVER PACKING REPLACE": false,
+  "TAPPET SETTING": false,
+  "WIRING REMOVE & REFITTING": false,
+  "WIRING REPAIR": false,
+  "1ST FREE SERVICE": false,
+  "1ST STAGE REGULATOR ORING R/R": false,
+  "1ST STAGE REGULATOR R/R": false,
+  "2ND FREE SERVICE": false,
+  "2ND STAGE REGUALTOR R/R": false,
+  "3RD FREE SERVICE": false,
+};
+const fourWheelerCheckList = {
+"ANNUAL MAINTAINANACE CONTRACT": false,
+"AIR FILTER R/R": false,
+"CNG TUNE UP": false,
+"CYLINDER REMOVE": false,
+"CYLINDER REFITTING": false,
+"CAR SCANNING": false,
+"CNG LEAKAGE CHECK": false,
+"CNG SEQ. KIT TUNE UP": false,
+"COOLANT REPLACE": false,
+"CYLINDER BRACKET R/R": false,
+"CYLINDER HYDROTESTING": false,
+"CYLINDER VALVE R/R": false,
+"DICKY FLOOR REPAIR": false,
+"ECM BRACKET R/R": false,
+"ECM R/R": false,
+"EMULATOR R/R": false,
+"ENGINE COMPRESSION CHECK": false,
+"ENGINE TUNE UP": false,
+"FILLER VALVE REPAIR": false,
+"FILLER VALVE R/R": false,
+"FUEL FILTER R/R": false,
+"FUEL GAUGE CORRECTOR FITMENT": false,
+"FUEL PUMP RELAY R/R": false,
+"FUEL PUMP R/R": false,
+"GRECO ACE KIT FITTING": false,
+"GRECO PRO KIT FITTING": false,
+"GAS FILLTER R/R": false,
+"GENERAL LABOUR CHARGES": false,
+"GRECO INJECTOR R/R": false,
+"HEIGHT PAD FITMENT": false,
+"HIGH PRESSURE PIPE R/R": false,
+"INGNITION COILS R/R": false,
+"INGNITION COIL CODE R/R": false,
+"INJECTOR NOZZLE R/R": false,
+"KIT REMOVE": false,
+"KIT SERVICE": false,
+"KIT REFITTING": false,
+"LOW PRESSURE HOSE R/R": false,
+"MAF/MAP SENSOR CLEAN": false,
+"MAP SENSOR R/R": false,
+"MIXER R/R": false,
+"O2 SENSOR CLEAN": false,
+"O2 SENSOR R/R": false,
+"OIL & OIL FILTER REPLACE": false,
+"PETROL INJECTOR R/R": false,
+"PRESSURE GAUGE R/R": false,
+"RAIL BRACKET R/R": false,
+"REDUCER BRACKET R/R": false,
+"REDUCER R/R": false,
+"REDUCER SERVICE": false,
+"SPARK PLUG R/R": false,
+"SWITCH R/R": false,
+"TAPPET COVER PACKING REPLACE": false,
+"TAPPET SETTING": false,
+"TEMPRESURE SENSOR R/R": false,
+"THROTTLE BODY CLEANING": false,
+"TIMING ADVANCE PROCESS R/R": false,
+"VACCUM HOSE PIPE R/R": false,
+"WIRING REMOVE & REFITTING": false,
+"WIRING REPAIR": false,
+"1ST FREE SERVICE": false,
+"2ND FREE SERVICE": false,
+"3RD FREE SERVICE": false,
+};
 
 const invoiceData = {
   orderID: "IN915426",
@@ -152,6 +238,7 @@ export class AddNewLeadImpl extends React.Component<
     currentNewSfid: string;
     productPriceList: any;
     statusLead: number;
+    selectedLead: any;
     openImg: string;
     workshopImages: any;
   }
@@ -170,6 +257,7 @@ export class AddNewLeadImpl extends React.Component<
       currentNewSfid: "",
       productPriceList: [],
       statusLead: 0,
+      selectedLead: [],
       openImg: "",
       workshopImages: 
         [
@@ -289,6 +377,8 @@ export class AddNewLeadImpl extends React.Component<
         loggedInUserDetails.token,
         params.id
       );
+      changeValuesInStore(`leadForm.zip`, leadData[0].postalcode);
+      console.log(store.getState().rxFormReducer["leadForm"].zip);
       this.handelStateForEdit(leadData["0"], loggedInUserDetails.record_type);
     } else {
       let formType;
@@ -349,8 +439,9 @@ export class AddNewLeadImpl extends React.Component<
       console.log(e);
     }
     console.log("leadsData =>", leadsData);
-    this.setStatusPersentage(leadsData.result[0].status)
+    this.setStatusPersentage(leadsData.result[0].status);
     this.getAllTasks(loggedInUserDetails, leadsData.result[0].sfid);
+    this.setState({selectedLead: leadsData.result[0]})
     return leadsData.result;
   }
 
@@ -361,6 +452,7 @@ export class AddNewLeadImpl extends React.Component<
     } else if (record_type == "0122w000000cwfNAAQ") {
       formType = "userForm";
     }
+    console.log("leadData =>", leadData)
     const rtoCodesArr = leadData.rto_code__c && leadData.rto_code__c.split(',') || [];
     const workshopImgArr = leadData.workshop_listt__c && leadData.workshop_listt__c.split(',') || [];
     console.log("workshopImgArr: ", workshopImgArr)
@@ -415,6 +507,7 @@ export class AddNewLeadImpl extends React.Component<
       PAN__c: leadData.pan__c,  
     };
     changeValuesInStore(formType, editData);
+    console.log(store.getState().rxFormReducer[formType])
   };
 
   insertInDistStep1 = async (userForm) => {
@@ -608,6 +701,7 @@ export class AddNewLeadImpl extends React.Component<
         throw result;
       }
       this.setState({ id: result.result[0].id});
+      this.setState({selectedLead: leadForm});
       return result;
     } catch (error) {
       throw error;
@@ -679,6 +773,7 @@ export class AddNewLeadImpl extends React.Component<
       ) {
         throw result;
       }
+      this.setState({selectedLead: leadForm});
       return result;
     } catch (error) {
       throw error;
@@ -1305,6 +1400,11 @@ export class AddNewLeadImpl extends React.Component<
   };
 
   renderJobCard = () => {
+    const jobcardCheckList = this.state.selectedLead.wheeles === "3 Wheeler" 
+                              ? threeWheelerCheckList 
+                              : this.state.selectedLead.wheeles === "4 Wheeler"
+                                ? fourWheelerCheckList 
+                                : {};
     return (
       <div className="card-container job-card-container">
         <SubFormHeading>GST Details</SubFormHeading>
@@ -1319,7 +1419,7 @@ export class AddNewLeadImpl extends React.Component<
           hasSubmit={false}
           options={gstDetails}
         />
-        {this.props.leadForm.subLeadType === "Servicing" &&
+        {this.state.selectedLead.subLeadType === "Servicing" &&
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
@@ -1368,7 +1468,8 @@ export class AddNewLeadImpl extends React.Component<
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
-            {Object.keys(this.state.dealerCheckboxes).map((key, value) => {
+            {/* {Object.keys(this.state.dealerCheckboxes).map((key, value) => { */}
+            {Object.keys(jobcardCheckList).map((key, value) => {
               const isChecked = this.state.dealerCheckboxes[key];
               return (
                 <React.Fragment>
@@ -1448,7 +1549,7 @@ export class AddNewLeadImpl extends React.Component<
           Upcoming Tasks
           <div className="right-button">
             <Button
-              color="primary"
+              color="default"
               variant="contained"
               onClick={() => this.setState({ openEditModal: true })}
             >
@@ -1668,44 +1769,48 @@ export class AddNewLeadImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
-            disable: this.state.statusLead < 40 ? false : true,
+            // disable: this.state.statusLead < 40 ? false : true,
+            disable: false,
             component: this.renderForm(),
           },
           {
             label: "Documents Collection",
-            disable: this.state.statusLead >= 10 && this.state.statusLead < 40 ? false : true,
+            // disable: this.state.statusLead >= 10 && this.state.statusLead < 40 ? false : true,
+            disable: false,
             component: this.renderDocsForRTO(),
           },
           {
             label: "Negotiation",
-            disable: this.state.statusLead >= 20 && this.state.statusLead < 40 ? false : true,
+            disable: false,
+            // disable: this.state.statusLead >= 20 && this.state.statusLead < 40 ? false : true,
             // component: <Proposal/>
             // component: this.renderNegotitation(),
-            component: <RenderNegotitationComp currentID={this.state.id}
-              onCancel={() => 
-                this.setState({ activeStep: this.state.activeStep - 1 })
-              }
-              onSubmit={async (v: any) => {
-                if (this.state.currentNewSfid) {
-                  await this.updateDealerSteps("Negotiation", v );
-                  this.setStatusPersentage("Negotiation");
-                  this.setState({
-                    // statusLead: "Negotiation",
-                    activeStep: this.state.activeStep + 1,
-                  });
-                  console.log(">> v", v);
-                }
-              }}
-              />
+            component: <RenderNegotitationComp currentID={this.state.id} 
+                          selectedLead={this.state.selectedLead}
+                          onCancel={() => 
+                            this.setState({ activeStep: this.state.activeStep - 1 })
+                          }
+                          onSubmit={async (v: any) => {
+                            if (this.state.currentNewSfid) {
+                              await this.updateDealerSteps("Negotiation", v );
+                              this.setStatusPersentage("Negotiation");
+                              this.setState({
+                                // statusLead: "Negotiation",
+                                activeStep: this.state.activeStep + 1,
+                              });
+                              console.log(">> v", v);
+                            }
+                          }}
+                        />
           },
           {
             label: "Closed",
-            disable: this.state.statusLead >= 30 && this.state.statusLead <= 40 ? false : true,
+            // disable: this.state.statusLead >= 30 && this.state.statusLead <= 40 ? false : true,
             component: this.renderClosedTab(),
           },
           {
             label: "Job Card",
-            disable: this.state.statusLead >= 40 && this.state.statusLead <= 50 ? false : true,
+            // disable: this.state.statusLead >= 40 && this.state.statusLead <= 50 ? false : true,
             component: this.renderJobCard(),
           },
         ]}
@@ -2024,7 +2129,9 @@ const styles = StyleSheet.create({
   subRow: {width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0},
 });
 
-const FitmentProposal = () => {
+const FitmentProposal = (props: any) => {
+  console.log("Fitment Props: ", props);
+  const details = props.selectedLead;
   return (
     // <PDFViewer>
       <Document >
@@ -2044,30 +2151,30 @@ const FitmentProposal = () => {
           
           <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row'}}>
             <Text style={{fontSize: 10, width: '10%' }}> Sr. No. :</Text>
-            <Text style={{fontSize: 10, width: '40%' }}> 951974 </Text>
+            <Text style={{fontSize: 10, width: '40%' }}>  </Text>
             <Text style={{fontSize: 12, width: '17%'}}> Date : </Text>
-            <Text style={{fontSize: 10, width: '33%' }}> 25/10/20 </Text>
+            <Text style={{fontSize: 10, width: '33%' }}>  </Text>
           </View>
           <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 12, width: '50%'}}> To,</Text>
             <Text style={{fontSize: 12, width: '17%'}}> Vehicle Make: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> Bajaj Auto Limited </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> {details.vehicle_make__c} </Text>
           </View>
           <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 10, width: '50%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Vehicle Model: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> Bajaj RE Auto Rickshau Compact 4S </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> {details.vehicle_model__c} </Text>
           </View>
           <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 10, width: '50%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Running KMs: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> 45 </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> {details.daily_running_kms__c} </Text>
           </View>
           <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 12, width: '10%'}}> E-mail : </Text>
-            <Text style={{fontSize: 10, width: '40%'}}> anurag@gmail.com </Text>
+            <Text style={{fontSize: 10, width: '40%'}}> {details.email} </Text>
             <Text style={{fontSize: 12, width: '17%'}}> Mobile No.: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> 9999999999</Text>
+            <Text style={{fontSize: 10, width: '33%'}}> {details.whatsapp_number__c} </Text>
           </View>
           
           <View style={styles.table}>
@@ -2176,7 +2283,9 @@ const FitmentProposal = () => {
   );
 }
 
-const ServicingProposal = () => {
+const ServicingProposal = (props: any) => {
+  console.log("servicing Props: ", props);
+  const details = props.selectedLead;
   return(
     <Document>
       <Page size = "A4" >
@@ -2201,44 +2310,58 @@ const ServicingProposal = () => {
               </View>
             </View>
             <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
-              <Text style={{ fontSize: 10, margin: "2px" }}>GST NO. : 2TAJJ4587GF5458</Text> 
+              <Text style={{ fontSize: 10, margin: "2px" }}>GST NO. : </Text> 
             </View> 
           </View> 
           <View style={styles.tableRow}> 
             <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Customer Name:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Reg. No.: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Job No.:</Text>
+                <Text style={{fontSize: 12, width: '20%'}}> Customer Name : </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> {details.name}</Text>
+                <Text style={{fontSize: 12, width: '15%'}}> Reg. No. : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> {details.vehicle_no__c}</Text>
+                <Text style={{fontSize: 12, width: '15%'}}> Job No. : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Address:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> VIN No.: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Job Date: </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> Address : </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> {details.city+", "+details.district__c+", "}</Text>
+                <Text style={{fontSize: 12, width: '15%'}}> VIN No. : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}>  </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> Job Date : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}>  </Text>
+              </View>
+              <View style={{ margin: "2px", flexDirection: 'row' }}>
+                <Text style={{fontSize: 12, width: '40%'}}> {details.state} </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> Engine No. : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> </Text>
+                <Text style={{fontSize: 12, width: '30%'}}> Job Time :</Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
                 <Text style={{fontSize: 12, width: '40%'}}> </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Engine No.: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Job Time </Text>
-              </View>
-              <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Model: </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> Model : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> {details.vehicle_model__c} </Text>
                 <Text style={{fontSize: 12, width: '30%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Mobile</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Make: </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> Mobile : </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> {details.whatsapp_number__c} </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> Make : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> {details.vehicle_make__c}</Text>
                 <Text style={{fontSize: 12, width: '30%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> 3/4 Wheeler:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Present KMs: </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> 3/4 Wheeler : </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> {details.x3_or_4_wheeler__c}</Text>
+                <Text style={{fontSize: 12, width: '15%'}}> Present KMs : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> {details.daily_running_kms__c}</Text>
                 <Text style={{fontSize: 12, width: '30%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Contact Person:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> SR Advisor: </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> Contact Person : </Text>
+                <Text style={{fontSize: 12, width: '20%'}}> {details.contact_person__c}</Text>
+                <Text style={{fontSize: 12, width: '15%'}}> SR Advisor : </Text>
+                <Text style={{fontSize: 12, width: '15%'}}> </Text>
                 <Text style={{fontSize: 12, width: '30%'}}> </Text>
               </View>
             </View>  
@@ -2331,13 +2454,14 @@ const ServicingProposal = () => {
 const RenderNegotitationComp = (props: any) => {
   const [blobURL, setblobURL] = React.useState(null);
   const [pdfLinkURL, setpdfLinkURL] = React.useState(null);
-  const subLeadType = store.getState().rxFormReducer["leadForm"].subLeadType ;
+  // const subLeadType = store.getState().rxFormReducer["leadForm"].subLeadType ;
+  const subLeadType = props.selectedLead.sub_lead_type__c;
   console.log("props => ", props)
   return (
     <div className="negotitation-container">
       {(subLeadType === "Fitment" || subLeadType === "Servicing" ) &&
         <div style={{ textAlign: "right" }}>
-          <BlobProvider document={subLeadType === "Fitment" ? <FitmentProposal /> : <ServicingProposal /> }> 
+          <BlobProvider document={subLeadType === "Fitment" ? <FitmentProposal selectedLead={props.selectedLead}/> : <ServicingProposal selectedLead={props.selectedLead}/> }> 
             { ({ blob, url, loading, error }) => {
               console.log("blob : ", blob);
               console.log("url : ", url);

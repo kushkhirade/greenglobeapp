@@ -21,9 +21,11 @@ import {
 import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
 import { ChangePhoneFormat } from "src/components/Format";
-import { getToken, IHistory } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds, IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { JobCardsList } from "src/pages/JobCard/index";
+
+var recordTypes;
 
 export interface IDealerDetailsProps {
   history: IHistory;
@@ -79,6 +81,8 @@ export class DealerDetailsImpl extends React.PureComponent<
  
   componentDidMount(){
     const { data } = getToken();
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes);    
     console.log("DAta: ", data)
     this.getdetailsData(data);
   }
@@ -94,17 +98,17 @@ export class DealerDetailsImpl extends React.PureComponent<
     }
     try{
       let details;
-      if(recordtypeid === '0122w000000cwfSAAQ'){
+      if(recordtypeid === recordTypes.dealerAccount){
         details = await getData({
           query: `SELECT * FROM salesforce.Account 
-          WHERE sfid = '${sfid}' AND RecordTypeId = '0122w000000cwfSAAQ'`,
+          WHERE sfid = '${sfid}' AND RecordTypeId = '${recordTypes.dealerAccount}'`,
           token: data.token
         })
       }
-      else if(recordtypeid === '0122w000000chRuAAI'){
+      else if(recordtypeid === recordTypes.dealerLead){
         details = await getData({
           query: `SELECT * FROM salesforce.lead 
-          WHERE sfid = '${sfid}' AND RecordTypeId = '0122w000000chRuAAI'`,
+          WHERE sfid = '${sfid}' AND RecordTypeId = '${recordTypes.dealerLead}'`,
           token: data.token
         })
       }
@@ -477,7 +481,7 @@ export class DealerDetailsImpl extends React.PureComponent<
     return (
       <AppBar>
         {/* <div style={{ padding: "20px" }}> */}
-          <Tabs tabsData={this.state.detailsData && this.state.detailsData.recordtypeid === "0122w000000chRuAAI" ? this.tabDataforLead() :this.tabDataforDealer()} />
+          <Tabs tabsData={this.state.detailsData && this.state.detailsData.recordtypeid === recordTypes.dealerLead ? this.tabDataforLead() :this.tabDataforDealer()} />
         {/* </div> */}
       </AppBar>
     );

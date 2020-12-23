@@ -15,12 +15,14 @@ import { Tabs } from "src/components/Tabs";
 import AppBar from "src/navigation/App.Bar";
 import getData from "src/utils/getData";
 import data from "../../data";
+import { store } from "../../store/Store";
 import { getToken, getAllRecordTypeIds, isDealer, IHistory, changeValuesInStore } from "src/state/Utility";
 import { saveLeadsData, saveAssignedDealersData, saveDealerData } from "src/actions/App.Actions";
 import { ChangePhoneFormat } from "src/components/Format";
 import "./leads.scss";
 import { Console } from "console";
 import Select from 'react-select';
+import { leadForm } from "src/reducers/CombinedReducers";
 
 var loggedInUserDetails, recordTypeList;
 
@@ -160,7 +162,7 @@ export class LeadsImpl extends React.Component<
     try {
       if (recordtypeid === recordTypeList.dealerAccount) {
         leadsData = await getData({
-          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status 
+          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, postalcode, sfid, Status 
           FROM salesforce.Lead 
           WHERE RecordTypeId = '${recordTypeList.customerLead}' 
           AND (Assigned_Dealer__c LIKE '%${sfid}%') 
@@ -170,7 +172,7 @@ export class LeadsImpl extends React.Component<
       } else if (recordtypeid === recordTypeList.distributorAccount) {
         console.log("here");
         leadsData = await getData({
-          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, sfid, Status
+          query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, postalcode, sfid, Status
           FROM salesforce.Lead 
           WHERE (Assigned_Distributor__c LIKE '%${sfid}%') 
           AND sfid is not null AND Status != 'Closed' AND Status != 'Approved'`,
@@ -847,6 +849,8 @@ export class LeadsImpl extends React.Component<
   handleCustomerDetails = async (customer) => {
     console.log("customer Data ", customer)
     saveDealerData(customer);
+    changeValuesInStore(`leadForm.zip`, customer.postalcode);
+    console.log(store.getState().rxFormReducer["leadForm"].zip);
     this.props.history.push(`/customer/customer-lead-details/${customer.recordtypeid}/${customer.sfid}`);
   };
 

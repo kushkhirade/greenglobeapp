@@ -37,7 +37,7 @@ export class Stepper extends React.Component<any, any> {
       state: { activeStep },
     } = this;
     return (
-      <div className="stepper-container">
+      <React.Fragment>
         <div className="step-container">
           {props.stepData.map((step: any, index: number) => {
             return (
@@ -69,6 +69,9 @@ export class Stepper extends React.Component<any, any> {
             );
           })}
         </div>
+
+        <div style={{padding: 30}}> </div>
+
         <div className="stepper-content">
           {console.log("props.activeStep : ", props.activeStep)}
           {props.activeStep && props.activeStep < props.stepData.length
@@ -79,7 +82,7 @@ export class Stepper extends React.Component<any, any> {
             ? props.stepData[props.activeStep].component
             : props.stepData[0].component}
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 }

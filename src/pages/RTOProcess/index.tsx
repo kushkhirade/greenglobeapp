@@ -29,11 +29,11 @@ import AppBar from "src/navigation/App.Bar";
 import data from "../../data";
 import "./rtoProcess.scss";
 import { FormComponent } from "src/components/FormComponent";
-import { getToken } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds } from "src/state/Utility";
 import getData from "src/utils/getData";
 import {ChangePhoneFormat} from "src/components/Format";
 
-var loggedInUserDetails;
+var loggedInUserDetails, recordTypes;
 var allCustomers;
 
 export interface IRTOProcessProps {
@@ -69,6 +69,8 @@ export class RTOProcessImpl extends React.PureComponent<
   
   async componentDidMount(){
     loggedInUserDetails = getToken().data;
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes); 
     console.log("loggedInUserDetails: ", loggedInUserDetails);
     const rto = await this.getAllRTOProcesses(loggedInUserDetails);
     this.setState({ rtoDataMain: rto });
@@ -111,7 +113,7 @@ export class RTOProcessImpl extends React.PureComponent<
         customerData = await getData({
           query: `SELECT sfid, name
           FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND Recordtypeid = '${recordTypes.customer}'`,
           token: data.token
         })
       }
@@ -119,7 +121,7 @@ export class RTOProcessImpl extends React.PureComponent<
         customerData = await getData({
           query: `SELECT sfid, name
           FROM salesforce.Contact 
-          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
+          WHERE contact.accountid LIKE '%${data.sfid}%' AND Recordtypeid = '${recordTypes.customer}'`,
           token: data.token
         })
     }

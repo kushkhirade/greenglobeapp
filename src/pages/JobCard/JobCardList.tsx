@@ -8,10 +8,12 @@ import "./../Customers/customers.scss";
 import { withRouter } from "react-router-dom";
 import { IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
-import { getToken, isDealer } from "./../../state/Utility";
+import { getToken, getAllRecordTypeIds, isDealer } from "./../../state/Utility";
 import { saveDealerData } from "src/actions/App.Actions";
 import { ChangePhoneFormat } from "src/components/Format";
 import moment from 'moment';
+
+var recordTypes;
 
 export interface IJobCardsProps {
   history: IHistory;
@@ -28,6 +30,8 @@ export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {allJobCar
 
   async componentDidMount(){
     const { data } = getToken();
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes); 
     const jobCardData = await this.getAllJobCards(data);
     this.setState({ allJobCards : jobCardData });
   }
@@ -43,7 +47,7 @@ export class JobCardsImpl extends React.PureComponent<IJobCardsProps, {allJobCar
     }
     try{
       let jobCardData;
-      if(recordtypeid === '0122w000000cwfSAAQ'){
+      if(recordtypeid === recordTypes.dealerAccount){
         jobCardData = await getData({
           query: `SELECT *
           FROM salesforce.contact Full OUTER JOIN salesforce.job_card__c

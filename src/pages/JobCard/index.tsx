@@ -47,42 +47,128 @@ import { isDealer } from "src/state/Utility";
 import { Tabs } from "src/components/Tabs";
 import { GSelect } from "src/components/GSelect";
 import data from "./../../data";
-import { getToken, changeValuesInStore } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds, changeValuesInStore } from "src/state/Utility";
 import { AnyCnameRecord } from "dns";
 import { LabelList } from "recharts";
 import moment from "moment";
 
-var loggedInUserDetails;
+var loggedInUserDetails, recordTypes;
 
 export interface IAddNewJobCardProps {
   leadForm: any;
 }
 
-const closedColumns = [
-  {
-    name: "itemName",
-    label: "Item Name",
-  },
-  {
-    name: "unitCost",
-    label: "Unit Cost",
-  },
-  {
-    name: "qty",
-    label: "Quantity",
-  },
-  {
-    name: "amount",
-    label: "Amount",
-  },
-];
-
-const products = [
-  {
-    value: "open",
-    label: "Open",
-  },
-];
+const threeWheelerCheckList = {
+    "ANNUAL MAINTAINANACE CONTRACT": false,
+    "AIR FILTER R/R": false,
+    "BLOCK PISTON R/R": false,
+    "CNG TUNE UP": false,
+    "CYLINDER REMOVE": false,
+    "CYLINDER REFITTING": false,
+    "CARBURETTOR SERVICE": false,
+    "CNG LEAKAGE CHECK": false,
+    "CYLINDER BRACKET R/R": false,
+    "CYLINDER HYDROTESTING": false,
+    "CYLINDER VALVE R/R": false,
+    "ENGINE COMPRESSION CHECK": false,
+    "ENGINE TUNE UP": false,
+    "FILLER VALVE REPAIR": false,
+    "FILLER VALVE R/R": false,
+    "GRECO ACE KIT FITTING": false,
+    "GRECO PRO KIT FITTING": false,
+    "GAS FILLTER R/R": false,
+    "GENERAL LABOUR CHARGES": false,
+    "HIGH PRESSURE PIPE R/R": false,
+    "INGNITION COIL CODE R/R": false,
+    "KIT REMOVE": false,
+    "KIT SERVICE": false,
+    "KIT REFITTING": false,
+    "LOW PRESSURE HOSE R/R": false,
+    "MIXER R/R": false,
+    "OIL & OIL FILTER REPLACE": false,
+    "PICK UP COIL R/R": false,
+    "PRESSURE GAUGE R/R": false,
+    "REDUCER R/R": false,
+    "REDUCER SERVICE": false,
+    "REDUCER BRACKET R/R" : false,
+    "SPARK PLUG R/R": false,
+    "SWITCH R/R": false,
+    "TAPPET COVER PACKING REPLACE": false,
+    "TAPPET SETTING": false,
+    "WIRING REMOVE & REFITTING": false,
+    "WIRING REPAIR": false,
+    "1ST FREE SERVICE": false,
+    "1ST STAGE REGULATOR ORING R/R": false,
+    "1ST STAGE REGULATOR R/R": false,
+    "2ND FREE SERVICE": false,
+    "2ND STAGE REGUALTOR R/R": false,
+    "3RD FREE SERVICE": false,
+};
+const fourWheelerCheckList = {
+  "ANNUAL MAINTAINANACE CONTRACT": false,
+  "AIR FILTER R/R": false,
+  "CNG TUNE UP": false,
+  "CYLINDER REMOVE": false,
+  "CYLINDER REFITTING": false,
+  "CAR SCANNING": false,
+  "CNG LEAKAGE CHECK": false,
+  "CNG SEQ. KIT TUNE UP": false,
+  "COOLANT REPLACE": false,
+  "CYLINDER BRACKET R/R": false,
+  "CYLINDER HYDROTESTING": false,
+  "CYLINDER VALVE R/R": false,
+  "DICKY FLOOR REPAIR": false,
+  "ECM BRACKET R/R": false,
+  "ECM R/R": false,
+  "EMULATOR R/R": false,
+  "ENGINE COMPRESSION CHECK": false,
+  "ENGINE TUNE UP": false,
+  "FILLER VALVE REPAIR": false,
+  "FILLER VALVE R/R": false,
+  "FUEL FILTER R/R": false,
+  "FUEL GAUGE CORRECTOR FITMENT": false,
+  "FUEL PUMP RELAY R/R": false,
+  "FUEL PUMP R/R": false,
+  "GRECO ACE KIT FITTING": false,
+  "GRECO PRO KIT FITTING": false,
+  "GAS FILLTER R/R": false,
+  "GENERAL LABOUR CHARGES": false,
+  "GRECO INJECTOR R/R": false,
+  "HEIGHT PAD FITMENT": false,
+  "HIGH PRESSURE PIPE R/R": false,
+  "INGNITION COILS R/R": false,
+  "INGNITION COIL CODE R/R": false,
+  "INJECTOR NOZZLE R/R": false,
+  "KIT REMOVE": false,
+  "KIT SERVICE": false,
+  "KIT REFITTING": false,
+  "LOW PRESSURE HOSE R/R": false,
+  "MAF/MAP SENSOR CLEAN": false,
+  "MAP SENSOR R/R": false,
+  "MIXER R/R": false,
+  "O2 SENSOR CLEAN": false,
+  "O2 SENSOR R/R": false,
+  "OIL & OIL FILTER REPLACE": false,
+  "PETROL INJECTOR R/R": false,
+  "PRESSURE GAUGE R/R": false,
+  "RAIL BRACKET R/R": false,
+  "REDUCER BRACKET R/R": false,
+  "REDUCER R/R": false,
+  "REDUCER SERVICE": false,
+  "SPARK PLUG R/R": false,
+  "SWITCH R/R": false,
+  "TAPPET COVER PACKING REPLACE": false,
+  "TAPPET SETTING": false,
+  "TEMPRESURE SENSOR R/R": false,
+  "THROTTLE BODY CLEANING": false,
+  "TIMING ADVANCE PROCESS R/R": false,
+  "VACCUM HOSE PIPE R/R": false,
+  "WIRING REMOVE & REFITTING": false,
+  "WIRING REPAIR": false,
+  "1ST FREE SERVICE": false,
+  "2ND FREE SERVICE": false,
+  "3RD FREE SERVICE": false,
+};
 
 export class AddNewJobCardImpl extends React.Component<
   IAddNewJobCardProps,
@@ -214,6 +300,8 @@ export class AddNewJobCardImpl extends React.Component<
 
   componentDidMount() {
     loggedInUserDetails = getToken().data;
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes); 
     this.getCustAndLeads(loggedInUserDetails);
     this.getAllJobCards(loggedInUserDetails);
     changeValuesInStore("leadForm", leadFormInitObj);
@@ -251,7 +339,7 @@ export class AddNewJobCardImpl extends React.Component<
   getCustomerVehicles = async (data, custSFID) => {
     try {
         const vehicles = await getData({
-          query: `select * from salesforce.vehicle_detail__c where customer__c like '${custSFID}'`,
+          query: `select * from salesforce.vehicle_detail__c where customer__c like '${custSFID}' AND sfid is not NULL`,
           token: data.token,
         });
       console.log("vehicles => ", vehicles)
@@ -269,7 +357,7 @@ export class AddNewJobCardImpl extends React.Component<
         console.log("----------------Dealer---------------------------");
         const custData = await getData({
           query: `SELECT * FROM salesforce.Contact 
-          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId ='0121s0000000WE4AAM' 
+          WHERE Assigned_Dealer__c LIKE '%${data.sfid}%' AND RecordtypeId = '${recordTypes.customer}' 
           AND SFID is not null AND Name is not null AND lead_status__c = 'Closed'`,
           token: data.token,
         });
@@ -517,7 +605,7 @@ export class AddNewJobCardImpl extends React.Component<
 
           console.log(assignedDist);
           let query = `INSERT INTO salesforce.Contact (appc_id__c, FirstName, MiddleName, LastName, Company__c, Email,Whatsapp_number__c,Lead_Type__c,lead_sub_type__c,Lead_Source__c,Lead_Status__c,Sub_Lead_Source__c,Lead_Rating__c,MailingStreet,MailingCity, Taluka__c, District__c,MailingState,RTO_Code__c,MailingPostalCode,accountid,RecordTypeId,Assigned_Dealer__c)
-          values('${UniqueId ?? ""}', '${firstName ?? ""}', '${middleName ?? ""}', '${lastName ?? ""}' , 'nullCompany', '${email ?? ""}' , ${whatsAppNumber} , '${leadType ?? ""}' , '${subLeadType ?? ""}', '${leadSource ?? ""}' , 'Closed' , '${subLeadSource ?? ""}' ,'${rating ?? ""}','${street ?? ""}','${city ?? ""}','${taluka ?? ""}','${district ?? ""}','${state ?? ""}','${rtoCode ?? ""}',${zip ?? 0},'${assignedDist}', '0121s0000000WE4AAM' , '${sfid}') Returning Id`;    
+          values('${UniqueId ?? ""}', '${firstName ?? ""}', '${middleName ?? ""}', '${lastName ?? ""}' , 'nullCompany', '${email ?? ""}' , ${whatsAppNumber} , '${leadType ?? ""}' , '${subLeadType ?? ""}', '${leadSource ?? ""}' , 'Closed' , '${subLeadSource ?? ""}' ,'${rating ?? ""}','${street ?? ""}','${city ?? ""}','${taluka ?? ""}','${district ?? ""}','${state ?? ""}','${rtoCode ?? ""}',${zip ?? 0},'${assignedDist}', '${recordTypes.customer}', '${sfid}') Returning Id`;    
           try {
             let res;
             res = await getData({
@@ -530,6 +618,7 @@ export class AddNewJobCardImpl extends React.Component<
             if(res.status === 200 && res.result){
               // alert("Successfully added record");
               this.setState({
+                selectedUser : obj,
                 activeStep: this.state.activeStep + 1,
                 basicDetailsFormRecordId : res.result[0].id,
                 isLeadOrCustomer : "leads"
@@ -735,6 +824,11 @@ export class AddNewJobCardImpl extends React.Component<
   };
   
   renderJobCard = () => {
+    const jobcardCheckList = this.state.selectedUser.wheeles === "3 Wheeler" 
+                              ? threeWheelerCheckList 
+                              : this.state.selectedUser.wheeles === "4 Wheeler"
+                                ? fourWheelerCheckList 
+                                : {};
     return (
       <div className="card-container job-card-container">
         <SubFormHeading>GST Details</SubFormHeading>
@@ -749,7 +843,8 @@ export class AddNewJobCardImpl extends React.Component<
           hasSubmit={false}
           options={gstDetails}
         />
-        {this.props.leadForm.subLeadType === "Servicing" &&
+        {/* {this.props.leadForm.subLeadType === "Servicing" && */}
+        { this.state.selectedUser.lead_sub_type__c === "Servicing" &&
           <div>
             <SubFormHeading>Complaint Checklist</SubFormHeading>
             <Grid container>
@@ -790,7 +885,8 @@ export class AddNewJobCardImpl extends React.Component<
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
-            {Object.keys(this.state.jobCardCheckboxes).map((key, value) => {
+            {/* {Object.keys(this.state.jobCardCheckboxes).map((key, value) => { */}
+            {Object.keys(jobcardCheckList).map((key, value) => {
               const isChecked = this.state.jobCardCheckboxesChanged[key];
               return (
                 <React.Fragment>
@@ -1005,6 +1101,7 @@ export class AddNewJobCardImpl extends React.Component<
     }
     // END DEFAULT VALUES
     changeValuesInStore("leadForm", newData);
+    this.setState({ selectedVehicle: obj });
   };
 
   handleCloseAddJobCard = () => {
@@ -1067,7 +1164,7 @@ export class AddNewJobCardImpl extends React.Component<
     
     return (
       <AppBar>
-        <div 
+        <div
           // className="card-container no-hover add-leads-page"
           // style={{ paddingBottom: 500 }}
         >
@@ -1102,8 +1199,8 @@ export class AddNewJobCardImpl extends React.Component<
           </Grid>
           {this.state.OpenAddJobCard && (
             <div className="">
-              <Tabs tabsData={this.tabData()} />
-              {/* {this.renderStepper()} */}
+              {/* <Tabs tabsData={this.tabData()} /> */}
+              {this.renderStepper()}
             </div>
           )}
         </div>

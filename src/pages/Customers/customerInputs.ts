@@ -1,4 +1,26 @@
 import { store } from "../../store/Store";
+import { getToken } from "src/state/Utility";
+import getData from "src/utils/getData";
+
+var data = null;
+const getAllCustomersAssignedToDelaer = async () => {
+  console.log("token: ");
+  console.log("sfid: ");
+  try {
+    const customerData = await getData({
+      query: `SELECT id, name, recordtypeid, createddate, assigned_dealer__c, email, firstname, lastname, whatsapp_number__c, kit_enquiry__c, x3_or_4_wheeler__c, dealer_generated__c, Company, rating, city, postalcode, sfid, Status 
+      FROM salesforce.Lead 
+      WHERE sfid is not null AND Status != 'Closed'`,
+      token: "sd"
+    });
+
+    console.log("customerData =>", data);
+    return customerData.result;
+
+  } catch (e) {
+    console.log('fetch Inventory Error', e)
+  }
+}
 
 export const vehicleInputs = [
   {
@@ -20,10 +42,13 @@ export const vehicleInputs = [
     label: "3 or 4 Wheeler",
     model: ".wheeles",
     type: "select",
-    options: (props, state) => [
+    options: (props, state) => {
+      const token = getToken().data.sfid;
+      console.log("3 OR 4 WHEELER DATA FETCH", token);
+      return [
       {label: "3 Wheeler", value: "3 Wheeler"},
       {label: "4 Wheeler", value: "4 Wheeler"},
-    ],
+    ]},
   },
   {
     label: "Kit Enquired",
@@ -384,7 +409,6 @@ export const vehicleInputs = [
         {label: "FIGO", value: "FIGO"},
         {label: "I KON 1.3/1.6", value: "Ballade"},
         {label: "FUSION", value: "FUSION"},
-        {label: "LINEA", value: "LINEA"},
         {label: "GRAND PUNTO", value: "GRAND PUNTO"},
         {label: "PALIO", value: "PALIO"},
         {label: "SUNNY", value: "SUNNY"},
@@ -929,8 +953,6 @@ export const leadSource = [
     model: ".subLeadType",
     type: "select",
     options: (props, state) => [
-      {label: "Customer", value: "Customer"},
-      {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
       {label: "Servicing", value: "Servicing"}
     ],
@@ -1043,8 +1065,6 @@ export const leadSourceForJobCard = [
     model: ".subLeadType",
     type: "select",
     options: (props, state) => [
-      {label: "Customer", value: "Customer"},
-      {label: "Influencer", value: "Influencer"},
       {label: "Fitment", value: "Fitment"},
       {label: "Servicing", value: "Servicing"}
     ],

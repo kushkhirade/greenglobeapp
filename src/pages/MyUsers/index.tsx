@@ -9,13 +9,13 @@ import { FormComponent } from "src/components/FormComponent";
 import getData from "src/utils/getData";
 import { saveSelectData } from "src/actions/App.Actions";
 import data from "src/data";
-import { getToken, changeValuesInStore } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds, getRecordTypeOF, changeValuesInStore } from "src/state/Utility";
 import { Button, Fab, TextField, Grid, Select, MenuItem } from "@material-ui/core";
 // import Select from "react-select";
 import { values } from "lodash";
 import {ChangePhoneFormat} from "src/components/Format";
 
-var loggedInUserDetails;
+var loggedInUserDetails, recordTypes;
 const users = [
   {
     name: "Dinesh KK",
@@ -93,8 +93,12 @@ export class MyUsersImpl extends React.PureComponent<
   }
 
   componentDidMount(){
-    // loggedInUserDetails = getToken().data;
-    loggedInUserDetails = JSON.parse(localStorage.getItem("userToken")).data;
+    loggedInUserDetails = getToken().data;
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes); 
+    const RecordTypes = getRecordTypeOF("customer");
+    console.log("RecordTypes : ", RecordTypes);
+    // loggedInUserDetails = JSON.parse(localStorage.getItem("userToken")).data;
     console.log("loggedInUserDetails : ", loggedInUserDetails);
     this.getAllUsers(loggedInUserDetails);
   }
@@ -104,7 +108,7 @@ export class MyUsersImpl extends React.PureComponent<
       const getUsers = await getData({
         query: `SELECT Firstname, Lastname, Name, Phone, Whatsapp_number__c, Email, Role__c, username__c, Password__c, sfid, id
         FROM salesforce.Contact 
-        WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='0121s0000000WDzAAM'  `,
+        WHERE contact.accountid LIKE '%${data.sfid}%' and RecordtypeId ='${recordTypes.user}'  `,
         token: data.token
       })
       console.log("getUsers => ", getUsers);
@@ -139,7 +143,7 @@ export class MyUsersImpl extends React.PureComponent<
           values (
             '${values.firstName}', '${values.lastName}', '${values.firstName} ${values.lastName}',
             '${values.email}', '${values.phone}', '${values.role}', 
-            '0121s0000000WDzAAM', '${data.sfid}'
+            '${recordTypes.user}', '${data.sfid}'
           ) RETURNING id`,
         token: data.token
       })
