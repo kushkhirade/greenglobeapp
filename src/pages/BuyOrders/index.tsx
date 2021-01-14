@@ -9,13 +9,13 @@ import { Add } from "@material-ui/icons";
 import moment from 'moment';
 import { Tabs } from "src/components/Tabs";
 import TrakingInfoBar from "src/components/TrakingInfoBar";
-import { getToken } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds } from "src/state/Utility";
 import getData from "src/utils/getData";
 import { saveOrderData } from "src/actions/App.Actions";
 import { dark } from "@material-ui/core/styles/createPalette";
 import { getDefaultSettings } from "http2";
 
-var loggedInUserDetails;
+var loggedInUserDetails, recordTypes;
 export interface IBuyOrdersProps {
   data?: string;
   history: IHistory;
@@ -33,6 +33,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
 
   async componentDidMount(){
     loggedInUserDetails = getToken().data;
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes);
     const res = await this.getAllOrders(loggedInUserDetails);
     console.log("result ", res)
     this.setState({orders : res});
@@ -44,13 +46,13 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
     // console.log("recordtypeid: ",recordtypeid);
     let orders;
     try {
-      if(data.record_type === "0122w000000cwfSAAQ"){
+      if(data.record_type === recordTypes.dealerAccount){
         orders = await getData({
           query: `SELECT * FROM salesforce.order NATURAL FULL JOIN salesforce.orderItem 
           WHERE salesforce.Order.Sold_To_Dealer__c LIKE '%${data.sfid}%'`,
           token: data.token
         })
-      }else if(data.record_type === "0122w000000cwfNAAQ"){
+      }else if(data.record_type === recordTypes.distributorAccount){
         orders = await getData({
           query: `SELECT * FROM salesforce.order 
           WHERE salesforce.order.accountid = '${data.sfid}' `,
@@ -85,10 +87,10 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
   InsertNewOrder = async (data, orderType) => {
     console.log("data: ", data);
     console.log(new Date())
-    const order = orderType === "Buy" ? '0122w000000UJdmAAG' : '0122w000000UJe1AAG';
+    const order = orderType === "Buy" ? recordTypes.buyOrder : recordTypes.sellOrder;
     let insertRTO;
     try{
-      if(data.record_type === "0122w000000cwfSAAQ"){
+      if(data.record_type === recordTypes.dealerAccount){
         
         const SFID = await getData({
           query: `select Assigned_distributor__c from salesforce.account where sfid = '${data.sfid}'`,
@@ -99,18 +101,18 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
           query: `INSERT INTO salesforce.order
           (status, EffectiveDate, Pricebook2Id, recordtypeid, Sold_To_Dealer__c, AccountId)
           values
-          ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0','0122w000000UJe1AAG','${data.sfid}', '${SFID.result[0].assigned_distributor__c}' )
+          ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${recordTypes.sellOrder}','${data.sfid}', '${SFID.result[0].assigned_distributor__c}' )
           RETURNING Id`,
           token: data.token
         });
       }
-      else if(data.record_type === "0122w000000cwfNAAQ"){
+      else if(data.record_type === recordTypes.distributorAccount){
         if(orderType === "Buy"){
           insertRTO = await getData({
             query: `INSERT INTO salesforce.order
             (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid)
             values
-            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJdmAAG')
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '${orderType}')
             RETURNING Id`,
             token: data.token
           });
@@ -120,7 +122,7 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
             query: `INSERT INTO salesforce.order
             (status, EffectiveDate, Pricebook2Id, accountid, recordtypeid)
             values
-            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '0122w000000UJe1AAG' )
+            ('Ordered', '${moment(new Date()).format("MM/DD/YYYY")}', '01s2w000003BsOZAA0', '${data.sfid}', '${orderType}' )
             RETURNING Id`,
             token: data.token
           });
@@ -209,8 +211,8 @@ export class BuyOrdersImpl extends React.PureComponent<IBuyOrdersProps, any> {
       // Number(a.casenumber.substr(a.casenumber.length - 3)) - Number(b.casenumber.substr(b.casenumber - 3))
       new Date(a.createddate) - new Date(b.createddate)
       )
-    const buyOrders = orderData && orderData.filter(data => data.recordtypeid === "0122w000000UJdmAAG")
-    const sellOrders = orderData && orderData.filter(data => data.recordtypeid === "0122w000000UJe1AAG")
+    const buyOrders = orderData && orderData.filter(data => data.recordtypeid === recordTypes.buyOrder)
+    const sellOrders = orderData && orderData.filter(data => data.recordtypeid === recordTypes.sellOrder)
     return (
       <AppBar>
          {isDealer() ? ( orderData !== undefined && 

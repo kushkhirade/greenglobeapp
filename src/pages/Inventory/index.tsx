@@ -8,9 +8,11 @@ import { Loading, NotFoundError } from "src/components/Loading";
 import AppBar from "src/navigation/App.Bar";
 import getData from "src/utils/getData";
 import data from "../../data";
-import { getToken, isDealer } from "src/state/Utility";
+import { getToken, isDealer, getAllRecordTypeIds } from "src/state/Utility";
 import "./inventory.scss";
 import Typography from "material-ui/styles/typography";
+
+var recordTypes;
 
 const productsFilterOptions = (invdata, Quantity) => [
   {label: "3W ACE ( "+ (Quantity.reduce((s, qnt) => Number(qnt.prd_name__c === "3 Wheeler Ace" && qnt.quantity) +s, 0) ?? 0) + " )", value: "3 Wheeler Ace"},
@@ -63,6 +65,8 @@ export class InventoryImpl extends React.PureComponent<
 
   async componentDidMount(){
     const {data} = getToken();
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes);
     const {location} = this.props;
     const sfid = location.data && location.data.sfid ? location.data.sfid : data.sfid;
     const recordtypeid = location.data && location.data.recordtypeid ? location.data.recordtypeid : data.record_type;
@@ -75,18 +79,18 @@ export class InventoryImpl extends React.PureComponent<
   getquantities = async (token, sfid, recordtypeid) => {
     let quantityData;
     try {
-      if(recordtypeid === "0122w000000cwfSAAQ"){
+      if(recordtypeid === recordTypes.dealerAccount){
         quantityData = await getData({
           query: `SELECT product2id,quantity,prd_name__c FROM salesforce.order 
           Full OUTER JOIN salesforce.orderitem ON  salesforce.order.sfid = salesforce.orderitem.orderid 
-          WHERE salesforce.order.Sold_To_Dealer__c LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJe1AAG' and product2id is not null `,
+          WHERE salesforce.order.Sold_To_Dealer__c LIKE '${sfid}' and salesforce.order.recordtypeid = '${recordTypes.sellOrder}' and product2id is not null `,
           token: token
         })
-      }else if(recordtypeid === "0122w000000cwfNAAQ"){
+      }else if(recordtypeid === recordTypes.distributorAccount){
         quantityData = await getData({
           query: `SELECT product2id,quantity,prd_name__c FROM salesforce.order  
           Full OUTER JOIN salesforce.orderitem ON  salesforce.order.sfid = salesforce.orderitem.orderid 
-          WHERE salesforce.order.accountid LIKE '${sfid}' and salesforce.order.recordtypeid = '0122w000000UJdmAAG' and product2id is not null `,
+          WHERE salesforce.order.accountid LIKE '${sfid}' and salesforce.order.recordtypeid = '${recordTypes.buyOrder}' and product2id is not null `,
           token: token
         })
       }
@@ -105,7 +109,7 @@ export class InventoryImpl extends React.PureComponent<
     // console.log("recordtypeid: ",recordtypeid);
     let inventoryData;
     try {
-      if(recordtypeid === "0122w000000cwfSAAQ"){
+      if(recordtypeid === recordTypes.dealerAccount){
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
           Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,
@@ -113,7 +117,7 @@ export class InventoryImpl extends React.PureComponent<
           FROM salesforce.product2`,
           token: token
         })
-      }else if(recordtypeid === "0122w000000cwfNAAQ"){
+      }else if(recordtypeid === recordTypes.distributorAccount){
         inventoryData = await getData({
           query: `SELECT CreatedDate, Date_Purchased__c, Description, Family, Id, image_url__c, 
             Manufacture_date__c, Name, ProductCode, Sold_To_Customer__c, Sold_To_Dealer__c, SFID,

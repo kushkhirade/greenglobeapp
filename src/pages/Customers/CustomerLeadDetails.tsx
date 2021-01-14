@@ -9,10 +9,11 @@ import { isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
 import { isDealer } from "./../../state/Utility";
 import { ChangePhoneFormat } from "src/components/Format";
-import { getToken, IHistory } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds, IHistory } from "src/state/Utility";
 import getData from "src/utils/getData";
 import moment from 'moment';
 
+var recordTypes;
 export interface ICustomerDetailsProps {
   history: IHistory;
   location: any
@@ -66,6 +67,8 @@ export class CustomerDetailsImpl extends React.PureComponent<
   }
   componentDidMount() {
     const data = getToken().data;
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes); 
     this.getDetailsData(data);
   }
 
@@ -80,13 +83,13 @@ export class CustomerDetailsImpl extends React.PureComponent<
     }
     try{
       let jobCardData;
-      if(recordtypeid === "0121s0000000WE4AAM"){
+      if(recordtypeid === recordTypes.customer){
         jobCardData = await getData({
           query: `select gst_number__c, customer__c, company__c, Name, createddate, sub_lead_type__c, sfid,
           (select Whatsapp_number__c from salesforce.contact where sfid like '%${sfid}%') ,
           (select firstName from salesforce.contact where sfid like '%${sfid}%') ,
           (select lastName from salesforce.contact where sfid like '%${sfid}%')
-          from salesforce.job_card__c where customer__c like '%${sfid}%'`,
+          from salesforce.job_card__c where customer__c like '%${sfid}%' AND sfid is not NULL`,
           token: data.token
         })
       }
@@ -96,7 +99,7 @@ export class CustomerDetailsImpl extends React.PureComponent<
           (select Whatsapp_number__c from salesforce.lead where sfid like '%${sfid}%') ,
           (select firstName from salesforce.contact where sfid like '%${sfid}%') ,
           (select lastName from salesforce.contact where sfid like '%${sfid}%')
-          from salesforce.job_card__c where lead__c like '%${sfid}%'`,
+          from salesforce.job_card__c where lead__c like '%${sfid}%' AND sfid is not NULL`,
           token: data.token
         });
       }
@@ -105,10 +108,10 @@ export class CustomerDetailsImpl extends React.PureComponent<
       this.setState({ AllJobCards : jobCardData.result });
 
       let details;
-      if(recordtypeid === "0121s0000000WE4AAM"){
+      if(recordtypeid === recordTypes.customer){
         details = await getData({
           query: `SELECT * FROM salesforce.Contact 
-          WHERE sfid LIKE '%${sfid}%' AND Recordtypeid = '0121s0000000WE4AAM'`,
+          WHERE sfid LIKE '%${sfid}%' AND Recordtypeid = '${recordTypes.customer}'`,
           token: data.token,
         })
       }
@@ -422,11 +425,12 @@ export class CustomerDetailsImpl extends React.PureComponent<
 
   render() {
     const { dealerDetails } = this.props;
-    console.log("dealerDetails: ", this.state.detailsData)
+    console.log("Data: ", this.state)
     return (
       <AppBar>
         {/* <div style={{ padding: "20px" }}> */}
-          <Tabs tabsData={this.props.match.params.recordtypeid === "0121s0000000WE4AAM" ? this.tabDataForCust() : this.tabDataforLead()} />
+          {recordTypes && 
+            <Tabs tabsData={this.props.match.params.recordtypeid === recordTypes.customer ? this.tabDataForCust() : this.tabDataforLead()} />}
         {/* </div> */}
       </AppBar>
     );

@@ -23,6 +23,7 @@ const store = createStore(combineForms({
   leadForm: {},
   customerForm: {},
   editUserForm: {},
+  caseForm : {}
 }));
 
 const Loader = () => (

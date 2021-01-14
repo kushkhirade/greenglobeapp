@@ -68,9 +68,11 @@ import { DealerDetails } from "./pages/AssignedDealers/DealerDetails";
 import { CustomerLeadDetails } from "./pages/Customers/CustomerLeadDetails";
 import {
   getToken,
+  getAllRecordTypeIds,
   isLoggedIn,
   saveLoggedInUserData,
   saveLoggedInUserToken,
+  saveAllRecordTypeIds,
 } from "./state/Utility";
 import { saveLoggedInUserDetails } from "./actions/App.Actions";
 import { AddNewOrder } from "./pages/BuyOrders/AddNewOrder";
@@ -101,16 +103,21 @@ class ProtectedRoute extends React.Component<any, any> {
     // }
     const { recordType } = isLoggedIn();
     const { data } = getToken();
+    
+    const { recordTypeIds } = getAllRecordTypeIds();
+    console.log("recordTypeIds", recordTypeIds)
     const { token, sfid } = data;
 
     if (recordType === "0122w000000cwfSAAQ") {
       saveLoggedInUserData({ recordType });
       saveLoggedInUserToken({ data });
+      saveAllRecordTypeIds({ recordTypeIds });
       saveLoggedInUserDetails({ data, isDealer: true, isDist: false });
     }
     if (recordType === "0122w000000cwfNAAQ") {
       saveLoggedInUserData({ recordType });
       saveLoggedInUserToken({ data });
+      saveAllRecordTypeIds({ recordTypeIds });
       saveLoggedInUserDetails({ data, isDealer: false, isDist: true });
     }
   }

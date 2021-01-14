@@ -18,6 +18,7 @@ import { Control, Form } from "react-redux-form";
 import { Shimmer } from "react-shimmer";
 import { BaseModal } from "src/components/BaseModal";
 import { FormComponent } from "src/components/FormComponent";
+import { ChangePhoneFormat } from "src/components/Format";
 import { TableWithGrid } from "src/components/TableWithGrid";
 import AppBar from "src/navigation/App.Bar";
 import { Stepper } from "../BuyOrders/Stepper";
@@ -63,6 +64,8 @@ import {
   StyleSheet, 
   PDFViewer } from "@react-pdf/renderer";
 import BaseLogo from "src/pages/account/BaseLogo.png"
+import tickAsCurrect from "./tickAsCurrect.png";
+import NonChecked from "./NonChecked.png";
 
 var loggedInUserDetails;
 
@@ -72,31 +75,117 @@ export interface IAddNewLeadProps {
   leadTaskForm: any;
 }
 
-const closedColumns = [
-  {
-    name: "itemName",
-    label: "Item Name",
-  },
-  {
-    name: "unitCost",
-    label: "Unit Cost",
-  },
-  {
-    name: "qty",
-    label: "Quantity",
-  },
-  {
-    name: "amount",
-    label: "Amount",
-  },
-];
-
-const products = [
-  {
-    value: "open",
-    label: "Open",
-  },
-];
+const threeWheelerCheckList = {
+  "ANNUAL MAINTAINANACE CONTRACT": false,
+  "AIR FILTER R/R": false,
+  "BLOCK PISTON R/R": false,
+  "CNG TUNE UP": false,
+  "CYLINDER REMOVE": false,
+  "CYLINDER REFITTING": false,
+  "CARBURETTOR SERVICE": false,
+  "CNG LEAKAGE CHECK": false,
+  "CYLINDER BRACKET R/R": false,
+  "CYLINDER HYDROTESTING": false,
+  "CYLINDER VALVE R/R": false,
+  "ENGINE COMPRESSION CHECK": false,
+  "ENGINE TUNE UP": false,
+  "FILLER VALVE REPAIR": false,
+  "FILLER VALVE R/R": false,
+  "GRECO ACE KIT FITTING": false,
+  "GRECO PRO KIT FITTING": false,
+  "GAS FILLTER R/R": false,
+  "GENERAL LABOUR CHARGES": false,
+  "HIGH PRESSURE PIPE R/R": false,
+  "INGNITION COIL CODE R/R": false,
+  "KIT REMOVE": false,
+  "KIT SERVICE": false,
+  "KIT REFITTING": false,
+  "LOW PRESSURE HOSE R/R": false,
+  "MIXER R/R": false,
+  "OIL & OIL FILTER REPLACE": false,
+  "PICK UP COIL R/R": false,
+  "PRESSURE GAUGE R/R": false,
+  "REDUCER R/R": false,
+  "REDUCER SERVICE": false,
+  "REDUCER BRACKET R/R" : false,
+  "SPARK PLUG R/R": false,
+  "SWITCH R/R": false,
+  "TAPPET COVER PACKING REPLACE": false,
+  "TAPPET SETTING": false,
+  "WIRING REMOVE & REFITTING": false,
+  "WIRING REPAIR": false,
+  "1ST FREE SERVICE": false,
+  "1ST STAGE REGULATOR ORING R/R": false,
+  "1ST STAGE REGULATOR R/R": false,
+  "2ND FREE SERVICE": false,
+  "2ND STAGE REGUALTOR R/R": false,
+  "3RD FREE SERVICE": false,
+};
+const fourWheelerCheckList = {
+"ANNUAL MAINTAINANACE CONTRACT": false,
+"AIR FILTER R/R": false,
+"CNG TUNE UP": false,
+"CYLINDER REMOVE": false,
+"CYLINDER REFITTING": false,
+"CAR SCANNING": false,
+"CNG LEAKAGE CHECK": false,
+"CNG SEQ. KIT TUNE UP": false,
+"COOLANT REPLACE": false,
+"CYLINDER BRACKET R/R": false,
+"CYLINDER HYDROTESTING": false,
+"CYLINDER VALVE R/R": false,
+"DICKY FLOOR REPAIR": false,
+"ECM BRACKET R/R": false,
+"ECM R/R": false,
+"EMULATOR R/R": false,
+"ENGINE COMPRESSION CHECK": false,
+"ENGINE TUNE UP": false,
+"FILLER VALVE REPAIR": false,
+"FILLER VALVE R/R": false,
+"FUEL FILTER R/R": false,
+"FUEL GAUGE CORRECTOR FITMENT": false,
+"FUEL PUMP RELAY R/R": false,
+"FUEL PUMP R/R": false,
+"GRECO ACE KIT FITTING": false,
+"GRECO PRO KIT FITTING": false,
+"GAS FILLTER R/R": false,
+"GENERAL LABOUR CHARGES": false,
+"GRECO INJECTOR R/R": false,
+"HEIGHT PAD FITMENT": false,
+"HIGH PRESSURE PIPE R/R": false,
+"INGNITION COILS R/R": false,
+"INGNITION COIL CODE R/R": false,
+"INJECTOR NOZZLE R/R": false,
+"KIT REMOVE": false,
+"KIT SERVICE": false,
+"KIT REFITTING": false,
+"LOW PRESSURE HOSE R/R": false,
+"MAF/MAP SENSOR CLEAN": false,
+"MAP SENSOR R/R": false,
+"MIXER R/R": false,
+"O2 SENSOR CLEAN": false,
+"O2 SENSOR R/R": false,
+"OIL & OIL FILTER REPLACE": false,
+"PETROL INJECTOR R/R": false,
+"PRESSURE GAUGE R/R": false,
+"RAIL BRACKET R/R": false,
+"REDUCER BRACKET R/R": false,
+"REDUCER R/R": false,
+"REDUCER SERVICE": false,
+"SPARK PLUG R/R": false,
+"SWITCH R/R": false,
+"TAPPET COVER PACKING REPLACE": false,
+"TAPPET SETTING": false,
+"TEMPRESURE SENSOR R/R": false,
+"THROTTLE BODY CLEANING": false,
+"TIMING ADVANCE PROCESS R/R": false,
+"VACCUM HOSE PIPE R/R": false,
+"WIRING REMOVE & REFITTING": false,
+"WIRING REPAIR": false,
+"1ST FREE SERVICE": false,
+"2ND FREE SERVICE": false,
+"3RD FREE SERVICE": false,
+};
 
 const invoiceData = {
   orderID: "IN915426",
@@ -152,7 +241,9 @@ export class AddNewLeadImpl extends React.Component<
     currentNewSfid: string;
     productPriceList: any;
     statusLead: number;
+    selectedLead: any;
     openImg: string;
+    dealerData: any;
     workshopImages: any;
   }
 > {
@@ -170,7 +261,9 @@ export class AddNewLeadImpl extends React.Component<
       currentNewSfid: "",
       productPriceList: [],
       statusLead: 0,
+      selectedLead: [],
       openImg: "",
+      dealerData: [],
       workshopImages: 
         [
         //  {url:'https://bucketeer-c550d01e-0ac2-41dc-a762-e083c38260fa.s3.eu-west-1.amazonaws.com/images/w9ASz7.png'},
@@ -274,7 +367,7 @@ export class AddNewLeadImpl extends React.Component<
     // this.props.dispatch(actions.setInitial('rxFormReducer.userForm'));
     console.log("this.props: ", this.props);
     loggedInUserDetails = getToken().data;
-
+    this.getDealerData(loggedInUserDetails);
     await this.getProductUnitPrice(loggedInUserDetails);
 
     const {
@@ -289,6 +382,8 @@ export class AddNewLeadImpl extends React.Component<
         loggedInUserDetails.token,
         params.id
       );
+      changeValuesInStore(`leadForm.zip`, leadData[0].postalcode);
+      console.log(store.getState().rxFormReducer["leadForm"].zip);
       this.handelStateForEdit(leadData["0"], loggedInUserDetails.record_type);
     } else {
       let formType;
@@ -306,6 +401,23 @@ export class AddNewLeadImpl extends React.Component<
   componentWillUnmount() {
     changeValuesInStore("leadForm", leadFormInitObj);
     changeValuesInStore("userForm", userFormInitObj);
+  }
+
+  async getDealerData(data) {
+    try{
+      const getprofile = await getData({
+        query: `SELECT *
+        FROM Salesforce.account
+        WHERE sfid = '${data.sfid}' `,
+        token: data.token
+      })
+      console.log("getprofile => ", getprofile);
+      this.setState({ dealerData : getprofile.result[0] })
+      return getprofile.result[0];
+    }
+    catch(e){
+      console.log(e);
+    }
   }
 
   async getProductUnitPrice(data) {
@@ -349,8 +461,9 @@ export class AddNewLeadImpl extends React.Component<
       console.log(e);
     }
     console.log("leadsData =>", leadsData);
-    this.setStatusPersentage(leadsData.result[0].status)
+    this.setStatusPersentage(leadsData.result[0].status);
     this.getAllTasks(loggedInUserDetails, leadsData.result[0].sfid);
+    this.setState({selectedLead: leadsData.result[0]})
     return leadsData.result;
   }
 
@@ -361,6 +474,7 @@ export class AddNewLeadImpl extends React.Component<
     } else if (record_type == "0122w000000cwfNAAQ") {
       formType = "userForm";
     }
+    console.log("leadData =>", leadData)
     const rtoCodesArr = leadData.rto_code__c && leadData.rto_code__c.split(',') || [];
     const workshopImgArr = leadData.workshop_listt__c && leadData.workshop_listt__c.split(',') || [];
     console.log("workshopImgArr: ", workshopImgArr)
@@ -415,6 +529,7 @@ export class AddNewLeadImpl extends React.Component<
       PAN__c: leadData.pan__c,  
     };
     changeValuesInStore(formType, editData);
+    console.log(store.getState().rxFormReducer[formType])
   };
 
   insertInDistStep1 = async (userForm) => {
@@ -608,6 +723,7 @@ export class AddNewLeadImpl extends React.Component<
         throw result;
       }
       this.setState({ id: result.result[0].id});
+      this.setState({selectedLead: leadForm});
       return result;
     } catch (error) {
       throw error;
@@ -679,6 +795,7 @@ export class AddNewLeadImpl extends React.Component<
       ) {
         throw result;
       }
+      this.setState({selectedLead: leadForm});
       return result;
     } catch (error) {
       throw error;
@@ -1305,9 +1422,14 @@ export class AddNewLeadImpl extends React.Component<
   };
 
   renderJobCard = () => {
+    const jobcardCheckList = this.state.selectedLead && this.state.selectedLead.wheeles === "3 Wheeler" 
+                              ? threeWheelerCheckList 
+                              : this.state.selectedLead && this.state.selectedLead.wheeles === "4 Wheeler"
+                                ? fourWheelerCheckList 
+                                : {};
     return (
       <div className="card-container job-card-container">
-        <SubFormHeading>GST Details</SubFormHeading>
+        {/* <SubFormHeading>GST Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
@@ -1318,8 +1440,8 @@ export class AddNewLeadImpl extends React.Component<
           formModel="leadForm"
           hasSubmit={false}
           options={gstDetails}
-        />
-        {this.props.leadForm.subLeadType === "Servicing" &&
+        /> */}
+        {this.state.selectedLead && this.state.selectedLead.subLeadType === "Servicing" &&
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
@@ -1368,7 +1490,8 @@ export class AddNewLeadImpl extends React.Component<
         <div>
           <SubFormHeading>Job Card</SubFormHeading>
           <Grid container>
-            {Object.keys(this.state.dealerCheckboxes).map((key, value) => {
+            {/* {Object.keys(this.state.dealerCheckboxes).map((key, value) => { */}
+            {Object.keys(jobcardCheckList).map((key, value) => {
               const isChecked = this.state.dealerCheckboxes[key];
               return (
                 <React.Fragment>
@@ -1435,7 +1558,7 @@ export class AddNewLeadImpl extends React.Component<
           hasSubmit={true}
           submitTitle="Save"
           options={[]}
-          allFormOptions={gstDetails}
+          // allFormOptions={gstDetails}
         />
       </div>
     );
@@ -1448,7 +1571,7 @@ export class AddNewLeadImpl extends React.Component<
           Upcoming Tasks
           <div className="right-button">
             <Button
-              color="primary"
+              color="default"
               variant="contained"
               onClick={() => this.setState({ openEditModal: true })}
             >
@@ -1668,44 +1791,49 @@ export class AddNewLeadImpl extends React.Component<
         stepData={[
           {
             label: "Basic Details",
-            disable: this.state.statusLead < 40 ? false : true,
+            // disable: this.state.statusLead < 40 ? false : true,
+            disable: false,
             component: this.renderForm(),
           },
           {
             label: "Documents Collection",
-            disable: this.state.statusLead >= 10 && this.state.statusLead < 40 ? false : true,
+            // disable: this.state.statusLead >= 10 && this.state.statusLead < 40 ? false : true,
+            disable: false,
             component: this.renderDocsForRTO(),
           },
           {
             label: "Negotiation",
-            disable: this.state.statusLead >= 20 && this.state.statusLead < 40 ? false : true,
+            disable: false,
+            // disable: this.state.statusLead >= 20 && this.state.statusLead < 40 ? false : true,
             // component: <Proposal/>
             // component: this.renderNegotitation(),
-            component: <RenderNegotitationComp currentID={this.state.id}
-              onCancel={() => 
-                this.setState({ activeStep: this.state.activeStep - 1 })
-              }
-              onSubmit={async (v: any) => {
-                if (this.state.currentNewSfid) {
-                  await this.updateDealerSteps("Negotiation", v );
-                  this.setStatusPersentage("Negotiation");
-                  this.setState({
-                    // statusLead: "Negotiation",
-                    activeStep: this.state.activeStep + 1,
-                  });
-                  console.log(">> v", v);
-                }
-              }}
-              />
+            component: <RenderNegotitationComp currentID={this.state.id} 
+                          selectedLead={this.state.selectedLead}
+                          dealerData={this.state.dealerData}
+                          onCancel={() => 
+                            this.setState({ activeStep: this.state.activeStep - 1 })
+                          }
+                          onSubmit={async (v: any) => {
+                            if (this.state.currentNewSfid) {
+                              await this.updateDealerSteps("Negotiation", v );
+                              this.setStatusPersentage("Negotiation");
+                              this.setState({
+                                // statusLead: "Negotiation",
+                                activeStep: this.state.activeStep + 1,
+                              });
+                              console.log(">> v", v);
+                            }
+                          }}
+                        />
           },
           {
             label: "Closed",
-            disable: this.state.statusLead >= 30 && this.state.statusLead <= 40 ? false : true,
+            // disable: this.state.statusLead >= 30 && this.state.statusLead <= 40 ? false : true,
             component: this.renderClosedTab(),
           },
           {
             label: "Job Card",
-            disable: this.state.statusLead >= 40 && this.state.statusLead <= 50 ? false : true,
+            // disable: this.state.statusLead >= 40 && this.state.statusLead <= 50 ? false : true,
             component: this.renderJobCard(),
           },
         ]}
@@ -2024,19 +2152,30 @@ const styles = StyleSheet.create({
   subRow: {width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0},
 });
 
-const FitmentProposal = () => {
+const FitmentProposal = (props: any) => {
+  console.log("Fitment Props: ", props);
+  const details = props.selectedLead;
+  const {dealerData} = props;
   return (
     // <PDFViewer>
       <Document >
         <Page size="A4">
-          <View style={{ margin: "10px", marginTop: "20px", textAlign: 'center'}}>
-            <Text style={{fontSize: 28, fontWeight: 'bold' }}>GRECOKITS FUEL SOLUTIONS</Text>
+          <View style={{ margin: "10px", textAlign: 'center'}}>
+            <Text style={{fontSize: 28, fontWeight: 'bold' }}>{dealerData.name}</Text>
           </View>
-          <View style={{ textAlign: 'center' }}>
-            <Text style={{fontSize: 12 }} >Plot No. 151, Brick Factory Compound, Shastri Nagar, Mulund colony, </Text>
-            <Text style={{fontSize: 12 }}>Mumbai - 400802 India Tel: 022-25677775 Fax : 022-25900903</Text>
-            <Text style={{fontSize: 12 }}>Mobile : 9519749360 / 70 / 90</Text>
-            <Text style={{fontSize: 12 }}>E-mail : sales@greco.co.in  Website : www.greco.co.in</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ width: "20%", margin: "2px"}}>
+              <Image src={BaseLogo} />
+            </View>
+            <View style={{ width: "60%", margin: "2px", textAlign: 'center' }}>
+              <Text style={{fontSize: 12 }} >{dealerData.shippingstreet}, </Text>
+              <Text style={{fontSize: 12 }}>{dealerData.shippingcity}, {dealerData.shippingstate} - {dealerData.shippingpostalcode}</Text>
+              <Text style={{ fontSize: 10 }}>Tel: {ChangePhoneFormat(dealerData.phone)}, Mobile: {ChangePhoneFormat(dealerData.whatsapp_no__c)}, FAX: {ChangePhoneFormat(dealerData.phone)}</Text>
+              <Text style={{ fontSize: 10 }}>E-mail : {dealerData.email__c}  Website : {dealerData.website}</Text>
+            </View>
+            <View style={{ width: "15%", margin: "2px"}}>
+              <Image src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1Kf6KHAapxnOlH3Y90sgX66JtDunmlPFnGA&usqp=CAU" width="100px" height="100px" />
+            </View>
           </View>
           <View style={{ margin: "10px", textAlign: 'center' }}>
             <Text style={{fontSize: 16}}>QUOTATION / PROFORMA INVOICE</Text>
@@ -2044,30 +2183,57 @@ const FitmentProposal = () => {
           
           <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row'}}>
             <Text style={{fontSize: 10, width: '10%' }}> Sr. No. :</Text>
-            <Text style={{fontSize: 10, width: '40%' }}> 951974 </Text>
+            <View style={{width: "25%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+              <Text style={{fontSize: 10 }}>  </Text>
+            </View>
+            <Text style={{width: '15%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Date : </Text>
-            <Text style={{fontSize: 10, width: '33%' }}> 25/10/20 </Text>
+            <View style={{width: "25%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+              <Text style={{fontSize: 10 }}> {moment(new Date()).format("DD/MM/YYYY")} </Text>
+            </View>
+            <Text style={{fontSize: 10, width: '8%' }}>  </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 12, width: '50%'}}> To,</Text>
             <Text style={{fontSize: 12, width: '17%'}}> Vehicle Make: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> Bajaj Auto Limited </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> {details.vehicle_make__c} </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
-            <Text style={{fontSize: 10, width: '50%'}}></Text>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            { details && (details.street || details.city )?
+              (<Text style={{fontSize: 10, width: "45%" }}> {details.street}, {details.city}, </Text>)
+              :
+              (<View style={{width: "45%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 10 }}> </Text>
+              </View>)
+            }
+            <Text style={{fontSize: 10, width: '5%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Vehicle Model: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> Bajaj RE Auto Rickshau Compact 4S </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> {details.vehicle_model__c} </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
-            <Text style={{fontSize: 10, width: '50%'}}></Text>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            { details && (details.postalcode || details.state) ?
+              (<Text style={{fontSize: 10, width: "45%" }}> {details.postalcode}, {details.state}, </Text>)
+              :
+              (<View style={{width: "45%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 10 }}> </Text>
+              </View>)
+            }
+            <Text style={{fontSize: 10, width: '5%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Running KMs: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> 45 </Text>
+            <Text style={{fontSize: 10, width: '33%'}}> {details.daily_running_kms__c} </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 12, width: '10%'}}> E-mail : </Text>
-            <Text style={{fontSize: 10, width: '40%'}}> anurag@gmail.com </Text>
+            { details && details.email ?
+              (<Text style={{fontSize: 10, width: "45%" }}> {details.email} </Text>)
+              :
+              (<View style={{width: "45%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 10 }}> </Text>
+              </View>)
+            }
+            <Text style={{fontSize: 10, width: '5%'}}>  </Text>
             <Text style={{fontSize: 12, width: '17%'}}> Mobile No.: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> 9999999999</Text>
+            <Text style={{fontSize: 10, width: "33%" }}> {details.whatsapp_number__c} </Text>
           </View>
           
           <View style={styles.table}>
@@ -2113,11 +2279,13 @@ const FitmentProposal = () => {
           <View style={{ marginLeft: "30px", marginRight: "30px", flexDirection: 'column' }}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ margin: "2px", fontSize: 11, width: '3%'}}> (1) </Text>
-              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The above mantioned rates are inclusive of KIT installation charges, all applicaiton taxes and RTO enrollment charges, RTO charges to be paid in cash.</Text>
+              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The above mantioned rates are inclusive of KIT installation charges, all applicaiton taxes and RTO enrollment service charges extra.
+              {/* , RTO charges to be paid in cash. */}
+              </Text>
             </View>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ margin: "2px", fontSize: 11, width: '3%'}}> (2) </Text>
-              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The warranty of the KIT would be 12 months from date of installation.</Text>
+              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The warranty of the CNG KIT would be 12 months from date of installation.</Text>
             </View>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ margin: "2px", fontSize: 11, width: '3%'}}> (3) </Text>
@@ -2162,7 +2330,7 @@ const FitmentProposal = () => {
           </View>
 
           <View style={{ margin: "10px", marginLeft: "30px", marginRight: "30px" }}>
-            <Text style={{fontSize: 16}}>GRECOKITS FUEL SOLUTIONS</Text>
+            <Text style={{fontSize: 16}}>{dealerData.name}</Text>
           </View>
 
           <View style={{ margin: "10px", marginLeft: "30px", marginRight: "30px", flexDirection: 'column'}}>
@@ -2176,10 +2344,16 @@ const FitmentProposal = () => {
   );
 }
 
-const ServicingProposal = () => {
+const ServicingProposal = (props: any) => {
+  console.log("servicing Props: ", props);
+  const details = props.selectedLead;
+  const {dealerData} = props;
+  const dealerGST = dealerData.gst_number__c.split("gst");
+  // const dealerGST = dealerData.gst_number__c.substr(dealerData.gst_number__c.length - 8);
+  console.log("gst_number__c : ", dealerGST[1]);
   return(
-    <Document>
-      <Page size = "A4" >
+    <Document>      
+      <Page size = "A4">
         <View style={{ marginTop: "10px", textAlign: 'center'}}>
           <Text style={{fontSize: 15, fontWeight: 'bold' }}>REPAIRE ORDER</Text>
         </View>
@@ -2191,55 +2365,71 @@ const ServicingProposal = () => {
                   <Image src={BaseLogo} />
                 </View>
                 <View style={{ width: "80%", margin: "2px" }}>
-                  <Text style={{ fontSize: 17, fontWeight: 'bold' }}>GRECOKITS FUEL SOLUTIONS</Text>
-                  <Text style={{ fontSize: 10 }} >Plot No. 151, Brick Factory Compound, Shastri Nagar,  </Text>
-                  <Text style={{ fontSize: 10 }}>Mulund colony, Mumbai - 400802 India </Text>
-                  <Text style={{ fontSize: 10 }}>Tel: 022-25677775 Fax : 022-25900903</Text>
-                  <Text style={{ fontSize: 10 }}>Mobile : 9519749360 / 70 / 90</Text>
-                  <Text style={{ fontSize: 10 }}>E-mail : sales@greco.co.in  Website : www.greco.co.in</Text>
+                  <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{dealerData.name}</Text>
+                  <Text style={{ fontSize: 10 }} >{dealerData.shippingstreet}, </Text>
+                  <Text style={{ fontSize: 10 }}>{dealerData.shippingcity}, {dealerData.shippingstate} - {dealerData.shippingpostalcode} </Text>
+                  <Text style={{ fontSize: 10 }}>Tel: {ChangePhoneFormat(dealerData.phone)}, FAX: {ChangePhoneFormat(dealerData.phone)}</Text>
+                  <Text style={{ fontSize: 10 }}>Mobile: {ChangePhoneFormat(dealerData.whatsapp_no__c)}, </Text>
+                  <Text style={{ fontSize: 10 }}>E-mail : {dealerData.email__c}  Website : {dealerData.website}</Text>
                 </View> 
               </View>
             </View>
             <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
-              <Text style={{ fontSize: 10, margin: "2px" }}>GST NO. : 2TAJJ4587GF5458</Text> 
+              <Text style={{ fontSize: 10, margin: "2px" }}>GST NO. : {dealerGST[1]}</Text> 
             </View> 
           </View> 
           <View style={styles.tableRow}> 
             <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Customer Name:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Reg. No.: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Job No.:</Text>
+                <Text style={{fontSize: 11, width: '20%'}}> Customer Name : </Text>
+                <Text style={{fontSize: 11, width: '20%'}}> {details.firstName ?? details.firstname} {details.middleName ?? details.middlename} {details.lastName ?? details.lastname}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Reg. No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.vehicleNumber ?? details.vehicle_no__c}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Job No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Address:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> VIN No.: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Job Date: </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Address : </Text>
+                <Text style={{fontSize: 11, width: '25%'}}> {details.street+", "+details.city+", "}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> VIN No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Job Date : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Engine No.: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Job Time </Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
+                <Text style={{fontSize: 11, width: '25%'}}> {details.district ?? details.district__c+", "+details.state} </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Engine No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> </Text>
+                <Text style={{fontSize: 11, width: '30%'}}> Job Time :</Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Model: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '40%'}}> </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Model : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.vehicleModel ?? details.vehicle_model__c} </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Strok : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Mobile</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Make: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '18%'}}> Mobile : </Text>
+                <Text style={{fontSize: 11, width: '22%'}}> {details.whatsAppNumber ?? details.whatsapp_number__c} </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Make : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.vehicleMek ?? details.vehicle_make__c}</Text>
+                <Text style={{fontSize: 11, width: '30%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> 3/4 Wheeler:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Present KMs: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '18%'}}> 3/4 Wheeler : </Text>
+                <Text style={{fontSize: 11, width: '22%'}}> {details.wheeles ?? details.x3_or_4_wheeler__c}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Present KMs : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.dailyRunning ?? details.daily_running_kms__c}</Text>
+                <Text style={{fontSize: 11, width: '30%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> Contact Person:</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> SR Advisor: </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '18%'}}> Contact Person : </Text>
+                <Text style={{fontSize: 11, width: '22%'}}> {details.contactPerson ?? details.contact_person__c}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> SR Advisor : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> </Text>
+                <Text style={{fontSize: 11, width: '30%'}}> </Text>
               </View>
             </View>  
           </View> 
@@ -2331,13 +2521,16 @@ const ServicingProposal = () => {
 const RenderNegotitationComp = (props: any) => {
   const [blobURL, setblobURL] = React.useState(null);
   const [pdfLinkURL, setpdfLinkURL] = React.useState(null);
-  const subLeadType = store.getState().rxFormReducer["leadForm"].subLeadType ;
-  console.log("props => ", props)
+  // const subLeadType = store.getState().rxFormReducer["leadForm"].subLeadType ;
+  const subLeadType = props.selectedLead.sub_lead_type__c || props.selectedLead.subLeadType;
+  console.log("props => ", props);
+  console.log("pdflinkURL : ", pdfLinkURL)
   return (
     <div className="negotitation-container">
+      {console.log("subLeadType => ", subLeadType)}
       {(subLeadType === "Fitment" || subLeadType === "Servicing" ) &&
         <div style={{ textAlign: "right" }}>
-          <BlobProvider document={subLeadType === "Fitment" ? <FitmentProposal /> : <ServicingProposal /> }> 
+          <BlobProvider document={subLeadType === "Fitment" ? <FitmentProposal dealerData={props.dealerData} selectedLead={props.selectedLead}/> : <ServicingProposal dealerData={props.dealerData} selectedLead={props.selectedLead}/> }> 
             { ({ blob, url, loading, error }) => {
               console.log("blob : ", blob);
               console.log("url : ", url);
@@ -2361,7 +2554,7 @@ const RenderNegotitationComp = (props: any) => {
                         console.log("pdfLinkURL => ", url)
                       }}
                     >
-                      Generate Proposal
+                      <a href={url} target="_blank"> Generate Proposal </a>
                     </Button>
                   }
                   { pdfLinkURL &&

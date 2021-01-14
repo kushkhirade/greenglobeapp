@@ -84,7 +84,7 @@ class FormComponentImpl extends React.Component <IFormComponentProps, any> {
   };
 
   componentDidMount(){
-    // this.getZipCodeResult();
+    this.getZipCodeResult();
   }
 
   componentWillUnmount() {
@@ -133,6 +133,7 @@ class FormComponentImpl extends React.Component <IFormComponentProps, any> {
                           e.target.value
                         );
                         if(opt.model === ".zip")
+                        console.log("Model is Zip Code :", opt.model)
                           this.getZipCodeResult()
                       }}
                       className={
@@ -159,6 +160,12 @@ class FormComponentImpl extends React.Component <IFormComponentProps, any> {
                         : "form-input"
                     }
                     onFocus={() => this.handleInputFocus(opt.model)}
+                    onChange={(e) =>{
+                      changeValuesInStore(
+                        `${props.formModel}${opt.model}`,
+                        e.target.value
+                      );
+                    }}
                     required={opt.required}
                     type="text"
                     name={opt.name}
@@ -229,6 +236,8 @@ class FormComponentImpl extends React.Component <IFormComponentProps, any> {
                         : "form-input"
                     }
                     required={opt.required}
+                    default={opt.defaultValue}
+                    disabled={opt.isDisable ?? false}
                     component={MUITextField}
                     type="number"
                     name={opt.name}

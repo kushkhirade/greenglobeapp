@@ -7,10 +7,12 @@ import "./asssignedDealers.scss";
 import { saveDealerData } from "src/actions/App.Actions";
 import { withRouter } from "react-router-dom";
 import { IHistory } from "src/state/Utility";
-import { getToken } from "src/state/Utility";
+import { getToken, getAllRecordTypeIds } from "src/state/Utility";
 import getData from "src/utils/getData";
 import moment from 'moment';
 import { ChangePhoneFormat } from "src/components/Format";
+
+var recordTypes;
 
 export interface IAssignedDealersProps {
   history: IHistory;
@@ -28,6 +30,8 @@ export class AssignedDealersImpl extends React.Component<
   
   async componentDidMount(){
     const {data} = getToken();
+    recordTypes = getAllRecordTypeIds().recordTypeIds;
+    console.log("recordTypes: ", recordTypes);
     const res = await this.getAllAssignedDealers(data);
     console.log("result ", res)
     this.setState({users : res});
@@ -38,7 +42,7 @@ export class AssignedDealersImpl extends React.Component<
     try {
         const assignedDealerData = await getData({
           query: `SELECT * FROM salesforce.Account 
-          WHERE Assigned_Distributor__c = '${data.sfid}' AND RecordTypeId = '0122w000000cwfSAAQ'`,
+          WHERE Assigned_Distributor__c = '${data.sfid}' AND RecordTypeId = '${recordTypes.dealerAccount}'`,
           token: data.token
         })
 

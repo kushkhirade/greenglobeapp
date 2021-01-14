@@ -53,6 +53,25 @@ export function saveLoggedInUserToken(data) {
   return localStorage.setItem("userToken", JSON.stringify(data));
 }
 
+export function getAllRecordTypeIds() {
+  return JSON.parse(localStorage.getItem("recordTypeIdList"));
+}
+
+export function getRecordTypeOF(type) {
+  console.log(JSON.parse(localStorage.getItem("recordTypeIdList")))
+  const arr = JSON.parse(localStorage.getItem("recordTypeIdList"));
+  console.log("arr => ", arr.recordTypeIds)
+  const sfid = Object.entries(arr.recordTypeIds).find(([key,value]) => 
+    key.toString() === type
+  )
+  console.log("KEY SET => ", sfid && sfid[1]);
+  return sfid[1];
+}
+
+export function saveAllRecordTypeIds(recordtypeIds) {
+  return localStorage.setItem("recordTypeIdList", JSON.stringify(recordtypeIds));
+}
+
 export function saveLoggedInUserData(recordType) {
   return localStorage.setItem("userData", JSON.stringify(recordType));
 }

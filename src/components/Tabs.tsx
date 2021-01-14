@@ -148,9 +148,10 @@ export class Tabs extends React.Component<
             )})
           }
         </div>
-        <div style={{padding: this.props.hasSort ? 25 : this.props.sortingData ? 40 : 10}}> </div>
-        
-        <div style={{paddingTop: 27}}>
+        <div style={{padding: this.props.hasSort ? 45 : this.props.sortingData ? 65 : 25}}> </div>
+
+        {/* style={{ height: '1500px', overflowY: 'scroll'}} */}
+        <div style={{ height: '680px', overflowY: 'auto'}}> 
           {this.props.tabsData ?
             this.props.tabsData.find(
               (tab: any, index: any) => index === this.state.activeTabIndex
@@ -158,7 +159,6 @@ export class Tabs extends React.Component<
             : this.props.SortingDatacomponent
           }
         </div>
-        
       </React.Fragment>
     );
   }

@@ -96,6 +96,7 @@ const rxFormReducer = combineForms({
   },
   customerForm: {},
   editUserForm: {},
+  caseForm: {},
   openSMSForm: {},
 });
 
