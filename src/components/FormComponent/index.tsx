@@ -236,6 +236,8 @@ class FormComponentImpl extends React.Component <IFormComponentProps, any> {
                         : "form-input"
                     }
                     required={opt.required}
+                    default={opt.defaultValue}
+                    disabled={opt.isDisable ?? false}
                     component={MUITextField}
                     type="number"
                     name={opt.name}

@@ -18,6 +18,7 @@ import { Control, Form } from "react-redux-form";
 import { Shimmer } from "react-shimmer";
 import { BaseModal } from "src/components/BaseModal";
 import { FormComponent } from "src/components/FormComponent";
+import { ChangePhoneFormat } from "src/components/Format";
 import { TableWithGrid } from "src/components/TableWithGrid";
 import AppBar from "src/navigation/App.Bar";
 import { Stepper } from "../BuyOrders/Stepper";
@@ -63,6 +64,8 @@ import {
   StyleSheet, 
   PDFViewer } from "@react-pdf/renderer";
 import BaseLogo from "src/pages/account/BaseLogo.png"
+import tickAsCurrect from "./tickAsCurrect.png";
+import NonChecked from "./NonChecked.png";
 
 var loggedInUserDetails;
 
@@ -240,6 +243,7 @@ export class AddNewLeadImpl extends React.Component<
     statusLead: number;
     selectedLead: any;
     openImg: string;
+    dealerData: any;
     workshopImages: any;
   }
 > {
@@ -259,6 +263,7 @@ export class AddNewLeadImpl extends React.Component<
       statusLead: 0,
       selectedLead: [],
       openImg: "",
+      dealerData: [],
       workshopImages: 
         [
         //  {url:'https://bucketeer-c550d01e-0ac2-41dc-a762-e083c38260fa.s3.eu-west-1.amazonaws.com/images/w9ASz7.png'},
@@ -362,7 +367,7 @@ export class AddNewLeadImpl extends React.Component<
     // this.props.dispatch(actions.setInitial('rxFormReducer.userForm'));
     console.log("this.props: ", this.props);
     loggedInUserDetails = getToken().data;
-
+    this.getDealerData(loggedInUserDetails);
     await this.getProductUnitPrice(loggedInUserDetails);
 
     const {
@@ -396,6 +401,23 @@ export class AddNewLeadImpl extends React.Component<
   componentWillUnmount() {
     changeValuesInStore("leadForm", leadFormInitObj);
     changeValuesInStore("userForm", userFormInitObj);
+  }
+
+  async getDealerData(data) {
+    try{
+      const getprofile = await getData({
+        query: `SELECT *
+        FROM Salesforce.account
+        WHERE sfid = '${data.sfid}' `,
+        token: data.token
+      })
+      console.log("getprofile => ", getprofile);
+      this.setState({ dealerData : getprofile.result[0] })
+      return getprofile.result[0];
+    }
+    catch(e){
+      console.log(e);
+    }
   }
 
   async getProductUnitPrice(data) {
@@ -1400,14 +1422,14 @@ export class AddNewLeadImpl extends React.Component<
   };
 
   renderJobCard = () => {
-    const jobcardCheckList = this.state.selectedLead.wheeles === "3 Wheeler" 
+    const jobcardCheckList = this.state.selectedLead && this.state.selectedLead.wheeles === "3 Wheeler" 
                               ? threeWheelerCheckList 
-                              : this.state.selectedLead.wheeles === "4 Wheeler"
+                              : this.state.selectedLead && this.state.selectedLead.wheeles === "4 Wheeler"
                                 ? fourWheelerCheckList 
                                 : {};
     return (
       <div className="card-container job-card-container">
-        <SubFormHeading>GST Details</SubFormHeading>
+        {/* <SubFormHeading>GST Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
@@ -1418,8 +1440,8 @@ export class AddNewLeadImpl extends React.Component<
           formModel="leadForm"
           hasSubmit={false}
           options={gstDetails}
-        />
-        {this.state.selectedLead.subLeadType === "Servicing" &&
+        /> */}
+        {this.state.selectedLead && this.state.selectedLead.subLeadType === "Servicing" &&
         <div>
           <SubFormHeading>Complaint Checklist</SubFormHeading>
           <Grid container>
@@ -1536,7 +1558,7 @@ export class AddNewLeadImpl extends React.Component<
           hasSubmit={true}
           submitTitle="Save"
           options={[]}
-          allFormOptions={gstDetails}
+          // allFormOptions={gstDetails}
         />
       </div>
     );
@@ -1787,6 +1809,7 @@ export class AddNewLeadImpl extends React.Component<
             // component: this.renderNegotitation(),
             component: <RenderNegotitationComp currentID={this.state.id} 
                           selectedLead={this.state.selectedLead}
+                          dealerData={this.state.dealerData}
                           onCancel={() => 
                             this.setState({ activeStep: this.state.activeStep - 1 })
                           }
@@ -2132,18 +2155,27 @@ const styles = StyleSheet.create({
 const FitmentProposal = (props: any) => {
   console.log("Fitment Props: ", props);
   const details = props.selectedLead;
+  const {dealerData} = props;
   return (
     // <PDFViewer>
       <Document >
         <Page size="A4">
-          <View style={{ margin: "10px", marginTop: "20px", textAlign: 'center'}}>
-            <Text style={{fontSize: 28, fontWeight: 'bold' }}>GRECOKITS FUEL SOLUTIONS</Text>
+          <View style={{ margin: "10px", textAlign: 'center'}}>
+            <Text style={{fontSize: 28, fontWeight: 'bold' }}>{dealerData.name}</Text>
           </View>
-          <View style={{ textAlign: 'center' }}>
-            <Text style={{fontSize: 12 }} >Plot No. 151, Brick Factory Compound, Shastri Nagar, Mulund colony, </Text>
-            <Text style={{fontSize: 12 }}>Mumbai - 400802 India Tel: 022-25677775 Fax : 022-25900903</Text>
-            <Text style={{fontSize: 12 }}>Mobile : 9519749360 / 70 / 90</Text>
-            <Text style={{fontSize: 12 }}>E-mail : sales@greco.co.in  Website : www.greco.co.in</Text>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ width: "20%", margin: "2px"}}>
+              <Image src={BaseLogo} />
+            </View>
+            <View style={{ width: "60%", margin: "2px", textAlign: 'center' }}>
+              <Text style={{fontSize: 12 }} >{dealerData.shippingstreet}, </Text>
+              <Text style={{fontSize: 12 }}>{dealerData.shippingcity}, {dealerData.shippingstate} - {dealerData.shippingpostalcode}</Text>
+              <Text style={{ fontSize: 10 }}>Tel: {ChangePhoneFormat(dealerData.phone)}, Mobile: {ChangePhoneFormat(dealerData.whatsapp_no__c)}, FAX: {ChangePhoneFormat(dealerData.phone)}</Text>
+              <Text style={{ fontSize: 10 }}>E-mail : {dealerData.email__c}  Website : {dealerData.website}</Text>
+            </View>
+            <View style={{ width: "15%", margin: "2px"}}>
+              <Image src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1Kf6KHAapxnOlH3Y90sgX66JtDunmlPFnGA&usqp=CAU" width="100px" height="100px" />
+            </View>
           </View>
           <View style={{ margin: "10px", textAlign: 'center' }}>
             <Text style={{fontSize: 16}}>QUOTATION / PROFORMA INVOICE</Text>
@@ -2151,30 +2183,57 @@ const FitmentProposal = (props: any) => {
           
           <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row'}}>
             <Text style={{fontSize: 10, width: '10%' }}> Sr. No. :</Text>
-            <Text style={{fontSize: 10, width: '40%' }}>  </Text>
+            <View style={{width: "25%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+              <Text style={{fontSize: 10 }}>  </Text>
+            </View>
+            <Text style={{width: '15%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Date : </Text>
-            <Text style={{fontSize: 10, width: '33%' }}>  </Text>
+            <View style={{width: "25%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+              <Text style={{fontSize: 10 }}> {moment(new Date()).format("DD/MM/YYYY")} </Text>
+            </View>
+            <Text style={{fontSize: 10, width: '8%' }}>  </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 12, width: '50%'}}> To,</Text>
             <Text style={{fontSize: 12, width: '17%'}}> Vehicle Make: </Text>
             <Text style={{fontSize: 10, width: '33%'}}> {details.vehicle_make__c} </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
-            <Text style={{fontSize: 10, width: '50%'}}></Text>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            { details && (details.street || details.city )?
+              (<Text style={{fontSize: 10, width: "45%" }}> {details.street}, {details.city}, </Text>)
+              :
+              (<View style={{width: "45%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 10 }}> </Text>
+              </View>)
+            }
+            <Text style={{fontSize: 10, width: '5%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Vehicle Model: </Text>
             <Text style={{fontSize: 10, width: '33%'}}> {details.vehicle_model__c} </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
-            <Text style={{fontSize: 10, width: '50%'}}></Text>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+            { details && (details.postalcode || details.state) ?
+              (<Text style={{fontSize: 10, width: "45%" }}> {details.postalcode}, {details.state}, </Text>)
+              :
+              (<View style={{width: "45%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 10 }}> </Text>
+              </View>)
+            }
+            <Text style={{fontSize: 10, width: '5%'}}></Text>
             <Text style={{fontSize: 12, width: '17%'}}> Running KMs: </Text>
             <Text style={{fontSize: 10, width: '33%'}}> {details.daily_running_kms__c} </Text>
           </View>
-          <View style={{ margin: "1px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
+          <View style={{ margin: "1px", marginTop: "5px", marginLeft: "30px", marginRight: "30px", flexDirection: 'row' }}>
             <Text style={{fontSize: 12, width: '10%'}}> E-mail : </Text>
-            <Text style={{fontSize: 10, width: '40%'}}> {details.email} </Text>
+            { details && details.email ?
+              (<Text style={{fontSize: 10, width: "45%" }}> {details.email} </Text>)
+              :
+              (<View style={{width: "45%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 10 }}> </Text>
+              </View>)
+            }
+            <Text style={{fontSize: 10, width: '5%'}}>  </Text>
             <Text style={{fontSize: 12, width: '17%'}}> Mobile No.: </Text>
-            <Text style={{fontSize: 10, width: '33%'}}> {details.whatsapp_number__c} </Text>
+            <Text style={{fontSize: 10, width: "33%" }}> {details.whatsapp_number__c} </Text>
           </View>
           
           <View style={styles.table}>
@@ -2220,11 +2279,13 @@ const FitmentProposal = (props: any) => {
           <View style={{ marginLeft: "30px", marginRight: "30px", flexDirection: 'column' }}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ margin: "2px", fontSize: 11, width: '3%'}}> (1) </Text>
-              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The above mantioned rates are inclusive of KIT installation charges, all applicaiton taxes and RTO enrollment charges, RTO charges to be paid in cash.</Text>
+              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The above mantioned rates are inclusive of KIT installation charges, all applicaiton taxes and RTO enrollment service charges extra.
+              {/* , RTO charges to be paid in cash. */}
+              </Text>
             </View>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ margin: "2px", fontSize: 11, width: '3%'}}> (2) </Text>
-              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The warranty of the KIT would be 12 months from date of installation.</Text>
+              <Text style={{ margin: "2px", fontSize: 11, width: '97%'}}> The warranty of the CNG KIT would be 12 months from date of installation.</Text>
             </View>
             <View style={{ flexDirection: 'row' }}>
               <Text style={{ margin: "2px", fontSize: 11, width: '3%'}}> (3) </Text>
@@ -2269,7 +2330,7 @@ const FitmentProposal = (props: any) => {
           </View>
 
           <View style={{ margin: "10px", marginLeft: "30px", marginRight: "30px" }}>
-            <Text style={{fontSize: 16}}>GRECOKITS FUEL SOLUTIONS</Text>
+            <Text style={{fontSize: 16}}>{dealerData.name}</Text>
           </View>
 
           <View style={{ margin: "10px", marginLeft: "30px", marginRight: "30px", flexDirection: 'column'}}>
@@ -2286,9 +2347,13 @@ const FitmentProposal = (props: any) => {
 const ServicingProposal = (props: any) => {
   console.log("servicing Props: ", props);
   const details = props.selectedLead;
+  const {dealerData} = props;
+  const dealerGST = dealerData.gst_number__c.split("gst");
+  // const dealerGST = dealerData.gst_number__c.substr(dealerData.gst_number__c.length - 8);
+  console.log("gst_number__c : ", dealerGST[1]);
   return(
-    <Document>
-      <Page size = "A4" >
+    <Document>      
+      <Page size = "A4">
         <View style={{ marginTop: "10px", textAlign: 'center'}}>
           <Text style={{fontSize: 15, fontWeight: 'bold' }}>REPAIRE ORDER</Text>
         </View>
@@ -2300,69 +2365,71 @@ const ServicingProposal = (props: any) => {
                   <Image src={BaseLogo} />
                 </View>
                 <View style={{ width: "80%", margin: "2px" }}>
-                  <Text style={{ fontSize: 17, fontWeight: 'bold' }}>GRECOKITS FUEL SOLUTIONS</Text>
-                  <Text style={{ fontSize: 10 }} >Plot No. 151, Brick Factory Compound, Shastri Nagar,  </Text>
-                  <Text style={{ fontSize: 10 }}>Mulund colony, Mumbai - 400802 India </Text>
-                  <Text style={{ fontSize: 10 }}>Tel: 022-25677775 Fax : 022-25900903</Text>
-                  <Text style={{ fontSize: 10 }}>Mobile : 9519749360 / 70 / 90</Text>
-                  <Text style={{ fontSize: 10 }}>E-mail : sales@greco.co.in  Website : www.greco.co.in</Text>
+                  <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{dealerData.name}</Text>
+                  <Text style={{ fontSize: 10 }} >{dealerData.shippingstreet}, </Text>
+                  <Text style={{ fontSize: 10 }}>{dealerData.shippingcity}, {dealerData.shippingstate} - {dealerData.shippingpostalcode} </Text>
+                  <Text style={{ fontSize: 10 }}>Tel: {ChangePhoneFormat(dealerData.phone)}, FAX: {ChangePhoneFormat(dealerData.phone)}</Text>
+                  <Text style={{ fontSize: 10 }}>Mobile: {ChangePhoneFormat(dealerData.whatsapp_no__c)}, </Text>
+                  <Text style={{ fontSize: 10 }}>E-mail : {dealerData.email__c}  Website : {dealerData.website}</Text>
                 </View> 
               </View>
             </View>
             <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
-              <Text style={{ fontSize: 10, margin: "2px" }}>GST NO. : </Text> 
+              <Text style={{ fontSize: 10, margin: "2px" }}>GST NO. : {dealerGST[1]}</Text> 
             </View> 
           </View> 
           <View style={styles.tableRow}> 
             <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '20%'}}> Customer Name : </Text>
-                <Text style={{fontSize: 12, width: '20%'}}> {details.name}</Text>
-                <Text style={{fontSize: 12, width: '15%'}}> Reg. No. : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> {details.vehicle_no__c}</Text>
-                <Text style={{fontSize: 12, width: '15%'}}> Job No. : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> </Text>
+                <Text style={{fontSize: 11, width: '20%'}}> Customer Name : </Text>
+                <Text style={{fontSize: 11, width: '20%'}}> {details.firstName ?? details.firstname} {details.middleName ?? details.middlename} {details.lastName ?? details.lastname}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Reg. No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.vehicleNumber ?? details.vehicle_no__c}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Job No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '20%'}}> Address : </Text>
-                <Text style={{fontSize: 12, width: '20%'}}> {details.city+", "+details.district__c+", "}</Text>
-                <Text style={{fontSize: 12, width: '15%'}}> VIN No. : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}>  </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> Job Date : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}>  </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Address : </Text>
+                <Text style={{fontSize: 11, width: '25%'}}> {details.street+", "+details.city+", "}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> VIN No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Job Date : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> {details.state} </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> Engine No. : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> Job Time :</Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
+                <Text style={{fontSize: 11, width: '25%'}}> {details.district ?? details.district__c+", "+details.state} </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Engine No. : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> </Text>
+                <Text style={{fontSize: 11, width: '30%'}}> Job Time :</Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '40%'}}> </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> Model : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> {details.vehicle_model__c} </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '40%'}}> </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Model : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.vehicleModel ?? details.vehicle_model__c} </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Strok : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}>  </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '20%'}}> Mobile : </Text>
-                <Text style={{fontSize: 12, width: '20%'}}> {details.whatsapp_number__c} </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> Make : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> {details.vehicle_make__c}</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '18%'}}> Mobile : </Text>
+                <Text style={{fontSize: 11, width: '22%'}}> {details.whatsAppNumber ?? details.whatsapp_number__c} </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Make : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.vehicleMek ?? details.vehicle_make__c}</Text>
+                <Text style={{fontSize: 11, width: '30%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '20%'}}> 3/4 Wheeler : </Text>
-                <Text style={{fontSize: 12, width: '20%'}}> {details.x3_or_4_wheeler__c}</Text>
-                <Text style={{fontSize: 12, width: '15%'}}> Present KMs : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> {details.daily_running_kms__c}</Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '18%'}}> 3/4 Wheeler : </Text>
+                <Text style={{fontSize: 11, width: '22%'}}> {details.wheeles ?? details.x3_or_4_wheeler__c}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> Present KMs : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> {details.dailyRunning ?? details.daily_running_kms__c}</Text>
+                <Text style={{fontSize: 11, width: '30%'}}> </Text>
               </View>
               <View style={{ margin: "2px", flexDirection: 'row' }}>
-                <Text style={{fontSize: 12, width: '20%'}}> Contact Person : </Text>
-                <Text style={{fontSize: 12, width: '20%'}}> {details.contact_person__c}</Text>
-                <Text style={{fontSize: 12, width: '15%'}}> SR Advisor : </Text>
-                <Text style={{fontSize: 12, width: '15%'}}> </Text>
-                <Text style={{fontSize: 12, width: '30%'}}> </Text>
+                <Text style={{fontSize: 11, width: '18%'}}> Contact Person : </Text>
+                <Text style={{fontSize: 11, width: '22%'}}> {details.contactPerson ?? details.contact_person__c}</Text>
+                <Text style={{fontSize: 11, width: '15%'}}> SR Advisor : </Text>
+                <Text style={{fontSize: 11, width: '15%'}}> </Text>
+                <Text style={{fontSize: 11, width: '30%'}}> </Text>
               </View>
             </View>  
           </View> 
@@ -2455,13 +2522,15 @@ const RenderNegotitationComp = (props: any) => {
   const [blobURL, setblobURL] = React.useState(null);
   const [pdfLinkURL, setpdfLinkURL] = React.useState(null);
   // const subLeadType = store.getState().rxFormReducer["leadForm"].subLeadType ;
-  const subLeadType = props.selectedLead.sub_lead_type__c;
-  console.log("props => ", props)
+  const subLeadType = props.selectedLead.sub_lead_type__c || props.selectedLead.subLeadType;
+  console.log("props => ", props);
+  console.log("pdflinkURL : ", pdfLinkURL)
   return (
     <div className="negotitation-container">
+      {console.log("subLeadType => ", subLeadType)}
       {(subLeadType === "Fitment" || subLeadType === "Servicing" ) &&
         <div style={{ textAlign: "right" }}>
-          <BlobProvider document={subLeadType === "Fitment" ? <FitmentProposal selectedLead={props.selectedLead}/> : <ServicingProposal selectedLead={props.selectedLead}/> }> 
+          <BlobProvider document={subLeadType === "Fitment" ? <FitmentProposal dealerData={props.dealerData} selectedLead={props.selectedLead}/> : <ServicingProposal dealerData={props.dealerData} selectedLead={props.selectedLead}/> }> 
             { ({ blob, url, loading, error }) => {
               console.log("blob : ", blob);
               console.log("url : ", url);

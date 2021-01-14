@@ -1151,6 +1151,224 @@ export const leadSourceForJobCard = [
   },
 ];
 
+export const jobCardStreetInputs = [
+  {
+    label: "Street",
+    model: ".street",
+    type: "text",
+  },
+  {
+    label: "Zip/Postal Code",
+    model: ".zip",
+    type: "text",
+    required: true,
+  },
+  {
+    label: "City",
+    model: ".city",
+    type: "select",
+    required: true,
+    options: (props, state) => state.cities,
+  },
+  {
+    label: "Taluka",
+    model: ".taluka",
+    type: "text",
+  },
+  {
+    label: "District",
+    model: ".district",
+    type: "text",
+  },
+  {
+    label: "State",
+    model: ".state",
+    type: "text",
+  },
+  {
+    label: "RTO Code",
+    model: ".rtoCode",
+    type: "multiselect",
+    options: (props, state) => 
+    store.getState().rxFormReducer[props.formModel].state === "Andhra Pradesh" 
+    ? [
+      {label: "AP-01", value: "AP-01"},
+      {label: "AP-02", value: "AP-02"},
+      {label: "AP-03", value: "AP-03"},
+      {label: "AP-04", value: "AP-04"},
+      {label: "AP-05", value: "AP-05"},
+      {label: "AP-07", value: "AP-07"},
+      {label: "AP-09", value: "AP-09"},
+      {label: "AP-10", value: "AP-10"},
+      {label: "AP-11", value: "AP-11"},
+      {label: "AP-12", value: "AP-12"},
+      {label: "AP-13", value: "AP-13"},
+      {label: "AP-15", value: "AP-15"},
+      {label: "AP-16", value: "AP-16"},
+      {label: "AP-20", value: "AP-20"},
+      {label: "AP-21", value: "AP-21"},
+      {label: "AP-22", value: "AP-22"},
+      {label: "AP-23", value: "AP-23"},
+      {label: "AP-24", value: "AP-24"},
+      {label: "AP-25", value: "AP-25"},
+      {label: "AP-26", value: "AP-26"},
+      {label: "AP-27", value: "AP-27"},
+      {label: "AP-28", value: "AP-28"},
+      {label: "AP-29", value: "AP-29"},
+      {label: "AP-30", value: "AP-30"},
+      {label: "AP-31", value: "AP-31"},
+      {label: "AP-35", value: "AP-35"},
+      {label: "AP-36", value: "AP-36"},
+      {label: "AP-37", value: "AP-37"},
+    ]
+    : store.getState().rxFormReducer[props.formModel].state === "Maharashtra" 
+      ? [
+        {label: "MH-01", value: "MH-01"},
+        {label: "MH-02", value: "MH-02"},
+        {label: "MH-03", value: "MH-03"},
+        {label: "MH-04", value: "MH-04"},
+        {label: "MH-05", value: "MH-05"},
+        {label: "MH-07", value: "MH-07"},
+        {label: "MH-09", value: "MH-09"},
+        {label: "MH-10", value: "MH-10"},
+        {label: "MH-11", value: "MH-11"},
+        {label: "MH-12", value: "MH-12"},
+        {label: "MH-13", value: "MH-13"},
+        {label: "MH-15", value: "MH-15"},
+        {label: "MH-16", value: "MH-16"},
+        {label: "MH-20", value: "MH-20"},
+        {label: "MH-21", value: "MH-21"},
+        {label: "MH-22", value: "MH-22"},
+        {label: "MH-23", value: "MH-23"},
+        {label: "MH-24", value: "MH-24"},
+        {label: "MH-25", value: "MH-25"},
+        {label: "MH-26", value: "MH-26"},
+        {label: "MH-27", value: "MH-27"},
+        {label: "MH-28", value: "MH-28"},
+        {label: "MH-29", value: "MH-29"},
+        {label: "MH-30", value: "MH-30"},
+        {label: "MH-31", value: "MH-31"},
+        {label: "MH-35", value: "MH-35"},
+        {label: "MH-36", value: "MH-36"},
+        {label: "MH-37", value: "MH-37"},
+        {label: "MH-38", value: "MH-38"},
+        {label: "MH-39", value: "MH-39"},
+        {label: "MH-40", value: "MH-40"},
+        {label: "MH-41", value: "MH-41"},
+        {label: "MH-42", value: "MH-42"},
+        {label: "MH-43", value: "MH-43"},
+        {label: "MH-44", value: "MH-44"},
+        {label: "MH-45", value: "MH-45"},
+        {label: "MH-46", value: "MH-46"},
+        {label: "MH-47", value: "MH-47"},
+        {label: "MH-48", value: "MH-48"},
+        {label: "MH-49", value: "MH-49"},
+        {label: "MH-50", value: "MH-50"},
+        {label: "MH-51", value: "MH-51"},
+        {label: "MH-52", value: "MH-52"},
+        {label: "MH-53", value: "MH-53"},
+        {label: "MH-54", value: "MH-54"},
+        {label: "MH-55", value: "MH-55"},
+        {label: "MH-56", value: "MH-56"},
+      ]
+      : store.getState().rxFormReducer[props.formModel].state === undefined
+        ? []
+        : [
+          {label: "MH-01", value: "MH-01"},
+          {label: "MH-02", value: "MH-02"},
+          {label: "MH-03", value: "MH-03"},
+          {label: "MH-04", value: "MH-04"},
+          {label: "MH-05", value: "MH-05"},
+          {label: "MH-07", value: "MH-07"},
+          {label: "MH-09", value: "MH-09"},
+          {label: "MH-10", value: "MH-10"},
+          {label: "MH-11", value: "MH-11"},
+          {label: "MH-12", value: "MH-12"},
+          {label: "MH-13", value: "MH-13"},
+          {label: "MH-15", value: "MH-15"},
+          {label: "MH-16", value: "MH-16"},
+          {label: "MH-20", value: "MH-20"},
+          {label: "MH-21", value: "MH-21"},
+          {label: "MH-22", value: "MH-22"},
+          {label: "MH-23", value: "MH-23"},
+          {label: "MH-24", value: "MH-24"},
+          {label: "MH-25", value: "MH-25"},
+          {label: "MH-26", value: "MH-26"},
+          {label: "MH-27", value: "MH-27"},
+          {label: "MH-28", value: "MH-28"},
+          {label: "MH-29", value: "MH-29"},
+          {label: "MH-30", value: "MH-30"},
+          {label: "MH-31", value: "MH-31"},
+          {label: "MH-35", value: "MH-35"},
+          {label: "MH-36", value: "MH-36"},
+          {label: "MH-37", value: "MH-37"},
+          {label: "MH-38", value: "MH-38"},
+          {label: "MH-39", value: "MH-39"},
+          {label: "MH-40", value: "MH-40"},
+          {label: "MH-41", value: "MH-41"},
+          {label: "MH-42", value: "MH-42"},
+          {label: "MH-43", value: "MH-43"},
+          {label: "MH-44", value: "MH-44"},
+          {label: "MH-45", value: "MH-45"},
+          {label: "MH-46", value: "MH-46"},
+          {label: "MH-47", value: "MH-47"},
+          {label: "MH-48", value: "MH-48"},
+          {label: "MH-49", value: "MH-49"},
+          {label: "MH-50", value: "MH-50"},
+          {label: "MH-51", value: "MH-51"},
+          {label: "MH-52", value: "MH-52"},
+          {label: "MH-53", value: "MH-53"},
+          {label: "MH-54", value: "MH-54"},
+          {label: "MH-55", value: "MH-55"},
+          {label: "MH-56", value: "MH-56"},
+        ]
+  }
+];
+
+export const billingDetails = [
+  {
+    label: "Kit Price",
+    model: ".kitPrice",
+    type: "number",
+  },
+  {
+    label: "kit GST No.",
+    model: ".kitGST",
+    type: "text",
+    defaultValue: "28%",
+    isDisable: true,
+  },
+  {
+    label: "Tank Price",
+    model: ".tankPrice",
+    type: "number",
+  },
+  {
+    label: "Tank GST No.",
+    model: ".tankGST",
+    type: "text",
+    defaultValue: "28%",
+    isDisable: true,
+  },
+  {
+    label: "Labour Price",
+    model: ".labourPrice",
+    type: "number",
+  },
+  {
+    label: "Labour GST No.",
+    model: ".labourGST",
+    type: "text",
+    defaultValue: "18%",
+    isDisable: true,
+  },
+  {
+    label: "Discount",
+    model: ".discount",
+    type: "number",
+  },
+];
+
 export const addressDetails = [
   {
     label: "Billing Address",
@@ -1165,28 +1383,12 @@ export const addressDetails = [
 ];
 
 export const gstDetails = [
-  // {
-  //   label: "Jobcard Type",
-  //   model: ".jobcardtype",
-  //   type: "select",
-  //   options: [
-  //     {label: "Fitment", value: "Fitment"},
-  //     {label: "Servicing", value: "Servicing"}
-  //   ]
-  // },
   {
     label: "GST Number",
     model: ".gstNumber",
     type: "number",
     // required: true,
   },
-  // {
-  //   label: "Company Name",
-  //   model: ".NameCompany",
-  //   type: "text",
-  
-  //   required: true,
-  // },
 ];
 
 export const rtoDocs = [

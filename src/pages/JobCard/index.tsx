@@ -10,8 +10,10 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 import * as React from "react";
 import { connect } from "react-redux";
 // import Select from "react-select";
-import Image, { Shimmer } from "react-shimmer";
+// import Image, { Shimmer } from "react-shimmer";
 import { BaseModal } from "src/components/BaseModal";
+import tickAsCurrect from "./tickAsCurrect.png";
+import NonChecked from "./NonChecked.png";
 import { FormComponent } from "src/components/FormComponent";
 import { TableWithGrid } from "src/components/TableWithGrid";
 import AppBar from "src/navigation/App.Bar";
@@ -23,15 +25,16 @@ import {
   addressDetails,
   leadDealer,
   leadSourceForJobCard,
+  billingDetails,
   options,
-  streetInputs,
+  jobCardStreetInputs,
   vehicleInputs,
   gstDetails,
 } from "../Customers/customerInputs";
 import { 
   Document, 
   PDFDownloadLink, 
-  BlobProvider, pdf,
+  BlobProvider, pdf, Image,
   Page,  
   View,
   Text,
@@ -186,6 +189,7 @@ export class AddNewJobCardImpl extends React.Component<
     selectedUser: any;
     selectedJobCard: any;
     selectedVehicle: any;
+    dealerData: any;
     basicDetailsFormRecordId : any;
     vahicleId : any;
     isLeadOrCustomer : string;
@@ -290,6 +294,7 @@ export class AddNewJobCardImpl extends React.Component<
       selectedUser: null,
       selectedJobCard: 0,
       selectedVehicle: null,
+      dealerData: [],
       allCustAndLeads: [],
       custVehicles: [],
       basicDetailsFormRecordId : "",
@@ -304,7 +309,25 @@ export class AddNewJobCardImpl extends React.Component<
     console.log("recordTypes: ", recordTypes); 
     this.getCustAndLeads(loggedInUserDetails);
     this.getAllJobCards(loggedInUserDetails);
+    this.getDealerData(loggedInUserDetails);
     changeValuesInStore("leadForm", leadFormInitObj);
+  }
+
+  getDealerData = async (data) => {
+    try{
+      const getprofile = await getData({
+        query: `SELECT *
+        FROM Salesforce.account
+        WHERE sfid = '${data.sfid}' `,
+        token: data.token
+      })
+      console.log("getprofile => ", getprofile);
+      this.setState({ dealerData : getprofile.result[0] })
+      return getprofile.result[0];
+    }
+    catch(e){
+      console.log(e);
+    }
   }
 
   getAllJobCards = async (data) => {
@@ -752,7 +775,7 @@ export class AddNewJobCardImpl extends React.Component<
             }}
             formModel="leadForm"
             hasSubmit={false}
-            options={streetInputs}
+            options={jobCardStreetInputs}
           />
           <SubFormHeading>Vehicle Details</SubFormHeading>
           {this.state.selectedUser && 
@@ -804,15 +827,25 @@ export class AddNewJobCardImpl extends React.Component<
             //   console.log(">> v", v);
 
             // }}
+            onSubmit={(v: any) => {
+              console.log(">> v", v);
+            }}
+            formModel="leadForm"
+            hasSubmit={false}
+            options={vehicleInputs}
+          />
+          <SubFormHeading>Billing Details</SubFormHeading>
+          <FormComponent
             onSubmit = { this.handleBasicDetailsFormSubmit }
             formModel="leadForm"
             hasSubmit={true}
-            options={vehicleInputs}
+            options={billingDetails}
             submitTitle="Next"
             allFormOptions={[
               ...options,
               ...vehicleInputs,
-              ...streetInputs,
+              ...billingDetails,
+              ...jobCardStreetInputs,
               ...leadSourceForJobCard,
             ]}
             cancelTitle="Close"
@@ -824,14 +857,14 @@ export class AddNewJobCardImpl extends React.Component<
   };
   
   renderJobCard = () => {
-    const jobcardCheckList = this.state.selectedUser.wheeles === "3 Wheeler" 
+    const jobcardCheckList = this.state.selectedUser && this.state.selectedUser.wheeles === "3 Wheeler" 
                               ? threeWheelerCheckList 
-                              : this.state.selectedUser.wheeles === "4 Wheeler"
+                              : this.state.selectedUser && this.state.selectedUser.wheeles === "4 Wheeler"
                                 ? fourWheelerCheckList 
                                 : {};
     return (
       <div className="card-container job-card-container">
-        <SubFormHeading>GST Details</SubFormHeading>
+        {/* <SubFormHeading>GST Details</SubFormHeading>
         <FormComponent
           onSubmit={(v: any) => {
             console.log(">> v", v);
@@ -842,9 +875,9 @@ export class AddNewJobCardImpl extends React.Component<
           formModel="leadForm"
           hasSubmit={false}
           options={gstDetails}
-        />
+        /> */}
         {/* {this.props.leadForm.subLeadType === "Servicing" && */}
-        { this.state.selectedUser.lead_sub_type__c === "Servicing" &&
+        { this.state.selectedUser && this.state.selectedUser.lead_sub_type__c === "Servicing" &&
           <div>
             <SubFormHeading>Complaint Checklist</SubFormHeading>
             <Grid container>
@@ -972,6 +1005,7 @@ export class AddNewJobCardImpl extends React.Component<
             disable: this.state.activeStep === 2 ? false  : true,
             component: <RenderNegotitationComp 
                           selectedUser={this.state.selectedUser}
+                          dealerData={this.state.dealerData}
                           selectedJobCard={this.state.selectedJobCard}
                           handleCloseAddJobCard={this.handleCloseAddJobCard} 
                           previous={() => this.setState({activeStep : this.state.activeStep - 1})}/>
@@ -1302,7 +1336,8 @@ const styles = StyleSheet.create({
 
 export const InvoiceProposal = (props: any) => {
   console.log("InvoiceProps", props);
-  const { userDetails, jobCardDetails } = props;
+  const { userDetails, jobCardDetails, dealerData } = props;
+  const dealerGST = dealerData.gst_number__c.split("gst");
   return (
     // <PDFViewer>
       <Document >
@@ -1311,17 +1346,25 @@ export const InvoiceProposal = (props: any) => {
             <View style={styles.tableRow}> 
               <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
                 <View style={{ marginTop: "5px", textAlign: 'center'}}>
-                  <Text style={{fontSize: 17, fontWeight: 'extrabold' }}>GRECOKITS FUEL SOLUTIONS</Text>
+                  <Text style={{fontSize: 17, fontWeight: 'extrabold' }}> {dealerData.name} </Text>
                 </View>
-                <View style={{ textAlign: 'center' }}>
-                  <Text style={{fontSize: 11 }}>Plot No. 151, Brick Factory Compound, Shastri Nagar, </Text>
-                  <Text style={{fontSize: 11 }}>Mulund colony, Mulund (West) Mumbai - 400802 </Text>
-                  <Text style={{fontSize: 11 }}>Tel: +91-22-25677775, M-7718801122, FAX: +91-22-25900903</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <View style={{ width: "20%", margin: "2px"}}>
+                    <Image src={BaseLogo} />
+                  </View>
+                  <View style={{ width: "60%", margin: "2px", textAlign: 'center' }}>
+                    <Text style={{fontSize: 11 }}> {dealerData.shippingstreet}, </Text>
+                    <Text style={{fontSize: 11 }}>{dealerData.shippingcity}, {dealerData.shippingstate} - {dealerData.shippingpostalcode} </Text>
+                    <Text style={{fontSize: 11 }}>Tel: {ChangePhoneFormat(dealerData.phone)}, Mobile: {ChangePhoneFormat(dealerData.whatsapp_no__c)}, FAX: {ChangePhoneFormat(dealerData.phone)}</Text>
+                  </View>
+                  <View style={{ width: "15%", margin: "2px"}}>
+                    <Image src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1Kf6KHAapxnOlH3Y90sgX66JtDunmlPFnGA&usqp=CAU" width="100px" height="100px" />
+                  </View>
                 </View>
                 <View style={{ margin: "2px", flexDirection: 'row', marginBottom: "5px", marginTop: '5px'  }}>
                   <Text style={{fontSize: 10, fontWeight: 900, width: '35%'}}> ISO 9001</Text>
-                  <Text style={{fontSize: 10, fontWeight: 'bold', width: '45%'}}> STATE- MAHARASHTRA, STATE CODE-27 </Text>
-                  <Text style={{fontSize: 10, fontWeight: 'ultrabold', width: '20%'}}> GSTIN:27AAHFG9723D1ZD </Text>
+                  <Text style={{fontSize: 10, fontWeight: 'bold', width: '45%'}}> STATE- {dealerData.shippingstate}, STATE CODE-27 </Text>
+                  <Text style={{fontSize: 10, fontWeight: 'ultrabold', width: '20%'}}> GSTIN: {dealerGST} </Text>
                 </View>
               </View>
             </View>
@@ -1333,9 +1376,9 @@ export const InvoiceProposal = (props: any) => {
             <View style={styles.tableRow}>
               <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
                 <Text style={{ fontSize: 10, margin: "2px"}}> Customer Details :</Text> 
-                <Text style={{ fontSize: 10, margin: "2px"}}>  </Text> 
                 <Text style={{ fontSize: 10, margin: "2px"}}> {userDetails.firstName +" "+ userDetails.middleName +" "+ userDetails.lastName} </Text> 
                 <Text style={{ fontSize: 10, margin: "2px"}}> {userDetails.whatsAppNumber} </Text> 
+                <Text style={{ fontSize: 10, margin: "2px"}}>  </Text> 
                 <View style={{margin: "2px", flexDirection: 'row', marginBottom: "2px"}} >
                   <Text style={{ fontSize: 8, margin: "2px", width: "50%"}}> State: Maharashtra </Text> 
                   <Text style={{ fontSize: 10, margin: "2px", width: "50%"}}> GSTN: {jobCardDetails.gst_number__c}</Text> 
@@ -1389,7 +1432,7 @@ export const InvoiceProposal = (props: any) => {
                 </View>
                 <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
                   <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
-                    <Text style={{ fontSize: 10, margin: "5px"}}> Service Type : {userDetails.lead_sub_type__c}</Text> 
+                    <Text style={{ fontSize: 10, margin: "5px"}}> Service Type : {userDetails.subLeadType}</Text> 
                   </View>
                 </View>
               </View>
@@ -1827,6 +1870,584 @@ export const InvoiceProposal = (props: any) => {
             </View>
           </View>
         </Page>
+        <Page size = "A4">
+          <View style={{ marginTop: "30px", flexDirection: 'row', textAlign: 'center'}}>
+            <Text style={{fontSize: 9, fontWeight: 'bold', width: '20%'}}> R- Replace </Text>
+            <Text style={{fontSize: 9, fontWeight: 'bold', width: '20%'}}> T- Top-Upped </Text>
+            <Text style={{fontSize: 9, fontWeight: 'bold', width: '20%'}}> C- Checked/ Cleaned </Text>
+            <Text style={{fontSize: 9, fontWeight: 'bold', width: '20%'}}> A-  Adjusted/ Tightened</Text>
+            <Text style={{fontSize: 9, fontWeight: 'bold', width: '20%'}}> Tick {<Image src={tickAsCurrect} height="20px" width="20px"/>} if Done </Text>
+            {/* <Image src={NonChecked} height="20px" width="20px"/> */}
+          </View>
+          <View style={{ display: "table", width: "auto",margin: "0px 15px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }}>
+            <View style={styles.tableRow}> 
+              <View style={{width: "100%", padding: 5, borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 14, width: '100%', textAlign: 'center' }}> Job Discription </Text> 
+              </View> 
+            </View>
+            <View style={styles.tableRow}> 
+              <View style={{width: "2%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: "auto", textAlign: 'center'}}> 1 </Text> 
+              </View> 
+              <View style={{width: "9%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 9, margin: "auto", textAlign: 'center'}}>Free/Paid Service Jobs (Tick as required) </Text> 
+              </View> 
+              <View style={{width: "89%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                {/* <View style={{ margin: "2px", flexDirection: 'row' }}>
+                  <View style={{width: "20%", padding: 5}}> 
+                    <Text style={{fontSize: 10, textAlign: 'center'}}> </Text> 
+                  </View>
+                  <View style={{width: "60%", padding: 5, textAlign: 'center', borderStyle: "solid", borderWidth: 1, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, textAlign: 'center'}}>(1) Free/Paid Service Jobs (Tick as required) </Text> 
+                  </View>
+                  <View style={{width: "20%", padding: 5}}> 
+                    <Text style={{fontSize: 10, textAlign: 'center'}}></Text> 
+                  </View>
+                </View> */}
+                {/* <View style={{ margin: "2px", flexDirection: 'row' }}>
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}>1</Text> 
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}>2</Text> 
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}>3</Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}>4</Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}>5</Text> 
+                </View> */}
+                <View style={styles.tableRow}> 
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px" style={{marginRight: 2}}/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px" style={{marginRight: 2}}/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px" style={{marginRight: 2}}/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+              </View>
+            </View> 
+            <View style={styles.tableRow}> 
+              <View style={{width: "2%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: "auto", textAlign: 'center'}}> 2 </Text> 
+              </View> 
+              <View style={{width: "9%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 9, margin: "auto", textAlign: 'center'}}> Misc Job (Tick if Done) </Text> 
+              </View> 
+              <View style={{width: "89%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <View style={styles.tableRow}> 
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                <View style={styles.tableRow}>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={tickAsCurrect} height="20px" width="20px"/>} </Text>
+                  </View>
+                  <View style={{width: "20%", borderStyle: "dotted", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                    <Text style={{fontSize: 10, margin: "2px"}}> Job Name  {<Image src={NonChecked} height="20px" width="20px"/>} </Text>
+                  </View>
+                </View>
+                {/* <View style={{ margin: "2px", flexDirection: 'row' }}>
+                  <Text style={{fontSize: 10, margin: '2px', width: '3%'}}> 25 </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '17%'}}> 26 </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}> 27 </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}> 28 </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '40%'}}> 29 </Text>
+                </View>
+                <View style={{ margin: "2px", flexDirection: 'row' }}>
+                  <Text style={{fontSize: 10, margin: '2px', width: '3%'}}> </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '17%'}}> 30 </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '20%'}}> 31 </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '60%'}}> 32 </Text>
+                </View> */}
+              </View>  
+            </View>
+            <View style={styles.tableRow}> 
+              <View style={{width: "2%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: "auto", textAlign: 'center'}}> 3 </Text> 
+              </View> 
+              <View style={{width: "9%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 9, margin: "auto", textAlign: 'center'}}> Mechanical Jobs </Text> 
+              </View> 
+              <View style={{width: "49%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}>
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> 1 </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> 2 </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> 3 </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> 4 </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> 5 </Text> 
+                </View>
+              </View>
+              <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}>
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> Tech: </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}>Alloted Time: </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> Start Time: </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}>End Time: </Text> 
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}>  </Text> 
+                </View> 
+              </View>
+            </View>
+            <View style={styles.tableRow}> 
+              <View style={{width: "2%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: "auto", textAlign: 'center'}}> 4 </Text> 
+              </View> 
+              <View style={{width: "9%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 9, margin: "auto", textAlign: 'center'}}> Electrician </Text> 
+              </View> 
+              <View style={{width: "49%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0}}> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <View style={{ display: "table", width: "auto", margin: "2px", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 }}>
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 7, margin: '2px'}}> Battery Check: </Text> 
+                      </View> 
+                      <View style={{width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 8, margin: '2px'}}> Cell </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 1 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 2 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 3 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 4 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 5 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 6 </Text> 
+                      </View> 
+                    </View> 
+                    <View style={styles.tableRow}> 
+                      <View style={{width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 8, margin: '2px'}}> Top Up </Text> 
+                      </View>  
+                      <View style={{width: "20%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 8, margin: '2px'}}> Sp. Gravity </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 1 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 2 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 3 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 4 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 5 </Text> 
+                      </View> 
+                      <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                        <Text style={{fontSize: 10, margin: '2px'}}> 6 </Text> 
+                      </View> 
+                    </View>  
+                  </View>
+                </View> 
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                  <Text style={{fontSize: 8, margin: '2px', width: '80%'}}> Alternator Charging Voltage : With out Load </Text> 
+                  <Text style={{fontSize: 8, margin: '2px', width: '20%'}}> With Load </Text> 
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '5px'}}>  </Text> 
+                </View>
+              </View>
+              <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0,}}> 
+                  <Text style={{fontSize: 10, margin: '6px'}}> Elect. Name : </Text> 
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0,}}> 
+                  <Text style={{fontSize: 10, margin: '7px'}}> Start Time : </Text> 
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '5px'}}> End Time : </Text> 
+                </View>
+              </View>
+            </View>
+            <View style={styles.tableRow}> 
+              <View style={{width: "2%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: "auto", textAlign: 'center'}}> 4 </Text> 
+              </View> 
+              <View style={{width: "9%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 9, margin: "auto", textAlign: 'center'}}> Adjustment Doors </Text> 
+              </View> 
+              <View style={{width: "49%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderBottomWidth: 0, borderTopWidth: 0}}>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                  <Text style={{fontSize: 8, margin: '2px', width: '40%'}}> 1. Check All Window Glass Operation </Text>
+                  <Text style={{fontSize: 8, margin: '2px', width: '30%'}}> 2. Check All Door Locks </Text> 
+                  <Text style={{fontSize: 8, margin: '2px', width: '30%'}}> 3. Check All Doors </Text> 
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                  <Text style={{fontSize: 8, margin: '2px', width: '40%'}}> 4. Check Hood% Tailgate Opeartion</Text>
+                  <Text style={{fontSize: 8, margin: '2px', width: '30%'}}> 5. </Text> 
+                  <Text style={{fontSize: 8, margin: '2px', width: '30%'}}> 6.  </Text> 
+                </View>
+              </View>
+              <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '5px', width: '30%'}}> Denter Name </Text>
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '5px', width: '30%'}}> Start Time </Text>
+                  <Text style={{fontSize: 10, margin: '5px', width: '30%'}}> End Time </Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.tableRow}> 
+              <View style={{width: "2%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: "auto", textAlign: 'center'}}> 5 </Text> 
+              </View> 
+              <View style={{width: "9%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{fontSize: 9, margin: "auto", textAlign: 'center'}}> Technician Reamrks </Text> 
+              </View> 
+              <View style={{width: "49%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0,borderBottomWidth: 0, borderTopWidth: 0}}>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0,}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}>  </Text> 
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0,}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}>  </Text>
+                </View>
+              </View>
+              <View style={{width: "40%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderBottomWidth: 0 }}>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0,}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> Warranty (if any) </Text>
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0,}}> 
+                  <Text style={{fontSize: 10, margin: '2px'}}> </Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.tableRow}> 
+              <View style={{width: "15%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: '2px', textAlign: 'center'}}> Washing </Text> 
+              </View> 
+              <View style={{width: "85%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>
+                <Text style={{fontSize: 10, margin: '2px', width: '30%'}}> ROAD TEST </Text> 
+                <Text style={{fontSize: 10, margin: '2px', width: '70%'}}> Remarks </Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}> 
+              <View style={{width: "15%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}>  
+                <Text style={{fontSize: 10, margin: '2px', textAlign: 'center'}}> PARTS CONFIRMED </Text> 
+              </View> 
+              <View style={{width: "85%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderBottomWidth: 0, borderTopWidth: 0}}>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px', width: '30%'}}> FINAL INSP. </Text> 
+                  <Text style={{fontSize: 10, margin: '2px', width: '60%'}}> Remarks </Text>
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px', width: '50%'}}> if vehicle likely to be Delayed, Revised Delivery Date :  </Text> 
+                  <Text style={{fontSize: 10, margin: '2px', width: '50%'}}> Time : </Text>
+                </View>
+                <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0}}> 
+                  <Text style={{fontSize: 10, margin: '2px', width: '35%'}}> Customer Informed Date : </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '15%'}}> Time : </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '35%'}}> Actual Vehicle Ready Date : </Text>
+                  <Text style={{fontSize: 10, margin: '2px', width: '15%'}}> Time : </Text>
+                </View>
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Sr. No. </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> LOBOUR DESCRIPTION </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Sr. No. </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> LOBOUR DESCRIPTION </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 1 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 7 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 2 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 8 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 3 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 9 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 4 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 10 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 5 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 11 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderRightWidth: 0, borderTopWidth: 0, borderBottomWidth: 0}}> 
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 6 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+              <View style={{width: "5%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> 12 </Text> 
+              </View>
+              <View style={{width: "35%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}>  </Text> 
+              </View>
+              <View style={{width: "10%", borderStyle: "solid", borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+                <Text style={{ fontSize: 10, margin: "5px"}}> Amount </Text> 
+              </View>
+            </View>
+            <View style={{width: "100%", borderStyle: "solid", flexDirection: 'row', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0}}> 
+              <Text style={{ fontSize: 10, marginTop: "5px", marginBottom: '3px', width: '12%'}}> Signature </Text> 
+              <Text style={{ fontSize: 10, marginTop: "15px", marginBottom: '3px', width: '20%'}}> Parts Supervisor </Text> 
+              <Text style={{ fontSize: 10, marginTop: "15px", marginBottom: '3px', width: '20%'}}> Final Inspection </Text> 
+              <Text style={{ fontSize: 10, marginTop: "15px", marginBottom: '3px', width: '12%'}}> Floor I/C </Text> 
+              <Text style={{ fontSize: 10, marginTop: "15px", marginBottom: '3px', width: '18%'}}> Service Advisor </Text> 
+              <Text style={{ fontSize: 10, marginTop: "15px", marginBottom: '3px', width: '18%'}}> Washing Supervisor </Text> 
+            </View>
+          </View>
+        </Page>
       </Document>
     // </PDFViewer>
   );
@@ -1840,7 +2461,7 @@ export const RenderNegotitationComp = (props: any) => {
   return (
     <div className="negotitation-container">
         <div style={{ textAlign: "right" }}>
-          <BlobProvider document={ <InvoiceProposal userDetails={props.selectedUser} jobCardDetails={props.selectedJobCard}/> }> 
+          <BlobProvider document={ <InvoiceProposal userDetails={props.selectedUser} jobCardDetails={props.selectedJobCard} dealerData={props.dealerData}/> }> 
             { ({ blob, url, loading, error }) => {
               console.log("blob : ", blob);
               console.log("url : ", url);

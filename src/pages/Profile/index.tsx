@@ -1,10 +1,17 @@
 import { PersonPin } from "@material-ui/icons";
 import EditIcon from '@material-ui/icons/Edit';
 import { Grid, Button } from "@material-ui/core";
+import moment from "moment";
 import ChatIcon from "@material-ui/icons/Chat";
+import LocationCityIcon from '@material-ui/icons/LocationCity';
 import MailIcon from "@material-ui/icons/Mail";
 import PhoneIcon from "@material-ui/icons/Phone";
 import RoomIcon from "@material-ui/icons/Room";
+import CakeIcon from '@material-ui/icons/Cake';
+import GSTIcon3 from "./GSTIcon3.jpg";
+import Manager from "./Manager.png";
+import pinCode from "./pinCode.png";
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import * as React from "react";
 import { connect } from "react-redux";
 import { saveSelectData } from "src/actions/App.Actions";
@@ -103,44 +110,73 @@ export class ProfileImpl extends React.PureComponent<IProfileProps, { profilePic
               {/* <EditIcon style={{ marginLeft: "-25px"}}/> */}
             </div>
 
-            <div className="profile-data">
-              <div style={{ marginTop: "10px" }}>
+            <Grid container>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }}>
                 <PersonPin color="primary"/>
-                <span style={{ paddingRight: "5px" }}> </span>{profileData[0].name}{" "}
-              </div>
-              <div style={{ marginTop: "10px" }} >
+                {/* <span style={{ paddingRight: "5px" }}> </span>{profileData[0].name}{" "} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {profileData[0].name} </div>
+              </Grid>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }} >
                 <MailIcon color="primary" />
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].email__c}
-              </div>
-              <div style={{ marginTop: "10px" }} >
+                {/* <span style={{ paddingRight: "5px" }}></span> {profileData[0].email__c} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {profileData[0].email__c} </div>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }} >
                 <PhoneIcon color="primary" />
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].phone && ChangePhoneFormat(profileData[0].phone)}
-              </div>
-              <div style={{ marginTop: "10px" }} >
+                {/* <span style={{ paddingRight: "5px" }}></span> {profileData[0].phone && ChangePhoneFormat(profileData[0].phone)} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {profileData[0].phone && ChangePhoneFormat(profileData[0].phone)} </div>
+              </Grid>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }} >
                 <ChatIcon color="primary" />
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].whatsapp_no__c && ChangePhoneFormat(profileData[0].whatsapp_no__c)}
-              </div>
-              <div style={{ marginTop: "10px" }} >
-                <RoomIcon color="primary" />
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].billingstreet} {profileData[0].billingcity} {profileData[0].billingstate} {profileData[0].billingpostalcode} {profileData[0].billingcountry}
-              </div>
-              <div style={{ marginTop: "10px" }} >
-                <span style={{color: "black", fontWeight: "bold" }}> Account Manager : </span>
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].account_manager__c}
-              </div>
-              <div style={{ marginTop: "10px" }} >
-                <span style={{color: "black", fontWeight: "bold" }}> GST Number : </span>
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].gst_number__c}
-              </div>
-              <div style={{ marginTop: "10px" }} >
-                <span style={{color: "black", fontWeight: "bold" }}> Date of Birth : </span>
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].description}
-              </div>
-              <div style={{ marginTop: "10px" }} >
-                <span style={{color: "black", fontWeight: "bold" }}> Pin Code : </span>
-                <span style={{ paddingRight: "5px" }}></span> {profileData[0].billingpostalcode}
-              </div>
-            </div>
+                {/* <span style={{ paddingRight: "5px" }}></span> {profileData[0].whatsapp_no__c && ChangePhoneFormat(profileData[0].whatsapp_no__c)} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {profileData[0].whatsapp_no__c && ChangePhoneFormat(profileData[0].whatsapp_no__c)} </div>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={12} style={{ marginTop: "15px" }} >
+                <LocationCityIcon color="primary" />
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px', textAlign: 'left'}}> {profileData[0].billingstreet} {profileData[0].billingcity} {profileData[0].billingstate} {profileData[0].billingpostalcode} {profileData[0].billingcountry} </div>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }} >
+                {/* <span style={{color: "black", fontWeight: "bold" }}> Account Manager : </span> */}
+                <img src={Manager} height="20px" width="20px" style={{marginLeft: "3px"}}/>
+                {/* <span style={{ paddingRight: "5px" }}></span> {profileData[0].account_manager__c} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {profileData[0].account_manager__c} </div>
+              </Grid>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }} >
+                <img src={GSTIcon3} height="20px" width="20px" style={{marginLeft: "3px"}}/>
+                {/* <span style={{color: "black", fontWeight: "bold" }}> GST Number : </span> */}
+                {/* <span style={{ paddingRight: "5px" }}></span> {profileData[0].gst_number__c} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {profileData[0].gst_number__c} </div>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }} >
+                {/* <span style={{color: "black", fontWeight: "bold" }}> Date of Birth : </span> */}
+                <CakeIcon color="primary" />
+                {/* <span style={{ paddingRight: "5px" }}></span> {profileData[0].description} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {moment(profileData[0].createddate).format("DD/MM/YYYY")} </div>
+              </Grid>
+              <Grid item xs={12} md={6} style={{ marginTop: "15px" }} >
+                {/* <span style={{color: "black", fontWeight: "bold" }}> Pin Code : </span> */}
+                <img src={pinCode} height="20px" width="20px" style={{marginLeft: "3px"}}/>
+                {/* <span style={{ paddingRight: "5px" }}></span> {profileData[0].billingpostalcode} */}
+                <span style={{ padding: "10px" }} />
+                <div style={{marginTop: '-25px', marginLeft: '35px'}}> {profileData[0].billingpostalcode} </div>
+              </Grid>
+            </Grid>
           </div>
         </div>
        }
